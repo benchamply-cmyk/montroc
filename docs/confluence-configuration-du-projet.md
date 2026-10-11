@@ -15,11 +15,11 @@ montroc.fr permet d'échanger des objets **sans prix ni monnaie** : chacun publi
 | API | Python 3.12, FastAPI (`api/`) | Render, Frankfurt | https://api.montroc.fr (doc : `/docs`) |
 | Moteur d'échanges | Python pur (`algorithme/`) | dans l'API | — |
 | Base de données | PostgreSQL 16 | Neon, Frankfurt | privée (chaîne de connexion secrète) |
-| Domaine et DNS | montroc.fr | OVH | — |
+| Domaine, DNS, e-mails | montroc.fr, 10 adresses @montroc.fr | OVH (offre Startup) | — |
 | Code, CI | Git, GitHub Actions | GitHub | https://github.com/benchamply-cmyk/montroc |
 
 Choix clés :
-- Pas d'hébergement mutualisé OVH : Netlify sert le site, et l'offre OVH ne fait pas tourner Python.
+- Offre OVH Startup prise pour les e-mails et le domaine offert ; le site est servi par Netlify et l'API par Render (le mutualisé OVH ne fait pas tourner Python).
 - Base PostgreSQL managée : sauvegardes et restauration gérées, règles métier garanties par des contraintes en base.
 - Tout en Europe (RGPD, latence).
 
@@ -27,7 +27,7 @@ Choix clés :
 
 | Service | Usage | Offre | Double authentification |
 |---|---|---|---|
-| OVH | domaine montroc.fr, zone DNS | domaine seul | ☐ |
+| OVH | domaine, zone DNS, e-mails | Startup | ☐ |
 | Neon | base `montroc` (branches `main`, `dev`) | gratuite au départ | ☐ |
 | Render | service `montroc-api` | gratuite au départ (Starter au lancement public) | ☐ |
 | Netlify | site montroc.fr | gratuite | ☐ |
@@ -41,7 +41,7 @@ Choix clés :
 | CNAME | www | `<site>.netlify.app.` |
 | CNAME | api | `montroc-api.onrender.com.` |
 
-DNSSEC activé. Certificats HTTPS : Let's Encrypt, émis et renouvelés automatiquement par Netlify et Render.
+Ne jamais supprimer les entrées MX/SPF/DKIM (e-mails OVH). DNSSEC activé. Certificats HTTPS : Let's Encrypt, émis et renouvelés automatiquement par Netlify et Render.
 
 ## Variables d'environnement de l'API
 

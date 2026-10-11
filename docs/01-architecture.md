@@ -18,12 +18,12 @@ flowchart LR
 | API | `api/` | **Render** (gratuit au départ, Frankfurt) | Python 3.12 + FastAPI. Reçoit les requêtes du site, lit/écrit la base, appelle le moteur. Documentation interactive sur `/docs`. |
 | Moteur | `algorithme/` | (dans l'API) | Bibliothèque Python pure qui trouve les boucles d'échange (2 ou 3 personnes) et le « math trade ». Aucune dépendance, testable seule. |
 | Base | `api/alembic/` (schéma) | **Neon** (PostgreSQL managé, Frankfurt) | Données : utilisateurs, objets, souhaits, échanges. Sauvegardes et restauration gérées par Neon. |
-| Domaine | — | **OVH** | `montroc.fr` et la zone DNS. |
+| Domaine et e-mails | — | **OVH** (offre Startup) | `montroc.fr`, la zone DNS et les adresses e-mail `@montroc.fr`. |
 
 ## Pourquoi ce découpage
 
 - **Netlify n'exécute pas de serveur Python ni de base de données** : il sert des fichiers. L'API et la base vivent donc ailleurs.
-- **L'hébergement mutualisé OVH (Startup, Pro…) n'est pas nécessaire** : il fait doublon avec Netlify pour le site, et ne sait pas faire tourner une API Python (il est fait pour PHP). On n'achète chez OVH que le domaine.
+- **L'offre OVH Startup sert pour les e-mails et le domaine**, pas pour le site : l'hébergement mutualisé ne fait pas tourner d'API Python (il est fait pour PHP), et Netlify sert le site avec déploiement automatique et aperçus de PR.
 - **PostgreSQL managé (Neon)** plutôt qu'une base qu'on administre soi-même : sauvegardes, mises à jour et chiffrement sont pris en charge ; la base respecte des contraintes fortes (voir [Base de données](03-base-de-donnees.md)).
 - **Tout est en Europe (Frankfurt)** : latence faible depuis la France, données dans l'UE (RGPD).
 - Chaque brique peut être remplacée sans toucher aux autres (ex. passer l'API sur un VPS OVH plus tard : seule l'URL `api.montroc.fr` change de cible).

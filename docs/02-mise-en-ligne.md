@@ -1,10 +1,10 @@
 # Mise en ligne de montroc.fr, étape par étape
 
-Ordre conseillé : **domaine → base → API → site → DNS → vérifications**. Chaque étape se fait sur ton compte, de tes mains ; rien n'est payant à part le domaine.
+Ordre conseillé : **domaine → base → API → site → DNS → vérifications**. Chaque étape se fait sur ton compte, de tes mains ; seul OVH est payant (domaine + offre Startup pour les e-mails).
 
 Coche au fur et à mesure :
 
-- [ ] 1. Domaine montroc.fr acheté chez OVH (sans hébergement)
+- [ ] 1. Domaine montroc.fr + offre Startup achetés chez OVH, adresses e-mail créées
 - [ ] 2. Base PostgreSQL créée sur Neon
 - [ ] 3. API déployée sur Render
 - [ ] 4. Site déployé sur Netlify
@@ -14,16 +14,19 @@ Coche au fur et à mesure :
 
 ---
 
-## 1. Acheter le domaine chez OVH (sans hébergement)
+## 1. Acheter le domaine chez OVH (avec l'offre Startup)
 
-1. Dans le panier OVH, sur l'écran **« Liez un hébergement web à votre nom de domaine »**, clique **« Ignorer cette étape »** en haut à droite (ou supprime l'hébergement *Startup* avec la corbeille dans « Votre sélection »).
-   *Pourquoi :* le site est hébergé par Netlify et l'API par Render. L'hébergement mutualisé OVH ne servirait à rien (et il ne sait pas faire tourner Python).
-2. Garde **DNSSEC** (inclus, gratuit).
-3. Durée : 1 an suffit pour démarrer ; 3 ans évite d'oublier un renouvellement. Active le **renouvellement automatique** dans tous les cas.
-4. Paie, puis attends l'e-mail « domaine activé » (quelques minutes à quelques heures pour un `.fr`).
-5. Vérifie dans **Web Cloud → Noms de domaine → montroc.fr** que le domaine apparaît, avec l'onglet **Zone DNS**.
+Choix retenu : domaine **montroc.fr + hébergement Startup**, pris pour ses services annexes, pas pour héberger le site :
 
-> Les adresses e-mail `@montroc.fr` ne sont pas incluses sans hébergement. Si tu en veux une plus tard : offre « MX Plan » OVH, ou redirection e-mail gratuite (onglet *E-mails* du domaine).
+- **10 adresses e-mail** `@montroc.fr` (5 Go chacune) : c'est l'intérêt principal (`contact@`, `bonjour@`, `ben@`…) ;
+- **domaine offert la première année** ;
+- un espace web OVH (100 Go, 15 sites, sauvegardes) qui reste disponible pour d'éventuelles pages annexes, mais **le site montroc.fr est servi par Netlify** et l'API Python par Render (l'hébergement mutualisé ne fait pas tourner Python).
+
+Étapes :
+1. Garde **DNSSEC** (inclus) et active le **renouvellement automatique** du domaine et de l'hébergement.
+2. Paie, puis attends l'e-mail « domaine activé » (quelques minutes à quelques heures pour un `.fr`).
+3. Dans **Web Cloud → Noms de domaine → montroc.fr**, vérifie l'onglet **Zone DNS**.
+4. Dans **Web Cloud → E-mails** (ou *Hébergements → montroc.fr → E-mails*), crée tes adresses. Les enregistrements **MX** qui font marcher ces e-mails sont créés par OVH : **ne jamais les supprimer**.
 
 ## 2. Créer la base PostgreSQL sur Neon
 
@@ -64,7 +67,7 @@ Le schéma (tables, contraintes) n'est pas créé à la main : l'API applique le
 
 Dans **Web Cloud → Noms de domaine → montroc.fr → Zone DNS** :
 
-1. **Supprime** les entrées par défaut qui pointent vers OVH pour le domaine nu et `www` : les lignes de type **A** (et **AAAA** s'il y en a) sur `montroc.fr.` et sur `www.montroc.fr.`, et un éventuel CNAME sur `www`. Ne touche pas aux lignes **NS**, **MX**, **SPF/TXT**.
+1. **Supprime** les entrées par défaut qui pointent vers l'hébergement OVH pour le domaine nu et `www` : les lignes de type **A** (et **AAAA** s'il y en a) sur `montroc.fr.` et sur `www.montroc.fr.`, et un éventuel CNAME sur `www`. Ne touche pas aux lignes **NS**, **MX**, **SPF/TXT** (DKIM, autodiscover) : ce sont tes e-mails.
 2. **Ajouter une entrée** :
 
 | Type | Sous-domaine | Cible | Pour |
@@ -106,7 +109,7 @@ Ainsi, rien n'arrive en production sans pull request et sans tests verts. Comme 
 
 | Service | Ce qu'on y trouve | Secret à garder |
 |---|---|---|
-| OVH | domaine montroc.fr, zone DNS | identifiants OVH (activer la double authentification) |
+| OVH | domaine montroc.fr, zone DNS, e-mails (offre Startup) | identifiants OVH (activer la double authentification) |
 | Neon | base PostgreSQL (`main`, `dev`) | chaîne de connexion `DATABASE_URL` |
 | Render | API `montroc-api` → `api.montroc.fr` | aucun en plus (DATABASE_URL y est stockée) |
 | Netlify | site → `montroc.fr` | aucun |
