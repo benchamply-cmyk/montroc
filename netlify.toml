@@ -1,0 +1,21 @@
+# Configuration Netlify : le site est le dossier web/, publié tel quel (pas d'étape de build).
+[build]
+  publish = "web"
+  command = ""
+
+# En-têtes de sécurité sur toutes les pages.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# Toujours servir le site sur montroc.fr (sans www).
+[[redirects]]
+  from = "https://www.montroc.fr/*"
+  to = "https://montroc.fr/:splat"
+  status = 301
+  force = true
