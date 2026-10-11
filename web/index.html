@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Troc</title>
+<meta name="description" content="Troc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : une seule colonne étroite, comme un carnet ; une boucle animée sert de signature ; barre d'onglets en bas. */
+:root{
+  --bg:#F4F6FA; --surface:#FFFFFF; --ink:#12151C; --muted:#5F6676; --line:#DDE2EC;
+  --accent:#2C47F5; --accent-ink:#FFFFFF; --mark:#FFD94D; --ok:#127A4B; --ok-bg:#E2F4EA;
+  --display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"DM Mono", ui-monospace, Menlo, monospace;
+  --r:14px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1117; --surface:#171B24; --ink:#EEF1F7; --muted:#9AA2B3; --line:#2A3040;
+  --accent:#7C8CFF; --accent-ink:#0E1117; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E1117; --surface:#171B24; --ink:#EEF1F7; --muted:#9AA2B3; --line:#2A3040;
+  --accent:#7C8CFF; --accent-ink:#0E1117; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding-inline:16px;padding-block:env(safe-area-inset-top,0px) 96px}
+.wrap{max-width:520px;margin:0 auto}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,8vw,44px);line-height:1.05}
+h2{font-size:22px;line-height:1.15}
+p{margin:0}
+.muted{color:var(--muted)}
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hl{background:linear-gradient(transparent 58%,var(--mark) 58%,var(--mark) 92%,transparent 92%);padding:0 .08em}
+
+header.top{display:flex;justify-content:space-between;align-items:center;padding-block:20px 8px}
+.logo{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
+.logo svg{width:22px;height:22px}
+.who{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+section.view{display:flex;flex-direction:column;gap:28px;padding-block:20px}
+section.view[hidden]{display:none}
+
+/* Accueil */
+.hero{display:flex;flex-direction:column;gap:16px}
+.loop{position:relative;width:100%;max-width:340px;aspect-ratio:1;margin:4px auto 0}
+.loop svg{width:100%;height:100%;overflow:visible}
+.loop .ring{fill:none;stroke:var(--line);stroke-width:1.5}
+.loop .arc{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:60 900;animation:run 6s linear infinite}
+@keyframes run{to{stroke-dashoffset:-911}}
+.node{position:absolute;transform:translate(-50%,-50%);background:var(--surface);border:1.5px solid var(--ink);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.25}
+.node small{display:block;font-weight:400;color:var(--muted);font-size:11px;font-family:var(--mono)}
+.loop .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;pointer-events:none}
+.loop .center b{font-family:var(--display);font-size:13px;letter-spacing:.02em}
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px 22px;font-weight:600;font-size:16px}
+.cta.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.rules div{background:var(--surface);padding:14px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.rules b{font-family:var(--display);font-size:15px}
+.rules span{font-size:13px;color:var(--muted);line-height:1.35}
+@media (max-width:420px){.rules{grid-template-columns:1fr}}
+.steps{display:flex;flex-direction:column;gap:14px;counter-reset:s;padding:0;margin:0;list-style:none}
+.steps li{display:grid;grid-template-columns:32px 1fr;gap:12px;align-items:start}
+.steps li::before{counter-increment:s;content:counter(s);font-family:var(--mono);font-size:13px;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center}
+.steps b{display:block}
+
+/* Listes */
+.lists{display:grid;gap:24px}
+.list-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
+.items{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.thumb{width:44px;height:44px;border-radius:10px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;flex:none}
+.thumb svg{width:22px;height:22px;stroke:var(--ink);fill:none;stroke-width:1.6}
+.item .t{flex:1;min-width:0}
+.item .t b{font-weight:600;display:block}
+.item .t span{font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;background:var(--surface);display:inline-flex;gap:6px;align-items:center}
+.chip.open{border-style:dashed;border-color:var(--accent);color:var(--accent)}
+.chip.sugg{border-color:var(--line);color:var(--muted);background:transparent}
+.chip.sugg:hover{border-color:var(--ink);color:var(--ink)}
+.chip .x{border:0;background:none;padding:0;color:var(--muted);font-size:16px;line-height:1}
+.add{display:flex;gap:8px;margin-top:12px}
+.add input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:999px;padding:10px 14px;background:var(--surface);color:var(--ink);font:inherit}
+.add button{border:0;border-radius:999px;background:var(--ink);color:var(--bg);padding:10px 16px;font-weight:600}
+.meter{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px}
+.meter .num{font-family:var(--display);font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .5s}
+
+/* Échanges */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px}
+.card.featured{border:1.5px solid var(--ink)}
+.tag{align-self:flex-start;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:6px;background:var(--bg);color:var(--muted)}
+.tag.a{background:var(--mark);color:#12151C}
+.swap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.swap .side{min-width:0}
+.swap .side .label{display:block;margin-bottom:2px}
+.swap .side b{font-weight:600}
+.swap .arrow{font-family:var(--mono);color:var(--muted)}
+.chain{display:flex;flex-direction:column;gap:0;border-left:1.5px solid var(--ink);margin-left:6px;padding-left:16px}
+.chain div{position:relative;padding:6px 0;font-size:15px}
+.chain div::before{content:"";position:absolute;left:-22px;top:13px;width:10px;height:10px;border-radius:50%;background:var(--surface);border:1.5px solid var(--ink)}
+.chain div.me::before{background:var(--accent);border-color:var(--accent)}
+.chain .muted{font-size:13px}
+.acc{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--muted)}
+.dot.on{background:var(--ok);border-color:var(--ok)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.status{font-size:14px;background:var(--ok-bg);color:var(--ok);padding:10px 12px;border-radius:10px}
+.recap{font-size:14px;border-top:1px dashed var(--line);padding-top:12px}
+
+/* Dépôt */
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.slot{background:var(--surface);border:1.5px dashed var(--line);border-radius:var(--r);padding:14px 10px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center;min-width:0}
+.slot.done{border:1.5px solid var(--ok);}
+.slot .who{font-family:var(--body);font-weight:600;font-size:14px;color:var(--ink)}
+.slot .st{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.slot.done .st{color:var(--ok)}
+.lock{display:flex;gap:12px;align-items:center;padding:14px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line)}
+.lock svg{width:28px;height:28px;flex:none;stroke:var(--ink);fill:none;stroke-width:1.6}
+.place{display:flex;justify-content:space-between;gap:12px;font-size:14px;border-top:1px solid var(--line);padding-top:12px}
+
+/* Onglets */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:5}
+nav.tabs .in{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs button{border:0;background:none;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:var(--muted);position:relative}
+nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7}
+nav.tabs button[aria-current="page"]{color:var(--ink);font-weight:600}
+nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--accent);color:var(--accent-ink);font-size:10px;font-family:var(--mono);border-radius:999px;padding:0 5px;line-height:16px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:6;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:reduce){.loop .arc{animation:none;stroke-dasharray:none;opacity:.5}.bar i{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="var(--accent)"/><circle cx="19.8" cy="16.5" r="2.6" fill="currentColor"/><circle cx="4.2" cy="16.5" r="2.6" fill="currentColor"/></svg>troc</div>
+    <span class="who">Lyon · Croix-Rousse</span>
+  </header>
+
+  <!-- ACCUEIL -->
+  <section class="view" id="v-home">
+    <div class="hero">
+      <span class="label">Pas de prix. Pas de monnaie.</span>
+      <h1>Ce qui dort chez vous est <span class="hl">utile</span> à quelqu'un.</h1>
+      <p class="muted">Dites ce que vous avez et ce qui vous serait utile. Troc trouve l'échange, même à trois.</p>
+    </div>
+
+    <div class="loop" aria-label="Exemple de troc en chaîne à trois personnes">
+      <svg viewBox="0 0 300 300" aria-hidden="true">
+        <circle class="ring" cx="150" cy="150" r="110"/>
+        <circle class="arc" cx="150" cy="150" r="110" transform="rotate(-90 150 150)"/>
+      </svg>
+      <div class="node" style="left:50%;top:13.3%">Vous<small>donnez une poussette</small></div>
+      <div class="node" style="left:81.8%;top:68.3%">Inès<small>donne une perceuse</small></div>
+      <div class="node" style="left:18.2%;top:68.3%">Marc<small>donne un vélo enfant</small></div>
+      <div class="center"><div><b>1 boucle</b><br><span class="muted" style="font-size:12px">3 personnes servies</span></div></div>
+    </div>
+
+    <div class="row">
+      <button class="cta" data-go="lists">Commencer mes listes</button>
+      <button class="cta ghost" data-go="trades">Voir un échange</button>
+    </div>
+
+    <div class="rules">
+      <div><b>Utile</b><span>On échange ce qui sert, pas ce qui « vaut ».</span></div>
+      <div><b>Large</b><span>Plus vos souhaits sont ouverts, plus il y a d'échanges.</span></div>
+      <div><b>Sûr</b><span>Rien n'est remis tant que tout le monde n'a pas déposé.</span></div>
+    </div>
+
+    <ol class="steps">
+      <li><div><b>J'ai</b><span class="muted">Une photo par objet. L'état est obligatoire.</span></div></li>
+      <li><div><b>Ça me serait utile</b><span class="muted">Des catégories plutôt qu'un modèle exact.</span></div></li>
+      <li><div><b>Troc propose</b><span class="muted">Un échange direct, une boucle à trois, ou une offre libre. Vous avez 48 h pour dire oui.</span></div></li>
+    </ol>
+  </section>
+
+  <!-- LISTES -->
+  <section class="view" id="v-lists" hidden>
+    <div class="hero"><span class="label">Mon profil</span><h2>Ce que j'ai, ce qui me serait utile</h2></div>
+
+    <div class="meter" aria-live="polite">
+      <span class="label">Échanges possibles près de chez vous</span>
+      <div class="num" id="m-num">4</div>
+      <div class="bar"><i id="m-bar" style="width:20%"></i></div>
+      <p class="muted" id="m-tip" style="font-size:14px">Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.</p>
+    </div>
+
+    <div class="lists">
+      <div>
+        <div class="list-head"><span class="label">J'ai · 3 objets</span></div>
+        <div class="items">
+          <div class="item"><div class="thumb"><svg viewBox="0 0 24 24"><circle cx="7" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="M4 6h3l3 9h8l2-6H9"/></svg></div><div class="t"><b>Poussette canne</b><span>Bon état · Puériculture</span></div></div>
+          <div class="item"><div class="thumb"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16"/></svg></div><div class="t"><b>Lot de 12 BD</b><span>Très bon état · Livres</span></div></div>
+          <div class="item"><div class="thumb"><svg viewBox="0 0 24 24"><path d="M6 20V9l6-5 6 5v11z"/><path d="M10 20v-5h4v5"/></svg></div><div class="t"><b>Lampe de bureau</b><span>Usagé, fonctionne · Maison</span></div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="list-head"><span class="label">Ça me serait utile</span></div>
+        <div class="chips" id="wishes">
+          <span class="chip">Outillage <button class="x" aria-label="Retirer">×</button></span>
+          <span class="chip open">Ouvert à tout : jardin <button class="x" aria-label="Retirer">×</button></span>
+        </div>
+        <div class="add">
+          <input id="wish-in" placeholder="Ex. vélo enfant, jeux Switch…" aria-label="Ajouter un souhait">
+          <button id="wish-add">Ajouter</button>
+        </div>
+        <p class="label" style="margin-top:16px;margin-bottom:8px">Suggestions d'après vos objets</p>
+        <div class="chips" id="suggs">
+          <button class="chip sugg" data-w="Siège auto 1-4 ans">+ Siège auto 1-4 ans</button>
+          <button class="chip sugg" data-w="Vélo enfant">+ Vélo enfant</button>
+          <button class="chip sugg" data-w="Ouvert à tout : livres" data-open="1">+ Ouvert à tout : livres</button>
+          <button class="chip sugg" data-w="Jeux de société">+ Jeux de société</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÉCHANGES -->
+  <section class="view" id="v-trades" hidden>
+    <div class="hero"><span class="label">Pour vous</span><h2>3 échanges trouvés</h2></div>
+
+    <article class="card featured" id="c-chain">
+      <span class="tag a">Boucle à trois</span>
+      <div class="chain">
+        <div class="me"><b>Vous</b> donnez la poussette canne à Inès</div>
+        <div><b>Inès</b> donne sa perceuse à Marc</div>
+        <div><b>Marc</b> vous donne un vélo enfant 16″</div>
+      </div>
+      <div class="recap">Vous donnez <b>une poussette canne</b>. Vous recevez <b>un vélo enfant 16″</b>.</div>
+      <div class="acc" id="chain-acc"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span>Inès a accepté · 47 h restantes</span></div>
+      <div class="btns" id="chain-btns"><button class="btn primary" data-act="accept">J'accepte</button><button class="btn" data-act="refuse">Pas pour moi</button></div>
+    </article>
+
+    <article class="card">
+      <span class="tag">Échange direct</span>
+      <div class="swap">
+        <div class="side"><span class="label">Vous donnez</span><b>Lot de 12 BD</b></div>
+        <span class="arrow">⇄</span>
+        <div class="side"><span class="label">Vous recevez</span><b>Ponceuse</b></div>
+      </div>
+      <p class="muted" style="font-size:14px">Avec Karim, à 900 m. Note 4,9 · 31 trocs.</p>
+      <div class="btns"><button class="btn primary" data-toast="Proposition envoyée à Karim">Proposer</button></div>
+    </article>
+
+    <article class="card">
+      <span class="tag">Offre libre reçue</span>
+      <div class="swap">
+        <div class="side"><span class="label">Léa propose</span><b>Arrosoir + 2 jardinières</b></div>
+        <span class="arrow">→</span>
+        <div class="side"><span class="label">Contre</span><b>Votre lampe de bureau</b></div>
+      </div>
+      <p class="muted" style="font-size:14px">Aucune valeur affichée. Seule compte l'utilité pour vous.</p>
+      <div class="btns"><button class="btn primary" data-toast="Offre de Léa acceptée">Accepter</button><button class="btn" data-toast="Contre-offre ouverte">Contre-offre</button></div>
+    </article>
+  </section>
+
+  <!-- REMISE -->
+  <section class="view" id="v-drop" hidden>
+    <div class="hero"><span class="label">Remise sécurisée</span><h2>Déposez, puis récupérez</h2></div>
+    <div class="slots" id="slots">
+      <div class="slot done"><span class="who">Inès</span><span class="st">déposé</span></div>
+      <div class="slot" id="slot-me"><span class="who">Vous</span><span class="st">à déposer</span></div>
+      <div class="slot"><span class="who">Marc</span><span class="st">à déposer</span></div>
+    </div>
+    <div class="lock">
+      <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      <p id="lock-txt" style="font-size:15px">Rien n'est libéré tant que les trois objets ne sont pas déposés. Si quelqu'un ne dépose pas, chacun récupère le sien.</p>
+    </div>
+    <div class="card">
+      <span class="label">Point de dépôt</span>
+      <b>Ressourcerie La Boucle</b>
+      <p class="muted" style="font-size:14px">12 rue d'Austerlitz · ouvert mar.–sam., 10 h–19 h</p>
+      <div class="place"><span class="muted">Votre code de dépôt</span><span style="font-family:var(--mono);font-weight:500">TRC-4821</span></div>
+      <div class="btns"><button class="btn primary" id="drop-btn">J'ai déposé la poussette</button></div>
+    </div>
+  </section>
+</div>
+
+<nav class="tabs" aria-label="Navigation">
+  <div class="in">
+    <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Troc</button>
+    <button data-go="lists"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Mes listes</button>
+    <button data-go="trades"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Échanges<span class="badge">3</span></button>
+    <button data-go="drop"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12h16M9 8V5h6v3"/></svg>Dépôt</button>
+  </div>
+</nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function go(v){
+  $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
+  $$('nav.tabs button').forEach(b=>{b.dataset.go===v?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2200)}
+$$('[data-toast]').forEach(b=>b.onclick=()=>toast(b.dataset.toast));
+
+/* Souhaits : chaque souhait ouvre des boucles ; un souhait « ouvert à tout » en ouvre davantage */
+const wishes=$('#wishes');
+function recount(){
+  const chips=[...wishes.children], open=chips.filter(c=>c.classList.contains('open')).length;
+  const n=Math.min(2+chips.length*2+open*3,40);
+  $('#m-num').textContent=n; $('#m-bar').style.width=Math.round(n/40*100)+'%';
+  $('#m-tip').textContent=n>=20?'Bel éventail. Vos chances de boucle sont élevées.':'Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.';
+}
+function addWish(txt,open){
+  txt=txt.trim(); if(!txt)return;
+  const c=document.createElement('span'); c.className='chip'+(open?' open':'');
+  c.textContent=txt+' '; const x=document.createElement('button'); x.className='x'; x.textContent='×'; x.setAttribute('aria-label','Retirer');
+  c.append(x); wishes.append(c); recount();
+}
+wishes.addEventListener('click',e=>{if(e.target.classList.contains('x')){e.target.parentElement.remove();recount()}});
+$('#wish-add').onclick=()=>{addWish($('#wish-in').value);$('#wish-in').value=''};
+$('#wish-in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#wish-add').click()}});
+$$('#suggs .chip').forEach(b=>b.onclick=()=>{addWish(b.dataset.w,b.dataset.open);b.remove()});
+recount();
+
+/* Boucle à trois */
+$('#chain-btns').addEventListener('click',e=>{
+  const a=e.target.dataset.act; if(!a)return;
+  if(a==='accept'){
+    $$('#chain-acc .dot')[1].classList.add('on');
+    $('#chain-acc span:last-child').textContent='Vous et Inès avez accepté · on attend Marc';
+    $('#chain-btns').innerHTML='<p class="status">C\'est noté. Dès que Marc accepte, le dépôt s\'ouvre.</p><button class="btn" data-go="drop">Voir le dépôt</button>';
+  }else{
+    $('#chain-btns').innerHTML='<p class="muted" style="font-size:14px">Pas de souci. Troc cherche un remplaçant pour Inès et Marc.</p>';
+  }
+});
+
+/* Dépôt */
+$('#drop-btn').onclick=function(){
+  const s=$('#slot-me'); s.classList.add('done'); s.querySelector('.st').textContent='déposé';
+  $('#lock-txt').textContent='2 dépôts sur 3. Dès que Marc dépose, vous récupérez le vélo avec votre code.';
+  this.textContent='Dépôt confirmé'; this.disabled=true; toast('Dépôt enregistré');
+};
+</script>
+</body>
+</html>
