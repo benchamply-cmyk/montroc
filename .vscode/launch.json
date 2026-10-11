@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API montroc (débogage)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["montroc_api.main:app", "--reload", "--port", "8001"],
+      "cwd": "${workspaceFolder}/api",
+      "envFile": "${workspaceFolder}/api/.env",
+      "justMyCode": true
+    },
+    {
+      "name": "Moteur : exemple commenté",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/algorithme/exemple.py",
+      "cwd": "${workspaceFolder}/algorithme"
+    },
+    {
+      "name": "Moteur : banc d'essai (1000 utilisateurs)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/algorithme/benchmark.py",
+      "args": ["1000"],
+      "cwd": "${workspaceFolder}/algorithme"
+    },
+    {
+      "name": "Tests API : fichier ouvert",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["${file}", "-x"],
+      "cwd": "${workspaceFolder}/api"
+    }
+  ]
+}
