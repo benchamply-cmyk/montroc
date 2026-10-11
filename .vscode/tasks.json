@@ -1,0 +1,18 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Installer l'environnement", "type": "shell", "command": "make installer", "problemMatcher": [] },
+    { "label": "Démarrer la base locale", "type": "shell", "command": "docker compose up -d --wait", "problemMatcher": [] },
+    { "label": "Appliquer les migrations", "type": "shell", "command": "make migrer", "problemMatcher": [] },
+    { "label": "Lancer l'API", "type": "shell", "command": "make api", "isBackground": true, "problemMatcher": [] },
+    { "label": "Servir le site", "type": "shell", "command": "make site", "isBackground": true, "problemMatcher": [] },
+    {
+      "label": "Tous les tests",
+      "type": "shell",
+      "command": "make tests",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    { "label": "Vérifier le style", "type": "shell", "command": "make lint", "problemMatcher": [] }
+  ]
+}

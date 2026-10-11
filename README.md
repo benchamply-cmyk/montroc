@@ -1,6 +1,6 @@
 # montroc
 
-L'alternative montroc : échanger des objets **sans prix ni monnaie**. Chacun dit ce qu'il a et ce qui lui serait utile, et Troc trouve l'échange, même en boucle à trois.
+L'alternative montroc : échanger des objets **sans prix ni monnaie**. Chacun dit ce qu'il a et ce qui lui serait utile, et montroc trouve l'échange, même en boucle à trois.
 
 Site prévu : [montroc.fr](https://montroc.fr)
 
@@ -8,34 +8,28 @@ Site prévu : [montroc.fr](https://montroc.fr)
 
 | Dossier | Contenu |
 |---|---|
-| [`web/`](web/) | La version web minimaliste : une seule page HTML autonome (accueil, mes listes, échanges proposés, dépôt sécurisé). Maquette interactive, sans serveur ni base de données. |
-| [`algorithme/`](algorithme/) | Le moteur d'échanges en Python (bibliothèque standard uniquement) : boucles autour d'un utilisateur, « math trade » à l'échelle d'une ville, gestion des refus. Voir son [README](algorithme/README.md). |
+| [`web/`](web/) | Le site : une page HTML autonome (maquette interactive), publiée par Netlify sur montroc.fr. |
+| [`algorithme/`](algorithme/) | Le moteur d'échanges en Python pur : boucles autour d'un utilisateur, « math trade » à l'échelle d'une ville, gestion des refus. Voir son [README](algorithme/README.md). |
+| [`api/`](api/) | L'API FastAPI (Python 3.12) et le schéma PostgreSQL avec ses migrations Alembic. Déployée sur Render (api.montroc.fr). |
+| [`docs/`](docs/) | **La documentation du projet** : architecture, mise en ligne pas à pas, base de données, VS Code, Git. |
 
-## Voir le site en local
-
-Ouvrir `web/index.html` dans un navigateur, ou :
-
-```
-cd web
-python3 -m http.server 8000
-# puis http://localhost:8000
-```
-
-Le dossier `web/` peut être publié tel quel sur n'importe quel hébergement statique (GitHub Pages, Netlify, OVH…) pour montroc.fr.
-
-## Lancer l'algorithme
-
-Python 3.10 ou plus récent, aucune dépendance.
+## Démarrer
 
 ```
-cd algorithme
-python3 exemple.py                      # démonstration commentée
-python3 -m unittest discover -s tests   # 20 tests
-python3 benchmark.py 1000 2000 5000     # banc d'essai « ville »
+make installer             # environnement Python (.venv) : moteur + API
+cp .env.example api/.env
+make base                  # PostgreSQL local (Docker)
+make api                   # API sur http://localhost:8001/docs
+make site                  # site sur http://localhost:8000
+make tests                 # tous les tests
 ```
 
-## Prochaines étapes
+Détails et équivalents VS Code : [docs/04-developpement-local.md](docs/04-developpement-local.md).
 
-- Relier la page web à l'algorithme (petite API qui appelle `boucles_autour` et `math_trade`).
-- Comptes utilisateurs, photos des objets, notifications d'acceptation sous 48 h.
-- Brancher le nom de domaine montroc.fr sur l'hébergement choisi.
+## Mettre en ligne
+
+Domaine chez OVH, site sur Netlify, API sur Render, base sur Neon : suivre [docs/02-mise-en-ligne.md](docs/02-mise-en-ligne.md).
+
+## Contribuer
+
+Une branche par fonctionnalité, fusion dans `main` par pull request avec la CI verte : [docs/05-git-et-branches.md](docs/05-git-et-branches.md).

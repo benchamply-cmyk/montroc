@@ -1,0 +1,28 @@
+# Blueprint Render : l'API Python (https://api.montroc.fr).
+# Render > New > Blueprint, choisir ce dépôt : le service est créé à partir de ce fichier.
+services:
+  - type: web
+    name: montroc-api
+    runtime: python
+    region: frankfurt
+    plan: free
+    branch: main
+    # Ne redéploie que si l'API ou le moteur changent.
+    buildFilter:
+      paths:
+        - api/**
+        - algorithme/**
+        - render.yaml
+    buildCommand: pip install ./algorithme ./api
+    # Les migrations passent avant chaque démarrage : la base est toujours au bon schéma.
+    startCommand: cd api && alembic upgrade head && uvicorn montroc_api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /sante
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: DATABASE_URL
+        sync: false   # à coller dans Render : chaîne de connexion Neon (branche main)
+      - key: CORS_ORIGINS
+        value: https://montroc.fr,https://www.montroc.fr
+      - key: ENVIRONNEMENT
+        value: production

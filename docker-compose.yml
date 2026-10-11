@@ -1,0 +1,23 @@
+# Base PostgreSQL locale, même version majeure que la production (Neon).
+#   docker compose up -d      démarre la base
+#   docker compose down       l'arrête (les données restent dans le volume)
+services:
+  postgres:
+    image: postgres:16
+    container_name: montroc-postgres
+    environment:
+      POSTGRES_USER: montroc
+      POSTGRES_PASSWORD: montroc
+      POSTGRES_DB: montroc
+    ports:
+      - "5432:5432"
+    volumes:
+      - montroc-pg:/var/lib/postgresql/data
+      - ./api/scripts/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U montroc"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  montroc-pg:

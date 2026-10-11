@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "troc-echanges"
+version = "0.1.0"
+description = "Moteur d'échanges montroc : boucles de troc sans prix ni monnaie (bibliothèque standard uniquement)."
+requires-python = ">=3.10"
+
+[tool.setuptools]
+packages = ["troc_echanges"]
