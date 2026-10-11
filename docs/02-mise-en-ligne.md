@@ -55,10 +55,10 @@ Le schéma (tables, contraintes) n'est pas créé à la main : l'API applique le
 
 ## 4. Déployer le site sur Netlify
 
-1. Sur **https://app.netlify.com** : **Add new site → Import an existing project → GitHub**, choisis `benchamply-cmyk/montroc`.
+1. Sur **https://app.netlify.com** : **Add new project → Import an existing project → GitHub** (Netlify appelle désormais les sites des « projects »), choisis `benchamply-cmyk/montroc`.
 2. Netlify lit [`netlify.toml`](../netlify.toml) : dossier publié `web`, pas de commande de build. Branche de production : **`main`**. Clique **Deploy**.
 3. Vérifie l'adresse provisoire `https://<nom>.netlify.app`.
-4. **Site configuration → Domain management → Add a domain** : `montroc.fr`. Netlify propose aussi `www.montroc.fr` : accepte.
+4. **Project configuration → Domain management → Add a domain** : `montroc.fr`. Netlify propose aussi `www.montroc.fr` : accepte.
 5. Netlify propose d'utiliser **Netlify DNS** : refuse (« Set up DNS externally » / garder OVH). Note les valeurs qu'il affiche :
    - pour `montroc.fr` : un enregistrement **A** vers l'adresse du load balancer Netlify (actuellement `75.2.60.5`, vérifie la valeur affichée) ;
    - pour `www` : un **CNAME** vers `<nom>.netlify.app`.
