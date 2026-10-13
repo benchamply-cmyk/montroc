@@ -28,6 +28,11 @@ def test_categories_de_base_presentes(client):
         "INSERT INTO objets (proprietaire_id, categorie_slug, titre, statut) VALUES (1, 'velo', 'V', 'vendu')",
         "INSERT INTO objets (proprietaire_id, categorie_slug, titre) VALUES (1, 'inconnue', 'V')",
         "INSERT INTO categories (slug, libelle) VALUES ('Pas Un Slug', 'x')",
+        # Pas d'objet disponible sans photo ni état.
+        "INSERT INTO objets (proprietaire_id, categorie_slug, titre, etat) VALUES (1, 'velo', 'V', 'bon')",
+        "INSERT INTO objets (proprietaire_id, categorie_slug, titre, photo_url) VALUES (1, 'velo', 'V', 'https://x')",
+        "INSERT INTO objets (proprietaire_id, categorie_slug, titre, photo_url, etat) "
+        "VALUES (1, 'velo', 'V', 'https://x', 'abime')",
     ],
 )
 def test_contraintes_refusent_les_donnees_incoherentes(creer, sql):
@@ -40,5 +45,5 @@ def test_suppression_utilisateur_en_cascade(client, creer):
     a = creer.utilisateur("alice")
     creer.objet(a, "velo")
     creer.souhait(a, "poussette")
-    assert client.delete(f"/utilisateurs/{a}").status_code == 204
+    assert client.delete("/moi", headers=a.headers).status_code == 204
     assert client.get("/objets").json() == []

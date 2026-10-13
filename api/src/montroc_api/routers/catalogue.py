@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
 
 from .. import models as m
-from ..deps import SessionDep
+from ..deps import Moderateur, SessionDep
 from ..schemas import CategorieCreation, CategorieLecture
 
 router = APIRouter(prefix="/categories", tags=["catégories"])
@@ -16,7 +16,7 @@ def lister(session: SessionDep):
 
 
 @router.post("", response_model=CategorieLecture, status_code=201)
-def creer(donnees: CategorieCreation, session: SessionDep):
+def creer(donnees: CategorieCreation, _moderateur: Moderateur, session: SessionDep):
     if session.get(m.Categorie, donnees.slug):
         raise HTTPException(409, "Cette catégorie existe déjà.")
     categorie = m.Categorie(**donnees.model_dump())
