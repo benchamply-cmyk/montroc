@@ -42,7 +42,7 @@ api/
 │   ├── models.py             tables et contraintes (SQLAlchemy)
 │   ├── schemas.py            formats JSON d'entrée/sortie (Pydantic)
 │   ├── services.py           logique métier : base ⇄ moteur d'échanges, délais, dépôts
-│   ├── courriels.py          e-mails des moments clés (SMTP OVH), envoyés après validation
+│   ├── courriels.py          e-mails des moments clés (API Brevo, ou SMTP), envoyés après validation
 │   ├── vues.py               réponses qui dépendent du lecteur (codes de retrait)
 │   └── routers/              une route par ressource
 │       ├── auth.py           /auth (lien magique, session, déconnexion)

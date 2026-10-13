@@ -10,15 +10,16 @@ Ce que l'étape 1 a ajouté, et ce qu'il faut configurer **de tes mains** pour q
 4. **E-mails aux moments clés** : « Une boucle vous attend », « Plus que 12 h pour répondre », « C'est oui pour tout le monde : à vous de déposer », « Inès a déposé », « Tout est déposé : votre objet vous attend », « Échange annulé ».
 5. **Signalement et modération** : un bouton « Signaler » sur les objets des autres, un onglet « Modération » pour les comptes modérateurs, des décisions motivées envoyées par e-mail.
 
-## 1. E-mails : une adresse OVH qui envoie
+## 1. E-mails : Brevo (gratuit), avec l'adresse @troctroc.fr
 
-Les e-mails partent par le serveur SMTP d'OVH (offre Startup, déjà payée).
+L'offre gratuite de Render **bloque les ports SMTP** (25, 465, 587) : l'API ne peut pas parler directement au serveur d'OVH. Elle envoie donc par l'**API HTTPS de Brevo** (société française, 300 e-mails par jour gratuits), avec l'adresse `bonjour@troctroc.fr` comme expéditeur.
 
-1. Espace client OVH → **Web Cloud → E-mails → troctroc.fr** : crée l'adresse `bonjour@troctroc.fr` (ou utilise une adresse existante) et choisis un mot de passe long, **différent** de celui du compte OVH.
-2. Vérifie qu'elle fonctionne : connecte-toi au webmail OVH avec cette adresse.
-3. Recommandé contre les spams : dans **E-mails → troctroc.fr**, active **DKIM** si OVH le propose, et ne touche pas aux lignes **SPF** et **MX** de la zone DNS.
+1. Crée un compte sur [brevo.com](https://www.brevo.com) avec l'adresse du projet (ex. `contact@troctroc.fr`).
+2. **Senders, Domains & Dedicated IPs → Domains → Add a domain** : `troctroc.fr`, puis choisis l'authentification manuelle. Brevo affiche des enregistrements DNS (code Brevo, DKIM, DMARC) : ajoute-les tels quels dans la **zone DNS OVH** de troctroc.fr, puis clique sur *Authenticate* (la propagation peut prendre de quelques minutes à quelques heures). Ne supprime aucune ligne existante (MX, SPF).
+3. **Senders → Add a sender** : `Troc`, `bonjour@troctroc.fr` (l'adresse OVH reçoit un e-mail de confirmation).
+4. **SMTP & API → API Keys → Generate a new API key** : copie la clé (elle commence par `xkeysib-`), c'est la valeur de `BREVO_API_KEY` dans Render.
 
-Réglages utilisés par l'API (déjà par défaut) : serveur `ssl0.ovh.net`, port `465` (SSL), identifiant = l'adresse complète.
+Les réponses des utilisateurs arrivent toujours dans la boîte OVH `bonjour@troctroc.fr`. Les variables `SMTP_*` ne servent que si l'API passe un jour sur une offre Render payante.
 
 ## 2. Photos : un compte Cloudinary gratuit
 
@@ -34,8 +35,7 @@ Render → service **montroc-api** → **Environment** → *Add Environment Vari
 
 | Variable | Valeur |
 |---|---|
-| `SMTP_UTILISATEUR` | `bonjour@troctroc.fr` |
-| `SMTP_MOT_DE_PASSE` | le mot de passe de cette adresse |
+| `BREVO_API_KEY` | la clé Brevo (`xkeysib-…`) |
 | `EMAIL_EXPEDITEUR` | `Troc <bonjour@troctroc.fr>` (même adresse que ci-dessus) |
 | `CLOUDINARY_URL` | la ligne copiée à l'étape 2 |
 | `MODERATEURS` | ton e-mail de connexion à Troc, ex. `ben.champly@gmail.com` (plusieurs : séparés par des virgules) |
@@ -55,7 +55,7 @@ Render gratuit n'a pas de tâches planifiées : c'est GitHub Actions ([`.github/
 
 ## 5. Vérifier le premier troc
 
-1. Sur https://troctroc.fr, saisis ton e-mail : le lien arrive (regarde les spams la première fois et marque-le « pas un spam »).
+1. Sur https://troctroc.fr, saisis ton e-mail : le lien arrive (en cas de doute, Brevo → *Transactional → Logs* montre chaque envoi ; regarde aussi les spams la première fois et marque-le « pas un spam »).
 2. Choisis ton pseudo, publie un objet avec photo, ajoute un souhait.
 3. Avec un deuxième compte (une autre adresse), publie l'objet que tu souhaites et souhaite le tien : l'échange apparaît dans « Échanges possibles ».
 4. Ton compte modérateur voit l'onglet **Modération**.

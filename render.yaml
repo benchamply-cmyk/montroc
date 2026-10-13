@@ -28,7 +28,10 @@ services:
         value: production
       - key: SITE_URL
         value: https://troctroc.fr
-      # E-mails (SMTP OVH) : l'adresse @troctroc.fr qui envoie, et son mot de passe.
+      # E-mails : Render gratuit bloque les ports SMTP, on envoie par l'API HTTPS de Brevo.
+      - key: BREVO_API_KEY
+        sync: false
+      # SMTP OVH : seulement sur une offre Render payante (ignoré si BREVO_API_KEY est renseignée).
       - key: SMTP_UTILISATEUR
         sync: false   # ex. bonjour@troctroc.fr
       - key: SMTP_MOT_DE_PASSE
