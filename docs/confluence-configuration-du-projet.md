@@ -28,7 +28,7 @@ Choix clés :
 | Service | Usage | Offre | Double authentification |
 |---|---|---|---|
 | OVH | domaine, zone DNS, e-mails | Startup | ☐ |
-| Neon | base `montroc` (branches `main`, `dev`) | gratuite au départ | ☐ |
+| Neon | projet `troctroc` (branches `main`, `dev`) | gratuite au départ | ☐ |
 | Render | service `montroc-api` | gratuite au départ (Starter au lancement public) | ☐ |
 | Netlify | site troctroc.fr | gratuite | ☐ |
 | GitHub | dépôt, CI, pull requests | gratuite | ☐ |
@@ -41,7 +41,7 @@ Zone **troctroc.fr** :
 |---|---|---|
 | A | (vide) | adresse Netlify (`75.2.60.5`, à vérifier dans Netlify) |
 | CNAME | www | `troctroc.netlify.app.` |
-| CNAME | api | `montroc-api.onrender.com.` |
+| CNAME | api | `montroc-api-csko.onrender.com.` |
 
 Ne jamais supprimer les entrées MX/SPF/DKIM (e-mails OVH). DNSSEC activé. Certificats HTTPS : Let's Encrypt, émis et renouvelés automatiquement par Netlify et Render.
 
