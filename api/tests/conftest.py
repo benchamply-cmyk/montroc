@@ -16,6 +16,7 @@ os.environ["CLOUDINARY_URL"] = "cloudinary://cle:secret@troc-test"
 os.environ["MODERATEURS"] = "modo@exemple.fr"
 os.environ["TACHES_SECRET"] = "secret-des-taches"
 os.environ["SMTP_MOT_DE_PASSE"] = ""
+os.environ["BREVO_API_KEY"] = ""
 
 import re  # noqa: E402
 from dataclasses import dataclass  # noqa: E402

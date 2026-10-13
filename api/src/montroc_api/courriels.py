@@ -1,9 +1,10 @@
-"""E-mails envoyés aux moments clés, par le serveur SMTP d'OVH.
+"""E-mails envoyés aux moments clés, par l'API HTTPS de Brevo ou par SMTP (OVH).
 
-Sans identifiants SMTP (en local, dans les tests), rien ne part : le message est écrit dans le
+Sans réglage d'envoi (en local, dans les tests), rien ne part : le message est écrit dans le
 journal et gardé dans ``ENVOYES``, ce qui permet de vérifier les envois dans les tests.
 """
 
+import json
 import logging
 import smtplib
 import ssl
@@ -11,7 +12,9 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from email.message import EmailMessage
-from email.utils import make_msgid
+from email.utils import make_msgid, parseaddr
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
 
 from sqlalchemy import event
 from sqlalchemy.orm import Session
@@ -32,12 +35,15 @@ ENVOYES: list[Courriel] = []
 
 
 def envoyer(destinataire: str, sujet: str, texte: str) -> None:
-    """Envoie un e-mail texte. Une panne SMTP est journalisée sans faire échouer la requête."""
+    """Envoie un e-mail texte. Une panne d'envoi est journalisée sans faire échouer la requête."""
     reglages = get_settings()
     courriel = Courriel(destinataire, sujet, texte + SIGNATURE.format(site=reglages.site_url))
-    if not reglages.smtp_configure:
+    if not reglages.envoi_configure:
         ENVOYES.append(courriel)
-        journal.warning("E-mail non envoyé (SMTP non configuré) à %s : %s\n%s", destinataire, sujet, courriel.texte)
+        journal.warning("E-mail non envoyé (envoi non configuré) à %s : %s\n%s", destinataire, sujet, courriel.texte)
+        return
+    if reglages.brevo_api_key:
+        _par_brevo(courriel)
         return
 
     message = EmailMessage()
@@ -56,6 +62,32 @@ def envoyer(destinataire: str, sujet: str, texte: str) -> None:
         journal.exception("Échec d'envoi de l'e-mail « %s » à %s", sujet, destinataire)
 
 
+def _par_brevo(courriel: Courriel) -> None:
+    """API transactionnelle de Brevo, en HTTPS : fonctionne là où les ports SMTP sont bloqués."""
+    reglages = get_settings()
+    nom, adresse = parseaddr(reglages.email_expediteur)
+    corps = {
+        "sender": {"name": nom or "Troc", "email": adresse},
+        "to": [{"email": courriel.destinataire}],
+        "subject": courriel.sujet,
+        "textContent": courriel.texte,
+    }
+    requete = Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=json.dumps(corps).encode(),
+        headers={"api-key": reglages.brevo_api_key, "content-type": "application/json", "accept": "application/json"},
+        method="POST",
+    )
+    try:
+        with urlopen(requete, timeout=20) as reponse:
+            reponse.read()
+    except HTTPError as e:
+        # Brevo explique son refus (clé invalide, expéditeur non validé…) : le garder dans le journal.
+        journal.error("Brevo refuse l'e-mail « %s » (%s) : %s", courriel.sujet, e.code, e.read()[:500])
+    except OSError:
+        journal.exception("Échec d'envoi (Brevo) de l'e-mail « %s » à %s", courriel.sujet, courriel.destinataire)
+
+
 SIGNATURE = """
 
 --
@@ -65,7 +97,7 @@ Troc, l'échange sans prix ni monnaie
 
 
 # Envoi après validation de la transaction : pas d'e-mail pour un échange qui n'a finalement pas été
-# enregistré. L'envoi SMTP se fait hors de la requête, pour ne pas faire attendre l'utilisateur.
+# enregistré. L'envoi se fait hors de la requête, pour ne pas faire attendre l'utilisateur.
 _envois = ThreadPoolExecutor(max_workers=2, thread_name_prefix="courriels")
 
 
@@ -76,7 +108,7 @@ def apres_validation(session: Session, fonction: Callable[..., None], *args) -> 
 @event.listens_for(Session, "after_commit")
 def _expedier(session: Session) -> None:
     for fonction, args in session.info.pop("courriels", []):
-        if get_settings().smtp_configure:
+        if get_settings().envoi_configure:
             _envois.submit(fonction, *args)
         else:
             fonction(*args)

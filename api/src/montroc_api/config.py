@@ -17,8 +17,10 @@ class Settings(BaseSettings):
     # Adresse du site, pour les liens dans les e-mails (lien magique, « une boucle vous attend »…).
     site_url: str = "https://troctroc.fr"
 
-    # E-mails sortants (SMTP OVH). Sans mot de passe, les e-mails sont écrits dans le journal au lieu
-    # d'être envoyés : pratique en local et dans les tests.
+    # E-mails sortants. Render gratuit bloque les ports SMTP : en production, on passe par l'API HTTPS
+    # de Brevo (BREVO_API_KEY). Le SMTP (OVH) reste possible sur une offre Render payante ou en local.
+    # Sans l'un ni l'autre, les e-mails sont écrits dans le journal : pratique en local et dans les tests.
+    brevo_api_key: str = ""
     smtp_hote: str = "ssl0.ovh.net"
     smtp_port: int = 465
     smtp_utilisateur: str = ""
@@ -47,6 +49,10 @@ class Settings(BaseSettings):
     @property
     def smtp_configure(self) -> bool:
         return bool(self.smtp_utilisateur and self.smtp_mot_de_passe)
+
+    @property
+    def envoi_configure(self) -> bool:
+        return bool(self.brevo_api_key) or self.smtp_configure
 
     @property
     def cloudinary(self) -> tuple[str, str, str] | None:
