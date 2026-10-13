@@ -140,6 +140,35 @@ nav.tabs button[aria-current="page"]{color:var(--ink);font-weight:600}
 nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--accent);color:var(--accent-ink);font-size:10px;font-family:var(--mono);border-radius:999px;padding:0 5px;line-height:16px}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:6;max-width:calc(100% - 32px)}
 @media (prefers-reduced-motion:reduce){.loop .arc{animation:none;stroke-dasharray:none;opacity:.5}.bar i{transition:none}}
+
+/* Formulaires, photos, fenêtre de signalement */
+.field{display:flex;flex-direction:column;gap:6px}
+.field>span{font-size:14px;font-weight:600}
+.input,select.input,textarea.input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);color:var(--ink);font:inherit}
+textarea.input{min-height:84px;resize:vertical}
+.input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+form.stack{display:flex;flex-direction:column;gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr}}
+.photo-pick{position:relative;display:grid;place-items:center;gap:6px;border:1.5px dashed var(--line);border-radius:var(--r);background:var(--surface);min-height:140px;cursor:pointer;text-align:center;padding:12px;overflow:hidden}
+.photo-pick img{max-height:220px;border-radius:10px;object-fit:cover}
+.photo-pick input{position:absolute;opacity:0;width:1px;height:1px}
+.thumb img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+.mini{width:28px;height:28px;border-radius:7px;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--line)}
+.linkbtn{border:0;background:none;padding:0;color:var(--muted);font-size:13px;text-decoration:underline;text-underline-offset:2px}
+.pill{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:6px;background:var(--bg);color:var(--muted);margin-left:6px}
+.pill.res{background:var(--mark);color:#12151C}
+.notice{font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.err{color:#C0362C}
+.empty{color:var(--muted);font-size:15px;padding:8px 0}
+.code{white-space:nowrap;font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:.06em}
+details.addobj summary{cursor:pointer;list-style:none;display:inline-flex}
+details.addobj summary::-webkit-details-marker{display:none}
+details.addobj[open] summary{margin-bottom:14px}
+dialog{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink);padding:18px;width:min(440px,calc(100% - 32px))}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+footer.legal{font-size:13px;color:var(--muted);padding-block:12px 0;text-align:center}
+nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 </style>
 </head>
 <body>
@@ -147,7 +176,7 @@ nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--
 <div class="wrap">
   <header class="top">
     <div class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="var(--accent)"/><circle cx="19.8" cy="16.5" r="2.6" fill="currentColor"/><circle cx="4.2" cy="16.5" r="2.6" fill="currentColor"/></svg>troc</div>
-    <span class="who">Lyon · Croix-Rousse</span>
+    <span class="who" id="who"></span>
   </header>
 
   <!-- ACCUEIL -->
@@ -169,9 +198,17 @@ nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--
       <div class="center"><div><b>1 boucle</b><br><span class="muted" style="font-size:12px">3 personnes servies</span></div></div>
     </div>
 
-    <div class="row">
-      <button class="cta" data-go="lists">Commencer mes listes</button>
-      <button class="cta ghost" data-go="trades">Voir un échange</button>
+    <form class="card stack" id="f-login" data-anon>
+      <span class="label">Se connecter ou créer un compte</span>
+      <label class="field"><span>Votre e-mail</span><input class="input" type="email" name="email" required autocomplete="email" placeholder="vous@exemple.fr"></label>
+      <button class="cta" type="submit">Recevoir mon lien de connexion</button>
+      <p class="muted" style="font-size:14px">Pas de mot de passe : un lien valable 20 minutes arrive par e-mail.</p>
+      <p class="status" id="login-ok" hidden></p>
+    </form>
+
+    <div class="row" data-auth hidden>
+      <button class="cta" data-go="lists">Mes listes</button>
+      <button class="cta ghost" data-go="trades">Mes échanges</button>
     </div>
 
     <div class="rules">
@@ -183,8 +220,20 @@ nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--
     <ol class="steps">
       <li><div><b>J'ai</b><span class="muted">Une photo par objet. L'état est obligatoire.</span></div></li>
       <li><div><b>Ça me serait utile</b><span class="muted">Des catégories plutôt qu'un modèle exact.</span></div></li>
-      <li><div><b>Troc propose</b><span class="muted">Un échange direct, une boucle à trois, ou une offre libre. Vous avez 48 h pour dire oui.</span></div></li>
+      <li><div><b>Troc propose</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui.</span></div></li>
     </ol>
+  </section>
+
+  <!-- PREMIÈRE CONNEXION -->
+  <section class="view" id="v-signup" hidden>
+    <div class="hero"><span class="label">Bienvenue</span><h2>Choisissez votre pseudo</h2>
+      <p class="muted" id="signup-email"></p></div>
+    <form class="stack" id="f-signup">
+      <label class="field"><span>Pseudo</span><input class="input" name="pseudo" required minlength="2" maxlength="40" autocomplete="nickname"></label>
+      <label class="field"><span>Ville</span><input class="input" name="zone" maxlength="80" placeholder="Lyon" autocomplete="address-level2"></label>
+      <p class="muted" style="font-size:14px">Votre pseudo et votre ville sont visibles des personnes avec qui vous échangez. Votre e-mail ne l'est jamais.</p>
+      <button class="cta" type="submit">Créer mon compte</button>
+    </form>
   </section>
 
   <!-- LISTES -->
@@ -192,163 +241,368 @@ nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--
     <div class="hero"><span class="label">Mon profil</span><h2>Ce que j'ai, ce qui me serait utile</h2></div>
 
     <div class="meter" aria-live="polite">
-      <span class="label">Échanges possibles près de chez vous</span>
-      <div class="num" id="m-num">4</div>
-      <div class="bar"><i id="m-bar" style="width:20%"></i></div>
+      <span class="label">Échanges possibles pour vous</span>
+      <div class="num" id="m-num">0</div>
+      <div class="bar"><i id="m-bar" style="width:0%"></i></div>
       <p class="muted" id="m-tip" style="font-size:14px">Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.</p>
     </div>
 
     <div class="lists">
       <div>
-        <div class="list-head"><span class="label">J'ai · 3 objets</span></div>
-        <div class="items">
-          <div class="item"><div class="thumb"><svg viewBox="0 0 24 24"><circle cx="7" cy="19" r="2"/><circle cx="17" cy="19" r="2"/><path d="M4 6h3l3 9h8l2-6H9"/></svg></div><div class="t"><b>Poussette canne</b><span>Bon état · Puériculture</span></div></div>
-          <div class="item"><div class="thumb"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16"/></svg></div><div class="t"><b>Lot de 12 BD</b><span>Très bon état · Livres</span></div></div>
-          <div class="item"><div class="thumb"><svg viewBox="0 0 24 24"><path d="M6 20V9l6-5 6 5v11z"/><path d="M10 20v-5h4v5"/></svg></div><div class="t"><b>Lampe de bureau</b><span>Usagé, fonctionne · Maison</span></div></div>
-        </div>
+        <div class="list-head"><span class="label" id="have-label">J'ai</span></div>
+        <div class="items" id="items"></div>
+        <details class="addobj" style="margin-top:14px">
+          <summary class="btn primary">+ Ajouter un objet</summary>
+          <form class="stack" id="f-obj">
+            <label class="photo-pick" id="photo-pick">
+              <input type="file" name="photo" accept="image/*" required>
+              <span id="photo-txt"><b>Ajouter une photo</b><br><span class="muted" style="font-size:13px">Obligatoire. Prenez l'objet en entier, en lumière du jour.</span></span>
+            </label>
+            <label class="field"><span>Quoi ?</span><input class="input" name="titre" required maxlength="120" placeholder="Ex. poussette canne"></label>
+            <div class="grid2">
+              <label class="field"><span>Catégorie</span><select class="input" name="categorie_slug" required id="cat-obj"></select></label>
+              <label class="field"><span>État</span><select class="input" name="etat" required>
+                <option value="">Choisir…</option><option value="neuf">Neuf</option><option value="tres_bon">Très bon état</option>
+                <option value="bon">Bon état</option><option value="usage">Usagé, fonctionne</option></select></label>
+            </div>
+            <label class="field"><span>Précisions <span class="muted" style="font-weight:400">(facultatif)</span></span><textarea class="input" name="description" maxlength="2000" placeholder="Taille, défauts, accessoires…"></textarea></label>
+            <button class="cta" type="submit">Publier</button>
+            <p class="err" id="obj-err" hidden></p>
+          </form>
+        </details>
       </div>
 
       <div>
         <div class="list-head"><span class="label">Ça me serait utile</span></div>
-        <div class="chips" id="wishes">
-          <span class="chip">Outillage <button class="x" aria-label="Retirer">×</button></span>
-          <span class="chip open">Ouvert à tout : jardin <button class="x" aria-label="Retirer">×</button></span>
-        </div>
-        <div class="add">
-          <input id="wish-in" placeholder="Ex. vélo enfant, jeux Switch…" aria-label="Ajouter un souhait">
-          <button id="wish-add">Ajouter</button>
-        </div>
-        <p class="label" style="margin-top:16px;margin-bottom:8px">Suggestions d'après vos objets</p>
-        <div class="chips" id="suggs">
-          <button class="chip sugg" data-w="Siège auto 1-4 ans">+ Siège auto 1-4 ans</button>
-          <button class="chip sugg" data-w="Vélo enfant">+ Vélo enfant</button>
-          <button class="chip sugg" data-w="Ouvert à tout : livres" data-open="1">+ Ouvert à tout : livres</button>
-          <button class="chip sugg" data-w="Jeux de société">+ Jeux de société</button>
-        </div>
+        <div class="chips" id="wishes"></div>
+        <form class="add" id="f-wish">
+          <select class="input" id="cat-wish" aria-label="Catégorie souhaitée" style="border-radius:999px"></select>
+          <button type="submit">Ajouter</button>
+        </form>
       </div>
+    </div>
+
+    <div class="card">
+      <span class="label">Mon compte</span>
+      <p id="account-txt"></p>
+      <div class="btns"><button class="btn" id="logout">Se déconnecter</button><button class="btn" id="delete-account">Supprimer mon compte</button></div>
     </div>
   </section>
 
   <!-- ÉCHANGES -->
   <section class="view" id="v-trades" hidden>
-    <div class="hero"><span class="label">Pour vous</span><h2>3 échanges trouvés</h2></div>
-
-    <article class="card featured" id="c-chain">
-      <span class="tag a">Boucle à trois</span>
-      <div class="chain">
-        <div class="me"><b>Vous</b> donnez la poussette canne à Inès</div>
-        <div><b>Inès</b> donne sa perceuse à Marc</div>
-        <div><b>Marc</b> vous donne un vélo enfant 16″</div>
-      </div>
-      <div class="recap">Vous donnez <b>une poussette canne</b>. Vous recevez <b>un vélo enfant 16″</b>.</div>
-      <div class="acc" id="chain-acc"><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span>Inès a accepté · 47 h restantes</span></div>
-      <div class="btns" id="chain-btns"><button class="btn primary" data-act="accept">J'accepte</button><button class="btn" data-act="refuse">Pas pour moi</button></div>
-    </article>
-
-    <article class="card">
-      <span class="tag">Échange direct</span>
-      <div class="swap">
-        <div class="side"><span class="label">Vous donnez</span><b>Lot de 12 BD</b></div>
-        <span class="arrow">⇄</span>
-        <div class="side"><span class="label">Vous recevez</span><b>Ponceuse</b></div>
-      </div>
-      <p class="muted" style="font-size:14px">Avec Karim, à 900 m. Note 4,9 · 31 trocs.</p>
-      <div class="btns"><button class="btn primary" data-toast="Proposition envoyée à Karim">Proposer</button></div>
-    </article>
-
-    <article class="card">
-      <span class="tag">Offre libre reçue</span>
-      <div class="swap">
-        <div class="side"><span class="label">Léa propose</span><b>Arrosoir + 2 jardinières</b></div>
-        <span class="arrow">→</span>
-        <div class="side"><span class="label">Contre</span><b>Votre lampe de bureau</b></div>
-      </div>
-      <p class="muted" style="font-size:14px">Aucune valeur affichée. Seule compte l'utilité pour vous.</p>
-      <div class="btns"><button class="btn primary" data-toast="Offre de Léa acceptée">Accepter</button><button class="btn" data-toast="Contre-offre ouverte">Contre-offre</button></div>
-    </article>
+    <div class="hero"><span class="label">Pour vous</span><h2 id="trades-title">Vos échanges</h2></div>
+    <div id="trades-current" style="display:flex;flex-direction:column;gap:16px"></div>
+    <div class="list-head" style="margin:8px 0 -12px"><span class="label">Échanges possibles</span></div>
+    <div id="trades-possible" style="display:flex;flex-direction:column;gap:16px"></div>
   </section>
 
   <!-- REMISE -->
   <section class="view" id="v-drop" hidden>
     <div class="hero"><span class="label">Remise sécurisée</span><h2>Déposez, puis récupérez</h2></div>
-    <div class="slots" id="slots">
-      <div class="slot done"><span class="who">Inès</span><span class="st">déposé</span></div>
-      <div class="slot" id="slot-me"><span class="who">Vous</span><span class="st">à déposer</span></div>
-      <div class="slot"><span class="who">Marc</span><span class="st">à déposer</span></div>
-    </div>
-    <div class="lock">
-      <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-      <p id="lock-txt" style="font-size:15px">Rien n'est libéré tant que les trois objets ne sont pas déposés. Si quelqu'un ne dépose pas, chacun récupère le sien.</p>
-    </div>
-    <div class="card">
-      <span class="label">Point de dépôt</span>
-      <b>Ressourcerie La Boucle</b>
-      <p class="muted" style="font-size:14px">12 rue d'Austerlitz · ouvert mar.–sam., 10 h–19 h</p>
-      <div class="place"><span class="muted">Votre code de dépôt</span><span style="font-family:var(--mono);font-weight:500">TRC-4821</span></div>
-      <div class="btns"><button class="btn primary" id="drop-btn">J'ai déposé la poussette</button></div>
-    </div>
+    <div id="drops" style="display:flex;flex-direction:column;gap:22px"></div>
   </section>
+
+  <!-- MODÉRATION -->
+  <section class="view" id="v-mod" hidden>
+    <div class="hero"><span class="label">Modération</span><h2>Signalements à traiter</h2>
+      <p class="muted" style="font-size:14px">Chaque décision est motivée : le texte est envoyé à la personne concernée, avec la possibilité de contester.</p></div>
+    <div id="reports" style="display:flex;flex-direction:column;gap:16px"></div>
+  </section>
+
+  <footer class="legal">Un contenu vous semble illicite ou dangereux ? Utilisez « Signaler » sur l'objet concerné.</footer>
 </div>
 
 <nav class="tabs" aria-label="Navigation">
-  <div class="in">
+  <div class="in" id="tabs">
     <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Troc</button>
     <button data-go="lists"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Mes listes</button>
-    <button data-go="trades"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Échanges<span class="badge">3</span></button>
+    <button data-go="trades"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Échanges<span class="badge" id="badge" hidden></span></button>
     <button data-go="drop"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12h16M9 8V5h6v3"/></svg>Dépôt</button>
+    <button data-go="mod" id="tab-mod" hidden><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Modération</button>
   </div>
 </nav>
-<div class="toast" id="toast" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<dialog id="d-report">
+  <form class="stack" id="f-report" method="dialog">
+    <h2 style="font-size:18px">Signaler <span id="report-what"></span></h2>
+    <label class="field"><span>Motif</span><select class="input" name="motif" required>
+      <option value="dangereux">Produit dangereux ou rappelé</option>
+      <option value="illegal">Objet ou contenu illicite</option>
+      <option value="contrefacon">Contrefaçon</option>
+      <option value="arnaque">Arnaque ou tromperie</option>
+      <option value="inapproprie">Photo ou texte inapproprié</option>
+      <option value="autre">Autre</option></select></label>
+    <label class="field"><span>Expliquez ce qui pose problème</span><textarea class="input" name="explication" required minlength="10" maxlength="2000"></textarea></label>
+    <div class="btns"><button class="btn primary" type="submit" value="ok">Envoyer le signalement</button><button class="btn" type="button" id="report-cancel">Annuler</button></div>
+  </form>
+</dialog>
 
 <script>
+/* Le site parle à l'API (api.troctroc.fr, ou localhost en développement). La session est un jeton
+   gardé dans le navigateur et envoyé dans l'en-tête Authorization. */
+const API = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8001' : 'https://api.troctroc.fr';
+const ETATS = {neuf:'Neuf', tres_bon:'Très bon état', bon:'Bon état', usage:'Usagé, fonctionne'};
+const STATUTS = {disponible:'', reserve:'réservé', retire:'retiré', modere:'retiré par la modération'};
+const MOTIFS = {dangereux:'Produit dangereux', illegal:'Illicite', contrefacon:'Contrefaçon', arnaque:'Arnaque', inapproprie:'Inapproprié', autre:'Autre'};
+
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2800)}
+
+const store={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch{}}};
+let jeton=store.get('troc.jeton'), moi=null, categories={}, echanges=[], boucles=[];
+
+async function api(chemin,{method='GET',body}={}){
+  const headers={}; if(body!==undefined)headers['Content-Type']='application/json';
+  if(jeton)headers.Authorization='Bearer '+jeton;
+  let r; try{ r=await fetch(API+chemin,{method,headers,body:body===undefined?undefined:JSON.stringify(body)}) }
+  catch{ throw new Error("Le serveur ne répond pas. Réessayez dans un instant.") }
+  if(r.status===401&&jeton){deconnecte();throw new Error('Session expirée : reconnectez-vous.')}
+  if(r.status===204)return null;
+  const data=await r.json().catch(()=>null);
+  if(!r.ok){const d=data&&data.detail;throw new Error(typeof d==='string'?d:(Array.isArray(d)?d.map(x=>x.msg).join(' · '):'Une erreur est survenue.'))}
+  return data;
+}
+
 function go(v){
+  if(!moi&&!['home','signup'].includes(v))v='home';
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
   $$('nav.tabs button').forEach(b=>{b.dataset.go===v?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   window.scrollTo(0,0);
+  if(v==='mod')chargerSignalements();
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
-let tt;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2200)}
-$$('[data-toast]').forEach(b=>b.onclick=()=>toast(b.dataset.toast));
 
-/* Souhaits : chaque souhait ouvre des boucles ; un souhait « ouvert à tout » en ouvre davantage */
-const wishes=$('#wishes');
-function recount(){
-  const chips=[...wishes.children], open=chips.filter(c=>c.classList.contains('open')).length;
-  const n=Math.min(2+chips.length*2+open*3,40);
-  $('#m-num').textContent=n; $('#m-bar').style.width=Math.round(n/40*100)+'%';
-  $('#m-tip').textContent=n>=20?'Bel éventail. Vos chances de boucle sont élevées.':'Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.';
+function afficherSession(){
+  $$('[data-anon]').forEach(x=>x.hidden=!!moi); $$('[data-auth]').forEach(x=>x.hidden=!moi);
+  $('#who').textContent=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
+  $('#tab-mod').hidden=!(moi&&moi.est_moderateur); $('#tabs').classList.toggle('n5',!!(moi&&moi.est_moderateur));
+  if(moi)$('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`;
 }
-function addWish(txt,open){
-  txt=txt.trim(); if(!txt)return;
-  const c=document.createElement('span'); c.className='chip'+(open?' open':'');
-  c.textContent=txt+' '; const x=document.createElement('button'); x.className='x'; x.textContent='×'; x.setAttribute('aria-label','Retirer');
-  c.append(x); wishes.append(c); recount();
-}
-wishes.addEventListener('click',e=>{if(e.target.classList.contains('x')){e.target.parentElement.remove();recount()}});
-$('#wish-add').onclick=()=>{addWish($('#wish-in').value);$('#wish-in').value=''};
-$('#wish-in').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#wish-add').click()}});
-$$('#suggs .chip').forEach(b=>b.onclick=()=>{addWish(b.dataset.w,b.dataset.open);b.remove()});
-recount();
+function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);afficherSession();go('home')}
 
-/* Boucle à trois */
-$('#chain-btns').addEventListener('click',e=>{
-  const a=e.target.dataset.act; if(!a)return;
-  if(a==='accept'){
-    $$('#chain-acc .dot')[1].classList.add('on');
-    $('#chain-acc span:last-child').textContent='Vous et Inès avez accepté · on attend Marc';
-    $('#chain-btns').innerHTML='<p class="status">C\'est noté. Dès que Marc accepte, le dépôt s\'ouvre.</p><button class="btn" data-go="drop">Voir le dépôt</button>';
-  }else{
-    $('#chain-btns').innerHTML='<p class="muted" style="font-size:14px">Pas de souci. Troc cherche un remplaçant pour Inès et Marc.</p>';
-  }
+/* Connexion par lien magique */
+$('#f-login').onsubmit=async e=>{
+  e.preventDefault(); const email=e.target.email.value.trim(), b=e.target.querySelector('button');
+  b.disabled=true;
+  try{await api('/auth/lien',{method:'POST',body:{email}});
+    $('#login-ok').textContent=`C'est parti : ouvrez l'e-mail envoyé à ${email} et cliquez sur le lien.`;$('#login-ok').hidden=false}
+  catch(err){toast(err.message)} finally{b.disabled=false}
+};
+let jetonLien=null;
+async function verifierLien(extra={}){
+  const r=await api('/auth/verifier',{method:'POST',body:{jeton:jetonLien,...extra}});
+  if(r.inscription_requise){$('#signup-email').textContent=r.email;go('signup');return}
+  jeton=r.jeton; store.set('troc.jeton',jeton); moi=r.utilisateur; jetonLien=null;
+  afficherSession(); await toutCharger(); go(extra.pseudo?'lists':'trades'); toast('Bienvenue '+moi.pseudo+' !');
+}
+$('#f-signup').onsubmit=async e=>{
+  e.preventDefault();
+  try{await verifierLien({pseudo:e.target.pseudo.value.trim(),zone:e.target.zone.value.trim()||null})}catch(err){toast(err.message)}
+};
+$('#logout').onclick=async()=>{try{await api('/auth/deconnexion',{method:'POST'})}catch{} deconnecte()};
+$('#delete-account').onclick=async()=>{
+  if(!confirm('Supprimer définitivement votre compte, vos objets et vos souhaits ? Vos échanges en cours seront annulés.'))return;
+  try{await api('/moi',{method:'DELETE'});deconnecte();toast('Compte supprimé')}catch(err){toast(err.message)}
+};
+
+/* Photos : réduites dans le navigateur (ce qui retire aussi la position GPS), puis envoyées à Cloudinary */
+const vignette=(url,t=120)=>url?url.replace('/image/upload/',`/image/upload/c_fill,w_${t},h_${t},q_auto,f_auto/`):'';
+async function reduire(fichier){
+  try{const img=await createImageBitmap(fichier), k=Math.min(1,1600/Math.max(img.width,img.height));
+    const c=document.createElement('canvas'); c.width=Math.round(img.width*k); c.height=Math.round(img.height*k);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    return await new Promise(ok=>c.toBlob(b=>ok(b||fichier),'image/jpeg',.85));
+  }catch{return fichier}
+}
+async function envoyerPhoto(fichier){
+  const s=await api('/moi/photos/signature'), f=new FormData();
+  f.append('file',await reduire(fichier)); f.append('api_key',s.api_key); f.append('timestamp',s.timestamp);
+  f.append('folder',s.folder); f.append('signature',s.signature);
+  const r=await fetch(s.url_envoi,{method:'POST',body:f}); if(!r.ok)throw new Error("La photo n'a pas pu être envoyée.");
+  const d=await r.json(); return {photo_url:d.secure_url, photo_id:d.public_id};
+}
+$('#f-obj').photo.onchange=e=>{
+  const f=e.target.files[0]; if(!f)return; const u=URL.createObjectURL(f);
+  $('#photo-txt').innerHTML=`<img src="${u}" alt="Aperçu de la photo"><span class="muted" style="font-size:13px">Changer de photo</span>`;
+};
+$('#f-obj').onsubmit=async e=>{
+  e.preventDefault(); const f=e.target, b=f.querySelector('button[type=submit]'); $('#obj-err').hidden=true;
+  b.disabled=true; b.textContent='Envoi de la photo…';
+  try{
+    const photo=await envoyerPhoto(f.photo.files[0]); b.textContent='Publication…';
+    await api('/moi/objets',{method:'POST',body:{titre:f.titre.value.trim(),categorie_slug:f.categorie_slug.value,etat:f.etat.value,
+      description:f.description.value.trim()||null,...photo}});
+    f.reset(); $('#photo-txt').innerHTML='<b>Ajouter une photo</b>'; f.closest('details').open=false;
+    toast('Objet publié'); await chargerListes(); chargerEchanges();
+  }catch(err){$('#obj-err').textContent=err.message;$('#obj-err').hidden=false}
+  finally{b.disabled=false;b.textContent='Publier'}
+};
+
+/* Mes listes */
+async function chargerListes(){
+  const [objets,souhaits]=await Promise.all([api('/moi/objets'),api('/moi/souhaits')]);
+  $('#have-label').textContent=`J'ai · ${objets.length} objet${objets.length>1?'s':''}`;
+  $('#items').innerHTML=objets.length?objets.map(o=>`
+    <div class="item"><div class="thumb">${o.photo_url?`<img src="${esc(vignette(o.photo_url))}" alt="">`:''}</div>
+      <div class="t"><b>${esc(o.titre)}${STATUTS[o.statut]?`<span class="pill ${o.statut==='reserve'?'res':''}">${STATUTS[o.statut]}</span>`:''}</b>
+      <span>${esc(ETATS[o.etat]||'État à préciser')} · ${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></div>
+      ${o.statut==='disponible'?`<button class="linkbtn" data-retirer="${o.id}">Retirer</button>`:''}
+      ${o.statut==='retire'&&o.photo_url?`<button class="linkbtn" data-remettre="${o.id}">Remettre</button>`:''}
+    </div>`).join(''):'<p class="empty">Rien pour l\'instant. Ajoutez un premier objet, avec sa photo.</p>';
+  $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>`<span class="chip">${esc(s.categorie_slug?categories[s.categorie_slug]||s.categorie_slug:'Objet n° '+s.objet_id)}
+    <button class="x" aria-label="Retirer ce souhait" data-souhait="${s.id}">×</button></span>`).join(''):'<p class="empty">Ajoutez ce qui vous serait utile.</p>';
+}
+$('#items').onclick=async e=>{
+  const r=e.target.dataset.retirer, m=e.target.dataset.remettre; if(!r&&!m)return;
+  try{await api('/moi/objets/'+(r||m),{method:'PATCH',body:{statut:r?'retire':'disponible'}});await chargerListes();chargerEchanges()}catch(err){toast(err.message)}
+};
+$('#wishes').onclick=async e=>{
+  const id=e.target.dataset.souhait; if(!id)return;
+  try{await api('/moi/souhaits/'+id,{method:'DELETE'});await chargerListes();chargerEchanges()}catch(err){toast(err.message)}
+};
+$('#f-wish').onsubmit=async e=>{
+  e.preventDefault(); const slug=$('#cat-wish').value; if(!slug)return;
+  try{await api('/moi/souhaits',{method:'POST',body:{categorie_slug:slug}});await chargerListes();chargerEchanges()}catch(err){toast(err.message)}
+};
+
+/* Échanges */
+const nom=(id,pseudo)=>id===moi.id?'Vous':esc(pseudo);
+const heures=d=>Math.max(0,Math.round((new Date(d)-Date.now())/36e5));
+function chaine(etapes){
+  return `<div class="chain">${etapes.map(t=>`<div class="${t.donneur_id===moi.id?'me':''}"><b>${nom(t.donneur_id,t.donneur_pseudo)}</b>
+    ${t.donneur_id===moi.id?'donnez':'donne'} ${t.objet.photo_url?`<img class="mini" src="${esc(vignette(t.objet.photo_url,56))}" alt="">`:''}« ${esc(t.objet.titre)} »
+    à <b>${t.receveur_id===moi.id?'vous':esc(t.receveur_pseudo)}</b>
+    ${t.donneur_id!==moi.id?`<button class="linkbtn" data-signaler="${t.objet.id}" data-titre="${esc(t.objet.titre)}">Signaler</button>`:''}</div>`).join('')}</div>`;
+}
+function recap(etapes){
+  const d=etapes.find(t=>t.donneur_id===moi.id), r=etapes.find(t=>t.receveur_id===moi.id);
+  if(!d||!r)return '';
+  return `<div class="recap">Vous donnez <b>${esc(d.objet.titre)}</b>. Vous recevez <b>${esc(r.objet.titre)}</b> <span class="muted">(${esc(ETATS[r.objet.etat]||'')})</span>.</div>`;
+}
+function carteEchange(e){
+  const ts=e.transferts, mien=ts.find(t=>t.receveur_id===moi.id), oui=ts.filter(t=>t.reponse==='acceptee').length;
+  const attente=ts.filter(t=>t.reponse==='en_attente'&&t.receveur_id!==moi.id).map(t=>esc(t.receveur_pseudo));
+  let bas;
+  if(e.statut==='propose'&&mien&&mien.reponse==='en_attente')
+    bas=`<div class="btns"><button class="btn primary" data-repondre="${e.id}" data-oui="1">J'accepte</button><button class="btn" data-repondre="${e.id}">Pas pour moi</button></div>`;
+  else if(e.statut==='propose')bas=`<p class="status">C'est noté. On attend ${attente.join(' et ')}.</p>`;
+  else bas=`<p class="status">Tout le monde a dit oui : place au dépôt.</p><button class="btn" data-go="drop">Voir le dépôt</button>`;
+  return `<article class="card featured" id="echange-${e.id}">
+    <span class="tag a">${ts.length===3?'Boucle à trois':'Échange direct'}</span>
+    ${chaine(ts)}${recap(ts)}
+    ${e.statut==='propose'?`<div class="acc">${ts.map(t=>`<span class="dot ${t.reponse==='acceptee'?'on':''}"></span>`).join('')}<span>${oui}/${ts.length} ont accepté · ${heures(e.expire_le)} h restantes</span></div>`:''}
+    ${bas}</article>`;
+}
+function carteBoucle(b,i){
+  return `<article class="card"><span class="tag">${b.longueur===3?'Boucle à trois':'Échange direct'}</span>${chaine(b.etapes)}${recap(b.etapes)}
+    <div class="btns"><button class="btn primary" data-proposer="${i}">Proposer cet échange</button></div></article>`;
+}
+async function chargerEchanges(){
+  [echanges,boucles]=await Promise.all([api('/moi/echanges'),api('/moi/boucles?limite=20')]);
+  const enCours=echanges.filter(e=>e.statut==='propose'||e.statut==='accepte');
+  const aRepondre=enCours.filter(e=>e.statut==='propose'&&e.transferts.some(t=>t.receveur_id===moi.id&&t.reponse==='en_attente')).length;
+  $('#badge').textContent=aRepondre; $('#badge').hidden=!aRepondre;
+  $('#trades-title').textContent=aRepondre?`${aRepondre} échange${aRepondre>1?'s':''} attend${aRepondre>1?'ent':''} votre réponse`:'Vos échanges';
+  $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Aucun échange en cours.</p>';
+  $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Pas encore d\'échange possible. Ajoutez des objets et des souhaits plus larges : Troc cherche aussi chaque nuit.</p>';
+  const n=boucles.length; $('#m-num').textContent=n; $('#m-bar').style.width=Math.min(100,n*10)+'%';
+  $('#m-tip').textContent=n>=5?'Bel éventail. Vos chances de boucle sont élevées.':'Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.';
+  afficherDepots();
+}
+$('#v-trades').addEventListener('click',async e=>{
+  const p=e.target.dataset.proposer, r=e.target.dataset.repondre;
+  if(p!==undefined){e.target.disabled=true;
+    try{await api('/echanges',{method:'POST',body:{objets:boucles[p].etapes.map(t=>t.objet.id)}});toast('Proposition envoyée aux autres participants')}
+    catch(err){toast(err.message)} chargerEchanges();}
+  if(r){e.target.disabled=true;
+    try{const x=await api(`/echanges/${r}/reponse`,{method:'POST',body:{accepte:!!e.target.dataset.oui}});
+      toast(x.statut==='accepte'?'Tout le monde a accepté : place au dépôt !':x.statut==='annule'?'Échange décliné. Troc cherche autre chose.':'Réponse enregistrée')}
+    catch(err){toast(err.message)} chargerEchanges();}
 });
 
 /* Dépôt */
-$('#drop-btn').onclick=function(){
-  const s=$('#slot-me'); s.classList.add('done'); s.querySelector('.st').textContent='déposé';
-  $('#lock-txt').textContent='2 dépôts sur 3. Dès que Marc dépose, vous récupérez le vélo avec votre code.';
-  this.textContent='Dépôt confirmé'; this.disabled=true; toast('Dépôt enregistré');
+function afficherDepots(){
+  const liste=echanges.filter(e=>e.statut==='accepte'||(e.statut==='termine'&&Date.now()-new Date(e.cree_le)<30*864e5));
+  $('#drops').innerHTML=liste.map(e=>{
+    const ts=e.transferts, don=ts.find(t=>t.donneur_id===moi.id), rec=ts.find(t=>t.receveur_id===moi.id), faits=ts.filter(t=>t.depose_le).length;
+    if(!don||!rec)return '';
+    const lieu=e.point_de_depot?`<b>${esc(e.point_de_depot)}</b>`:'<span class="muted">Le lieu de dépôt n\'est pas encore indiqué : il apparaîtra ici.</span>';
+    if(e.statut==='termine')return `<div class="card"><span class="tag a">Tout est déposé</span>
+      <p>Récupérez <b>${esc(rec.objet.titre)}</b> au point de dépôt avec ce code :</p><span class="code">${esc(rec.code_retrait||'')}</span>
+      <div class="place"><span class="muted">Point de dépôt</span><span>${lieu}</span></div></div>`;
+    return `<div style="display:flex;flex-direction:column;gap:14px">
+      <div class="slots" style="grid-template-columns:repeat(${ts.length},1fr)">${ts.map(t=>`<div class="slot ${t.depose_le?'done':''}"><span class="who">${nom(t.donneur_id,t.donneur_pseudo)}</span><span class="st">${t.depose_le?'déposé':'à déposer'}</span></div>`).join('')}</div>
+      <div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <p style="font-size:15px">${faits} dépôt${faits>1?'s':''} sur ${ts.length}. Rien n'est libéré tant que tout n'est pas déposé. Sans dépôt de tous d'ici ${Math.ceil(heures(e.expire_le)/24)} jour(s), chacun récupère le sien.</p></div>
+      <div class="card"><span class="label">Point de dépôt</span>${lieu}
+        <div class="place"><span class="muted">Marquez « ${esc(don.objet.titre)} » avec le code</span><span class="code">${esc(don.code_retrait||'')}</span></div>
+        <div class="btns">${don.depose_le?'<p class="status">Dépôt enregistré.</p>':`<button class="btn primary" data-deposer="${e.id}">J'ai déposé ${esc(don.objet.titre)}</button>`}</div></div></div>`;
+  }).join('')||'<p class="empty">Rien à déposer pour l\'instant. Le dépôt s\'ouvre quand tout le monde a accepté un échange.</p>';
+}
+$('#drops').onclick=async e=>{
+  const id=e.target.dataset.deposer; if(!id)return; e.target.disabled=true;
+  try{const x=await api(`/echanges/${id}/depot`,{method:'POST'});toast(x.statut==='termine'?'Tout est déposé : récupérez votre objet !':'Dépôt enregistré')}catch(err){toast(err.message)}
+  chargerEchanges();
 };
+
+/* Signalement */
+let aSignaler=null;
+document.addEventListener('click',e=>{const s=e.target.dataset.signaler; if(!s)return;
+  aSignaler=+s; $('#report-what').textContent='« '+e.target.dataset.titre+' »'; $('#f-report').reset(); $('#d-report').showModal()});
+$('#report-cancel').onclick=()=>$('#d-report').close();
+$('#f-report').onsubmit=async e=>{
+  e.preventDefault(); const f=e.target;
+  try{await api('/signalements',{method:'POST',body:{objet_id:aSignaler,motif:f.motif.value,explication:f.explication.value.trim()}});
+    $('#d-report').close(); toast('Signalement envoyé. Merci, il sera examiné.')}catch(err){toast(err.message)}
+};
+
+/* Modération */
+async function chargerSignalements(){
+  let liste; try{liste=await api('/moderation/signalements')}catch(err){toast(err.message);return}
+  $('#reports').innerHTML=liste.map(s=>`<article class="card" data-id="${s.id}">
+    <span class="tag a">${esc(MOTIFS[s.motif])} · n° ${s.id}</span>
+    ${s.objet?`<div class="item" style="border:0;padding:0"><div class="thumb">${s.objet.photo_url?`<img src="${esc(vignette(s.objet.photo_url))}" alt="">`:''}</div><div class="t"><b>${esc(s.objet.titre)}</b><span>Objet n° ${s.objet.id} · ${esc(s.objet.description||'')}</span></div></div>`
+      :`<p>Compte visé : <b>${esc(s.utilisateur_vise?s.utilisateur_vise.pseudo:'supprimé')}</b></p>`}
+    <p style="font-size:15px">« ${esc(s.explication)} »</p>
+    <p class="muted" style="font-size:13px">Par ${esc(s.auteur?s.auteur.pseudo:(s.email_contact||'anonyme'))} · ${new Date(s.cree_le).toLocaleString('fr-FR')}</p>
+    <label class="field"><span>Motivation de la décision (envoyée aux personnes concernées)</span><textarea class="input" name="motivation" minlength="10" required></textarea></label>
+    <label style="font-size:14px;display:flex;gap:8px;align-items:center"><input type="checkbox" name="suspendre"> Suspendre aussi le compte</label>
+    <div class="btns"><button class="btn primary" data-decider="1">Retenir : retirer</button><button class="btn" data-decider="0">Rejeter</button></div>
+  </article>`).join('')||'<p class="empty">Aucun signalement en attente.</p>';
+}
+$('#reports').onclick=async e=>{
+  const d=e.target.dataset.decider; if(d===undefined)return; const c=e.target.closest('article');
+  const motivation=c.querySelector('[name=motivation]').value.trim();
+  if(motivation.length<10){toast('Rédigez une motivation (10 caractères au moins).');return}
+  try{await api(`/moderation/signalements/${c.dataset.id}/decision`,{method:'POST',body:{retenir:d==='1',suspendre_compte:c.querySelector('[name=suspendre]').checked,motivation}});
+    toast('Décision enregistrée et envoyée');chargerSignalements()}catch(err){toast(err.message)}
+};
+
+/* Démarrage */
+async function toutCharger(){
+  try{await Promise.all([chargerListes(),chargerEchanges()])}catch(err){toast(err.message)}
+}
+async function demarrer(){
+  try{const cats=await api('/categories'); categories=Object.fromEntries(cats.map(c=>[c.slug,c.libelle]));
+    const opts=cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
+    $('#cat-obj').innerHTML='<option value="">Choisir…</option>'+opts; $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
+  }catch(err){toast(err.message)}
+  const h=location.hash;
+  if(h.startsWith('#connexion=')){
+    jetonLien=decodeURIComponent(h.slice(11)); history.replaceState(null,'',location.pathname);
+    try{await verifierLien()}catch(err){toast(err.message)} return;
+  }
+  if(jeton){try{moi=await api('/moi')}catch{moi=null}}
+  afficherSession();
+  if(!moi)return;
+  await toutCharger();
+  if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}
+  else if(h==='#moderation'&&moi.est_moderateur)go('mod');
+}
+demarrer();
 </script>
 </body>
 </html>

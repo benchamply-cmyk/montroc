@@ -26,3 +26,24 @@ services:
         value: https://troctroc.fr,https://www.troctroc.fr
       - key: ENVIRONNEMENT
         value: production
+      - key: SITE_URL
+        value: https://troctroc.fr
+      # E-mails (SMTP OVH) : l'adresse @troctroc.fr qui envoie, et son mot de passe.
+      - key: SMTP_UTILISATEUR
+        sync: false   # ex. bonjour@troctroc.fr
+      - key: SMTP_MOT_DE_PASSE
+        sync: false
+      - key: EMAIL_EXPEDITEUR
+        value: Troc <bonjour@troctroc.fr>
+      # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary.
+      - key: CLOUDINARY_URL
+        sync: false
+      # Comptes qui ont accès à la modération (e-mails séparés par des virgules).
+      - key: MODERATEURS
+        sync: false
+      # Secret partagé avec la tâche planifiée GitHub Actions (rappels, expirations, math trade).
+      - key: TACHES_SECRET
+        sync: false
+      # Lieu de dépôt affiché aux participants (adresse et horaires).
+      - key: POINT_DE_DEPOT
+        sync: false

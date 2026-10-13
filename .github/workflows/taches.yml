@@ -1,0 +1,39 @@
+name: Tâches planifiées
+
+# Render (offre gratuite) n'a pas de tâches planifiées : GitHub Actions appelle l'API à la place.
+# Secret à créer dans GitHub (Settings > Secrets and variables > Actions) : TACHES_SECRET,
+# la même valeur que la variable TACHES_SECRET du service Render.
+on:
+  schedule:
+    - cron: "17 * * * *"  # toutes les heures : rappels « plus que 12 h », échanges expirés
+    - cron: "40 3 * * *"  # chaque nuit (3 h 40 UTC) : math trade sur tout le marché
+  workflow_dispatch:
+    inputs:
+      tache:
+        description: "Tâche à lancer"
+        type: choice
+        options: [horaires, math-trade]
+        default: horaires
+
+jobs:
+  appeler:
+    name: Appeler l'API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Choisir la tâche
+        id: choix
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tache=${{ inputs.tache }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "40 3 * * *" ]; then
+            echo "tache=math-trade" >> "$GITHUB_OUTPUT"
+          else
+            echo "tache=horaires" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Appel (l'API peut mettre une minute à se réveiller)
+        env:
+          TACHES_SECRET: ${{ secrets.TACHES_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --retry 4 --retry-delay 20 --retry-all-errors --max-time 120 \
+            -X POST -H "X-Taches-Secret: $TACHES_SECRET" \
+            "https://api.troctroc.fr/taches/${{ steps.choix.outputs.tache }}"
