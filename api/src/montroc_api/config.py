@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     # postgresql+psycopg://utilisateur:mot_de_passe@hote:5432/base
     database_url: str = "postgresql+psycopg://montroc:montroc@localhost:5432/montroc"
     # Origines autorisées à appeler l'API depuis un navigateur, séparées par des virgules.
-    cors_origins: str = "http://localhost:8000,https://montroc.fr,https://www.montroc.fr"
+    cors_origins: str = "http://localhost:8000,https://troctroc.fr,https://www.troctroc.fr"
     environnement: str = "local"
 
     @property
