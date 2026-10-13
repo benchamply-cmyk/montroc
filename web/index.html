@@ -2,6 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#111318">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Troc</title>
 <meta name="description" content="Troc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.">
@@ -10,20 +12,15 @@
 <style>
 /* Layout : une seule colonne étroite, comme un carnet ; une boucle animée sert de signature ; barre d'onglets en bas. */
 :root{
-  --bg:#F4F6FA; --surface:#FFFFFF; --ink:#12151C; --muted:#5F6676; --line:#DDE2EC;
-  --accent:#2C47F5; --accent-ink:#FFFFFF; --mark:#FFD94D; --ok:#127A4B; --ok-bg:#E2F4EA;
+  /* Thème sombre unique, quel que soit le réglage de l'appareil. */
+  --bg:#111318; --surface:#1A1D24; --ink:#F2F3F6; --muted:#A3A9B6; --line:#2C303A;
+  --accent:#8B97FF; --accent-ink:#111318; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
   --display:"Unbounded", "Arial Black", system-ui, sans-serif;
   --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"DM Mono", ui-monospace, Menlo, monospace;
   --r:14px;
-  color-scheme:light;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0E1117; --surface:#171B24; --ink:#EEF1F7; --muted:#9AA2B3; --line:#2A3040;
-  --accent:#7C8CFF; --accent-ink:#0E1117; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; color-scheme:dark }}
-:root[data-theme="dark"]{
-  --bg:#0E1117; --surface:#171B24; --ink:#EEF1F7; --muted:#9AA2B3; --line:#2A3040;
-  --accent:#7C8CFF; --accent-ink:#0E1117; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; color-scheme:dark }
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -159,14 +156,14 @@ form.stack{display:flex;flex-direction:column;gap:14px}
 .pill{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:6px;background:var(--bg);color:var(--muted);margin-left:6px}
 .pill.res{background:var(--mark);color:#12151C}
 .notice{font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-.err{color:#C0362C}
+.err{color:var(--danger)}
 .empty{color:var(--muted);font-size:15px;padding:8px 0}
 .code{white-space:nowrap;font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:.06em}
 details.addobj summary{cursor:pointer;list-style:none;display:inline-flex}
 details.addobj summary::-webkit-details-marker{display:none}
 details.addobj[open] summary{margin-bottom:14px}
 dialog{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink);padding:18px;width:min(440px,calc(100% - 32px))}
-dialog::backdrop{background:rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(0,0,0,.65)}
 footer.legal{font-size:13px;color:var(--muted);padding-block:12px 0;text-align:center}
 nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 </style>
