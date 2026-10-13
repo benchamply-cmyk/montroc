@@ -14,13 +14,19 @@ erDiagram
     echanges ||--|{ transferts : "2 ou 3 étapes"
     objets ||--o{ transferts : "circule"
     utilisateurs ||--o{ transferts : "donne / reçoit"
+    utilisateurs ||--o{ sessions : "connecté"
+    objets ||--o{ signalements : "visé"
+    utilisateurs ||--o{ signalements : "visé / auteur"
 
     categories { string slug PK  string libelle }
-    utilisateurs { int id PK  string email UK  string pseudo UK  string zone  float fiabilite  timestamptz cree_le }
-    objets { int id PK  int proprietaire_id FK  string categorie_slug FK  string titre  text description  string statut }
+    utilisateurs { int id PK  string email UK  string pseudo UK  string zone  float fiabilite  timestamptz suspendu_le  timestamptz cree_le }
+    objets { int id PK  int proprietaire_id FK  string categorie_slug FK  string titre  text description  string etat  string photo_url  string statut }
     souhaits { int id PK  int utilisateur_id FK  string categorie_slug FK  int objet_id FK  int rang  int quantite  bool acceptation_auto }
-    echanges { int id PK  string statut  float proba_reussite  timestamptz expire_le }
-    transferts { int id PK  int echange_id FK  int position  int donneur_id FK  int receveur_id FK  int objet_id FK  string reponse }
+    echanges { int id PK  string statut  float proba_reussite  timestamptz expire_le  timestamptz rappel_envoye_le }
+    transferts { int id PK  int echange_id FK  int position  int donneur_id FK  int receveur_id FK  int objet_id FK  string reponse  timestamptz depose_le  string code_retrait }
+    jetons_connexion { int id PK  string email  string empreinte UK  timestamptz expire_le  timestamptz utilise_le }
+    sessions { int id PK  int utilisateur_id FK  string empreinte UK  timestamptz expire_le }
+    signalements { int id PK  int objet_id FK  int utilisateur_vise_id FK  int auteur_id FK  string motif  text explication  string statut  text decision }
 ```
 
 Aucune colonne de prix ni de monnaie : c'est voulu.
@@ -35,6 +41,9 @@ Ces règles sont des **contraintes PostgreSQL** : même un bug dans l'API ne peu
 | Un pseudo est unique | `uq_utilisateurs_pseudo` |
 | La fiabilité est entre 0 et 1 | `ck_utilisateurs_fiabilite_0_1` |
 | Un objet a un titre non vide et une catégorie existante | `ck_objets_titre_non_vide`, clé étrangère |
+| Un objet n'est proposé (`disponible`) qu'avec une photo et un état | `ck_objets_photo_et_etat_si_disponible` |
+| Un lien de connexion ou une session n'est stocké que sous forme d'empreinte, unique | `uq_jetons_connexion_empreinte`, `uq_sessions_empreinte` |
+| Un signalement est expliqué (10 caractères au moins) et survit à la suppression de sa cible | `ck_signalements_explication_utile`, `ON DELETE SET NULL` |
 | Un statut d'objet / d'échange / de réponse est une valeur connue | `ck_objets_statut_objet`, `ck_echanges_statut_echange`, `ck_transferts_reponse` |
 | Un souhait vise **soit** une catégorie **soit** un objet précis | `ck_souhaits_categorie_ou_objet` |
 | Rang et quantité d'un souhait ≥ 1 | `ck_souhaits_rang_positif`, `ck_souhaits_quantite_positive` |
@@ -44,7 +53,8 @@ Ces règles sont des **contraintes PostgreSQL** : même un bug dans l'API ne peu
 
 Et dans l'API :
 - quand une boucle est enregistrée, ses objets sont **verrouillés** (`SELECT … FOR UPDATE`) puis passent en `reserve` : deux échanges simultanés ne peuvent pas réserver le même objet ;
-- un refus ou un délai de 48 h dépassé **annule** l'échange et remet les objets en `disponible`.
+- un refus, un délai de 48 h dépassé ou des dépôts incomplets après 7 jours **annulent** l'échange et remettent les objets en `disponible` ;
+- un objet retiré par la modération passe en `modere` : son propriétaire ne peut pas le remettre en ligne.
 
 Les tests (`api/tests/test_base_de_donnees.py`) vérifient chacune de ces contraintes sur une vraie base PostgreSQL.
 

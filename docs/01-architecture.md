@@ -38,14 +38,21 @@ api/
 │   ├── main.py               création de l'application, CORS, route /sante
 │   ├── config.py             réglages lus dans les variables d'environnement
 │   ├── db.py                 connexion à PostgreSQL
+│   ├── deps.py               session de base, utilisateur connecté, modérateurs, secret des tâches
 │   ├── models.py             tables et contraintes (SQLAlchemy)
 │   ├── schemas.py            formats JSON d'entrée/sortie (Pydantic)
-│   ├── services.py           logique métier : base ⇄ moteur d'échanges
+│   ├── services.py           logique métier : base ⇄ moteur d'échanges, délais, dépôts
+│   ├── courriels.py          e-mails des moments clés (SMTP OVH), envoyés après validation
+│   ├── vues.py               réponses qui dépendent du lecteur (codes de retrait)
 │   └── routers/              une route par ressource
+│       ├── auth.py           /auth (lien magique, session, déconnexion)
+│       ├── moi.py            /moi : profil, mes objets, souhaits, boucles possibles, échanges, photos
 │       ├── catalogue.py      /categories
-│       ├── utilisateurs.py   /utilisateurs, leurs objets, souhaits, boucles possibles
-│       ├── objets.py         /objets, /souhaits
-│       └── echanges.py       /echanges (proposer, répondre, terminer, math trade)
+│       ├── objets.py         /objets (catalogue public)
+│       ├── utilisateurs.py   /utilisateurs/{id} (profil public)
+│       ├── echanges.py       /echanges (proposer, répondre, déposer)
+│       ├── signalements.py   /signalements et /moderation
+│       └── taches.py         /taches (rappels, expirations, math trade : appelées par GitHub Actions)
 └── tests/                    tests sur une vraie base PostgreSQL
 ```
 
@@ -55,12 +62,23 @@ Le chemin d'une requête : **route** (`routers/`) → valide le JSON (`schemas.p
 
 ```mermaid
 stateDiagram-v2
-    [*] --> propose: boucle enregistrée,<br/>objets « reserve »
+    [*] --> propose: boucle enregistrée,<br/>objets « reserve »,<br/>e-mail « une boucle vous attend »
     propose --> accepte: tous les receveurs acceptent<br/>(ou acceptation automatique)
-    propose --> annule: un refus ou 48 h dépassées<br/>objets libérés
-    accepte --> termine: objets remis<br/>objets « echange »
+    propose --> annule: un refus ou 48 h dépassées<br/>(rappel « plus que 12 h »)
+    accepte --> termine: tout le monde a déposé<br/>objets « echange »
+    accepte --> annule: dépôts incomplets après 7 jours
 ```
+
+Chaque passage envoie un e-mail aux participants concernés. Pendant les dépôts, chaque donneur voit le code à écrire sur son paquet ; le receveur ne reçoit ce code qu'une fois **tout** déposé, ce qui garantit que personne ne repart avec un objet sans avoir donné le sien.
+
+## Connexion
+
+Pas de mot de passe. `POST /auth/lien` envoie un lien `https://troctroc.fr/#connexion=…` valable 20 minutes et à usage unique ; le site l'échange contre un jeton de session de 30 jours (`POST /auth/verifier`), gardé dans le navigateur et envoyé dans l'en-tête `Authorization: Bearer …`. À la première connexion, l'API demande un pseudo et une ville. La base ne stocke que l'empreinte (SHA-256) des jetons. Toutes les routes personnelles sont sous `/moi` : l'API ne fait jamais confiance à un identifiant d'utilisateur envoyé par le navigateur.
+
+## Photos
+
+Le navigateur réduit la photo (1600 px, ce qui efface aussi la position GPS), demande une signature à l'API (`GET /moi/photos/signature`) et l'envoie **directement** à Cloudinary : l'API ne transporte aucune image. Elle n'accepte ensuite que des adresses de notre compte Cloudinary.
 
 ## Ce qui n'est pas encore fait
 
-Voir la feuille de route dans [Git, branches et pull requests](05-git-et-branches.md#feuille-de-route) : authentification, branchement du site sur l'API, photos, notifications, passe nocturne du math trade.
+Voir la feuille de route dans [Git, branches et pull requests](05-git-et-branches.md#feuille-de-route).

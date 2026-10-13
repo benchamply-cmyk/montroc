@@ -32,6 +32,7 @@ make api               # applique les migrations et lance l'API
 
 - API : http://localhost:8001 — documentation interactive : **http://localhost:8001/docs** (on peut y essayer chaque route).
 - Site : `make site` puis http://localhost:8000.
+- Se connecter en local : saisis n'importe quel e-mail sur le site ; sans SMTP configuré, l'e-mail (avec le lien `http://localhost:8000/#connexion=…`) s'affiche dans le terminal de l'API. Pour publier des objets, il faut une photo : renseigne `CLOUDINARY_URL` dans `api/.env` (voir [06-comptes-e-mails-photos.md](06-comptes-e-mails-photos.md)).
 
 Si VS Code demande quel interpréteur Python utiliser : choisis `.venv` (`⌘⇧P` → *Python: Select Interpreter*).
 

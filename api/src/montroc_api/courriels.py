@@ -37,7 +37,7 @@ def envoyer(destinataire: str, sujet: str, texte: str) -> None:
     courriel = Courriel(destinataire, sujet, texte + SIGNATURE.format(site=reglages.site_url))
     if not reglages.smtp_configure:
         ENVOYES.append(courriel)
-        journal.info("E-mail non envoyé (SMTP non configuré) à %s : %s\n%s", destinataire, sujet, courriel.texte)
+        journal.warning("E-mail non envoyé (SMTP non configuré) à %s : %s\n%s", destinataire, sujet, courriel.texte)
         return
 
     message = EmailMessage()
