@@ -32,7 +32,7 @@ Choix retenu : domaine **troctroc.fr + hébergement Startup**, pris pour ses ser
 
 1. Crée un compte sur **https://neon.tech** (connexion avec GitHub possible).
 2. **Create project** :
-   - Project name : `montroc`
+   - Project name : `troctroc`
    - Postgres version : **16**
    - Region : **AWS Europe Central 1 (Frankfurt)**
    - Database name : `montroc`
@@ -48,8 +48,8 @@ Le schéma (tables, contraintes) n'est pas créé à la main : l'API applique le
 2. **New → Blueprint**, choisis le dépôt `montroc`. Render lit le fichier [`render.yaml`](../render.yaml) et propose le service **montroc-api** (Frankfurt, offre gratuite).
 3. Render demande la valeur de **`DATABASE_URL`** : colle la chaîne de connexion Neon de l'étape 2.
 4. **Apply**. Le premier déploiement installe Python, applique les migrations et démarre l'API.
-5. Vérifie : ouvre `https://montroc-api.onrender.com/sante` (le nom exact est affiché par Render). Tu dois voir `{"statut":"ok",...}`. La documentation interactive est sur `/docs`.
-6. **Settings → Custom Domains → Add** : `api.troctroc.fr`. Render affiche la cible CNAME à mettre chez OVH (`montroc-api.onrender.com`). Garde l'onglet ouvert pour l'étape 5.
+5. Vérifie : ouvre `https://montroc-api-csko.onrender.com/sante` (adresse affichée en haut du service ; le suffixe `-csko` est attribué par Render). Tu dois voir `{"statut":"ok",...}`. La documentation interactive est sur `/docs`.
+6. **Settings → Custom Domains → Add** : `api.troctroc.fr`. Render affiche la cible CNAME à mettre chez OVH (`montroc-api-csko.onrender.com`). Garde l'onglet ouvert pour l'étape 5.
 
 > Offre gratuite Render : l'API s'endort après un moment sans visite et met quelques dizaines de secondes à se réveiller. Pour un vrai lancement public, passer à l'offre *Starter* (payante) supprime la mise en veille.
 
@@ -74,7 +74,7 @@ Dans **Web Cloud → Noms de domaine → troctroc.fr → Zone DNS** :
 |---|---|---|---|
 | A | *(vide)* | `75.2.60.5` (valeur Netlify) | troctroc.fr → Netlify |
 | CNAME | `www` | `troctroc.netlify.app.` | www.troctroc.fr → Netlify |
-| CNAME | `api` | `montroc-api.onrender.com.` | api.troctroc.fr → Render |
+| CNAME | `api` | `montroc-api-csko.onrender.com.` | api.troctroc.fr → Render |
 
 3. Attends la propagation (de quelques minutes à quelques heures). Pour vérifier depuis un terminal :
    ```
