@@ -1,4 +1,4 @@
-# Blueprint Render : l'API Python (https://api.montroc.fr).
+# Blueprint Render : l'API Python (https://api.troctroc.fr).
 # Render > New > Blueprint, choisir ce dépôt : le service est créé à partir de ce fichier.
 services:
   - type: web
@@ -23,6 +23,6 @@ services:
       - key: DATABASE_URL
         sync: false   # à coller dans Render : chaîne de connexion Neon (branche main)
       - key: CORS_ORIGINS
-        value: https://montroc.fr,https://www.montroc.fr
+        value: https://troctroc.fr,https://www.troctroc.fr
       - key: ENVIRONNEMENT
         value: production

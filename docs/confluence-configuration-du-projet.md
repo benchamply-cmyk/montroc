@@ -5,17 +5,17 @@
 
 ## En une phrase
 
-montroc.fr permet d'échanger des objets **sans prix ni monnaie** : chacun publie ce qu'il a et ce qui lui serait utile, et le moteur trouve des boucles d'échange de 2 ou 3 personnes.
+troctroc.fr permet d'échanger des objets **sans prix ni monnaie** : chacun publie ce qu'il a et ce qui lui serait utile, et le moteur trouve des boucles d'échange de 2 ou 3 personnes.
 
 ## Architecture
 
 | Brique | Technologie | Hébergeur | Adresse |
 |---|---|---|---|
-| Site | HTML/CSS/JS statique (`web/`) | Netlify | https://montroc.fr |
-| API | Python 3.12, FastAPI (`api/`) | Render, Frankfurt | https://api.montroc.fr (doc : `/docs`) |
+| Site | HTML/CSS/JS statique (`web/`) | Netlify | https://troctroc.fr (alias https://troctroc.cloud, redirigé) |
+| API | Python 3.12, FastAPI (`api/`) | Render, Frankfurt | https://api.troctroc.fr (doc : `/docs`) |
 | Moteur d'échanges | Python pur (`algorithme/`) | dans l'API | — |
 | Base de données | PostgreSQL 16 | Neon, Frankfurt | privée (chaîne de connexion secrète) |
-| Domaine, DNS, e-mails | montroc.fr, 10 adresses @montroc.fr | OVH (offre Startup) | — |
+| Domaine, DNS, e-mails | troctroc.fr (+ alias troctroc.cloud), 10 adresses @troctroc.fr | OVH (offre Startup) | — |
 | Code, CI | Git, GitHub Actions | GitHub | https://github.com/benchamply-cmyk/montroc |
 
 Choix clés :
@@ -30,16 +30,20 @@ Choix clés :
 | OVH | domaine, zone DNS, e-mails | Startup | ☐ |
 | Neon | base `montroc` (branches `main`, `dev`) | gratuite au départ | ☐ |
 | Render | service `montroc-api` | gratuite au départ (Starter au lancement public) | ☐ |
-| Netlify | site montroc.fr | gratuite | ☐ |
+| Netlify | site troctroc.fr | gratuite | ☐ |
 | GitHub | dépôt, CI, pull requests | gratuite | ☐ |
 
 ## Zone DNS (OVH)
 
+Zone **troctroc.fr** :
+
 | Type | Sous-domaine | Cible |
 |---|---|---|
 | A | (vide) | adresse Netlify (`75.2.60.5`, à vérifier dans Netlify) |
-| CNAME | www | `<site>.netlify.app.` |
+| CNAME | www | `troctroc.netlify.app.` |
 | CNAME | api | `montroc-api.onrender.com.` |
+
+Zone **troctroc.cloud** (alias, redirigé en 301 vers troctroc.fr par Netlify) : la même ligne A et le même CNAME www, sans ligne api.
 
 Ne jamais supprimer les entrées MX/SPF/DKIM (e-mails OVH). DNSSEC activé. Certificats HTTPS : Let's Encrypt, émis et renouvelés automatiquement par Netlify et Render.
 
@@ -48,7 +52,7 @@ Ne jamais supprimer les entrées MX/SPF/DKIM (e-mails OVH). DNSSEC activé. Cert
 | Variable | Production (Render) | Local (`api/.env`) |
 |---|---|---|
 | `DATABASE_URL` | chaîne Neon, branche `main` (secrète) | `postgresql+psycopg://montroc:montroc@localhost:5432/montroc` |
-| `CORS_ORIGINS` | `https://montroc.fr,https://www.montroc.fr` | `http://localhost:8000,…` |
+| `CORS_ORIGINS` | `https://troctroc.fr,https://www.troctroc.fr` | `http://localhost:8000,…` |
 | `ENVIRONNEMENT` | `production` | `local` |
 | `TEST_DATABASE_URL` | — | base `montroc_test` (vidée par les tests) |
 

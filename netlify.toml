@@ -13,9 +13,22 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
 
-# Toujours servir le site sur montroc.fr (sans www).
+# Toujours servir le site sur troctroc.fr (sans www).
+# troctroc.cloud est un alias : il redirige vers troctroc.fr, pour une seule adresse officielle.
 [[redirects]]
-  from = "https://www.montroc.fr/*"
-  to = "https://montroc.fr/:splat"
+  from = "https://www.troctroc.fr/*"
+  to = "https://troctroc.fr/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://troctroc.cloud/*"
+  to = "https://troctroc.fr/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.troctroc.cloud/*"
+  to = "https://troctroc.fr/:splat"
   status = 301
   force = true
