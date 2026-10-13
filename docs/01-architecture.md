@@ -18,7 +18,7 @@ flowchart LR
 | API | `api/` | **Render** (gratuit au départ, Frankfurt) | Python 3.12 + FastAPI. Reçoit les requêtes du site, lit/écrit la base, appelle le moteur. Documentation interactive sur `/docs`. |
 | Moteur | `algorithme/` | (dans l'API) | Bibliothèque Python pure qui trouve les boucles d'échange (2 ou 3 personnes) et le « math trade ». Aucune dépendance, testable seule. |
 | Base | `api/alembic/` (schéma) | **Neon** (PostgreSQL managé, Frankfurt) | Données : utilisateurs, objets, souhaits, échanges. Sauvegardes et restauration gérées par Neon. |
-| Domaine et e-mails | — | **OVH** (offre Startup) | `troctroc.fr` (et l'alias `troctroc.cloud`, redirigé vers troctroc.fr), les zones DNS et les adresses e-mail `@troctroc.fr`. |
+| Domaine et e-mails | — | **OVH** (offre Startup) | `troctroc.fr`, la zone DNS et les adresses e-mail `@troctroc.fr`. |
 
 ## Pourquoi ce découpage
 

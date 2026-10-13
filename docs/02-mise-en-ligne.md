@@ -4,7 +4,7 @@ Ordre conseillé : **domaine → base → API → site → DNS → vérification
 
 Coche au fur et à mesure :
 
-- [ ] 1. Domaines troctroc.fr (principal) et troctroc.cloud (alias) + offre Startup chez OVH, adresses e-mail créées
+- [ ] 1. Domaine troctroc.fr + offre Startup achetés chez OVH, adresses e-mail créées
 - [ ] 2. Base PostgreSQL créée sur Neon
 - [ ] 3. API déployée sur Render
 - [ ] 4. Site déployé sur Netlify
@@ -26,8 +26,7 @@ Choix retenu : domaine **troctroc.fr + hébergement Startup**, pris pour ses ser
 1. Garde **DNSSEC** (inclus) et active le **renouvellement automatique** du domaine et de l'hébergement.
 2. Paie, puis attends l'e-mail « domaine activé » (quelques minutes à quelques heures pour un `.fr`).
 3. Dans **Web Cloud → Noms de domaine → troctroc.fr**, vérifie l'onglet **Zone DNS**.
-4. Fais les points 1 à 3 aussi pour **troctroc.cloud**, l'alias : il ne sert qu'à rediriger vers troctroc.fr (même site, une seule adresse officielle).
-5. Dans **Web Cloud → E-mails** (ou *Hébergements → troctroc.fr → E-mails*), crée tes adresses. Les enregistrements **MX** qui font marcher ces e-mails sont créés par OVH : **ne jamais les supprimer**.
+4. Dans **Web Cloud → E-mails** (ou *Hébergements → troctroc.fr → E-mails*), crée tes adresses. Les enregistrements **MX** qui font marcher ces e-mails sont créés par OVH : **ne jamais les supprimer**.
 
 ## 2. Créer la base PostgreSQL sur Neon
 
@@ -60,8 +59,7 @@ Le schéma (tables, contraintes) n'est pas créé à la main : l'API applique le
 2. Netlify lit [`netlify.toml`](../netlify.toml) : dossier publié `web`, pas de commande de build. Branche de production : **`main`**. Clique **Deploy**.
 3. Vérifie l'adresse provisoire `https://troctroc.netlify.app`.
 4. **Project configuration → Domain management → Add a domain** : `troctroc.fr`. Netlify propose aussi `www.troctroc.fr` : accepte. Vérifie que `troctroc.fr` est marqué **Primary domain**.
-5. **Add a domain alias** : `troctroc.cloud`, puis `www.troctroc.cloud`. Les redirections 301 vers `troctroc.fr` sont déjà écrites dans [`netlify.toml`](../netlify.toml).
-6. Netlify propose d'utiliser **Netlify DNS** : refuse (« Set up DNS externally » / garder OVH). Note les valeurs qu'il affiche :
+5. Netlify propose d'utiliser **Netlify DNS** : refuse (« Set up DNS externally » / garder OVH). Note les valeurs qu'il affiche :
    - pour `troctroc.fr` : un enregistrement **A** vers l'adresse du load balancer Netlify (actuellement `75.2.60.5`, vérifie la valeur affichée) ;
    - pour `www` : un **CNAME** vers `troctroc.netlify.app`.
 
@@ -84,12 +82,6 @@ Dans **Web Cloud → Noms de domaine → troctroc.fr → Zone DNS** :
    dig +short www.troctroc.fr
    dig +short api.troctroc.fr
    ```
-4. Même chose dans **Noms de domaine → troctroc.cloud → Zone DNS**, avec seulement deux lignes (pas d'`api`, pas d'e-mails nécessaires sur l'alias) :
-
-| Type | Sous-domaine | Cible | Pour |
-|---|---|---|---|
-| A | *(vide)* | `75.2.60.5` (valeur Netlify) | troctroc.cloud → Netlify → redirigé vers troctroc.fr |
-| CNAME | `www` | `troctroc.netlify.app.` | www.troctroc.cloud → Netlify → redirigé vers troctroc.fr |
 
 ## 6. HTTPS et vérifications
 
@@ -97,7 +89,7 @@ Dans **Web Cloud → Noms de domaine → troctroc.fr → Zone DNS** :
 2. Render : le domaine `api.troctroc.fr` passe en **Verified** et le certificat est émis automatiquement.
 3. Vérifie :
    - `https://troctroc.fr` affiche le site ;
-   - `https://www.troctroc.fr`, `https://troctroc.cloud` et `https://www.troctroc.cloud` redirigent vers `https://troctroc.fr` ;
+   - `https://www.troctroc.fr` redirige vers `https://troctroc.fr` ;
    - `https://api.troctroc.fr/sante` répond `ok` ;
    - `https://api.troctroc.fr/docs` affiche la documentation de l'API.
 
@@ -117,10 +109,10 @@ Ainsi, rien n'arrive en production sans pull request et sans tests verts. Comme 
 
 | Service | Ce qu'on y trouve | Secret à garder |
 |---|---|---|
-| OVH | domaines troctroc.fr et troctroc.cloud, zones DNS, e-mails (offre Startup) | identifiants OVH (activer la double authentification) |
+| OVH | domaine troctroc.fr, zone DNS, e-mails (offre Startup) | identifiants OVH (activer la double authentification) |
 | Neon | base PostgreSQL (`main`, `dev`) | chaîne de connexion `DATABASE_URL` |
 | Render | API `montroc-api` → `api.troctroc.fr` | aucun en plus (DATABASE_URL y est stockée) |
-| Netlify | site → `troctroc.fr` (alias `troctroc.cloud`) | aucun |
+| Netlify | site → `troctroc.fr` | aucun |
 | GitHub | code, CI, pull requests | — |
 
 Active la **double authentification** sur les cinq comptes.

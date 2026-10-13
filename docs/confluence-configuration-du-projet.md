@@ -11,11 +11,11 @@ troctroc.fr permet d'échanger des objets **sans prix ni monnaie** : chacun publ
 
 | Brique | Technologie | Hébergeur | Adresse |
 |---|---|---|---|
-| Site | HTML/CSS/JS statique (`web/`) | Netlify | https://troctroc.fr (alias https://troctroc.cloud, redirigé) |
+| Site | HTML/CSS/JS statique (`web/`) | Netlify | https://troctroc.fr |
 | API | Python 3.12, FastAPI (`api/`) | Render, Frankfurt | https://api.troctroc.fr (doc : `/docs`) |
 | Moteur d'échanges | Python pur (`algorithme/`) | dans l'API | — |
 | Base de données | PostgreSQL 16 | Neon, Frankfurt | privée (chaîne de connexion secrète) |
-| Domaine, DNS, e-mails | troctroc.fr (+ alias troctroc.cloud), 10 adresses @troctroc.fr | OVH (offre Startup) | — |
+| Domaine, DNS, e-mails | troctroc.fr, 10 adresses @troctroc.fr | OVH (offre Startup) | — |
 | Code, CI | Git, GitHub Actions | GitHub | https://github.com/benchamply-cmyk/montroc |
 
 Choix clés :
@@ -42,8 +42,6 @@ Zone **troctroc.fr** :
 | A | (vide) | adresse Netlify (`75.2.60.5`, à vérifier dans Netlify) |
 | CNAME | www | `troctroc.netlify.app.` |
 | CNAME | api | `montroc-api.onrender.com.` |
-
-Zone **troctroc.cloud** (alias, redirigé en 301 vers troctroc.fr par Netlify) : la même ligne A et le même CNAME www, sans ligne api.
 
 Ne jamais supprimer les entrées MX/SPF/DKIM (e-mails OVH). DNSSEC activé. Certificats HTTPS : Let's Encrypt, émis et renouvelés automatiquement par Netlify et Render.
 
