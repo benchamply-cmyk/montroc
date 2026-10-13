@@ -23,7 +23,7 @@ python3 benchmark.py 1000 2000 5000     # banc d'essai « ville »
 from troc_echanges import Marche, Souhait, math_trade
 
 m = Marche(p_acceptation=0.7, p_auto=0.95)
-m.ajouter_utilisateur("Alice", [Souhait(categorie="siege-auto", acceptation_auto=True)], zone="Lyon")
+m.ajouter_utilisateur("Alice", [Souhait(categorie="siege-auto", acceptation_auto=True)], zone="Marseille")
 m.ajouter_objet("p1", "Alice", "poussette", "Poussette Yoyo")
 ...
 sol = math_trade(m, longueur_max=3)

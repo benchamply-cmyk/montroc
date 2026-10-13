@@ -135,7 +135,7 @@ class TestBouclesAutour(unittest.TestCase):
     def test_zone(self):
         m = marche_abc()
         m.utilisateurs["C"].zone = "Paris"
-        m.utilisateurs["A"].zone = "Lyon"
+        m.utilisateurs["A"].zone = "Marseille"
         self.assertEqual(boucles_autour(m, "A"), [])
 
     def test_objet_precis(self):

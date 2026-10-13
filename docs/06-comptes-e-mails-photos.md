@@ -40,7 +40,7 @@ Render → service **montroc-api** → **Environment** → *Add Environment Vari
 | `CLOUDINARY_URL` | la ligne copiée à l'étape 2 |
 | `MODERATEURS` | ton e-mail de connexion à Troc, ex. `ben.champly@gmail.com` (plusieurs : séparés par des virgules) |
 | `TACHES_SECRET` | une longue chaîne au hasard (ex. 40 caractères générés par ton gestionnaire de mots de passe) |
-| `POINT_DE_DEPOT` | le lieu de dépôt, ex. `Ressourcerie La Boucle, 12 rue d'Austerlitz, mar.–sam. 10 h–19 h` |
+| `POINT_DE_DEPOT` | le lieu de dépôt, ex. `Ressourcerie (exemple), rue des Trois-Rois, 13006 Marseille, mar.–sam. 10 h–19 h` |
 | `SITE_URL` | `https://troctroc.fr` (déjà la valeur par défaut) |
 
 Au redémarrage, la migration `0003` s'applique toute seule. Les objets déjà publiés sans photo passent en « retiré » : leur propriétaire peut en publier de nouveaux avec photo.

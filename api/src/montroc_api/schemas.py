@@ -32,7 +32,7 @@ class Verification(BaseModel):
     jeton: str = Field(min_length=20, max_length=100)
     # À fournir seulement à la première connexion, quand l'API répond « inscription_requise ».
     pseudo: str | None = Field(default=None, min_length=2, max_length=40)
-    zone: str | None = Field(default=None, max_length=80, examples=["Lyon"])
+    zone: str | None = Field(default=None, max_length=80, examples=["Marseille"])
 
 
 class Moi(Lecture):
