@@ -40,7 +40,7 @@ Zone **troctroc.fr** :
 | Type | Sous-domaine | Cible |
 |---|---|---|
 | A | (vide) | adresse Netlify (`75.2.60.5`, à vérifier dans Netlify) |
-| CNAME | www | `<site>.netlify.app.` |
+| CNAME | www | `troctroc.netlify.app.` |
 | CNAME | api | `montroc-api.onrender.com.` |
 
 Zone **troctroc.cloud** (alias, redirigé en 301 vers troctroc.fr par Netlify) : la même ligne A et le même CNAME www, sans ligne api.

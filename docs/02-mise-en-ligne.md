@@ -58,12 +58,12 @@ Le schéma (tables, contraintes) n'est pas créé à la main : l'API applique le
 
 1. Sur **https://app.netlify.com** : **Add new project → Import an existing project → GitHub** (Netlify appelle désormais les sites des « projects »), choisis `benchamply-cmyk/montroc`.
 2. Netlify lit [`netlify.toml`](../netlify.toml) : dossier publié `web`, pas de commande de build. Branche de production : **`main`**. Clique **Deploy**.
-3. Vérifie l'adresse provisoire `https://<nom>.netlify.app`.
+3. Vérifie l'adresse provisoire `https://troctroc.netlify.app`.
 4. **Project configuration → Domain management → Add a domain** : `troctroc.fr`. Netlify propose aussi `www.troctroc.fr` : accepte. Vérifie que `troctroc.fr` est marqué **Primary domain**.
 5. **Add a domain alias** : `troctroc.cloud`, puis `www.troctroc.cloud`. Les redirections 301 vers `troctroc.fr` sont déjà écrites dans [`netlify.toml`](../netlify.toml).
 6. Netlify propose d'utiliser **Netlify DNS** : refuse (« Set up DNS externally » / garder OVH). Note les valeurs qu'il affiche :
    - pour `troctroc.fr` : un enregistrement **A** vers l'adresse du load balancer Netlify (actuellement `75.2.60.5`, vérifie la valeur affichée) ;
-   - pour `www` : un **CNAME** vers `<nom>.netlify.app`.
+   - pour `www` : un **CNAME** vers `troctroc.netlify.app`.
 
 ## 5. Configurer la zone DNS chez OVH
 
@@ -75,7 +75,7 @@ Dans **Web Cloud → Noms de domaine → troctroc.fr → Zone DNS** :
 | Type | Sous-domaine | Cible | Pour |
 |---|---|---|---|
 | A | *(vide)* | `75.2.60.5` (valeur Netlify) | troctroc.fr → Netlify |
-| CNAME | `www` | `<nom>.netlify.app.` | www.troctroc.fr → Netlify |
+| CNAME | `www` | `troctroc.netlify.app.` | www.troctroc.fr → Netlify |
 | CNAME | `api` | `montroc-api.onrender.com.` | api.troctroc.fr → Render |
 
 3. Attends la propagation (de quelques minutes à quelques heures). Pour vérifier depuis un terminal :
@@ -89,7 +89,7 @@ Dans **Web Cloud → Noms de domaine → troctroc.fr → Zone DNS** :
 | Type | Sous-domaine | Cible | Pour |
 |---|---|---|---|
 | A | *(vide)* | `75.2.60.5` (valeur Netlify) | troctroc.cloud → Netlify → redirigé vers troctroc.fr |
-| CNAME | `www` | `<nom>.netlify.app.` | www.troctroc.cloud → Netlify → redirigé vers troctroc.fr |
+| CNAME | `www` | `troctroc.netlify.app.` | www.troctroc.cloud → Netlify → redirigé vers troctroc.fr |
 
 ## 6. HTTPS et vérifications
 
