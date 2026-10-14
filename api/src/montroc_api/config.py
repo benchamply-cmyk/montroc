@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     moderateurs: str = ""
     # Secret partagé avec la tâche planifiée GitHub Actions qui appelle /taches/… (rappels, math trade).
     taches_secret: str = ""
+    # Les boucles se décident au Grand Troc du dimanche. Mettre à true pour laisser aussi chacun proposer
+    # tout de suite une boucle parmi ses suggestions (POST /echanges), comme avant le Grand Troc.
+    echanges_a_la_demande: bool = False
     # Lieu de dépôt affiché aux participants d'un échange accepté (adresse, horaires).
     point_de_depot: str = ""
 

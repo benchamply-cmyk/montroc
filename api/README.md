@@ -22,7 +22,8 @@ make tests
 | `GET /categories`, `GET /objets`, `GET /objets/{id}`, `GET /utilisateurs/{id}` | lecture publique, sans compte (`GET /objets?q=vélo enfant` : recherche libre dans le titre, la description et la catégorie) |
 | `POST /signalements` | signaler un objet ou un compte (avec ou sans compte) |
 | `GET /moderation/signalements`, `POST /moderation/signalements/{id}/decision`, `POST /categories` | modération (comptes listés dans `MODERATEURS`) |
-| `POST /taches/horaires`, `POST /taches/math-trade` | tâches planifiées (en-tête `X-Taches-Secret`) |
+| `GET /grand-troc` | date du prochain Grand Troc du dimanche et bilan du dernier (public) |
+| `POST /taches/horaires`, `POST /taches/grand-troc` | tâches planifiées (en-tête `X-Taches-Secret`) ; `?force=true` lance le Grand Troc tout de suite |
 
 Les routes personnelles demandent l'en-tête `Authorization: Bearer <jeton>`. En local, sans SMTP configuré, les e-mails (dont le lien de connexion) s'affichent dans la console de l'API.
 

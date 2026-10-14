@@ -4,7 +4,7 @@ from fastapi import APIRouter
 
 from .. import services, vues
 from ..deps import SecretTaches, SessionDep
-from ..schemas import ResultatMathTrade, ResultatTaches
+from ..schemas import GrandTrocLecture, ResultatGrandTroc, ResultatTaches
 from .echanges import metier
 
 router = APIRouter(prefix="/taches", tags=["tâches planifiées"], dependencies=[SecretTaches])
@@ -18,13 +18,16 @@ def horaires(session: SessionDep):
     return ResultatTaches(rappels_envoyes=rappels, echanges_expires=expires)
 
 
-@router.post("/math-trade", response_model=ResultatMathTrade)
-def math_trade(session: SessionDep):
-    """Chaque nuit : maximum d'objets échangés sur tout le marché ; chaque participant est prévenu."""
-    solution, echanges = metier(services.lancer_math_trade, session)
-    return ResultatMathTrade(
-        optimal=solution.optimal,
-        duree_s=solution.duree_s,
-        nb_objets_echanges=solution.nb_objets_echanges,
+@router.post("/grand-troc", response_model=ResultatGrandTroc)
+def grand_troc(session: SessionDep, force: bool = False):
+    """Le dimanche à partir de 18 h (heure de Paris) : maximum d'objets échangés sur tout le stock.
+
+    Sans effet avant l'heure ou si le Grand Troc du jour a déjà eu lieu ; ``force`` le lance tout de suite.
+    """
+    resultat, echanges, lance, message = metier(services.lancer_grand_troc, session, force)
+    return ResultatGrandTroc(
+        lance=lance,
+        message=message,
+        grand_troc=GrandTrocLecture.model_validate(resultat) if resultat else None,
         echanges=[vues.echange(e) for e in echanges],
     )

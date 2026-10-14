@@ -17,6 +17,9 @@ os.environ["MODERATEURS"] = "modo@exemple.fr"
 os.environ["TACHES_SECRET"] = "secret-des-taches"
 os.environ["SMTP_MOT_DE_PASSE"] = ""
 os.environ["BREVO_API_KEY"] = ""
+# Les parcours de test proposent une boucle tout de suite plutôt que d'attendre le Grand Troc du dimanche ;
+# le réglage par défaut (désactivé) est vérifié à part.
+os.environ["ECHANGES_A_LA_DEMANDE"] = "true"
 
 import re  # noqa: E402
 from dataclasses import dataclass  # noqa: E402
@@ -50,7 +53,10 @@ def base_vide():
     courriels.ENVOYES.clear()
     yield
     with engine.begin() as conn:
-        tables = "signalements, sessions, jetons_connexion, transferts, echanges, souhaits, objets, utilisateurs"
+        tables = (
+            "signalements, sessions, jetons_connexion, transferts, echanges, grands_trocs, souhaits, objets, "
+            "utilisateurs"
+        )
         conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
 
 

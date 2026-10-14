@@ -7,7 +7,8 @@ une fois la transaction validée.
 """
 
 import secrets
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session, selectinload
@@ -22,6 +23,16 @@ from .config import get_settings
 DELAI_REPONSE = timedelta(hours=48)
 RAPPEL_AVANT = timedelta(hours=12)
 DELAI_DEPOT = timedelta(days=7)
+
+# Le Grand Troc du dimanche : chaque dimanche à 18 h (heure de Paris), le math trade tourne sur tout le stock.
+# Toutes les propositions arrivent en même temps, on a 48 h pour répondre (jusqu'au mardi 18 h), puis les
+# dépôts se font dans la semaine, jusqu'au dimanche suivant midi : les objets d'un échange qui n'a pas abouti
+# repartent ainsi dans le Grand Troc du soir même.
+PARIS = ZoneInfo("Europe/Paris")
+DIMANCHE = 6
+HEURE_GRAND_TROC = time(18)
+FIN_DES_DEPOTS = (timedelta(days=7), time(12))
+DUREE_MAX_GRAND_TROC_S = 30.0
 
 
 class ErreurMetier(Exception):
@@ -63,7 +74,9 @@ def _code_retrait() -> str:
     return "TRC-" + "".join(secrets.choice("23456789ABCDEFGHJKMNPQRSTUVWXYZ") for _ in range(5))
 
 
-def proposer(session: Session, boucle: Boucle, auteur_id: int | None = None) -> m.Echange:
+def proposer(
+    session: Session, boucle: Boucle, auteur_id: int | None = None, grand_troc: m.GrandTroc | None = None
+) -> m.Echange:
     """Enregistre une boucle, réserve ses objets et prévient les participants. À appeler dans une transaction.
 
     ``auteur_id`` : le participant qui a choisi cette boucle ; la proposer vaut accord pour sa part.
@@ -78,7 +91,9 @@ def proposer(session: Session, boucle: Boucle, auteur_id: int | None = None) -> 
         o.statut = m.StatutObjet.reserve
 
     maintenant = datetime.now(UTC)
-    echange = m.Echange(proba_reussite=boucle.proba_reussite, expire_le=maintenant + DELAI_REPONSE)
+    echange = m.Echange(
+        proba_reussite=boucle.proba_reussite, expire_le=maintenant + DELAI_REPONSE, grand_troc=grand_troc
+    )
     for i, t in enumerate(boucle.transferts):
         # Souhait coché « j'accepte d'office », ou boucle choisie par le receveur : pas besoin de redemander.
         d_office = t.auto or int(t.receveur) == auteur_id
@@ -107,12 +122,18 @@ def proposer(session: Session, boucle: Boucle, auteur_id: int | None = None) -> 
                     donne,
                     t.objet.titre,
                     lien_echange(echange),
+                    grand_troc is not None,
                 )
     return echange
 
 
 def proposer_par_objets(session: Session, objet_ids: list[int], auteur_id: int) -> m.Echange:
     """Enregistre la boucle suggérée formée par ces objets (dans l'ordre), après l'avoir revérifiée."""
+    if not get_settings().echanges_a_la_demande:
+        raise ErreurMetier(
+            "Les échanges se décident au Grand Troc du dimanche : cette boucle vous sera proposée dimanche "
+            "si elle est toujours possible."
+        )
     cible = tuple(str(i) for i in objet_ids)
     for b in boucles_autour(construire_marche(session), str(auteur_id), limite=None, options_par_transfert=10):
         if b.objets == cible:
@@ -120,10 +141,63 @@ def proposer_par_objets(session: Session, objet_ids: list[int], auteur_id: int) 
     raise ErreurMetier("Ces objets ne forment pas une boucle d'échange valide pour vous.")
 
 
-def lancer_math_trade(session: Session, duree_max_s: float = 10.0):
-    solution = math_trade(construire_marche(session), longueur_max=3, duree_max_s=duree_max_s)
-    echanges = [proposer(session, b) for b in solution.boucles]
-    return solution, echanges
+def prochain_grand_troc(apres: datetime) -> datetime:
+    """Le prochain dimanche 18 h (heure de Paris) strictement après ``apres``."""
+    local = apres.astimezone(PARIS)
+    dimanche = local.date() + timedelta(days=(DIMANCHE - local.weekday()) % 7)
+    rendez_vous = datetime.combine(dimanche, HEURE_GRAND_TROC, tzinfo=PARIS)
+    if rendez_vous <= local:
+        rendez_vous = datetime.combine(dimanche + timedelta(days=7), HEURE_GRAND_TROC, tzinfo=PARIS)
+    return rendez_vous
+
+
+def fin_des_depots(jour_grand_troc: date) -> datetime:
+    decalage, heure = FIN_DES_DEPOTS
+    return datetime.combine(jour_grand_troc + decalage, heure, tzinfo=PARIS)
+
+
+def _maintenant() -> datetime:
+    return datetime.now(PARIS)
+
+
+def dernier_grand_troc(session: Session) -> m.GrandTroc | None:
+    return session.scalars(select(m.GrandTroc).order_by(m.GrandTroc.jour.desc()).limit(1)).first()
+
+
+def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTroc | None, list[m.Echange], bool, str]:
+    """Le Grand Troc du dimanche : maximum d'objets échangés sur tout le stock, une seule fois par dimanche.
+
+    La tâche planifiée appelle cette fonction plusieurs fois le dimanche (l'heure d'été change l'heure UTC) :
+    elle ne fait rien avant 18 h, ni si le Grand Troc du jour a déjà eu lieu. ``force`` lance le Grand Troc
+    tout de suite, quel que soit le jour (lancement manuel) ; il reste unique par jour.
+    Renvoie (le Grand Troc du jour ou None, les échanges proposés, vrai s'il vient d'avoir lieu, une explication).
+    """
+    maintenant = _maintenant()
+    if not force and (maintenant.weekday() != DIMANCHE or maintenant.time() < HEURE_GRAND_TROC):
+        return (
+            None,
+            [],
+            False,
+            f"Pas encore l'heure : prochain Grand Troc le {prochain_grand_troc(maintenant):%d/%m à %H h}.",
+        )
+    jour = maintenant.date()
+    deja = session.scalars(select(m.GrandTroc).where(m.GrandTroc.jour == jour)).first()
+    if deja is not None:
+        return deja, [], False, "Le Grand Troc de ce jour a déjà eu lieu."
+
+    solution = math_trade(construire_marche(session), longueur_max=3, duree_max_s=DUREE_MAX_GRAND_TROC_S)
+    grand_troc = m.GrandTroc(
+        jour=jour,
+        optimal=solution.optimal,
+        duree_s=solution.duree_s,
+        nb_boucles=len(solution.boucles),
+        nb_objets=solution.nb_objets_echanges,
+        nb_participants=len(solution.participants),
+    )
+    session.add(grand_troc)
+    session.flush()
+    echanges = [proposer(session, b, grand_troc=grand_troc) for b in solution.boucles]
+    return grand_troc, echanges, True, f"{len(echanges)} boucle(s) proposée(s), {solution.nb_objets_echanges} objets."
 
 
 def _transfert_du_donneur(echange: m.Echange, utilisateur_id: int) -> m.Transfert:
@@ -201,7 +275,10 @@ def _mettre_a_jour_statut(session: Session, echange: m.Echange) -> bool:
         return True
     if reponses == {m.Reponse.acceptee}:
         echange.statut = m.StatutEchange.accepte
-        echange.expire_le = datetime.now(UTC) + DELAI_DEPOT
+        if echange.grand_troc is not None:
+            echange.expire_le = fin_des_depots(echange.grand_troc.jour)
+        else:
+            echange.expire_le = datetime.now(UTC) + DELAI_DEPOT
         point = get_settings().point_de_depot
         for t in echange.transferts:
             courriels.apres_validation(
@@ -213,6 +290,7 @@ def _mettre_a_jour_statut(session: Session, echange: m.Echange) -> bool:
                 t.code_retrait,
                 point,
                 lien_echange(echange),
+                echange.expire_le,
             )
         return True
     return False
@@ -281,6 +359,6 @@ def taches_horaires(session: Session) -> tuple[int, int]:
         if echange.statut == m.StatutEchange.propose:
             raison = "Tout le monde n'a pas répondu dans les 48 h."
         else:
-            raison = "Tous les objets n'ont pas été déposés dans les 7 jours : chacun récupère le sien."
+            raison = "Tous les objets n'ont pas été déposés à temps : chacun récupère le sien."
         annuler(session, echange, raison)
     return rappels, len(expires)

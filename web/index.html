@@ -190,6 +190,12 @@ form.stack{display:flex;flex-direction:column;gap:14px}
 .notice{font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .err{color:var(--danger)}
 .empty{color:var(--muted);font-size:15px;padding:8px 0}
+/* Grand Troc du dimanche : le rendez-vous de la semaine, avec son compte à rebours. */
+.gt{border-color:color-mix(in srgb,var(--mark) 45%,var(--line))}
+.gt-cd{display:flex;align-items:baseline;justify-content:space-between;gap:6px 12px;flex-wrap:wrap}
+.gt-cd b{font-family:var(--display);font-size:22px;line-height:1.2}
+.gt-reste{font-family:var(--mono);font-size:14px;color:var(--mark);white-space:nowrap}
+.gt p{font-size:14px;line-height:1.45}
 /* Recherche libre, ouverte sans compte */
 .search{display:flex;gap:8px}
 .search input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:999px;padding:13px 18px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
@@ -241,6 +247,13 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <div class="center"><div><b>1 boucle</b><br><span class="muted" style="font-size:12px">3 personnes servies</span></div></div>
     </div>
 
+    <div class="card gt">
+      <span class="tag a">Le Grand Troc du dimanche</span>
+      <div class="gt-cd"><b data-gt-quand>Chaque dimanche à 18 h</b><span class="gt-reste" data-gt-reste aria-live="polite"></span></div>
+      <p class="muted">Une fois par semaine, TrocTroc cherche toutes les boucles d'un coup, sur tous les objets. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
+      <p class="muted" data-gt-bilan hidden></p>
+    </div>
+
     <div class="marqs" aria-label="Exemples d'échanges">
       <span class="label">Par exemple</span>
       <div class="marq"><div class="track"></div><div class="track" aria-hidden="true"></div></div>
@@ -275,7 +288,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <ol class="steps">
       <li><div><b>J'ai</b><span class="muted">Une photo par objet. L'état est obligatoire.</span></div></li>
       <li><div><b>Ça me serait utile</b><span class="muted">Des catégories plutôt qu'un modèle exact.</span></div></li>
-      <li><div><b>TrocTroc propose</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui.</span></div></li>
+      <li><div><b>Dimanche, 18 h : le Grand Troc</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui, puis la semaine pour déposer.</span></div></li>
     </ol>
   </section>
 
@@ -368,7 +381,13 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
   <section class="view" id="v-trades" hidden>
     <div class="hero"><span class="label">Pour vous</span><h2 id="trades-title">Vos échanges</h2></div>
     <div id="trades-current" style="display:flex;flex-direction:column;gap:16px"></div>
-    <div class="list-head" style="margin:8px 0 -12px"><span class="label">Échanges possibles</span></div>
+    <div class="card gt">
+      <span class="tag a">Le Grand Troc du dimanche</span>
+      <div class="gt-cd"><b data-gt-quand>Chaque dimanche à 18 h</b><span class="gt-reste" data-gt-reste aria-live="polite"></span></div>
+      <p class="muted">Une fois par semaine, TrocTroc cherche toutes les boucles d'un coup, sur tous les objets. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
+      <p class="muted" data-gt-bilan hidden></p>
+    </div>
+    <div class="list-head" style="margin:8px 0 -12px"><span class="label" id="possible-title">Aperçu pour dimanche</span></div>
     <div id="trades-possible" style="display:flex;flex-direction:column;gap:16px"></div>
   </section>
 
@@ -427,7 +446,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2800)}
 
 const store={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch{}}};
-let jeton=store.get('troc.jeton'), moi=null, categories={}, echanges=[], boucles=[];
+let jeton=store.get('troc.jeton'), moi=null, categories={}, echanges=[], boucles=[], grandTroc=null;
 
 async function api(chemin,{method='GET',body}={}){
   const headers={}; if(body!==undefined)headers['Content-Type']='application/json';
@@ -599,14 +618,16 @@ function carteEchange(e){
   else if(e.statut==='propose')bas=`<p class="status">C'est noté. On attend ${attente.join(' et ')}.</p>`;
   else bas=`<p class="status">Tout le monde a dit oui : place au dépôt.</p><button class="btn" data-go="drop">Voir le dépôt</button>`;
   return `<article class="card featured" id="echange-${e.id}">
-    <span class="tag a">${ts.length===3?'Boucle à trois':'Échange direct'}</span>
+    <span class="tag a">${e.grand_troc_jour?'Grand Troc · ':''}${ts.length===3?'Boucle à trois':'Échange direct'}</span>
     ${chaine(ts)}${recap(ts)}
     ${e.statut==='propose'?`<div class="acc">${ts.map(t=>`<span class="dot ${t.reponse==='acceptee'?'on':''}"></span>`).join('')}<span>${oui}/${ts.length} ont accepté · ${heures(e.expire_le)} h restantes</span></div>`:''}
     ${bas}</article>`;
 }
 function carteBoucle(b,i){
-  return `<article class="card"><span class="tag">${b.longueur===3?'Boucle à trois':'Échange direct'}</span>${chaine(b.etapes)}${recap(b.etapes)}
-    <div class="btns"><button class="btn primary" data-proposer="${i}">Proposer cet échange</button></div></article>`;
+  const bas=grandTroc&&grandTroc.echanges_a_la_demande
+    ?`<div class="btns"><button class="btn primary" data-proposer="${i}">Proposer cet échange</button></div>`
+    :'<p class="muted" style="font-size:14px">Si elle tient toujours, elle vous sera proposée au Grand Troc de dimanche.</p>';
+  return `<article class="card"><span class="tag">${b.longueur===3?'Boucle à trois':'Échange direct'}</span>${chaine(b.etapes)}${recap(b.etapes)}${bas}</article>`;
 }
 async function chargerEchanges(){
   [echanges,boucles]=await Promise.all([api('/moi/echanges'),api('/moi/boucles?limite=20')]);
@@ -615,7 +636,7 @@ async function chargerEchanges(){
   $('#badge').textContent=aRepondre; $('#badge').hidden=!aRepondre;
   $('#trades-title').textContent=aRepondre?`${aRepondre} échange${aRepondre>1?'s':''} attend${aRepondre>1?'ent':''} votre réponse`:'Vos échanges';
   $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TrocTroc a de chances d\'en trouver une.</p>';
-  $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Rien pour l\'instant. Élargissez vos souhaits : TrocTroc cherche à nouveau chaque nuit.</p>';
+  $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Rien pour l\'instant. Élargissez vos souhaits : le prochain Grand Troc a lieu dimanche à 18 h.</p>';
   const n=boucles.length; $('#m-num').textContent=n; $('#m-bar').style.width=Math.min(100,n*10)+'%';
   $('#m-tip').textContent=n>=5?'Bel éventail. Vos chances de boucle sont élevées.':'Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.';
   afficherDepots();
@@ -689,6 +710,32 @@ $('#reports').onclick=async e=>{
     toast('Décision enregistrée et envoyée');chargerSignalements()}catch(err){toast(err.message)}
 };
 
+/* Grand Troc du dimanche : date du prochain passage, compte à rebours et bilan du dernier. */
+const PARIS={timeZone:'Europe/Paris'};
+function texteDuree(ms){
+  const min=Math.max(1,Math.round(ms/6e4)), j=Math.floor(min/1440), h=Math.floor(min%1440/60), m=min%60;
+  return j?`${j} j ${h} h`:h?`${h} h ${String(m).padStart(2,'0')}`:`${m} min`;
+}
+function afficherGrandTroc(){
+  if(!grandTroc)return;
+  const prochain=new Date(grandTroc.prochain), dernier=grandTroc.dernier, maintenant=Date.now();
+  // Pendant les 48 h de réponse, le rendez-vous qui compte est celui qui vient d'avoir lieu.
+  const enCours=dernier&&maintenant-new Date(dernier.cree_le)<48*36e5;
+  const quand=prochain.toLocaleString('fr-FR',{...PARIS,weekday:'long',day:'numeric',month:'long'});
+  $$('[data-gt-quand]').forEach(x=>x.textContent=enCours?'Le Grand Troc a eu lieu':`${quand[0].toUpperCase()+quand.slice(1)}, 18 h`);
+  $$('[data-gt-reste]').forEach(x=>x.textContent=enCours?`réponses jusqu'à ${new Date(new Date(dernier.cree_le).getTime()+48*36e5).toLocaleString('fr-FR',{...PARIS,weekday:'long',hour:'numeric'})}`:'dans '+texteDuree(prochain-maintenant));
+  $$('[data-gt-bilan]').forEach(x=>{
+    if(!dernier){x.hidden=true;return}
+    const jour=new Date(dernier.jour+'T12:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+    x.textContent=dernier.nb_boucles
+      ?`Le ${jour} : ${dernier.nb_boucles} boucle${dernier.nb_boucles>1?'s':''}, ${dernier.nb_objets} objets échangés entre ${dernier.nb_participants} personnes.`
+      :`Le ${jour} : pas de boucle trouvée. Plus il y a d'objets et de souhaits, plus il y en aura dimanche.`;
+    x.hidden=false;
+  });
+}
+async function chargerGrandTroc(){try{grandTroc=await api('/grand-troc');afficherGrandTroc()}catch{}}
+setInterval(afficherGrandTroc,30e3);
+
 /* Recherche libre : aucun compte nécessaire, l'API ne renvoie que les objets en ligne. */
 async function chercher(q){
   q=q.trim(); if(!q)return;
@@ -714,6 +761,7 @@ async function toutCharger(){
   try{await Promise.all([chargerListes(),chargerEchanges()])}catch(err){toast(err.message)}
 }
 async function demarrer(){
+  const gt=chargerGrandTroc();
   try{const cats=await api('/categories'); categories=Object.fromEntries(cats.map(c=>[c.slug,c.libelle]));
     const opts=cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
     $('#cat-obj').innerHTML='<option value="">Choisir…</option>'+opts; $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
@@ -727,7 +775,7 @@ async function demarrer(){
   afficherSession();
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(!moi)return;
-  await toutCharger();
+  await gt; await toutCharger();
   if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}
   else if(h==='#moderation'&&moi.est_moderateur)go('mod');
 }

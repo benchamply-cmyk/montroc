@@ -1,6 +1,6 @@
 """Formats d'entrée et de sortie de l'API (validation Pydantic)."""
 
-from datetime import datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
 
@@ -203,6 +203,8 @@ class EchangeLecture(BaseModel):
     proba_reussite: float
     cree_le: datetime
     expire_le: datetime
+    # Le dimanche du Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande).
+    grand_troc_jour: date | None = None
     point_de_depot: str | None = None
     transferts: list[TransfertLecture]
 
@@ -211,10 +213,29 @@ class ReponseEchange(BaseModel):
     accepte: bool
 
 
-class ResultatMathTrade(BaseModel):
+class GrandTrocLecture(Lecture):
+    jour: date
+    cree_le: datetime
+    nb_boucles: int
+    nb_objets: int
+    nb_participants: int
     optimal: bool
     duree_s: float
-    nb_objets_echanges: int
+
+
+class InfosGrandTroc(BaseModel):
+    """Le rendez-vous du dimanche : quand a lieu le prochain, ce qu'a donné le dernier."""
+
+    prochain: datetime
+    dernier: GrandTrocLecture | None
+    # Vrai si l'on peut aussi proposer une boucle tout de suite (POST /echanges), sans attendre dimanche.
+    echanges_a_la_demande: bool
+
+
+class ResultatGrandTroc(BaseModel):
+    lance: bool
+    message: str
+    grand_troc: GrandTrocLecture | None
     echanges: list[EchangeLecture]
 
 

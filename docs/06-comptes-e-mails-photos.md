@@ -47,7 +47,15 @@ Au redémarrage, la migration `0003` s'applique toute seule. Les objets déjà p
 
 ## 4. Tâches planifiées : un secret GitHub
 
-Render gratuit n'a pas de tâches planifiées : c'est GitHub Actions ([`.github/workflows/taches.yml`](../.github/workflows/taches.yml)) qui appelle l'API toutes les heures (rappels « plus que 12 h », échanges expirés) et chaque nuit (math trade sur tout le marché).
+Render gratuit n'a pas de tâches planifiées : c'est GitHub Actions ([`.github/workflows/taches.yml`](../.github/workflows/taches.yml)) qui appelle l'API toutes les heures (rappels « plus que 12 h », échanges expirés) et le dimanche (Grand Troc).
+
+### Le Grand Troc du dimanche
+
+Les boucles ne sont plus proposées au fil de l'eau : chaque **dimanche à 18 h (heure de Paris)**, le math trade tourne une fois sur tout le stock, comme les math trades de BoardGameGeek. Toutes les propositions arrivent en même temps (e-mail « Grand Troc : une boucle vous attend »), chacun a **48 h** pour répondre (jusqu'au mardi 18 h, rappel 12 h avant), puis les dépôts se font **dans la semaine, jusqu'au dimanche suivant midi** : les objets d'un échange incomplet repartent dans le Grand Troc du soir même.
+
+- GitHub Actions appelle `/taches/grand-troc` le dimanche à 16 h 07 et 17 h 07 UTC (heure d'été / d'hiver) ; l'API ne lance rien avant 18 h à Paris, ni deux fois le même dimanche.
+- Pour le lancer à la main (par exemple pour un premier essai) : **Actions → Tâches planifiées → Run workflow → grand-troc**. Il a lieu tout de suite, une seule fois par jour.
+- Les « boucles possibles » restent visibles dans « Échanges » comme un aperçu de dimanche. Pour permettre aussi de proposer une boucle tout de suite, comme avant, ajouter dans Render `ECHANGES_A_LA_DEMANDE=true`.
 
 1. GitHub → dépôt **montroc** → **Settings → Secrets and variables → Actions → New repository secret**.
 2. Nom : `TACHES_SECRET`, valeur : **la même** que dans Render.
@@ -57,7 +65,7 @@ Render gratuit n'a pas de tâches planifiées : c'est GitHub Actions ([`.github/
 
 1. Sur https://troctroc.fr, saisis ton e-mail : le lien arrive (en cas de doute, Brevo → *Transactional → Logs* montre chaque envoi ; regarde aussi les spams la première fois et marque-le « pas un spam »).
 2. Choisis ton pseudo, publie un objet avec photo, ajoute un souhait.
-3. Avec un deuxième compte (une autre adresse), publie l'objet que tu souhaites et souhaite le tien : l'échange apparaît dans « Échanges possibles ».
+3. Avec un deuxième compte (une autre adresse), publie l'objet que tu souhaites et souhaite le tien : l'échange apparaît dans « Aperçu pour dimanche » ; lance le Grand Troc à la main (ci-dessus) pour le recevoir tout de suite.
 4. Ton compte modérateur voit l'onglet **Modération**.
 
 ## Modération et DSA

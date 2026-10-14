@@ -24,6 +24,7 @@ def echange(e: m.Echange, lecteur_id: int | None = None) -> EchangeLecture:
         proba_reussite=e.proba_reussite,
         cree_le=e.cree_le,
         expire_le=e.expire_le,
+        grand_troc_jour=e.grand_troc.jour if e.grand_troc else None,
         point_de_depot=get_settings().point_de_depot or None,
         transferts=[
             TransfertLecture(
