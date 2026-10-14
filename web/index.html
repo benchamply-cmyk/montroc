@@ -81,6 +81,7 @@ section.view[hidden]{display:none}
 .item .t{flex:1;min-width:0}
 .item .t b{font-weight:600;display:block}
 .item .t span{font-size:13px;color:var(--muted)}
+.item .t a{color:inherit}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:1.5px solid var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;background:var(--surface);display:inline-flex;gap:6px;align-items:center}
 .chip.open{border-style:dashed;border-color:var(--accent);color:var(--accent)}
@@ -190,6 +191,14 @@ form.stack{display:flex;flex-direction:column;gap:14px}
 .notice{font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .err{color:var(--danger)}
 .empty{color:var(--muted);font-size:15px;padding:8px 0}
+/* Annonce recopiée de Vinted ou Leboncoin */
+.troquez h2{font-size:26px}
+.troquez h2 em{font-style:normal;color:var(--mark)}
+.troquez p a{color:var(--ink);text-underline-offset:2px}
+.import{border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.import ol{margin:0;padding-left:20px;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.import ol b{color:var(--ink);font-weight:600}
+.import a{color:var(--accent);font-size:14px}
 /* Recherche libre, ouverte sans compte */
 .search{display:flex;gap:8px}
 .search input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:999px;padding:13px 18px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
@@ -251,6 +260,14 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <span class="label">Juste regarder ce qu'il y a</span>
       <div class="search"><input type="search" name="q" maxlength="100" required placeholder="Vélo, poussette, perceuse…" aria-label="Chercher un objet"><button type="submit">Chercher</button></div>
       <p class="muted" style="font-size:14px">Sans compte. Vous voyez les objets proposés en ce moment.</p>
+    </form>
+
+    <form class="card stack troquez" id="f-import-home">
+      <span class="label">Votre annonce ne part pas ?</span>
+      <h2>Troquez-<em>la.</em></h2>
+      <p class="muted" style="font-size:15px">Un objet qui attend depuis des mois sur <a href="https://www.vinted.fr" target="_blank" rel="noopener noreferrer">Vinted</a> ou <a href="https://www.leboncoin.fr" target="_blank" rel="noopener noreferrer">Leboncoin</a> ? Collez le lien de l'annonce : on vous aide à le proposer ici, sans prix, contre quelque chose qui vous servira.</p>
+      <div class="search"><input type="url" name="lien" required inputmode="url" placeholder="Lien de votre annonce" aria-label="Lien de votre annonce Vinted ou Leboncoin"><button type="submit">Troquer</button></div>
+      <p class="status" id="import-home-ok" hidden>Votre lien est gardé. Connectez-vous juste en dessous : on reprend là où vous en étiez.</p>
     </form>
 
     <form class="card stack" id="f-login" data-anon>
@@ -329,6 +346,11 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
         <details class="addobj" style="margin-top:14px">
           <summary class="btn primary">+ Proposer un objet</summary>
           <form class="stack" id="f-obj">
+            <div class="import">
+              <label class="field"><span>Déjà en vente sur Vinted ou Leboncoin ? <span class="muted" style="font-weight:400">(facultatif)</span></span>
+                <input class="input" type="url" name="annonce_origine" inputmode="url" maxlength="500" placeholder="Collez le lien de l'annonce"></label>
+              <div id="import-guide" hidden></div>
+            </div>
             <label class="photo-pick" id="photo-pick">
               <input type="file" name="photo" accept="image/*" required>
               <span id="photo-txt"><b>Ajouter une photo</b><br><span class="muted" style="font-size:13px">Obligatoire. Prenez l'objet en entier, en lumière du jour.</span></span>
@@ -414,6 +436,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
   </form>
 </dialog>
 
+<script src="annonce.js"></script>
 <script>
 /* Le site parle à l'API (api.troctroc.fr, ou localhost en développement). La session est un jeton
    gardé dans le navigateur et envoyé dans l'en-tête Authorization. */
@@ -504,7 +527,7 @@ async function verifierLien(extra={}){
   const r=await api('/auth/verifier',{method:'POST',body:{jeton:jetonLien,...extra}});
   if(r.inscription_requise){$('#signup-email').textContent=r.email;go('signup');return}
   jeton=r.jeton; store.set('troc.jeton',jeton); moi=r.utilisateur; jetonLien=null;
-  afficherSession(); await toutCharger(); go(extra.pseudo?'lists':'trades'); toast('Bienvenue '+moi.pseudo+' !');
+  afficherSession(); await toutCharger(); go(extra.pseudo?'lists':'trades'); toast('Bienvenue '+moi.pseudo+' !'); reprendreAnnonce();
 }
 $('#f-signup').onsubmit=async e=>{
   e.preventDefault();
@@ -538,15 +561,51 @@ $('#f-obj').photo.onchange=e=>{
 };
 $('#f-obj').onsubmit=async e=>{
   e.preventDefault(); const f=e.target, b=f.querySelector('button[type=submit]'); $('#obj-err').hidden=true;
+  const annonce=AnnonceAilleurs.lire(f.annonce_origine.value);
+  if(f.annonce_origine.value.trim()&&!annonce){$('#obj-err').textContent="Ce lien n'est pas une annonce Vinted ou Leboncoin. Corrigez-le ou videz le champ.";$('#obj-err').hidden=false;return}
   b.disabled=true; b.textContent='Envoi de la photo…';
   try{
     const photo=await envoyerPhoto(f.photo.files[0]); b.textContent='Publication…';
     await api('/moi/objets',{method:'POST',body:{titre:f.titre.value.trim(),categorie_slug:f.categorie_slug.value,etat:f.etat.value,
-      description:f.description.value.trim()||null,...photo}});
-    f.reset(); $('#photo-txt').innerHTML='<b>Ajouter une photo</b>'; f.closest('details').open=false;
-    toast('Objet publié'); await chargerListes(); chargerEchanges();
+      description:f.description.value.trim()||null,annonce_origine:annonce?annonce.lien:null,...photo}});
+    f.reset(); $('#photo-txt').innerHTML='<b>Ajouter une photo</b>'; $('#import-guide').hidden=true; f.closest('details').open=false;
+    toast(annonce?`Objet publié. Une fois troqué, pensez à retirer l'annonce ${annonce.site}.`:'Objet publié');
+    await chargerListes(); chargerEchanges();
   }catch(err){$('#obj-err').textContent=err.message;$('#obj-err').hidden=false}
   finally{b.disabled=false;b.textContent='Publier'}
+};
+
+/* « Votre annonce ne part pas ? Troquez-la. » : TrocTroc ne lit que le lien (voir annonce.js),
+   la personne recopie le reste elle-même. Le lien en attente survit à la connexion par e-mail. */
+function guiderAnnonce(){
+  const f=$('#f-obj'), brut=f.annonce_origine.value.trim(), a=AnnonceAilleurs.lire(brut), g=$('#import-guide');
+  g.hidden=!brut;
+  if(!brut)return;
+  if(!a){g.innerHTML=`<p class="err" style="font-size:14px">Ce lien n'est pas une annonce Vinted ou Leboncoin.</p>`;return}
+  if(a.titre&&!f.titre.value.trim())f.titre.value=a.titre;
+  if(a.categorie&&!f.categorie_slug.value&&categories[a.categorie])f.categorie_slug.value=a.categorie;
+  g.innerHTML=`<p style="font-size:14px">Annonce ${esc(a.site)} reconnue. ${a.titre||a.categorie?'On a pré-rempli ce que dit le lien, vérifiez-le.':'Recopiez-la en quelques secondes :'}</p>
+    <ol>
+      <li><b>La photo</b> : reprenez celle de votre téléphone, c'est la vôtre.</li>
+      <li><b>Le titre et la catégorie</b> : ${a.titre?'corrigez-les si besoin':'reprenez le titre de l\'annonce'}.</li>
+      <li><b>L'état</b> : obligatoire ici, choisissez-le honnêtement.</li>
+      <li><b>Pas de prix</b> : sur TrocTroc, un objet s'échange contre un objet.</li>
+    </ol>
+    <a href="${esc(a.lien)}" target="_blank" rel="noopener noreferrer">Ouvrir l'annonce pour recopier la description</a>`;
+}
+$('#f-obj').annonce_origine.addEventListener('input',guiderAnnonce);
+function reprendreAnnonce(){
+  const lien=store.get('troc.annonce'); if(!lien||!moi)return;
+  store.set('troc.annonce',null); go('lists');
+  const f=$('#f-obj'); f.closest('details').open=true; f.annonce_origine.value=lien; guiderAnnonce();
+  f.scrollIntoView({behavior:calme?'auto':'smooth',block:'start'});
+}
+$('#f-import-home').onsubmit=e=>{
+  e.preventDefault(); const a=AnnonceAilleurs.lire(e.target.lien.value);
+  if(!a){toast("Collez le lien d'une annonce Vinted ou Leboncoin.");return}
+  store.set('troc.annonce',a.lien); e.target.reset();
+  if(moi){reprendreAnnonce();return}
+  $('#import-home-ok').hidden=false; const l=$('#f-login'); l.scrollIntoView({behavior:calme?'auto':'smooth',block:'center'}); l.email.focus({preventScroll:true});
 };
 
 /* Mes listes */
@@ -556,7 +615,7 @@ async function chargerListes(){
   $('#items').innerHTML=objets.length?objets.map(o=>`
     <div class="item"><div class="thumb">${o.photo_url?`<img src="${esc(vignette(o.photo_url))}" alt="">`:''}</div>
       <div class="t"><b>${esc(o.titre)}${STATUTS[o.statut]?`<span class="pill ${o.statut==='reserve'?'res':''}">${STATUTS[o.statut]}</span>`:''}</b>
-      <span>${esc(ETATS[o.etat]||'État à préciser')} · ${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></div>
+      <span>${esc(ETATS[o.etat]||'État à préciser')} · ${esc(categories[o.categorie_slug]||o.categorie_slug)}${o.annonce_origine?` · <a href="${esc(o.annonce_origine)}" target="_blank" rel="noopener noreferrer">aussi en vente ailleurs</a>`:''}</span></div>
       ${o.statut==='disponible'?`<button class="linkbtn" data-retirer="${o.id}">Retirer</button>`:''}
       ${o.statut==='retire'&&o.photo_url?`<button class="linkbtn" data-remettre="${o.id}">Remettre</button>`:''}
     </div>`).join(''):'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>';
@@ -728,7 +787,8 @@ async function demarrer(){
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(!moi)return;
   await toutCharger();
-  if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}
+  if(store.get('troc.annonce'))reprendreAnnonce();
+  else if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}
   else if(h==='#moderation'&&moi.est_moderateur)go('mod');
 }
 demarrer();
