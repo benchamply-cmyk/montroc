@@ -5,8 +5,8 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#111318">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Troc</title>
-<meta name="description" content="Troc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.">
+<title>TrocTroc</title>
+<meta name="description" content="TrocTroc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
 <style>
@@ -38,8 +38,10 @@ p{margin:0}
 .hl{background:linear-gradient(transparent 58%,var(--mark) 58%,var(--mark) 92%,transparent 92%);padding:0 .08em}
 
 header.top{display:flex;justify-content:space-between;align-items:center;padding-block:20px 8px}
-.logo{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
-.logo svg{width:22px;height:22px}
+.logo{border:0;background:none;padding:0;color:var(--ink);font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
+.logo svg{width:24px;height:24px;transition:transform .6s cubic-bezier(.6,0,.2,1)}
+.logo:hover svg{transform:rotate(120deg)}
+.logo-2{color:var(--mark)}
 .who{font-family:var(--mono);font-size:12px;color:var(--muted)}
 
 section.view{display:flex;flex-direction:column;gap:28px;padding-block:20px}
@@ -202,7 +204,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 
 <div class="wrap">
   <header class="top">
-    <div class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="var(--accent)"/><circle cx="19.8" cy="16.5" r="2.6" fill="currentColor"/><circle cx="4.2" cy="16.5" r="2.6" fill="currentColor"/></svg>troc</div>
+    <button class="logo" type="button" data-go="home" aria-label="TrocTroc, retour à l'accueil"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset=".5" stop-color="var(--mark)"/><stop offset="1" stop-color="var(--ok)"/></linearGradient></defs><circle cx="12" cy="12" r="9" fill="none" stroke="url(#logo-g)" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="var(--accent)"/><circle cx="19.8" cy="16.5" r="2.6" fill="var(--ok)"/><circle cx="4.2" cy="16.5" r="2.6" fill="var(--mark)"/></svg><span>Troc<span class="logo-2">Troc</span></span></button>
     <span class="who" id="who"></span>
   </header>
 
@@ -212,7 +214,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <div class="hero">
       <span class="label">Pas de prix. Pas de monnaie.</span>
       <h1 aria-label="Ce qui dort chez vous est utile à quelqu'un."><span aria-hidden="true"><span class="w" style="--i:0">Ce</span> <span class="w" style="--i:1">qui</span> <span class="w" style="--i:2">dort</span> <span class="w" style="--i:3">chez</span> <span class="w" style="--i:4">vous</span> <span class="w" style="--i:5">est</span> <span class="w" style="--i:6"><span class="rot" id="rot"><span class="on">utile</span><span>précieux</span><span>cher</span></span></span> <span class="w" style="--i:7">à</span> <span class="w" style="--i:8">quelqu'un.</span></span></h1>
-      <p class="muted">Dites ce que vous avez et ce qui vous serait utile. Troc trouve l'échange, même à trois.</p>
+      <p class="muted">Dites ce que vous avez et ce qui vous serait utile. TrocTroc trouve l'échange, même à trois.</p>
     </div>
 
     <div class="loop" aria-label="Exemple de troc en chaîne à trois personnes">
@@ -249,14 +251,14 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 
     <div class="rules">
       <div><b>Sans argent</b><span>Un objet contre un objet. Jamais d'euros, jamais de points.</span></div>
-      <div><b>À plusieurs</b><span>Pas besoin de trouver la bonne personne. Troc ferme la boucle pour vous.</span></div>
+      <div><b>À plusieurs</b><span>Pas besoin de trouver la bonne personne. TrocTroc ferme la boucle pour vous.</span></div>
       <div><b>En confiance</b><span>Chacun dépose, chacun récupère. Personne ne part les mains vides.</span></div>
     </div>
 
     <ol class="steps">
       <li><div><b>J'ai</b><span class="muted">Une photo par objet. L'état est obligatoire.</span></div></li>
       <li><div><b>Ça me serait utile</b><span class="muted">Des catégories plutôt qu'un modèle exact.</span></div></li>
-      <li><div><b>Troc propose</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui.</span></div></li>
+      <li><div><b>TrocTroc propose</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui.</span></div></li>
     </ol>
   </section>
 
@@ -351,7 +353,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 
 <nav class="tabs" aria-label="Navigation">
   <div class="in" id="tabs">
-    <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Troc</button>
+    <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Accueil</button>
     <button data-go="lists"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Mes listes</button>
     <button data-go="trades"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Échanges<span class="badge" id="badge" hidden></span></button>
     <button data-go="drop"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12h16M9 8V5h6v3"/></svg>Dépôt</button>
@@ -575,8 +577,8 @@ async function chargerEchanges(){
   const aRepondre=enCours.filter(e=>e.statut==='propose'&&e.transferts.some(t=>t.receveur_id===moi.id&&t.reponse==='en_attente')).length;
   $('#badge').textContent=aRepondre; $('#badge').hidden=!aRepondre;
   $('#trades-title').textContent=aRepondre?`${aRepondre} échange${aRepondre>1?'s':''} attend${aRepondre>1?'ent':''} votre réponse`:'Vos échanges';
-  $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus Troc a de chances d\'en trouver une.</p>';
-  $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Rien pour l\'instant. Élargissez vos souhaits : Troc cherche à nouveau chaque nuit.</p>';
+  $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TrocTroc a de chances d\'en trouver une.</p>';
+  $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Rien pour l\'instant. Élargissez vos souhaits : TrocTroc cherche à nouveau chaque nuit.</p>';
   const n=boucles.length; $('#m-num').textContent=n; $('#m-bar').style.width=Math.min(100,n*10)+'%';
   $('#m-tip').textContent=n>=5?'Bel éventail. Vos chances de boucle sont élevées.':'Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.';
   afficherDepots();
@@ -588,7 +590,7 @@ $('#v-trades').addEventListener('click',async e=>{
     catch(err){toast(err.message)} chargerEchanges();}
   if(r){e.target.disabled=true;
     try{const x=await api(`/echanges/${r}/reponse`,{method:'POST',body:{accepte:!!e.target.dataset.oui}});
-      toast(x.statut==='accepte'?'Tout le monde a accepté : place au dépôt !':x.statut==='annule'?'Échange décliné. Troc cherche autre chose.':'Réponse enregistrée')}
+      toast(x.statut==='accepte'?'Tout le monde a accepté : place au dépôt !':x.statut==='annule'?'Échange décliné. TrocTroc cherche autre chose.':'Réponse enregistrée')}
     catch(err){toast(err.message)} chargerEchanges();}
 });
 

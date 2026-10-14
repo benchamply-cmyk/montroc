@@ -73,7 +73,7 @@ def _photo_cloudinary(url: str) -> str:
     cloudinary = get_settings().cloudinary
     prefixe = f"https://res.cloudinary.com/{cloudinary[0]}/image/upload/" if cloudinary else None
     if prefixe is None or not url.startswith(prefixe):
-        raise ValueError("La photo doit être envoyée depuis le site Troc.")
+        raise ValueError("La photo doit être envoyée depuis le site TrocTroc.")
     return url
 
 

@@ -37,7 +37,7 @@ services:
       - key: SMTP_MOT_DE_PASSE
         sync: false
       - key: EMAIL_EXPEDITEUR
-        value: Troc <bonjour@troctroc.fr>
+        value: TrocTroc <bonjour@troctroc.fr>
       # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary.
       - key: CLOUDINARY_URL
         sync: false

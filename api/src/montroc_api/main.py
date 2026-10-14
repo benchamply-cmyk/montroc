@@ -15,7 +15,9 @@ from .routers import auth, catalogue, echanges, moi, objets, signalements, tache
 app = FastAPI(
     title="API montroc",
     version=__version__,
-    description="Troc sans prix ni monnaie : objets disponibles, souhaits et boucles d'échange (2 ou 3 personnes).",
+    description=(
+        "TrocTroc, troc sans prix ni monnaie : objets disponibles, souhaits et boucles d'échange (2 ou 3 personnes)."
+    ),
 )
 app.add_middleware(
     CORSMiddleware,

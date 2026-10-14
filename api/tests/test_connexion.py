@@ -12,7 +12,7 @@ from montroc_api.db import engine
 def test_premiere_connexion_demande_un_pseudo(client):
     assert client.post("/auth/lien", json={"email": "Ines@Exemple.fr"}).status_code == 202
     courriel = courriels.ENVOYES[-1]
-    assert courriel.destinataire == "ines@exemple.fr" and courriel.sujet == "Votre lien de connexion à Troc"
+    assert courriel.destinataire == "ines@exemple.fr" and courriel.sujet == "Votre lien de connexion à TrocTroc"
     assert "https://troctroc.fr/#connexion=" in courriel.texte
     jeton = jeton_du_dernier_lien("ines@exemple.fr")
 

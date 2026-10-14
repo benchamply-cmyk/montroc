@@ -67,7 +67,7 @@ def _par_brevo(courriel: Courriel) -> None:
     reglages = get_settings()
     nom, adresse = parseaddr(reglages.email_expediteur)
     corps = {
-        "sender": {"name": nom or "Troc", "email": adresse},
+        "sender": {"name": nom or "TrocTroc", "email": adresse},
         "to": [{"email": courriel.destinataire}],
         "subject": courriel.sujet,
         "textContent": courriel.texte,
@@ -91,7 +91,7 @@ def _par_brevo(courriel: Courriel) -> None:
 SIGNATURE = """
 
 --
-Troc, l'échange sans prix ni monnaie
+TrocTroc, l'échange sans prix ni monnaie
 {site}
 """
 
@@ -125,8 +125,9 @@ def _oublier(session: Session) -> None:
 def lien_magique(email: str, lien: str) -> None:
     envoyer(
         email,
-        "Votre lien de connexion à Troc",
-        f"Bonjour,\n\nPour vous connecter à Troc, ouvrez ce lien (valable 20 minutes, une seule fois) :\n\n{lien}\n\n"
+        "Votre lien de connexion à TrocTroc",
+        "Bonjour,\n\nPour vous connecter à TrocTroc, ouvrez ce lien (valable 20 minutes, une seule fois) :"
+        f"\n\n{lien}\n\n"
         "Si vous n'avez rien demandé, ignorez simplement cet e-mail : personne ne peut se connecter sans ce lien.",
     )
 
@@ -155,7 +156,7 @@ def echange_accepte(email: str, pseudo: str, donne: str, code: str, point_de_dep
         email,
         "C'est oui pour tout le monde : à vous de déposer",
         f"Bonjour {pseudo},\n\nTout le monde a accepté l'échange. Déposez « {donne} » dans les 7 jours, emballé et "
-        f"marqué du code {code}, puis indiquez-le sur Troc.\n\n{lieu}Rien n'est remis tant que tout le monde n'a "
+        f"marqué du code {code}, puis indiquez-le sur TrocTroc.\n\n{lieu}Rien n'est remis tant que tout le monde n'a "
         f"pas déposé.\n\nVoir l'échange : {lien}",
     )
 
@@ -179,7 +180,7 @@ def echange_annule(email: str, pseudo: str, raison: str, lien: str) -> None:
     envoyer(
         email,
         "Échange annulé",
-        f"Bonjour {pseudo},\n\n{raison} Vos objets redeviennent disponibles et Troc cherche déjà d'autres "
+        f"Bonjour {pseudo},\n\n{raison} Vos objets redeviennent disponibles et TrocTroc cherche déjà d'autres "
         f"échanges.\n\n{lien}",
     )
 
