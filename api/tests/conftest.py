@@ -77,7 +77,7 @@ def creer(client):
     """Petits raccourcis pour peupler la base via l'API, connexion par lien magique comprise."""
 
     class Fabrique:
-        def utilisateur(self, pseudo, zone="Lyon", email=None) -> Compte:
+        def utilisateur(self, pseudo, zone="Marseille", email=None) -> Compte:
             email = email or f"{pseudo}@exemple.fr"
             assert client.post("/auth/lien", json={"email": email}).status_code == 202
             r = client.post(

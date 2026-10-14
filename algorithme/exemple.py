@@ -1,4 +1,4 @@
-"""Exemple : un petit groupe de parents à Lyon qui échangent des affaires d'enfants.
+"""Exemple : un petit groupe de parents à Marseille qui échangent des affaires d'enfants.
 
 Lancer : python3 exemple.py
 """
@@ -6,18 +6,18 @@ from troc_echanges import Marche, Souhait, boucles_autour, math_trade, remplacan
 
 m = Marche(p_acceptation=0.7, p_auto=0.95)
 
-m.ajouter_utilisateur("Alice", [Souhait(categorie="siege-auto-1-4", acceptation_auto=True)], zone="Lyon")
-m.ajouter_utilisateur("Bruno", [Souhait(categorie="velo-enfant"), Souhait(categorie="livres", rang=2)], zone="Lyon")
-m.ajouter_utilisateur("Chloé", [Souhait(categorie="poussette")], zone="Lyon")
-m.ajouter_utilisateur("David", [Souhait(categorie="lit-parapluie"), Souhait(categorie="poussette", rang=2)], zone="Lyon")
-m.ajouter_utilisateur("Emma", [Souhait(categorie="vetements-2ans")], zone="Lyon")
-m.ajouter_utilisateur("Farid", [Souhait(categorie="jeux-societe")], zone="Lyon")
-m.ajouter_utilisateur("Léa", [Souhait(categorie="poussette")], zone="Lyon")
+m.ajouter_utilisateur("Alice", [Souhait(categorie="siege-auto-1-4", acceptation_auto=True)], zone="Marseille")
+m.ajouter_utilisateur("Bruno", [Souhait(categorie="velo-enfant"), Souhait(categorie="livres", rang=2)], zone="Marseille")
+m.ajouter_utilisateur("Chloé", [Souhait(categorie="poussette")], zone="Marseille")
+m.ajouter_utilisateur("David", [Souhait(categorie="lit-parapluie"), Souhait(categorie="poussette", rang=2)], zone="Marseille")
+m.ajouter_utilisateur("Emma", [Souhait(categorie="vetements-2ans")], zone="Marseille")
+m.ajouter_utilisateur("Farid", [Souhait(categorie="jeux-societe")], zone="Marseille")
+m.ajouter_utilisateur("Léa", [Souhait(categorie="poussette")], zone="Marseille")
 # Quatre voisins qui ne peuvent échanger qu'en boucle de 4
-m.ajouter_utilisateur("Hugo", [Souhait(categorie="puzzle")], zone="Lyon")
-m.ajouter_utilisateur("Inès", [Souhait(categorie="doudou")], zone="Lyon")
-m.ajouter_utilisateur("Jules", [Souhait(categorie="tricycle")], zone="Lyon")
-m.ajouter_utilisateur("Karim", [Souhait(categorie="trottinette")], zone="Lyon")
+m.ajouter_utilisateur("Hugo", [Souhait(categorie="puzzle")], zone="Marseille")
+m.ajouter_utilisateur("Inès", [Souhait(categorie="doudou")], zone="Marseille")
+m.ajouter_utilisateur("Jules", [Souhait(categorie="tricycle")], zone="Marseille")
+m.ajouter_utilisateur("Karim", [Souhait(categorie="trottinette")], zone="Marseille")
 m.ajouter_utilisateur("Gaëlle", [Souhait(categorie="poussette")], zone="Marseille")  # autre ville
 
 m.ajouter_objet("p1", "Alice", "poussette", "Poussette Yoyo")

@@ -19,7 +19,7 @@ def test_premiere_connexion_demande_un_pseudo(client):
     r = client.post("/auth/verifier", json={"jeton": jeton}).json()
     assert r == {"inscription_requise": True, "email": "ines@exemple.fr", "jeton": None, "utilisateur": None}
 
-    r = client.post("/auth/verifier", json={"jeton": jeton, "pseudo": "Inès", "zone": "Lyon"})
+    r = client.post("/auth/verifier", json={"jeton": jeton, "pseudo": "Inès", "zone": "Marseille"})
     assert r.status_code == 200
     corps = r.json()
     assert corps["utilisateur"]["pseudo"] == "Inès" and not corps["utilisateur"]["est_moderateur"]

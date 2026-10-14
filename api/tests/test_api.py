@@ -66,7 +66,7 @@ def test_souhait_invalide(client, creer):
 
 
 def test_filtrer_objets(client, creer):
-    a = creer.utilisateur("alice", zone="Lyon")
+    a = creer.utilisateur("alice", zone="Marseille")
     b = creer.utilisateur("bruno", zone="Paris")
     creer.objet(a, "velo")
     creer.objet(b, "velo")
