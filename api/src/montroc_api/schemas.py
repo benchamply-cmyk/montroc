@@ -1,7 +1,7 @@
 """Formats d'entrée et de sortie de l'API (validation Pydantic)."""
 
 import re
-from datetime import datetime
+from datetime import date, datetime
 from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
