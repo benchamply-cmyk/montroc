@@ -36,6 +36,25 @@ def test_photo_et_etat_obligatoires(client, creer):
     assert r.status_code == 201 and r.json()["photo_url"] == PHOTO and r.json()["etat"] == "tres_bon"
 
 
+def test_objet_recopie_d_une_annonce(client, creer):
+    """Le lien Vinted ou Leboncoin est gardé, nettoyé, et visible du seul propriétaire."""
+    alice = creer.utilisateur("alice")
+    base = {"categorie_slug": "velo", "titre": "Vélo", "etat": "bon", "photo_url": PHOTO}
+    mauvais_liens = ("https://ebay.fr/itm/1", "https://www.vinted.fr/", "javascript:alert(1)", "vinted.fr/items/1")
+    for mauvais in mauvais_liens:
+        r = client.post("/moi/objets", json={**base, "annonce_origine": mauvais}, headers=alice.headers)
+        assert r.status_code == 422, mauvais
+    lien = "https://www.vinted.fr/items/123-velo-enfant?referrer=catalog#photos"
+    r = client.post("/moi/objets", json={**base, "annonce_origine": lien}, headers=alice.headers)
+    assert r.status_code == 201 and r.json()["annonce_origine"] == "https://www.vinted.fr/items/123-velo-enfant"
+    lbc = {**base, "annonce_origine": "https://www.leboncoin.fr/ad/velos/2712345678"}
+    assert client.post("/moi/objets", json=lbc, headers=alice.headers).status_code == 201
+    sans = client.post("/moi/objets", json={**base, "annonce_origine": " "}, headers=alice.headers)
+    assert sans.status_code == 201 and sans.json()["annonce_origine"] is None
+    assert len([o for o in client.get("/moi/objets", headers=alice.headers).json() if o["annonce_origine"]]) == 2
+    assert all("annonce_origine" not in o for o in client.get("/objets").json())
+
+
 def test_signature_cloudinary(client, creer):
     alice = creer.utilisateur("alice")
     s = client.get("/moi/photos/signature", headers=alice.headers).json()

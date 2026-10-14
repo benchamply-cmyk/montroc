@@ -147,6 +147,8 @@ class Objet(Horodatage, Base):
     # Photo hébergée chez Cloudinary : l'adresse publique et l'identifiant (pour la supprimer).
     photo_url: Mapped[str | None] = mapped_column(String(500))
     photo_id: Mapped[str | None] = mapped_column(String(200))
+    # Annonce Vinted ou Leboncoin d'où l'objet a été recopié à la main (référence privée du propriétaire).
+    annonce_origine: Mapped[str | None] = mapped_column(String(500))
     statut: Mapped[StatutObjet] = mapped_column(
         _enum(StatutObjet, "statut_objet"),
         default=StatutObjet.disponible,
