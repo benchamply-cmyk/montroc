@@ -55,6 +55,7 @@ Les boucles ne sont plus proposées au fil de l'eau : chaque **dimanche à 18 h 
 
 - GitHub Actions appelle `/taches/grand-troc` le dimanche à 16 h 07 et 17 h 07 UTC (heure d'été / d'hiver) ; l'API ne lance rien avant 18 h à Paris, ni deux fois le même dimanche.
 - Pour le lancer à la main (par exemple pour un premier essai) : **Actions → Tâches planifiées → Run workflow → grand-troc**. Il a lieu tout de suite, une seule fois par jour.
+- **SMS** : les membres qui ont donné leur portable (facultatif, à l'inscription ou dans « Mon compte ») reçoivent en plus un SMS, un seul par personne et par Grand Troc. Il passe par la même clé Brevo que les e-mails, mais il faut **acheter des crédits SMS** dans Brevo (*Mon plan → SMS*). Sans crédits, l'e-mail part quand même et le refus est écrit dans le journal Render. L'expéditeur affiché est « TrocTroc » (variable `SMS_EXPEDITEUR`, 11 caractères au plus).
 - Les « boucles possibles » restent visibles dans « Échanges » comme un aperçu de dimanche. Pour permettre aussi de proposer une boucle tout de suite, comme avant, ajouter dans Render `ECHANGES_A_LA_DEMANDE=true`.
 
 1. GitHub → dépôt **montroc** → **Settings → Secrets and variables → Actions → New repository secret**.

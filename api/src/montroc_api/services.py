@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session, selectinload
 from troc_echanges import Boucle, Marche, boucles_autour, math_trade
 from troc_echanges import Souhait as SouhaitMoteur
 
-from . import courriels
+from . import courriels, sms
 from . import models as m
 from .config import get_settings
 
@@ -124,6 +124,11 @@ def proposer(
                     lien_echange(echange),
                     grand_troc is not None,
                 )
+                # Au Grand Troc, un seul SMS par personne pour toutes ses boucles : envoyé par lancer_grand_troc.
+                if grand_troc is None and t.receveur.telephone:
+                    courriels.apres_validation(
+                        session, sms.boucle_proposee, t.receveur.telephone, 1, lien_echange(echange), False
+                    )
     return echange
 
 
@@ -197,7 +202,22 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
     session.add(grand_troc)
     session.flush()
     echanges = [proposer(session, b, grand_troc=grand_troc) for b in solution.boucles]
+    _sms_du_grand_troc(session, echanges)
     return grand_troc, echanges, True, f"{len(echanges)} boucle(s) proposée(s), {solution.nb_objets_echanges} objets."
+
+
+def _sms_du_grand_troc(session: Session, echanges: list[m.Echange]) -> None:
+    """Un SMS par personne qui a au moins une réponse à donner, avec le nombre d'échanges et un lien."""
+    a_prevenir: dict[int, tuple[m.Utilisateur, list[m.Echange]]] = {}
+    for echange in echanges:
+        if echange.statut != m.StatutEchange.propose:
+            continue
+        for t in echange.transferts:
+            if t.reponse == m.Reponse.en_attente and t.receveur.telephone:
+                a_prevenir.setdefault(t.receveur_id, (t.receveur, []))[1].append(echange)
+    for utilisateur, siens in a_prevenir.values():
+        lien = lien_echange(siens[0]) if len(siens) == 1 else f"{get_settings().site_url}/#echanges"
+        courriels.apres_validation(session, sms.boucle_proposee, utilisateur.telephone, len(siens), lien, True)
 
 
 def _transfert_du_donneur(echange: m.Echange, utilisateur_id: int) -> m.Transfert:

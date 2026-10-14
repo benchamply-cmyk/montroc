@@ -121,6 +121,9 @@ class Utilisateur(Horodatage, Base):
     email: Mapped[str] = mapped_column(String(254))
     pseudo: Mapped[str] = mapped_column(String(40), unique=True)
     zone: Mapped[str | None] = mapped_column(String(80))  # ville au lancement
+    # Portable au format international (+33612345678), facultatif : SMS quand une boucle est proposée.
+    # Jamais montré aux autres membres.
+    telephone: Mapped[str | None] = mapped_column(String(16))
     fiabilite: Mapped[float] = mapped_column(Float, default=1.0, server_default="1")
     # Compte suspendu par la modération : plus de connexion, objets retirés des échanges.
     suspendu_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

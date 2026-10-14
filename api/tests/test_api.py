@@ -5,7 +5,7 @@ from datetime import UTC, datetime, timedelta
 from conftest import PHOTO
 from sqlalchemy import text
 
-from montroc_api import courriels, services
+from montroc_api import courriels, services, sms
 from montroc_api.config import get_settings
 from montroc_api.db import engine
 
@@ -264,6 +264,49 @@ def test_grand_troc_force_et_depots_dans_la_semaine(client, creer, monkeypatch):
     assert echange["statut"] == "accepte"
     assert datetime.fromisoformat(echange["expire_le"]) == datetime(2026, 10, 21, 12, tzinfo=services.PARIS)
     assert "avant mercredi 21/10 à 12 h" in courriels.ENVOYES[-1].texte
+
+
+def test_sms_quand_le_grand_troc_propose(client, creer, monkeypatch):
+    # Alice (avec portable) est dans deux boucles, Bruno (avec portable) dans une, les autres sans numéro.
+    a = creer.utilisateur("alice", telephone="06 12 34 56 78")
+    b = creer.utilisateur("bruno", telephone="+33 7 11 22 33 44")
+    c, d = creer.utilisateur("chloe"), creer.utilisateur("david")
+    creer.objet(a, "poussette")
+    creer.objet(a, "livres")
+    creer.objet(b, "velo")
+    creer.objet(c, "siege-auto")
+    creer.objet(d, "jouets")
+    creer.souhait(a, "velo")
+    creer.souhait(b, "poussette")
+    creer.souhait(a, "jouets")
+    creer.souhait(d, "livres")
+    creer.souhait(c, "jouets")  # Chloé ne boucle avec personne
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 5))
+    r = client.post("/taches/grand-troc", headers=TACHES).json()
+    assert len(r["echanges"]) == 2
+    envoyes = {x.numero: x.texte for x in sms.ENVOYES}
+    assert set(envoyes) == {"+33612345678", "+33711223344"}
+    assert envoyes["+33612345678"].startswith("Le Grand Troc vous propose 2 échanges.")
+    assert envoyes["+33612345678"].endswith("/#echanges")
+    assert "un échange" in envoyes["+33711223344"] and "#echange-" in envoyes["+33711223344"]
+
+
+def test_telephone_a_l_inscription_et_dans_le_compte(client, creer):
+    a = creer.utilisateur("alice", telephone="0033 6 12 34 56 78")
+    assert client.get("/moi", headers=a.headers).json()["telephone"] == "+33612345678"
+    # Jamais visible des autres.
+    assert "telephone" not in client.get(f"/utilisateurs/{a.id}").json()
+    r = client.patch("/moi", json={"telephone": "12"}, headers=a.headers)
+    assert r.status_code == 422
+    assert client.patch("/moi", json={"telephone": "07.98.76.54.32"}, headers=a.headers).json()["telephone"] == (
+        "+33798765432"
+    )
+    assert client.patch("/moi", json={"telephone": ""}, headers=a.headers).json()["telephone"] is None
+    # Boucle proposée à la demande par Alice (sans numéro) : SMS pour Bruno seulement, Chloé n'a que l'e-mail.
+    creer.utilisateur("bruno", telephone="06 00 00 00 01")
+    creer.echange_abc()
+    assert [x.numero for x in sms.ENVOYES] == ["+33600000001"]
+    assert sms.ENVOYES[0].texte.startswith("TrocTroc vous propose un échange.")
 
 
 def test_echanges_a_la_demande_desactives_par_defaut(client, creer, monkeypatch):

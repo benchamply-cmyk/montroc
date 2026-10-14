@@ -319,7 +319,8 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <form class="stack" id="f-signup">
       <label class="field"><span>Pseudo</span><input class="input" name="pseudo" required minlength="2" maxlength="40" autocomplete="nickname"></label>
       <label class="field"><span>Ville</span><input class="input" name="zone" maxlength="80" placeholder="Marseille" autocomplete="address-level2"></label>
-      <p class="muted" style="font-size:14px">Votre pseudo et votre ville sont visibles des personnes avec qui vous échangez. Votre e-mail ne l'est jamais.</p>
+      <label class="field"><span>Téléphone portable (facultatif)</span><input class="input" type="tel" name="telephone" maxlength="30" placeholder="06 12 34 56 78" autocomplete="tel"></label>
+      <p class="muted" style="font-size:14px">Avec votre portable, vous recevez un SMS en plus de l'e-mail quand le Grand Troc vous propose un échange : rien d'autre. Votre pseudo et votre ville sont visibles des personnes avec qui vous échangez. Votre e-mail et votre téléphone ne le sont jamais.</p>
       <button class="cta" type="submit">Créer mon compte</button>
     </form>
   </section>
@@ -373,6 +374,10 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <div class="card">
       <span class="label">Mon compte</span>
       <p id="account-txt"></p>
+      <form class="stack" id="f-phone">
+        <label class="field"><span>Portable pour les SMS du Grand Troc (facultatif)</span><input class="input" type="tel" name="telephone" maxlength="30" placeholder="06 12 34 56 78" autocomplete="tel"></label>
+        <div class="btns"><button class="btn" type="submit">Enregistrer le numéro</button></div>
+      </form>
       <div class="btns"><button class="btn" id="logout">Se déconnecter</button><button class="btn" id="delete-account">Supprimer mon compte</button></div>
     </div>
   </section>
@@ -506,7 +511,7 @@ function afficherSession(){
   $$('[data-anon]').forEach(x=>x.hidden=!!moi); $$('[data-auth]').forEach(x=>x.hidden=!moi);
   $('#who').textContent=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
   $('#tab-mod').hidden=!(moi&&moi.est_moderateur); $('#tabs').classList.toggle('n5',!!(moi&&moi.est_moderateur));
-  if(moi)$('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`;
+  if(moi){$('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`; $('#f-phone').telephone.value=moi.telephone||''}
 }
 function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);afficherSession();go('home')}
 
@@ -527,7 +532,11 @@ async function verifierLien(extra={}){
 }
 $('#f-signup').onsubmit=async e=>{
   e.preventDefault();
-  try{await verifierLien({pseudo:e.target.pseudo.value.trim(),zone:e.target.zone.value.trim()||null})}catch(err){toast(err.message)}
+  try{await verifierLien({pseudo:e.target.pseudo.value.trim(),zone:e.target.zone.value.trim()||null,telephone:e.target.telephone.value.trim()||null})}catch(err){toast(err.message)}
+};
+$('#f-phone').onsubmit=async e=>{
+  e.preventDefault(); const t=e.target.telephone.value.trim();
+  try{moi=await api('/moi',{method:'PATCH',body:{telephone:t||null}});afficherSession();toast(t?'Numéro enregistré : vous recevrez un SMS au prochain Grand Troc':'Numéro retiré : plus de SMS')}catch(err){toast(err.message)}
 };
 $('#logout').onclick=async()=>{try{await api('/auth/deconnexion',{method:'POST'})}catch{} deconnecte()};
 $('#delete-account').onclick=async()=>{
@@ -777,6 +786,7 @@ async function demarrer(){
   if(!moi)return;
   await gt; await toutCharger();
   if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}
+  else if(h==='#echanges')go('trades');
   else if(h==='#moderation'&&moi.est_moderateur)go('mod');
 }
 demarrer();

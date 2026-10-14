@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     smtp_utilisateur: str = ""
     smtp_mot_de_passe: str = ""
     email_expediteur: str = "TrocTroc <bonjour@troctroc.fr>"
+    # Nom affiché comme expéditeur des SMS (Brevo, 11 caractères au plus, lettres et chiffres).
+    sms_expediteur: str = "TrocTroc"
 
     # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary (cloudinary://clé:secret@nom).
     cloudinary_url: str = ""

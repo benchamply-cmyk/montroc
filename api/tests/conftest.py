@@ -31,7 +31,7 @@ from alembic.config import Config  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import text  # noqa: E402
 
-from montroc_api import courriels  # noqa: E402
+from montroc_api import courriels, sms  # noqa: E402
 from montroc_api.db import engine  # noqa: E402
 from montroc_api.main import app  # noqa: E402
 
@@ -51,6 +51,7 @@ def schema():
 @pytest.fixture(autouse=True)
 def base_vide():
     courriels.ENVOYES.clear()
+    sms.ENVOYES.clear()
     yield
     with engine.begin() as conn:
         tables = (
@@ -83,11 +84,12 @@ def creer(client):
     """Petits raccourcis pour peupler la base via l'API, connexion par lien magique comprise."""
 
     class Fabrique:
-        def utilisateur(self, pseudo, zone="Marseille", email=None) -> Compte:
+        def utilisateur(self, pseudo, zone="Marseille", email=None, telephone=None) -> Compte:
             email = email or f"{pseudo}@exemple.fr"
             assert client.post("/auth/lien", json={"email": email}).status_code == 202
             r = client.post(
-                "/auth/verifier", json={"jeton": jeton_du_dernier_lien(email), "pseudo": pseudo, "zone": zone}
+                "/auth/verifier",
+                json={"jeton": jeton_du_dernier_lien(email), "pseudo": pseudo, "zone": zone, "telephone": telephone},
             )
             assert r.status_code == 200, r.text
             corps = r.json()

@@ -11,7 +11,7 @@ make tests
 |---|---|
 | `GET /sante` | l'API et la base répondent |
 | `POST /auth/lien`, `POST /auth/verifier`, `POST /auth/deconnexion` | connexion par lien magique (e-mail), session |
-| `GET/PATCH/DELETE /moi` | mon profil, suppression du compte |
+| `GET/PATCH/DELETE /moi` | mon profil (dont le portable facultatif pour les SMS), suppression du compte |
 | `GET/POST /moi/objets`, `PATCH /moi/objets/{id}`, `GET /moi/photos/signature` | mes objets (photo et état obligatoires) |
 | `GET/POST /moi/souhaits`, `DELETE /moi/souhaits/{id}` | ce qui me serait utile |
 | `GET /moi/boucles` | « Mes échanges possibles » (boucles de 2 et 3) |

@@ -1,5 +1,6 @@
 """Formats d'entrée et de sortie de l'API (validation Pydantic)."""
 
+import re
 from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
@@ -28,11 +29,36 @@ class DemandeLien(BaseModel):
     email: EmailStr
 
 
-class Verification(BaseModel):
+def normaliser_telephone(valeur: str | None) -> str | None:
+    """« 06 12 34 56 78 », « +33 6 12… » ou « 0033 6… » → « +33612345678 ». Vide → None."""
+    if valeur is None:
+        return None
+    numero = re.sub(r"[\s.\-()]", "", valeur)
+    if not numero:
+        return None
+    if numero.startswith("00"):
+        numero = "+" + numero[2:]
+    elif re.fullmatch(r"0[1-9]\d{8}", numero):
+        numero = "+33" + numero[1:]
+    if not re.fullmatch(r"\+[1-9]\d{7,14}", numero):
+        raise ValueError("Numéro de téléphone invalide : par exemple 06 12 34 56 78.")
+    return numero
+
+
+class AvecTelephone(BaseModel):
+    @field_validator("telephone", mode="before", check_fields=False)
+    @classmethod
+    def _telephone(cls, v):
+        return normaliser_telephone(v)
+
+
+class Verification(AvecTelephone):
     jeton: str = Field(min_length=20, max_length=100)
     # À fournir seulement à la première connexion, quand l'API répond « inscription_requise ».
     pseudo: str | None = Field(default=None, min_length=2, max_length=40)
     zone: str | None = Field(default=None, max_length=80, examples=["Marseille"])
+    # Facultatif : pour recevoir un SMS quand le Grand Troc vous propose un échange.
+    telephone: str | None = Field(default=None, max_length=30, examples=["06 12 34 56 78"])
 
 
 class Moi(Lecture):
@@ -40,14 +66,17 @@ class Moi(Lecture):
     email: str
     pseudo: str
     zone: str | None
+    telephone: str | None = None
     fiabilite: float
     cree_le: datetime
     est_moderateur: bool = False
 
 
-class MoiModification(BaseModel):
+class MoiModification(AvecTelephone):
     pseudo: str | None = Field(default=None, min_length=2, max_length=40)
     zone: str | None = Field(default=None, max_length=80)
+    # null ou "" pour ne plus recevoir de SMS.
+    telephone: str | None = Field(default=None, max_length=30)
 
 
 class ResultatConnexion(BaseModel):
