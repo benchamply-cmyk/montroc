@@ -194,6 +194,7 @@ form.stack{display:flex;flex-direction:column;gap:14px}
 /* Annonce recopiée de Vinted ou Leboncoin */
 .troquez h2{font-size:26px}
 .troquez h2 em{font-style:normal;color:var(--mark)}
+.troquez p a{color:var(--ink);text-underline-offset:2px}
 .import{border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
 .import ol{margin:0;padding-left:20px;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 .import ol b{color:var(--ink);font-weight:600}
@@ -264,7 +265,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <form class="card stack troquez" id="f-import-home">
       <span class="label">Votre annonce ne part pas ?</span>
       <h2>Troquez-<em>la.</em></h2>
-      <p class="muted" style="font-size:15px">Un objet qui attend depuis des mois sur Vinted ou Leboncoin ? Collez le lien de l'annonce : on vous aide à le proposer ici, sans prix, contre quelque chose qui vous servira.</p>
+      <p class="muted" style="font-size:15px">Un objet qui attend depuis des mois sur <a href="https://www.vinted.fr" target="_blank" rel="noopener noreferrer">Vinted</a> ou <a href="https://www.leboncoin.fr" target="_blank" rel="noopener noreferrer">Leboncoin</a> ? Collez le lien de l'annonce : on vous aide à le proposer ici, sans prix, contre quelque chose qui vous servira.</p>
       <div class="search"><input type="url" name="lien" required inputmode="url" placeholder="Lien de votre annonce" aria-label="Lien de votre annonce Vinted ou Leboncoin"><button type="submit">Troquer</button></div>
       <p class="status" id="import-home-ok" hidden>Votre lien est gardé. Connectez-vous juste en dessous : on reprend là où vous en étiez.</p>
     </form>
