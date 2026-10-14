@@ -19,7 +19,7 @@ make tests
 | `POST /echanges`, `GET /echanges/{id}` | proposer une de mes boucles (réserve les objets, prévient les autres) |
 | `POST /echanges/{id}/reponse` | accepter / refuser (48 h) |
 | `POST /echanges/{id}/depot` | j'ai déposé mon objet |
-| `GET /categories`, `GET /objets`, `GET /objets/{id}`, `GET /utilisateurs/{id}` | lecture publique |
+| `GET /categories`, `GET /objets`, `GET /objets/{id}`, `GET /utilisateurs/{id}` | lecture publique, sans compte (`GET /objets?q=vélo enfant` : recherche libre dans le titre, la description et la catégorie) |
 | `POST /signalements` | signaler un objet ou un compte (avec ou sans compte) |
 | `GET /moderation/signalements`, `POST /moderation/signalements/{id}/decision`, `POST /categories` | modération (comptes listés dans `MODERATEURS`) |
 | `POST /taches/horaires`, `POST /taches/math-trade` | tâches planifiées (en-tête `X-Taches-Secret`) |

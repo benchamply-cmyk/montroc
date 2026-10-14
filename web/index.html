@@ -190,6 +190,17 @@ form.stack{display:flex;flex-direction:column;gap:14px}
 .notice{font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .err{color:var(--danger)}
 .empty{color:var(--muted);font-size:15px;padding:8px 0}
+/* Recherche libre, ouverte sans compte */
+.search{display:flex;gap:8px}
+.search input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:999px;padding:13px 18px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
+.search input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.search button{border:0;border-radius:999px;background:var(--mark);color:#111318;padding:12px 20px;font-weight:600;font-size:16px}
+.results{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.result{display:flex;flex-direction:column;gap:8px;min-width:0}
+.result .ph{aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+.result .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.result b{font-weight:600;overflow-wrap:anywhere}
+.result span{font-size:13px;color:var(--muted)}
 .code{white-space:nowrap;font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:.06em}
 details.addobj summary{cursor:pointer;list-style:none;display:inline-flex}
 details.addobj summary::-webkit-details-marker{display:none}
@@ -236,6 +247,12 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <div class="marq rev"><div class="track"></div><div class="track" aria-hidden="true"></div></div>
     </div>
 
+    <form class="card stack" id="f-search-home" role="search">
+      <span class="label">Juste regarder ce qu'il y a</span>
+      <div class="search"><input type="search" name="q" maxlength="100" required placeholder="Vélo, poussette, perceuse…" aria-label="Chercher un objet"><button type="submit">Chercher</button></div>
+      <p class="muted" style="font-size:14px">Sans compte. Vous voyez les objets proposés en ce moment.</p>
+    </form>
+
     <form class="card stack" id="f-login" data-anon>
       <span class="label">Se connecter ou créer un compte</span>
       <label class="field"><span>Votre e-mail</span><input class="input" type="email" name="email" required autocomplete="email" placeholder="vous@exemple.fr"></label>
@@ -260,6 +277,26 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <li><div><b>Ça me serait utile</b><span class="muted">Des catégories plutôt qu'un modèle exact.</span></div></li>
       <li><div><b>TrocTroc propose</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui.</span></div></li>
     </ol>
+  </section>
+
+  <!-- RECHERCHE (sans compte) -->
+  <section class="view" id="v-search" hidden>
+    <div class="hero"><span class="label">Recherche</span><h2 id="search-title">Ce qui est proposé</h2></div>
+    <form class="search" id="f-search" role="search">
+      <input type="search" name="q" maxlength="100" placeholder="Chercher un objet" aria-label="Chercher un objet"><button type="submit">Chercher</button>
+    </form>
+    <p class="muted" id="search-count" aria-live="polite"></p>
+    <div class="results" id="results"></div>
+    <div class="card stack" data-anon>
+      <b>Un objet vous plaît ?</b>
+      <span class="muted">Créez un compte gratuit, ajoutez ce que vous pouvez donner : TrocTroc vous propose l'échange, même à trois.</span>
+      <button class="cta" type="button" id="search-signup">Créer un compte pour troquer</button>
+    </div>
+    <div class="card stack" data-auth hidden>
+      <b>Un objet vous plaît ?</b>
+      <span class="muted">Ajoutez sa catégorie à vos souhaits : TrocTroc cherchera la boucle qui vous l'apporte.</span>
+      <button class="cta" type="button" data-go="lists">Mes listes</button>
+    </div>
   </section>
 
   <!-- PREMIÈRE CONNEXION -->
@@ -405,7 +442,7 @@ async function api(chemin,{method='GET',body}={}){
 }
 
 function go(v){
-  if(!moi&&!['home','signup'].includes(v))v='home';
+  if(!moi&&!['home','signup','search'].includes(v))v='home';
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
   $$('nav.tabs button').forEach(b=>{b.dataset.go===v?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   window.scrollTo(0,0);
@@ -652,6 +689,26 @@ $('#reports').onclick=async e=>{
     toast('Décision enregistrée et envoyée');chargerSignalements()}catch(err){toast(err.message)}
 };
 
+/* Recherche libre : aucun compte nécessaire, l'API ne renvoie que les objets en ligne. */
+async function chercher(q){
+  q=q.trim(); if(!q)return;
+  $('#f-search').q.value=q; $('#search-title').textContent=`« ${q} »`;
+  $('#search-count').textContent='Recherche…'; $('#results').innerHTML='';
+  if(location.hash!=='#recherche='+encodeURIComponent(q))history.replaceState(null,'','#recherche='+encodeURIComponent(q));
+  go('search');
+  try{
+    const objets=await api('/objets?q='+encodeURIComponent(q));
+    $('#search-count').textContent=objets.length?`${objets.length>=200?'Plus de 200':objets.length} objet${objets.length>1?'s':''} disponible${objets.length>1?'s':''}`:'';
+    $('#results').innerHTML=objets.length?objets.map(o=>`
+      <article class="result"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}</div>
+        <b>${esc(o.titre)}</b><span>${esc(ETATS[o.etat]||'')}${o.etat?' · ':''}${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></article>`).join('')
+      :`<p class="empty">Rien pour « ${esc(q)} » pour l'instant. Essayez un mot plus large (« vélo » plutôt qu'un modèle), ou créez un compte : votre souhait sera servi dès qu'un objet arrive.</p>`;
+  }catch(err){$('#search-count').textContent='';toast(err.message)}
+}
+$('#f-search-home').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value)};
+$('#f-search').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value)};
+$('#search-signup').onclick=()=>{history.replaceState(null,'',location.pathname);go('home');const f=$('#f-login');f.scrollIntoView({behavior:calme?'auto':'smooth',block:'center'});f.email.focus({preventScroll:true})};
+
 /* Démarrage */
 async function toutCharger(){
   try{await Promise.all([chargerListes(),chargerEchanges()])}catch(err){toast(err.message)}
@@ -668,6 +725,7 @@ async function demarrer(){
   }
   if(jeton){try{moi=await api('/moi')}catch{moi=null}}
   afficherSession();
+  if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(!moi)return;
   await toutCharger();
   if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}

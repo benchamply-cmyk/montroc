@@ -75,6 +75,50 @@ def test_filtrer_objets(client, creer):
     assert len(client.get("/objets", params={"zone": "Paris"}).json()) == 2
 
 
+def test_recherche_libre_sans_compte(client, creer):
+    a = creer.utilisateur("alice")
+    b = creer.utilisateur("bruno")
+    velo = creer.objet(a, "velo", titre="Vélo enfant 16 pouces")
+    creer.objet(a, "livres", titre="Lot de BD")
+    r = client.post(
+        "/moi/objets",
+        json={
+            "categorie_slug": "livres",
+            "titre": "Romans",
+            "description": "Trois ÉLÉPHANTS et un 50% polar",
+            "etat": "bon",
+            "photo_url": PHOTO,
+        },
+        headers=b.headers,
+    )
+    romans = r.json()["id"]
+
+    def chercher(q):
+        r = client.get("/objets", params={"q": q})
+        assert r.status_code == 200, r.text
+        return [o["id"] for o in r.json()]
+
+    # Sans en-tête d'authentification, sans accents ni majuscules, dans le titre ou la description.
+    assert chercher("velo") == [velo]
+    assert chercher("VÉLO enfant") == [velo]
+    assert chercher("elephants") == [romans]
+    assert chercher("velo bd") == []  # tous les mots doivent correspondre
+    assert chercher("50%") == [romans] and chercher("%") == [romans]  # pas de joker
+    assert chercher("   ") == chercher("") and len(chercher("")) == 3
+    # Le libellé de la catégorie compte aussi.
+    libelle = client.get("/categories").json()
+    livres = next(c["libelle"] for c in libelle if c["slug"] == "livres")
+    assert set(chercher(livres.split()[0])) >= {romans}
+    assert "email" not in client.get("/objets", params={"q": "velo"}).json()[0]
+    # Retiré ou compte suspendu : plus trouvable.
+    client.patch(f"/moi/objets/{velo}", json={"statut": "retire"}, headers=a.headers)
+    assert chercher("velo") == []
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE utilisateurs SET suspendu_le = now() WHERE pseudo = 'bruno'"))
+    assert chercher("romans") == []
+    assert client.get("/objets", params={"q": "x" * 101}).status_code == 422
+
+
 def test_boucle_a_trois_de_bout_en_bout(client, creer):
     (a, b, c), objets = creer.boucle_abc()
 
