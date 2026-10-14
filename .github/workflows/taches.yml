@@ -6,13 +6,16 @@ name: Tâches planifiées
 on:
   schedule:
     - cron: "17 * * * *"  # toutes les heures : rappels « plus que 12 h », échanges expirés
-    - cron: "40 3 * * *"  # chaque nuit (3 h 40 UTC) : math trade sur tout le marché
+    # Grand Troc du dimanche, 18 h à Paris : 16 h UTC en heure d'été, 17 h UTC en heure d'hiver. On appelle
+    # aux deux heures ; l'API ne lance rien avant 18 h (heure de Paris) ni deux fois le même dimanche.
+    - cron: "7 16 * * 0"
+    - cron: "7 17 * * 0"
   workflow_dispatch:
     inputs:
       tache:
         description: "Tâche à lancer"
         type: choice
-        options: [horaires, math-trade]
+        options: [horaires, grand-troc]
         default: horaires
 
 jobs:
@@ -23,10 +26,13 @@ jobs:
       - name: Choisir la tâche
         id: choix
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.tache }}" = "grand-troc" ]; then
+            # Lancement à la main : tout de suite, quel que soit le jour (une seule fois par jour).
+            echo "tache=grand-troc?force=true" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "tache=${{ inputs.tache }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.schedule }}" = "40 3 * * *" ]; then
-            echo "tache=math-trade" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "7 16 * * 0" ] || [ "${{ github.event.schedule }}" = "7 17 * * 0" ]; then
+            echo "tache=grand-troc" >> "$GITHUB_OUTPUT"
           else
             echo "tache=horaires" >> "$GITHUB_OUTPUT"
           fi

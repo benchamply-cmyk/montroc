@@ -62,7 +62,9 @@ def verifier(donnees: Verification, session: SessionDep):
             return ResultatConnexion(inscription_requise=True, email=lien.email)
         if session.scalar(select(m.Utilisateur.id).where(func.lower(m.Utilisateur.pseudo) == donnees.pseudo.lower())):
             raise HTTPException(409, "Ce pseudo est déjà pris.")
-        utilisateur = m.Utilisateur(email=lien.email, pseudo=donnees.pseudo.strip(), zone=donnees.zone)
+        utilisateur = m.Utilisateur(
+            email=lien.email, pseudo=donnees.pseudo.strip(), zone=donnees.zone, telephone=donnees.telephone
+        )
         session.add(utilisateur)
     elif utilisateur.suspendu_le is not None:
         raise HTTPException(403, "Ce compte est suspendu.")

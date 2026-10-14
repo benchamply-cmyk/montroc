@@ -5,7 +5,8 @@ from datetime import UTC, datetime, timedelta
 from conftest import PHOTO
 from sqlalchemy import text
 
-from montroc_api import courriels
+from montroc_api import courriels, services, sms
+from montroc_api.config import get_settings
 from montroc_api.db import engine
 
 TACHES = {"X-Taches-Secret": "secret-des-taches"}
@@ -218,24 +219,126 @@ def test_objets_qui_ne_bouclent_pas(client, creer):
     assert client.post("/echanges", json={"objets": [p, v, s]}, headers=d.headers).status_code == 409
 
 
-def test_math_trade_reserve_aux_taches_planifiees(client, creer):
-    creer.boucle_abc()
+def _dimanche(heure, minute=0, jour=18):
+    """Un moment à Paris ; le 18 octobre 2026 est un dimanche."""
+    return datetime(2026, 10, jour, heure, minute, tzinfo=services.PARIS)
+
+
+def test_date_du_prochain_grand_troc():
+    prochain = services.prochain_grand_troc
+    # Un mercredi : le dimanche qui suit, 18 h à Paris (16 h UTC, heure d'été).
+    premier = prochain(datetime(2026, 10, 14, 3, tzinfo=UTC))
+    assert premier == _dimanche(18) and premier.utcoffset() == timedelta(hours=2)
+    assert prochain(_dimanche(17, 59)) == _dimanche(18)
+    # Juste après : la semaine suivante, toujours 18 h à Paris malgré le passage à l'heure d'hiver.
+    suivant = prochain(_dimanche(18))
+    assert suivant == _dimanche(18, jour=25) and suivant.utcoffset() == timedelta(hours=1)
+
+
+def test_grand_troc_du_dimanche(client, creer, monkeypatch):
+    (a, b, c), _ = creer.boucle_abc()
     d, e = creer.utilisateur("david"), creer.utilisateur("emma")
     creer.objet(d, "livres")
     creer.objet(e, "jouets")
     creer.souhait(d, "jouets")
     creer.souhait(e, "livres")
 
-    assert client.post("/taches/math-trade").status_code == 403
-    assert client.post("/taches/math-trade", headers={"X-Taches-Secret": "faux"}).status_code == 403
-    r = client.post("/taches/math-trade", headers=TACHES).json()
-    assert r["nb_objets_echanges"] == 5 and r["optimal"]
+    assert client.post("/taches/grand-troc").status_code == 403
+    assert client.post("/taches/grand-troc", headers={"X-Taches-Secret": "faux"}).status_code == 403
+
+    # Avant 18 h, la tâche ne fait rien (elle passe deux fois le dimanche à cause de l'heure d'été).
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(17, 5))
+    r = client.post("/taches/grand-troc", headers=TACHES).json()
+    assert not r["lance"] and r["echanges"] == [] and "18/10 à 18 h" in r["message"]
+    assert client.get("/grand-troc").json()["dernier"] is None
+
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 5))
+    r = client.post("/taches/grand-troc", headers=TACHES).json()
+    assert r["lance"] and r["grand_troc"]["nb_objets"] == 5 and r["grand_troc"]["optimal"]
     assert sorted(len(x["transferts"]) for x in r["echanges"]) == [2, 3]
+    assert {x["grand_troc_jour"] for x in r["echanges"]} == {"2026-10-18"}
     assert all(t["code_retrait"] is None for x in r["echanges"] for t in x["transferts"])
     assert client.get("/objets").json() == []
-    assert sujets(e.email) == ["Votre lien de connexion à TrocTroc", "Une boucle vous attend"]
-    # Relancer ne propose rien de plus : tout est réservé.
-    assert client.post("/taches/math-trade", headers=TACHES).json()["echanges"] == []
+    assert sujets(e.email) == ["Votre lien de connexion à TrocTroc", "Grand Troc : une boucle vous attend"]
+    assert "Le Grand Troc du dimanche a trouvé" in courriels.ENVOYES[-1].texte
+
+    # Une seule fois par dimanche, même si la tâche est relancée.
+    r = client.post("/taches/grand-troc", headers=TACHES).json()
+    assert not r["lance"] and r["echanges"] == [] and r["grand_troc"]["nb_boucles"] == 2
+
+    infos = client.get("/grand-troc").json()
+    assert infos["dernier"]["jour"] == "2026-10-18" and infos["dernier"]["nb_participants"] == 5
+    assert datetime.fromisoformat(infos["prochain"]) > datetime.now(UTC)
+
+
+def test_grand_troc_force_et_depots_dans_la_semaine(client, creer, monkeypatch):
+    creer.boucle_abc(auto=True)
+    # Un mercredi : sans « force », rien ; avec, le Grand Troc a lieu tout de suite.
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(10, jour=14))
+    assert not client.post("/taches/grand-troc", headers=TACHES).json()["lance"]
+    r = client.post("/taches/grand-troc?force=true", headers=TACHES).json()
+    assert r["lance"] and len(r["echanges"]) == 1
+    # Acceptation automatique : dépôts jusqu'au dimanche suivant midi, avant le prochain Grand Troc.
+    echange = r["echanges"][0]
+    assert echange["statut"] == "accepte"
+    assert datetime.fromisoformat(echange["expire_le"]) == datetime(2026, 10, 21, 12, tzinfo=services.PARIS)
+    assert "avant mercredi 21/10 à 12 h" in courriels.ENVOYES[-1].texte
+
+
+def test_sms_quand_le_grand_troc_propose(client, creer, monkeypatch):
+    # Alice (avec portable) est dans deux boucles, Bruno (avec portable) dans une, les autres sans numéro.
+    a = creer.utilisateur("alice", telephone="06 12 34 56 78")
+    b = creer.utilisateur("bruno", telephone="+33 7 11 22 33 44")
+    c, d = creer.utilisateur("chloe"), creer.utilisateur("david")
+    creer.objet(a, "poussette")
+    creer.objet(a, "livres")
+    creer.objet(b, "velo")
+    creer.objet(c, "siege-auto")
+    creer.objet(d, "jouets")
+    creer.souhait(a, "velo")
+    creer.souhait(b, "poussette")
+    creer.souhait(a, "jouets")
+    creer.souhait(d, "livres")
+    creer.souhait(c, "jouets")  # Chloé ne boucle avec personne
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 5))
+    r = client.post("/taches/grand-troc", headers=TACHES).json()
+    assert len(r["echanges"]) == 2
+    envoyes = {x.numero: x.texte for x in sms.ENVOYES}
+    assert set(envoyes) == {"+33612345678", "+33711223344"}
+    assert envoyes["+33612345678"].startswith("Le Grand Troc vous propose 2 échanges.")
+    assert envoyes["+33612345678"].endswith("/#echanges")
+    assert "un échange" in envoyes["+33711223344"] and "#echange-" in envoyes["+33711223344"]
+
+
+def test_telephone_a_l_inscription_et_dans_le_compte(client, creer):
+    a = creer.utilisateur("alice", telephone="0033 6 12 34 56 78")
+    assert client.get("/moi", headers=a.headers).json()["telephone"] == "+33612345678"
+    # Jamais visible des autres.
+    assert "telephone" not in client.get(f"/utilisateurs/{a.id}").json()
+    r = client.patch("/moi", json={"telephone": "12"}, headers=a.headers)
+    assert r.status_code == 422
+    assert client.patch("/moi", json={"telephone": "07.98.76.54.32"}, headers=a.headers).json()["telephone"] == (
+        "+33798765432"
+    )
+    assert client.patch("/moi", json={"telephone": ""}, headers=a.headers).json()["telephone"] is None
+    # Boucle proposée à la demande par Alice (sans numéro) : SMS pour Bruno seulement, Chloé n'a que l'e-mail.
+    creer.utilisateur("bruno", telephone="06 00 00 00 01")
+    creer.echange_abc()
+    assert [x.numero for x in sms.ENVOYES] == ["+33600000001"]
+    assert sms.ENVOYES[0].texte.startswith("TrocTroc vous propose un échange.")
+
+
+def test_echanges_a_la_demande_desactives_par_defaut(client, creer, monkeypatch):
+    monkeypatch.setattr(get_settings(), "echanges_a_la_demande", False)
+    (a, _, _), _ = creer.boucle_abc()
+    # Les boucles possibles restent visibles, comme un aperçu de dimanche…
+    boucles = client.get("/moi/boucles", headers=a.headers).json()
+    assert len(boucles) == 1
+    # … mais on ne peut plus en proposer une tout de suite.
+    ordre = [e["objet"]["id"] for e in boucles[0]["etapes"]]
+    r = client.post("/echanges", json={"objets": ordre}, headers=a.headers)
+    assert r.status_code == 409 and "Grand Troc du dimanche" in r.json()["detail"]
+    assert client.get("/grand-troc").json()["echanges_a_la_demande"] is False
 
 
 def _decaler(echange_id, heures):

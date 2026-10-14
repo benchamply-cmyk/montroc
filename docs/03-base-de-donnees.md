@@ -11,6 +11,7 @@ erDiagram
     utilisateurs ||--o{ objets : "possède"
     utilisateurs ||--o{ souhaits : "exprime"
     objets ||--o{ souhaits : "souhait précis"
+    grands_trocs ||--o{ echanges : "propose le dimanche"
     echanges ||--|{ transferts : "2 ou 3 étapes"
     objets ||--o{ transferts : "circule"
     utilisateurs ||--o{ transferts : "donne / reçoit"
@@ -19,10 +20,11 @@ erDiagram
     utilisateurs ||--o{ signalements : "visé / auteur"
 
     categories { string slug PK  string libelle }
-    utilisateurs { int id PK  string email UK  string pseudo UK  string zone  float fiabilite  timestamptz suspendu_le  timestamptz cree_le }
+    utilisateurs { int id PK  string email UK  string pseudo UK  string zone  string telephone  float fiabilite  timestamptz suspendu_le  timestamptz cree_le }
     objets { int id PK  int proprietaire_id FK  string categorie_slug FK  string titre  text description  string etat  string photo_url  string statut }
     souhaits { int id PK  int utilisateur_id FK  string categorie_slug FK  int objet_id FK  int rang  int quantite  bool acceptation_auto }
-    echanges { int id PK  string statut  float proba_reussite  timestamptz expire_le  timestamptz rappel_envoye_le }
+    grands_trocs { int id PK  date jour UK  int nb_boucles  int nb_objets  int nb_participants  bool optimal }
+    echanges { int id PK  int grand_troc_id FK  string statut  float proba_reussite  timestamptz expire_le  timestamptz rappel_envoye_le }
     transferts { int id PK  int echange_id FK  int position  int donneur_id FK  int receveur_id FK  int objet_id FK  string reponse  timestamptz depose_le  string code_retrait }
     jetons_connexion { int id PK  string email  string empreinte UK  timestamptz expire_le  timestamptz utilise_le }
     sessions { int id PK  int utilisateur_id FK  string empreinte UK  timestamptz expire_le }
@@ -53,7 +55,7 @@ Ces règles sont des **contraintes PostgreSQL** : même un bug dans l'API ne peu
 
 Et dans l'API :
 - quand une boucle est enregistrée, ses objets sont **verrouillés** (`SELECT … FOR UPDATE`) puis passent en `reserve` : deux échanges simultanés ne peuvent pas réserver le même objet ;
-- un refus, un délai de 48 h dépassé ou des dépôts incomplets après 7 jours **annulent** l'échange et remettent les objets en `disponible` ;
+- un refus, un délai de 48 h dépassé ou des dépôts incomplets à la fin de la semaine (dimanche midi après le Grand Troc) **annulent** l'échange et remettent les objets en `disponible` ;
 - un objet retiré par la modération passe en `modere` : son propriétaire ne peut pas le remettre en ligne.
 
 Les tests (`api/tests/test_base_de_donnees.py`) vérifient chacune de ces contraintes sur une vraie base PostgreSQL.

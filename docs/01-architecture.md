@@ -52,7 +52,7 @@ api/
 │       ├── utilisateurs.py   /utilisateurs/{id} (profil public)
 │       ├── echanges.py       /echanges (proposer, répondre, déposer)
 │       ├── signalements.py   /signalements et /moderation
-│       └── taches.py         /taches (rappels, expirations, math trade : appelées par GitHub Actions)
+│       └── taches.py         /taches (rappels, expirations, Grand Troc du dimanche : appelées par GitHub Actions)
 └── tests/                    tests sur une vraie base PostgreSQL
 ```
 
@@ -66,7 +66,7 @@ stateDiagram-v2
     propose --> accepte: tous les receveurs acceptent<br/>(ou acceptation automatique)
     propose --> annule: un refus ou 48 h dépassées<br/>(rappel « plus que 12 h »)
     accepte --> termine: tout le monde a déposé<br/>objets « echange »
-    accepte --> annule: dépôts incomplets après 7 jours
+    accepte --> annule: dépôts incomplets le dimanche suivant à midi
 ```
 
 Chaque passage envoie un e-mail aux participants concernés. Pendant les dépôts, chaque donneur voit le code à écrire sur son paquet ; le receveur ne reçoit ce code qu'une fois **tout** déposé, ce qui garantit que personne ne repart avec un objet sans avoir donné le sien.

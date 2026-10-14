@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     smtp_utilisateur: str = ""
     smtp_mot_de_passe: str = ""
     email_expediteur: str = "TrocTroc <bonjour@troctroc.fr>"
+    # Nom affiché comme expéditeur des SMS (Brevo, 11 caractères au plus, lettres et chiffres).
+    sms_expediteur: str = "TrocTroc"
 
     # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary (cloudinary://clé:secret@nom).
     cloudinary_url: str = ""
@@ -34,6 +36,9 @@ class Settings(BaseSettings):
     moderateurs: str = ""
     # Secret partagé avec la tâche planifiée GitHub Actions qui appelle /taches/… (rappels, math trade).
     taches_secret: str = ""
+    # Les boucles se décident au Grand Troc du dimanche. Mettre à true pour laisser aussi chacun proposer
+    # tout de suite une boucle parmi ses suggestions (POST /echanges), comme avant le Grand Troc.
+    echanges_a_la_demande: bool = False
     # Lieu de dépôt affiché aux participants d'un échange accepté (adresse, horaires).
     point_de_depot: str = ""
 

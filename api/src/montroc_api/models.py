@@ -10,10 +10,12 @@ Toute modification de ce fichier s'accompagne d'une migration Alembic
 from __future__ import annotations
 
 import enum
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
+    Date,
     DateTime,
     Enum,
     Float,
@@ -119,6 +121,9 @@ class Utilisateur(Horodatage, Base):
     email: Mapped[str] = mapped_column(String(254))
     pseudo: Mapped[str] = mapped_column(String(40), unique=True)
     zone: Mapped[str | None] = mapped_column(String(80))  # ville au lancement
+    # Portable au format international (+33612345678), facultatif : SMS quand une boucle est proposée.
+    # Jamais montré aux autres membres.
+    telephone: Mapped[str | None] = mapped_column(String(16))
     fiabilite: Mapped[float] = mapped_column(Float, default=1.0, server_default="1")
     # Compte suspendu par la modération : plus de connexion, objets retirés des échanges.
     suspendu_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -189,6 +194,23 @@ class Souhait(Horodatage, Base):
     )
 
 
+class GrandTroc(Horodatage, Base):
+    """Un passage du Grand Troc du dimanche : le math trade lancé une fois par semaine sur tout le stock."""
+
+    __tablename__ = "grands_trocs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    # Date du dimanche (heure de Paris) : unique, pour qu'une tâche relancée ne propose pas deux fois.
+    jour: Mapped[date] = mapped_column(Date, unique=True)
+    optimal: Mapped[bool] = mapped_column(Boolean)
+    duree_s: Mapped[float] = mapped_column(Float)
+    nb_boucles: Mapped[int] = mapped_column(Integer)
+    nb_objets: Mapped[int] = mapped_column(Integer)
+    nb_participants: Mapped[int] = mapped_column(Integer)
+
+    echanges: Mapped[list[Echange]] = relationship(back_populates="grand_troc")
+
+
 class Echange(Horodatage, Base):
     """Une boucle proposée : chaque participant donne un objet au suivant."""
 
@@ -202,9 +224,12 @@ class Echange(Horodatage, Base):
         index=True,
     )
     proba_reussite: Mapped[float] = mapped_column(Float)
-    # Fin du délai en cours : réponses (48 h) tant que « propose », dépôts (7 jours) une fois « accepte ».
+    # Fin du délai en cours : réponses (48 h) tant que « propose », dépôts (dans la semaine) une fois « accepte ».
     expire_le: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     rappel_envoye_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Le Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande).
+    grand_troc_id: Mapped[int | None] = mapped_column(ForeignKey("grands_trocs.id", ondelete="SET NULL"), index=True)
+    grand_troc: Mapped[GrandTroc | None] = relationship(back_populates="echanges")
 
     transferts: Mapped[list[Transfert]] = relationship(
         back_populates="echange", cascade="all, delete-orphan", order_by="Transfert.position"

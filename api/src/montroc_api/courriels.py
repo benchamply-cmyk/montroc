@@ -11,10 +11,12 @@ import ssl
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import datetime
 from email.message import EmailMessage
 from email.utils import make_msgid, parseaddr
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import event
 from sqlalchemy.orm import Session
@@ -132,11 +134,22 @@ def lien_magique(email: str, lien: str) -> None:
     )
 
 
-def boucle_vous_attend(email: str, pseudo: str, donne: str, recoit: str, lien: str) -> None:
+JOURS = ("lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche")
+
+
+def quand(moment: datetime) -> str:
+    """« dimanche 25/10 à 12 h », à l'heure de Paris."""
+    local = moment.astimezone(ZoneInfo("Europe/Paris"))
+    minutes = f"{local.minute:02d}" if local.minute else ""
+    return f"{JOURS[local.weekday()]} {local:%d/%m} à {local.hour} h{minutes}"
+
+
+def boucle_vous_attend(email: str, pseudo: str, donne: str, recoit: str, lien: str, grand_troc: bool = False) -> None:
+    trouve = "Le Grand Troc du dimanche a trouvé" if grand_troc else "TrocTroc a trouvé"
     envoyer(
         email,
-        "Une boucle vous attend",
-        f"Bonjour {pseudo},\n\nTroc a trouvé un échange pour vous : vous donnez « {donne} » et vous recevez "
+        "Grand Troc : une boucle vous attend" if grand_troc else "Une boucle vous attend",
+        f"Bonjour {pseudo},\n\n{trouve} un échange pour vous : vous donnez « {donne} » et vous recevez "
         f"« {recoit} ».\n\nVous avez 48 h pour dire oui ou non : {lien}",
     )
 
@@ -150,14 +163,16 @@ def plus_que_12_h(email: str, pseudo: str, recoit: str, lien: str) -> None:
     )
 
 
-def echange_accepte(email: str, pseudo: str, donne: str, code: str, point_de_depot: str, lien: str) -> None:
+def echange_accepte(
+    email: str, pseudo: str, donne: str, code: str, point_de_depot: str, lien: str, limite: datetime
+) -> None:
     lieu = f"Point de dépôt : {point_de_depot}\n\n" if point_de_depot else ""
     envoyer(
         email,
         "C'est oui pour tout le monde : à vous de déposer",
-        f"Bonjour {pseudo},\n\nTout le monde a accepté l'échange. Déposez « {donne} » dans les 7 jours, emballé et "
-        f"marqué du code {code}, puis indiquez-le sur TrocTroc.\n\n{lieu}Rien n'est remis tant que tout le monde n'a "
-        f"pas déposé.\n\nVoir l'échange : {lien}",
+        f"Bonjour {pseudo},\n\nTout le monde a accepté l'échange. Déposez « {donne} » avant {quand(limite)}, "
+        f"emballé et marqué du code {code}, puis indiquez-le sur TrocTroc.\n\n{lieu}Rien n'est remis tant que "
+        f"tout le monde n'a pas déposé.\n\nVoir l'échange : {lien}",
     )
 
 

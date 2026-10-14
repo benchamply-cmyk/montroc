@@ -17,6 +17,9 @@ os.environ["MODERATEURS"] = "modo@exemple.fr"
 os.environ["TACHES_SECRET"] = "secret-des-taches"
 os.environ["SMTP_MOT_DE_PASSE"] = ""
 os.environ["BREVO_API_KEY"] = ""
+# Les parcours de test proposent une boucle tout de suite plutôt que d'attendre le Grand Troc du dimanche ;
+# le réglage par défaut (désactivé) est vérifié à part.
+os.environ["ECHANGES_A_LA_DEMANDE"] = "true"
 
 import re  # noqa: E402
 from dataclasses import dataclass  # noqa: E402
@@ -28,7 +31,7 @@ from alembic.config import Config  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import text  # noqa: E402
 
-from montroc_api import courriels  # noqa: E402
+from montroc_api import courriels, sms  # noqa: E402
 from montroc_api.db import engine  # noqa: E402
 from montroc_api.main import app  # noqa: E402
 
@@ -48,9 +51,13 @@ def schema():
 @pytest.fixture(autouse=True)
 def base_vide():
     courriels.ENVOYES.clear()
+    sms.ENVOYES.clear()
     yield
     with engine.begin() as conn:
-        tables = "signalements, sessions, jetons_connexion, transferts, echanges, souhaits, objets, utilisateurs"
+        tables = (
+            "signalements, sessions, jetons_connexion, transferts, echanges, grands_trocs, souhaits, objets, "
+            "utilisateurs"
+        )
         conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
 
 
@@ -77,11 +84,12 @@ def creer(client):
     """Petits raccourcis pour peupler la base via l'API, connexion par lien magique comprise."""
 
     class Fabrique:
-        def utilisateur(self, pseudo, zone="Marseille", email=None) -> Compte:
+        def utilisateur(self, pseudo, zone="Marseille", email=None, telephone=None) -> Compte:
             email = email or f"{pseudo}@exemple.fr"
             assert client.post("/auth/lien", json={"email": email}).status_code == 202
             r = client.post(
-                "/auth/verifier", json={"jeton": jeton_du_dernier_lien(email), "pseudo": pseudo, "zone": zone}
+                "/auth/verifier",
+                json={"jeton": jeton_du_dernier_lien(email), "pseudo": pseudo, "zone": zone, "telephone": telephone},
             )
             assert r.status_code == 200, r.text
             corps = r.json()
