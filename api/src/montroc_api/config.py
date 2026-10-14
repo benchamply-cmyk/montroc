@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     smtp_port: int = 465
     smtp_utilisateur: str = ""
     smtp_mot_de_passe: str = ""
-    email_expediteur: str = "Troc <bonjour@troctroc.fr>"
+    email_expediteur: str = "TrocTroc <bonjour@troctroc.fr>"
 
     # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary (cloudinary://clé:secret@nom).
     cloudinary_url: str = ""

@@ -169,7 +169,7 @@ def test_math_trade_reserve_aux_taches_planifiees(client, creer):
     assert sorted(len(x["transferts"]) for x in r["echanges"]) == [2, 3]
     assert all(t["code_retrait"] is None for x in r["echanges"] for t in x["transferts"])
     assert client.get("/objets").json() == []
-    assert sujets(e.email) == ["Votre lien de connexion à Troc", "Une boucle vous attend"]
+    assert sujets(e.email) == ["Votre lien de connexion à TrocTroc", "Une boucle vous attend"]
     # Relancer ne propose rien de plus : tout est réservé.
     assert client.post("/taches/math-trade", headers=TACHES).json()["echanges"] == []
 

@@ -2,28 +2,25 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#111318">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Troc</title>
-<meta name="description" content="Troc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.">
+<title>TrocTroc</title>
+<meta name="description" content="TrocTroc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
 <style>
 /* Layout : une seule colonne étroite, comme un carnet ; une boucle animée sert de signature ; barre d'onglets en bas. */
 :root{
-  --bg:#F4F6FA; --surface:#FFFFFF; --ink:#12151C; --muted:#5F6676; --line:#DDE2EC;
-  --accent:#2C47F5; --accent-ink:#FFFFFF; --mark:#FFD94D; --ok:#127A4B; --ok-bg:#E2F4EA;
+  /* Thème sombre unique, quel que soit le réglage de l'appareil. */
+  --bg:#111318; --surface:#1A1D24; --ink:#F2F3F6; --muted:#A3A9B6; --line:#2C303A;
+  --accent:#8B97FF; --accent-ink:#111318; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
   --display:"Unbounded", "Arial Black", system-ui, sans-serif;
   --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"DM Mono", ui-monospace, Menlo, monospace;
   --r:14px;
-  color-scheme:light;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0E1117; --surface:#171B24; --ink:#EEF1F7; --muted:#9AA2B3; --line:#2A3040;
-  --accent:#7C8CFF; --accent-ink:#0E1117; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; color-scheme:dark }}
-:root[data-theme="dark"]{
-  --bg:#0E1117; --surface:#171B24; --ink:#EEF1F7; --muted:#9AA2B3; --line:#2A3040;
-  --accent:#7C8CFF; --accent-ink:#0E1117; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; color-scheme:dark }
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -41,8 +38,10 @@ p{margin:0}
 .hl{background:linear-gradient(transparent 58%,var(--mark) 58%,var(--mark) 92%,transparent 92%);padding:0 .08em}
 
 header.top{display:flex;justify-content:space-between;align-items:center;padding-block:20px 8px}
-.logo{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
-.logo svg{width:22px;height:22px}
+.logo{border:0;background:none;padding:0;color:var(--ink);font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
+.logo svg{width:24px;height:24px;transition:transform .6s cubic-bezier(.6,0,.2,1)}
+.logo:hover svg{transform:rotate(120deg)}
+.logo-2{color:var(--mark)}
 .who{font-family:var(--mono);font-size:12px;color:var(--muted)}
 
 section.view{display:flex;flex-direction:column;gap:28px;padding-block:20px}
@@ -53,9 +52,9 @@ section.view[hidden]{display:none}
 .loop{position:relative;width:100%;max-width:340px;aspect-ratio:1;margin:4px auto 0}
 .loop svg{width:100%;height:100%;overflow:visible}
 .loop .ring{fill:none;stroke:var(--line);stroke-width:1.5}
-.loop .arc{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:60 900;animation:run 6s linear infinite}
-@keyframes run{to{stroke-dashoffset:-911}}
-.node{position:absolute;transform:translate(-50%,-50%);background:var(--surface);border:1.5px solid var(--ink);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.25}
+.obj{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:var(--mark);color:#12151C;display:grid;place-items:center;z-index:3;box-shadow:0 0 0 4px var(--bg)}
+.obj svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
+.node{position:absolute;z-index:2;transform:translate(-50%,-50%);background:var(--surface);border:1.5px solid var(--ink);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.25}
 .node small{display:block;font-weight:400;color:var(--muted);font-size:11px;font-family:var(--mono)}
 .loop .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;pointer-events:none}
 .loop .center b{font-family:var(--display);font-size:13px;letter-spacing:.02em}
@@ -139,7 +138,37 @@ nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-
 nav.tabs button[aria-current="page"]{color:var(--ink);font-weight:600}
 nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--accent);color:var(--accent-ink);font-size:10px;font-family:var(--mono);border-radius:999px;padding:0 5px;line-height:16px}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:6;max-width:calc(100% - 32px)}
-@media (prefers-reduced-motion:reduce){.loop .arc{animation:none;stroke-dasharray:none;opacity:.5}.bar i{transition:none}}
+/* Titre : les mots montent un à un, le surligneur passe sous « utile », puis le mot change toutes les 2,4 s. */
+h1 .w{display:inline-block;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i)*70ms)}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+.rot{display:inline-grid;vertical-align:bottom;overflow:hidden;padding:0 .08em;transition:width .45s cubic-bezier(.6,0,.2,1);
+  background:linear-gradient(var(--mark),var(--mark)) no-repeat 0 78%/0% 34%;animation:sweep .8s .75s cubic-bezier(.6,0,.2,1) forwards}
+.rot.again{animation:sweep .6s cubic-bezier(.6,0,.2,1) forwards}
+@keyframes sweep{to{background-size:100% 34%}}
+.rot>span{grid-area:1/1;white-space:nowrap;transition:transform .45s cubic-bezier(.6,0,.2,1),opacity .45s}
+.rot>span:not(.on){transform:translateY(105%);opacity:0}
+.rot>span.out{transform:translateY(-105%);opacity:0}
+/* Ambiance de l'accueil : deux halos qui dérivent lentement et un grain de papier. */
+.ambient{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.ambient i{position:absolute;border-radius:50%;filter:blur(70px);background:var(--accent);opacity:.22;width:420px;height:420px;left:calc(50% - 210px);top:-60px;animation:drift 14s ease-in-out infinite alternate}
+.ambient i+i{background:var(--mark);opacity:.10;width:300px;height:300px;top:260px;animation-duration:18s;animation-direction:alternate-reverse}
+@keyframes drift{from{transform:translate(-140px,-20px)}to{transform:translate(140px,50px)}}
+.ambient::after{content:"";position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* Bandeau d'exemples d'échanges, deux rubans en sens inverse. */
+.marqs{display:flex;flex-direction:column;gap:10px}
+.marq{display:flex;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.marq .track{display:flex;gap:10px;flex:none;padding-right:10px;animation:marq 32s linear infinite}
+.marq.rev .track{animation-direction:reverse;animation-duration:38s}
+@keyframes marq{to{transform:translateX(-100%)}}
+.tk{font-family:var(--mono);font-size:13px;white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:6px 13px;color:var(--muted)}
+.tk b{color:var(--ink);font-weight:500}
+.tk i{font-style:normal;color:var(--mark);padding-inline:6px}
+@media (prefers-reduced-motion:reduce){
+  h1 .w,.ambient i,.marq .track{animation:none}
+  .rot{animation:none;background-size:100% 34%}
+  .marq{overflow-x:auto}
+  .bar i{transition:none}
+}
 
 /* Formulaires, photos, fenêtre de signalement */
 .field{display:flex;flex-direction:column;gap:6px}
@@ -159,14 +188,14 @@ form.stack{display:flex;flex-direction:column;gap:14px}
 .pill{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:6px;background:var(--bg);color:var(--muted);margin-left:6px}
 .pill.res{background:var(--mark);color:#12151C}
 .notice{font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-.err{color:#C0362C}
+.err{color:var(--danger)}
 .empty{color:var(--muted);font-size:15px;padding:8px 0}
 .code{white-space:nowrap;font-family:var(--mono);font-weight:500;font-size:18px;letter-spacing:.06em}
 details.addobj summary{cursor:pointer;list-style:none;display:inline-flex}
 details.addobj summary::-webkit-details-marker{display:none}
 details.addobj[open] summary{margin-bottom:14px}
 dialog{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);color:var(--ink);padding:18px;width:min(440px,calc(100% - 32px))}
-dialog::backdrop{background:rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(0,0,0,.65)}
 footer.legal{font-size:13px;color:var(--muted);padding-block:12px 0;text-align:center}
 nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 </style>
@@ -175,33 +204,42 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 
 <div class="wrap">
   <header class="top">
-    <div class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="var(--accent)"/><circle cx="19.8" cy="16.5" r="2.6" fill="currentColor"/><circle cx="4.2" cy="16.5" r="2.6" fill="currentColor"/></svg>troc</div>
+    <button class="logo" type="button" data-go="home" aria-label="TrocTroc, retour à l'accueil"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset=".5" stop-color="var(--mark)"/><stop offset="1" stop-color="var(--ok)"/></linearGradient></defs><circle cx="12" cy="12" r="9" fill="none" stroke="url(#logo-g)" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="var(--accent)"/><circle cx="19.8" cy="16.5" r="2.6" fill="var(--ok)"/><circle cx="4.2" cy="16.5" r="2.6" fill="var(--mark)"/></svg><span>Troc<span class="logo-2">Troc</span></span></button>
     <span class="who" id="who"></span>
   </header>
 
   <!-- ACCUEIL -->
   <section class="view" id="v-home">
+    <div class="ambient" aria-hidden="true"><i></i><i></i></div>
     <div class="hero">
       <span class="label">Pas de prix. Pas de monnaie.</span>
-      <h1>Ce qui dort chez vous est <span class="hl">utile</span> à quelqu'un.</h1>
-      <p class="muted">Dites ce que vous avez et ce qui vous serait utile. Troc trouve l'échange, même à trois.</p>
+      <h1 aria-label="Ce qui dort chez vous est utile à quelqu'un."><span aria-hidden="true"><span class="w" style="--i:0">Ce</span> <span class="w" style="--i:1">qui</span> <span class="w" style="--i:2">dort</span> <span class="w" style="--i:3">chez</span> <span class="w" style="--i:4">vous</span> <span class="w" style="--i:5">est</span> <span class="w" style="--i:6"><span class="rot" id="rot"><span class="on">utile</span><span>précieux</span><span>cher</span></span></span> <span class="w" style="--i:7">à</span> <span class="w" style="--i:8">quelqu'un.</span></span></h1>
+      <p class="muted">Dites ce que vous avez et ce qui vous serait utile. TrocTroc trouve l'échange, même à trois.</p>
     </div>
 
     <div class="loop" aria-label="Exemple de troc en chaîne à trois personnes">
       <svg viewBox="0 0 300 300" aria-hidden="true">
         <circle class="ring" cx="150" cy="150" r="110"/>
-        <circle class="arc" cx="150" cy="150" r="110" transform="rotate(-90 150 150)"/>
       </svg>
       <div class="node" style="left:50%;top:13.3%">Vous<small>donnez une poussette</small></div>
       <div class="node" style="left:81.8%;top:68.3%">Inès<small>donne une perceuse</small></div>
       <div class="node" style="left:18.2%;top:68.3%">Marc<small>donne un vélo enfant</small></div>
+      <div class="obj" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="7" cy="18" r="2.5"/><circle cx="17" cy="18" r="2.5"/><path d="M4 6h3l3 9h7l2-6H9"/></svg></div>
+      <div class="obj" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10h11l3 3v3H8l-2 4H3zM14 10V6h4"/></svg></div>
+      <div class="obj" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-8h5l3 8M10 8h-2"/></svg></div>
       <div class="center"><div><b>1 boucle</b><br><span class="muted" style="font-size:12px">3 personnes servies</span></div></div>
+    </div>
+
+    <div class="marqs" aria-label="Exemples d'échanges">
+      <span class="label">Par exemple</span>
+      <div class="marq"><div class="track"></div><div class="track" aria-hidden="true"></div></div>
+      <div class="marq rev"><div class="track"></div><div class="track" aria-hidden="true"></div></div>
     </div>
 
     <form class="card stack" id="f-login" data-anon>
       <span class="label">Se connecter ou créer un compte</span>
       <label class="field"><span>Votre e-mail</span><input class="input" type="email" name="email" required autocomplete="email" placeholder="vous@exemple.fr"></label>
-      <button class="cta" type="submit">Recevoir mon lien de connexion</button>
+      <button class="cta" type="submit">Commencer à troquer</button>
       <p class="muted" style="font-size:14px">Pas de mot de passe : un lien valable 20 minutes arrive par e-mail.</p>
       <p class="status" id="login-ok" hidden></p>
     </form>
@@ -212,15 +250,15 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     </div>
 
     <div class="rules">
-      <div><b>Utile</b><span>On échange ce qui sert, pas ce qui « vaut ».</span></div>
-      <div><b>Large</b><span>Plus vos souhaits sont ouverts, plus il y a d'échanges.</span></div>
-      <div><b>Sûr</b><span>Rien n'est remis tant que tout le monde n'a pas déposé.</span></div>
+      <div><b>Sans argent</b><span>Un objet contre un objet. Jamais d'euros, jamais de points.</span></div>
+      <div><b>À plusieurs</b><span>Pas besoin de trouver la bonne personne. TrocTroc ferme la boucle pour vous.</span></div>
+      <div><b>En confiance</b><span>Chacun dépose, chacun récupère. Personne ne part les mains vides.</span></div>
     </div>
 
     <ol class="steps">
       <li><div><b>J'ai</b><span class="muted">Une photo par objet. L'état est obligatoire.</span></div></li>
       <li><div><b>Ça me serait utile</b><span class="muted">Des catégories plutôt qu'un modèle exact.</span></div></li>
-      <li><div><b>Troc propose</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui.</span></div></li>
+      <li><div><b>TrocTroc propose</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui.</span></div></li>
     </ol>
   </section>
 
@@ -252,7 +290,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
         <div class="list-head"><span class="label" id="have-label">J'ai</span></div>
         <div class="items" id="items"></div>
         <details class="addobj" style="margin-top:14px">
-          <summary class="btn primary">+ Ajouter un objet</summary>
+          <summary class="btn primary">+ Proposer un objet</summary>
           <form class="stack" id="f-obj">
             <label class="photo-pick" id="photo-pick">
               <input type="file" name="photo" accept="image/*" required>
@@ -315,7 +353,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 
 <nav class="tabs" aria-label="Navigation">
   <div class="in" id="tabs">
-    <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Troc</button>
+    <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Accueil</button>
     <button data-go="lists"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Mes listes</button>
     <button data-go="trades"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Échanges<span class="badge" id="badge" hidden></span></button>
     <button data-go="drop"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12h16M9 8V5h6v3"/></svg>Dépôt</button>
@@ -374,6 +412,39 @@ function go(v){
   if(v==='mod')chargerSignalements();
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
+
+/* Animations de l'accueil (coupées si l'appareil demande moins de mouvement). */
+const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
+(()=>{ // le mot surligné change une fois le titre apparu
+  const rot=$('#rot'), mots=[...rot.children]; let i=0;
+  const largeur=()=>{rot.style.width=(mots[i].offsetWidth/parseFloat(getComputedStyle(rot).fontSize)+.16)+'em'};
+  document.fonts.ready.then(largeur);
+  if(calme)return;
+  setTimeout(()=>setInterval(()=>{
+    if($('#v-home').hidden)return;
+    const avant=mots[i]; i=(i+1)%mots.length;
+    avant.classList.replace('on','out'); setTimeout(()=>avant.classList.remove('out'),460);
+    mots[i].classList.add('on'); largeur();
+    rot.classList.remove('again'); void rot.offsetWidth; rot.classList.add('again');
+  },2400),1600);
+})();
+(()=>{ // les objets voyagent d'une personne à la suivante : Vous → Inès → Marc → Vous
+  const objs=$$('.loop .obj'), angles=[-90,30,150], R=110/300*100, etape=2600;
+  const placer=(o,deg)=>{const r=deg*Math.PI/180;o.style.left=50+R*Math.cos(r)+'%';o.style.top=50+R*Math.sin(r)+'%'};
+  objs.forEach((o,j)=>placer(o,angles[j]+40));
+  if(calme)return;
+  let t0;
+  (function image(t){t0??=t;const k=((t-t0)%(etape*3))/etape, pas=Math.floor(k), f=k-pas;
+    const e=f<.25?0:f>.85?1:(f-.25)/.6, doux=e<.5?2*e*e:1-Math.pow(-2*e+2,2)/2;
+    objs.forEach((o,j)=>placer(o,angles[(j+pas)%3]+40+120*doux));
+    requestAnimationFrame(image)})(performance.now());
+})();
+(()=>{ // bandeau d'exemples (illustratifs, pas de vrais échanges)
+  const a=[['une poussette','un vélo enfant'],['un lot de BD','une yaourtière'],['une perceuse','des rollers 38'],['une plante verte','un jeu de société'],['un sac de foot','une lampe de bureau']];
+  const b=[['une guitare','une machine à pain'],['un siège auto','un tapis'],['des livres de cuisine','un pied photo'],['une console','un vélo d\'appartement'],['un manteau 6 ans','une luge']];
+  const remplir=(l,sel)=>$$(sel).forEach(t=>t.innerHTML=l.map(([x,y])=>`<span class="tk"><b>${x}</b><i>⟳</i>${y}</span>`).join(''));
+  remplir(a,'.marq:not(.rev) .track'); remplir(b,'.marq.rev .track');
+})();
 
 function afficherSession(){
   $$('[data-anon]').forEach(x=>x.hidden=!!moi); $$('[data-auth]').forEach(x=>x.hidden=!moi);
@@ -451,7 +522,7 @@ async function chargerListes(){
       <span>${esc(ETATS[o.etat]||'État à préciser')} · ${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></div>
       ${o.statut==='disponible'?`<button class="linkbtn" data-retirer="${o.id}">Retirer</button>`:''}
       ${o.statut==='retire'&&o.photo_url?`<button class="linkbtn" data-remettre="${o.id}">Remettre</button>`:''}
-    </div>`).join(''):'<p class="empty">Rien pour l\'instant. Ajoutez un premier objet, avec sa photo.</p>';
+    </div>`).join(''):'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>';
   $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>`<span class="chip">${esc(s.categorie_slug?categories[s.categorie_slug]||s.categorie_slug:'Objet n° '+s.objet_id)}
     <button class="x" aria-label="Retirer ce souhait" data-souhait="${s.id}">×</button></span>`).join(''):'<p class="empty">Ajoutez ce qui vous serait utile.</p>';
 }
@@ -506,8 +577,8 @@ async function chargerEchanges(){
   const aRepondre=enCours.filter(e=>e.statut==='propose'&&e.transferts.some(t=>t.receveur_id===moi.id&&t.reponse==='en_attente')).length;
   $('#badge').textContent=aRepondre; $('#badge').hidden=!aRepondre;
   $('#trades-title').textContent=aRepondre?`${aRepondre} échange${aRepondre>1?'s':''} attend${aRepondre>1?'ent':''} votre réponse`:'Vos échanges';
-  $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Aucun échange en cours.</p>';
-  $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Pas encore d\'échange possible. Ajoutez des objets et des souhaits plus larges : Troc cherche aussi chaque nuit.</p>';
+  $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TrocTroc a de chances d\'en trouver une.</p>';
+  $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Rien pour l\'instant. Élargissez vos souhaits : TrocTroc cherche à nouveau chaque nuit.</p>';
   const n=boucles.length; $('#m-num').textContent=n; $('#m-bar').style.width=Math.min(100,n*10)+'%';
   $('#m-tip').textContent=n>=5?'Bel éventail. Vos chances de boucle sont élevées.':'Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.';
   afficherDepots();
@@ -519,7 +590,7 @@ $('#v-trades').addEventListener('click',async e=>{
     catch(err){toast(err.message)} chargerEchanges();}
   if(r){e.target.disabled=true;
     try{const x=await api(`/echanges/${r}/reponse`,{method:'POST',body:{accepte:!!e.target.dataset.oui}});
-      toast(x.statut==='accepte'?'Tout le monde a accepté : place au dépôt !':x.statut==='annule'?'Échange décliné. Troc cherche autre chose.':'Réponse enregistrée')}
+      toast(x.statut==='accepte'?'Tout le monde a accepté : place au dépôt !':x.statut==='annule'?'Échange décliné. TrocTroc cherche autre chose.':'Réponse enregistrée')}
     catch(err){toast(err.message)} chargerEchanges();}
 });
 
