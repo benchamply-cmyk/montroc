@@ -8,5 +8,9 @@ version = "0.1.0"
 description = "Moteur d'échanges montroc : boucles de troc sans prix ni monnaie (bibliothèque standard uniquement)."
 requires-python = ">=3.10"
 
+[project.optional-dependencies]
+# Solveur exact du math trade ; sans lui, le moteur garde son heuristique.
+exact = ["ortools>=9.12"]
+
 [tool.setuptools]
 packages = ["troc_echanges"]

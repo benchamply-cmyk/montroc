@@ -19,6 +19,8 @@ dependencies = [
     "tzdata",
     # Le moteur d'échanges vit dans ../algorithme ; installé avec `pip install -e ../algorithme`.
     "troc-echanges",
+    # Solveur exact du math trade (CP-SAT, licence Apache 2.0). Sans lui, le moteur garde son heuristique.
+    "ortools>=9.12",
 ]
 
 [project.optional-dependencies]

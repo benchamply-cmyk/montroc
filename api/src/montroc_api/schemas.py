@@ -131,6 +131,9 @@ class ObjetCreation(BaseModel):
     photo_url: str = Field(max_length=500)
     photo_id: str | None = Field(default=None, max_length=200)
     annonce_origine: str | None = Field(default=None, max_length=500)
+    # « Je le donne contre… » : des souhaits du propriétaire ; vide = contre n'importe lequel de ses souhaits.
+    contre_souhait_ids: list[int] = Field(default_factory=list, max_length=50)
+    contre_strict: bool = False
 
     _photo = field_validator("photo_url")(_photo_cloudinary)
     _origine = field_validator("annonce_origine")(_annonce_origine)
@@ -142,6 +145,8 @@ class ObjetModification(BaseModel):
     etat: EtatObjet | None = None
     # Seuls ces deux statuts se changent à la main ; les autres suivent les échanges et la modération.
     statut: StatutObjet | None = None
+    contre_souhait_ids: list[int] | None = Field(default=None, max_length=50)
+    contre_strict: bool | None = None
 
     @model_validator(mode="after")
     def statut_manuel(self):
@@ -163,9 +168,11 @@ class ObjetLecture(Lecture):
 
 
 class MonObjet(ObjetLecture):
-    """Mes objets : avec le lien de l'annonce d'origine, que les autres ne voient pas."""
+    """Mes objets : avec le lien de l'annonce d'origine et la liste « contre », que les autres ne voient pas."""
 
     annonce_origine: str | None
+    contre_souhait_ids: list[int]
+    contre_strict: bool
 
 
 class SouhaitCreation(BaseModel):
@@ -275,6 +282,8 @@ class GrandTrocLecture(Lecture):
     nb_participants: int
     optimal: bool
     duree_s: float
+    repeche_le: datetime | None
+    nb_objets_repeches: int
 
 
 class InfosGrandTroc(BaseModel):
@@ -296,6 +305,8 @@ class ResultatGrandTroc(BaseModel):
 class ResultatTaches(BaseModel):
     rappels_envoyes: int
     echanges_expires: int
+    # Repêchage du mardi 18 h : None s'il n'a pas eu lieu à cet appel.
+    objets_repeches: int | None = None
 
 
 # --- Signalements et modération ---

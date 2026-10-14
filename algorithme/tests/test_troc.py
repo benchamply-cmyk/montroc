@@ -9,7 +9,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from troc_echanges import (Contraintes, GrapheEchanges, Marche, Souhait, boucles_autour,  # noqa: E402
-                           enumerer_boucles, math_trade, proba_tous_acceptent, remplacants, replanifier)
+                           enumerer_boucles, math_trade, proba_tous_acceptent, remplacants, replanifier,
+                           solveur_exact)
+
+AVEC_ORTOOLS = unittest.skipUnless(solveur_exact.disponible(), "OR-Tools n'est pas installé")
 
 
 def marche_abc():
@@ -55,6 +58,7 @@ def verifier_solution(test, m, sol, longueur_max):
             test.assertEqual(m.objets[t.objet.id].proprietaire, t.donneur)
             s = m.utilisateurs[t.receveur].souhaits[t.souhait_idx]
             test.assertTrue(s.correspond(t.objet))
+            test.assertTrue(t.objet.accepte(b.transferts[k - 1]), "liste « contre » stricte respectée")
             donnes[t.objet.id] += 1
             souhaits[t.cle_souhait] += 1
     test.assertTrue(all(v == 1 for v in donnes.values()), "objet donné deux fois")
@@ -236,6 +240,105 @@ class TestMathTrade(unittest.TestCase):
         verifier_solution(self, m, sol_libre, None)
         self.assertGreater(sol3.nb_objets_echanges, 0)
         self.assertGreaterEqual(sol_libre.nb_objets_echanges, sol3.nb_objets_echanges)
+
+
+def marche_contre(seed, n_users=5, n_cat=4):
+    """Marché aléatoire avec 3 objets par personne, dont certains à liste « contre » stricte ou de préférence."""
+    rnd = random.Random(seed)
+    m = Marche(meme_zone=False)
+    for u in range(n_users):
+        ws = [Souhait(categorie=f"c{c}", rang=i + 1, quantite=rnd.choice([1, 2]))
+              for i, c in enumerate(rnd.sample(range(n_cat), 2))]
+        m.ajouter_utilisateur(f"u{u}", ws)
+    k = 0
+    for u in range(n_users):
+        for _ in range(3):
+            contre = {i for i in range(2) if rnd.random() < 0.4}
+            m.ajouter_objet(f"o{k}", f"u{u}", f"c{rnd.randrange(n_cat)}", contre=contre,
+                            contre_strict=rnd.random() < 0.5)
+            k += 1
+    return m
+
+
+class TestMoteurExact(unittest.TestCase):
+    @staticmethod
+    def marche_trois_paires():
+        """A et B ont chacun trois objets que l'autre veut (souhaits de quantité 3)."""
+        m = Marche()
+        m.ajouter_utilisateur("A", [Souhait(categorie="Y", quantite=3)])
+        m.ajouter_utilisateur("B", [Souhait(categorie="X", quantite=3)])
+        for i in range(3):
+            m.ajouter_objet(f"a{i}", "A", "X")
+            m.ajouter_objet(f"b{i}", "B", "Y")
+        return m
+
+    @AVEC_ORTOOLS
+    def test_tous_les_objets_entre_deux_personnes(self):
+        # L'énumération ne garde que 2 objets par couple : l'heuristique s'arrête à 4 objets.
+        m = self.marche_trois_paires()
+        sol = math_trade(m, longueur_max=3, moteur="exact")
+        verifier_solution(self, m, sol, 3)
+        self.assertEqual((sol.nb_objets_echanges, sol.optimal, sol.moteur), (6, True, "exact"))
+        self.assertEqual(math_trade(m, longueur_max=3, moteur="heuristique").nb_objets_echanges, 4)
+
+    @AVEC_ORTOOLS
+    def test_contre_force_brute_avec_listes_contre(self):
+        for seed in range(30):
+            m = marche_contre(seed)
+            for lm in (2, 3):
+                sol = math_trade(m, longueur_max=lm, moteur="exact")
+                verifier_solution(self, m, sol, lm)
+                self.assertTrue(sol.optimal)
+                self.assertEqual(sol.nb_objets_echanges, optimum_force_brute_borne(m, lm), f"seed {seed}")
+
+    @AVEC_ORTOOLS
+    def test_le_plus_de_personnes_servies(self):
+        # A peut faire deux échanges avec B, ou un avec B et un avec C : autant d'objets, mais C est servi.
+        m = Marche()
+        m.ajouter_utilisateur("A", [Souhait(categorie="Y", quantite=2)])
+        m.ajouter_utilisateur("B", [Souhait(categorie="X", quantite=2)])
+        m.ajouter_utilisateur("C", [Souhait(categorie="X")])
+        for o, u, c in [("a1", "A", "X"), ("a2", "A", "X"), ("b1", "B", "Y"), ("b2", "B", "Y"), ("c1", "C", "Y")]:
+            m.ajouter_objet(o, u, c)
+        sol = math_trade(m, longueur_max=3, moteur="exact")
+        self.assertEqual(sol.nb_objets_echanges, 4)
+        self.assertEqual(sol.participants, {"A", "B", "C"})
+
+    def test_contre_strict(self):
+        # A ne donne sa poussette que contre un siège ; B n'a qu'un livre (que A souhaite aussi).
+        def marche(strict):
+            m = Marche()
+            m.ajouter_utilisateur("A", [Souhait(categorie="siege"), Souhait(categorie="livre")])
+            m.ajouter_utilisateur("B", [Souhait(categorie="poussette")])
+            m.ajouter_objet("p", "A", "poussette", contre={0}, contre_strict=strict)
+            m.ajouter_objet("l", "B", "livre")
+            return m
+        moteurs = ["heuristique"] + (["exact"] if solveur_exact.disponible() else [])
+        for moteur in moteurs:
+            self.assertEqual(math_trade(marche(True), moteur=moteur).nb_objets_echanges, 0, moteur)
+            self.assertEqual(math_trade(marche(False), moteur=moteur).nb_objets_echanges, 2, moteur)
+        self.assertEqual(boucles_autour(marche(True), "A"), [])
+
+    def test_contre_preference(self):
+        # B (livre) et C (siège) veulent la poussette ; A la donne de préférence contre un siège.
+        m = Marche()
+        m.ajouter_utilisateur("A", [Souhait(categorie="livre"), Souhait(categorie="siege")])
+        m.ajouter_utilisateur("B", [Souhait(categorie="poussette")])
+        m.ajouter_utilisateur("C", [Souhait(categorie="poussette")])
+        m.ajouter_objet("p", "A", "poussette", contre={1})
+        m.ajouter_objet("l", "B", "livre")
+        m.ajouter_objet("s", "C", "siege")
+        moteurs = ["heuristique"] + (["exact"] if solveur_exact.disponible() else [])
+        for moteur in moteurs:
+            sol = math_trade(m, moteur=moteur)
+            self.assertEqual(sol.participants, {"A", "C"}, moteur)
+            self.assertEqual(sol.boucles[0].preferences_respectees, 1)
+
+    def test_contre_designe_ses_propres_souhaits(self):
+        m = Marche()
+        m.ajouter_utilisateur("A", [Souhait(categorie="siege")])
+        with self.assertRaises(ValueError):
+            m.ajouter_objet("p", "A", "poussette", contre={1})
 
 
 class TestRobustesse(unittest.TestCase):

@@ -24,6 +24,7 @@ def test_categories_de_base_presentes(client):
         "INSERT INTO souhaits (utilisateur_id) VALUES (1)",
         "INSERT INTO souhaits (utilisateur_id, categorie_slug, rang) VALUES (1, 'velo', 0)",
         "INSERT INTO utilisateurs (email, pseudo, fiabilite) VALUES ('x@y.fr', 'x', 1.5)",
+        "INSERT INTO utilisateurs (email, pseudo, engagements_manques) VALUES ('x@y.fr', 'x', -1)",
         "INSERT INTO utilisateurs (email, pseudo) VALUES ('ALICE@exemple.fr', 'autre')",  # e-mail sans casse
         "INSERT INTO objets (proprietaire_id, categorie_slug, titre, statut) VALUES (1, 'velo', 'V', 'vendu')",
         "INSERT INTO objets (proprietaire_id, categorie_slug, titre) VALUES (1, 'inconnue', 'V')",

@@ -1,11 +1,11 @@
 # Algorithme d'échanges Troc
 
-Module Python sans dépendance (Python 3.10+, bibliothèque standard uniquement) qui trouve des échanges **sans prix ni monnaie** : chaque utilisateur publie des objets disponibles et liste ce qui lui serait utile ; l'algorithme cherche des **boucles** où chacun donne un objet et en reçoit un.
+Module Python sans dépendance obligatoire (Python 3.10+ ; [OR-Tools](https://developers.google.com/optimization) en option pour le solveur exact, `pip install "./algorithme[exact]"`) qui trouve des échanges **sans prix ni monnaie** : chaque utilisateur publie des objets disponibles et liste ce qui lui serait utile ; l'algorithme cherche des **boucles** où chacun donne un objet et en reçoit un.
 
 ```
 cd algorithme
 python3 exemple.py                      # démonstration commentée
-python3 -m unittest discover -s tests   # 20 tests, ~13 s
+python3 -m unittest discover -s tests   # 26 tests, ~20 s (3 sautés sans OR-Tools)
 python3 benchmark.py 1000 2000 5000     # banc d'essai « ville »
 ```
 
@@ -14,7 +14,7 @@ python3 benchmark.py 1000 2000 5000     # banc d'essai « ville »
 | Brique | Fonction | À quoi ça sert dans l'app |
 |---|---|---|
 | **Version simple** | `boucles_autour(marche, "Alice")` | Écran « Mes échanges possibles » : les boucles de 2 et 3 personnes qui incluent Alice, classées par chance de réussite. Instantané. |
-| **Math trade** (TradeMaximizer) | `math_trade(marche, longueur_max=3)` | Passe globale (par ex. chaque nuit) : le **nombre maximal d'objets échangés** sur toute la ville, chaque objet ne partant qu'une fois. |
+| **Math trade** (TradeMaximizer) | `math_trade(marche, longueur_max=3)` | Grand Troc du dimanche et repêchage du mardi : le **nombre maximal d'objets échangés** sur toute la ville, chaque objet ne partant qu'une fois. |
 | **Robustesse** | `remplacants(...)`, `replanifier(...)` | Quand quelqu'un refuse ou ne répond pas en 48 h : on garde les boucles acceptées et on cherche aussitôt un remplaçant pour les autres. |
 
 ## Modèle
@@ -37,6 +37,15 @@ Un `Souhait` porte :
 - une **quantité** (par défaut 1 : on ne reçoit pas trois poussettes pour un seul souhait) ;
 - la case **acceptation automatique** (« j'accepte d'office un échange contre cet objet »), qui fait monter la chance de réussite de 70 % à 95 % par défaut.
 
+Un objet peut porter une liste **« je le donne contre… »** (`contre`, des indices de souhaits de son propriétaire), comme les listes par objet de BoardGameGeek (« ce jeu contre A ou B ») :
+- `contre_strict=True` : l'objet ne part que si son propriétaire reçoit, dans la même boucle, un de ces souhaits ;
+- `contre_strict=False` : simple préférence ; à défaut, l'objet part contre n'importe lequel de ses souhaits, comme sans liste.
+
+```python
+m.ajouter_utilisateur("Alice", [Souhait(categorie="siege-auto"), Souhait(categorie="livres")])
+m.ajouter_objet("p1", "Alice", "poussette", contre={0}, contre_strict=True)   # seulement contre un siège auto
+```
+
 Un utilisateur a une **zone** (les échanges restent dans la même ville si `meme_zone=True`) et une **fiabilité** (0 à 1, à relier à la réputation) qui entre dans l'estimation de réussite.
 
 La chance de réussite d'une boucle est le produit des acceptations de chaque participant : 49 % pour un échange à 2, 34 % pour une boucle à 3 avec 70 % d'acceptation, comme dans l'étude.
@@ -45,14 +54,15 @@ La chance de réussite d'une boucle est le produit des acceptations de chaque pa
 
 Comme TradeMaximizer sur BoardGameGeek, on cherche le **maximum d'échanges simultanés**, sous forme de boucles, avec deux modes :
 
-1. **`longueur_max=3` (mode de lancement)**. On énumère toutes les boucles de 2 et 3 personnes, puis on choisit le meilleur ensemble compatible (un objet ne part qu'une fois, la quantité de chaque souhait est respectée). Le problème se découpe en groupes indépendants :
-   - groupe petit (≤ 400 boucles candidates) : **solution exacte**, prouvée optimale ;
-   - groupe grand : algorithme glouton puis amélioration locale, dans un budget de temps (`duree_max_s`, 10 s par défaut). `sol.optimal` dit si l'optimum est prouvé.
+1. **`longueur_max=3` (mode de lancement)**, boucles de 2 et 3 personnes, avec deux moteurs (`moteur=`) :
+   - **`"exact"`** (`solveur_exact.py`, CP-SAT d'OR-Tools) : on énumère les cycles de *personnes* et le solveur choisit les objets, sans en écarter aucun. Objectifs dans l'ordre : le plus d'objets échangés, puis le plus de **personnes différentes servies** (comme `USERS-TRADING` de TradeMaximizer), puis le plus de préférences « contre » respectées, puis les boucles les plus sûres et les souhaits les mieux classés. `sol.optimal` dit si le nombre d'objets est prouvé maximal.
+   - **`"heuristique"`** : on énumère les boucles d'objets (au plus `options_par_transfert` objets par couple de personnes), puis on choisit le meilleur ensemble compatible par groupes indépendants : recherche exacte jusqu'à 400 boucles candidates, glouton et amélioration locale au-delà. Son « optimal » ne vaut que parmi les boucles énumérées.
+   - **`"auto"`** (défaut) : l'exact si OR-Tools est installé et si le marché reste sous `solveur_exact.MAX_COPIES_AUTO` (6 000 copies de cycles, environ 2 400 personnes sur le banc d'essai, pour rester sous les 512 Mo de Render gratuit) ; l'heuristique sinon, ou si l'exact ne trouve rien dans le temps imparti (`duree_max_s`, 10 s par défaut).
 2. **`longueur_max=None` (TradeMaximizer pur)**. Boucles de longueur illimitée, résolu **exactement** par un flot de coût minimal, comme le vrai TradeMaximizer : maximum d'objets échangés, puis préférence aux souhaits les mieux classés. Utile pour comparer et mesurer ce qu'on perd en limitant à 3 (les boucles obtenues sont souvent très longues, donc irréalistes au lancement).
 
 Deux objectifs pour le mode borné :
-- `objectif="echanges"` (défaut) : maximum d'objets échangés, à égalité la solution la plus sûre ;
-- `objectif="esperance"` : maximum d'objets échangés **attendus** une fois les refus pris en compte (longueur × chance de réussite). Favorise les échanges directs et les acceptations automatiques.
+- `objectif="echanges"` (défaut) : maximum d'objets échangés, puis les départages ci-dessus ;
+- `objectif="esperance"` : maximum d'objets échangés **attendus** une fois les refus pris en compte (longueur × chance de réussite). Favorise les échanges directs et les acceptations automatiques. Moteur heuristique seulement.
 
 Autres réglages : `proba_min` (écarter les boucles trop risquées), `options_par_transfert` (combien d'objets différents essayer entre deux mêmes personnes, 2 par défaut).
 
@@ -69,7 +79,8 @@ Seul le transfert que Bruno a refusé est interdit ; Bruno reste disponible pour
 
 ## Vérifications faites
 
-- **Optimalité contrôlée par force brute** : sur 40 petits marchés aléatoires, le math trade borné (2 et 3) trouve exactement l'optimum ; sur plus de 50 marchés, le mode illimité aussi.
+- **Optimalité contrôlée par force brute** : sur 40 petits marchés aléatoires, le math trade borné (2 et 3) trouve exactement l'optimum ; sur 30 autres, avec 3 objets par personne et des listes « contre » strictes ou de préférence, le moteur exact aussi ; sur plus de 50 marchés, le mode illimité aussi.
+- Cas où l'heuristique se trompe en se disant optimale (deux personnes qui ont chacune 3 objets voulus par l'autre) : elle trouve 4 objets, le moteur exact 6.
 - Chaque solution est vérifiée : chaque objet part une fois, il correspond bien à un souhait du receveur, les quantités et la limite de longueur sont respectées, chaque boucle se referme.
 
 **Banc d'essai sur le scénario prudent de l'étude** (`benchmark.py`, une seule exécution, graine fixe) :
@@ -84,12 +95,22 @@ Seul le transfert que Bruno a refusé est interdit ; Bruno reste disponible pour
 
 La colonne « existe » retrouve les chiffres de la simulation de l'étude (16 / 32 / 51 / 71 / 90 %). La colonne « obtenu » est plus basse parce qu'un objet ne peut partir qu'une fois : c'est le chiffre à retenir pour les prévisions. Il faut encore le multiplier par le taux d'acceptation.
 
+**Moteur exact contre heuristique** (même banc d'essai, budget 30 s, 2 fils) :
+
+| Utilisateurs | Heuristique | Exact | Personnes servies (heur. / exact) |
+|---|---|---|---|
+| 500 | 110 objets, 2,2 s | 110 objets, **prouvé**, 0,1 s | 95 / 98 |
+| 1 000 | 366 objets, 0,1 s | **372**, **prouvé**, 1,6 s | 297 / 303 |
+| 2 000 | 1 195 objets, 1,2 s | **1 221**, 26 s, 220 Mo | 881 / 898 |
+| 3 000 | 2 356 objets, 11 s | **2 401**, 26 s, 380 Mo | 1 645 / 1 656 (« auto » garde l'heuristique : mémoire) |
+| 5 000 | 5 330 objets, 35 s | 5 163 (moins bien, 1 Go de mémoire) | « auto » garde l'heuristique |
+
 ## Limites connues
 
-- À 10 000 utilisateurs, le calcul prend environ une minute en Python pur, dont la majeure partie pour énumérer les 400 000 boucles candidates. C'est très bien pour une passe nocturne ; pour du temps réel à cette échelle, il faudra un solveur d'optimisation (OR-Tools, HiGHS) ou un langage compilé.
+- À 10 000 utilisateurs, l'heuristique prend environ une minute en Python pur, dont la majeure partie pour énumérer les 400 000 boucles candidates ; le moteur exact n'est pas utilisé à cette taille (mémoire). Il faudra alors découper par quartier ou passer à une formulation plus compacte (PICEF).
 - Au-delà de 400 boucles candidates par groupe, l'optimum n'est pas prouvé (la solution reste bonne : sur un marché dense de 600 personnes, 1 680 objets échangés en 10 s contre une borne de 1 760 en longueur illimitée).
 - Un objet s'échange contre un seul objet. Les offres « plusieurs objets contre un » (offres libres) relèvent d'un autre mécanisme.
-- La table des souhaits par objet précis de TradeMaximizer (« ce jeu-ci contre ces jeux-là seulement ») n'est pas reproduite : les souhaits sont par utilisateur, et n'importe lequel de ses objets peut partir.
+- Les listes « contre » choisissent parmi les souhaits de l'utilisateur ; elles ne créent pas de souhait nouveau. Le mode illimité les ignore.
 
 ## Fichiers
 
@@ -97,6 +118,7 @@ La colonne « existe » retrouve les chiffres de la simulation de l'étude (16 /
 - `troc_echanges/graphe.py` : graphe « qui peut donner à qui »
 - `troc_echanges/boucles.py` : version simple, boucles de 2 et 3 autour d'un utilisateur
 - `troc_echanges/math_trade.py` : maximum d'échanges (borné et illimité)
+- `troc_echanges/solveur_exact.py` : math trade borné exact (CP-SAT d'OR-Tools)
 - `troc_echanges/empaquetage.py` : choix du meilleur ensemble de boucles compatibles
 - `troc_echanges/flot.py` : flot de coût minimal (mode illimité)
 - `troc_echanges/robustesse.py` : refus, remplaçants, replanification

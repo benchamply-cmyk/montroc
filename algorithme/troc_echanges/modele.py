@@ -12,11 +12,28 @@ from math import prod
 
 @dataclass(frozen=True)
 class Objet:
-    """Un objet disponible à l'échange."""
+    """Un objet disponible à l'échange.
+
+    ``contre`` : les souhaits de son propriétaire (indices dans sa liste) contre
+    lesquels il le donne, comme les listes par objet de BoardGameGeek
+    (« je donne ce jeu contre A ou B »). Vide : contre n'importe lequel de ses
+    souhaits. ``contre_strict`` : seulement contre ceux-là ; sinon ce n'est
+    qu'une préférence, et l'objet peut partir contre un autre de ses souhaits.
+    """
     id: str
     proprietaire: str
     categorie: str
     titre: str = ""
+    contre: frozenset[int] = frozenset()
+    contre_strict: bool = False
+
+    def accepte(self, recu: Transfert) -> bool:
+        """Peut-on donner cet objet en recevant ``recu`` dans la même boucle ?"""
+        return not (self.contre and self.contre_strict) or recu.souhait_idx in self.contre
+
+    def prefere(self, recu: Transfert) -> bool:
+        """``recu`` fait-il partie des souhaits indiqués pour cet objet ?"""
+        return bool(self.contre) and recu.souhait_idx in self.contre
 
 
 @dataclass(frozen=True)
@@ -111,6 +128,12 @@ class Boucle:
     def cle(self) -> frozenset:
         return frozenset(t.cle for t in self.transferts)
 
+    @property
+    def preferences_respectees(self) -> int:
+        """Nombre d'objets donnés contre un des souhaits indiqués sur leur fiche."""
+        n = len(self.transferts)
+        return sum(self.transferts[k].objet.prefere(self.transferts[k - 1]) for k in range(n))
+
     def decrire(self) -> str:
         etapes = [f"{t.donneur} donne « {t.objet.titre or t.objet.id} » à {t.receveur}"
                   for t in self.transferts]
@@ -149,12 +172,17 @@ class Marche:
         self.utilisateurs[id] = u
         return u
 
-    def ajouter_objet(self, id: str, proprietaire: str, categorie: str, titre: str = "") -> Objet:
+    def ajouter_objet(self, id: str, proprietaire: str, categorie: str, titre: str = "",
+                      contre=(), contre_strict: bool = False) -> Objet:
         if id in self.objets:
             raise ValueError(f"Objet {id!r} déjà présent.")
         if proprietaire not in self.utilisateurs:
             raise ValueError(f"Propriétaire inconnu : {proprietaire!r}.")
-        o = Objet(id, proprietaire, categorie, titre)
+        nb_souhaits = len(self.utilisateurs[proprietaire].souhaits)
+        contre = frozenset(contre)
+        if any(not 0 <= i < nb_souhaits for i in contre):
+            raise ValueError(f"« contre » doit désigner des souhaits de {proprietaire!r}.")
+        o = Objet(id, proprietaire, categorie, titre, contre, contre_strict)
         self.objets[id] = o
         return o
 
@@ -165,6 +193,11 @@ class Marche:
         """Probabilité que le receveur accepte la boucle et aille au bout."""
         fiab = self.utilisateurs[transfert.receveur].fiabilite
         return transfert.proba_acceptation * fiab
+
+    @staticmethod
+    def boucle_admise(transferts) -> bool:
+        """Chaque objet donné respecte sa liste stricte « contre » (le donneur reçoit le transfert précédent)."""
+        return all(transferts[k].objet.accepte(transferts[k - 1]) for k in range(len(transferts)))
 
     def creer_boucle(self, transferts) -> Boucle:
         transferts = tuple(transferts)

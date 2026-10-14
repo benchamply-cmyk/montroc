@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session, selectinload
 
-from troc_echanges import Boucle, Marche, boucles_autour, math_trade
+from troc_echanges import Boucle, Contraintes, Marche, boucles_autour, math_trade
 from troc_echanges import Souhait as SouhaitMoteur
 
 from . import courriels, sms
@@ -33,6 +33,13 @@ DIMANCHE = 6
 HEURE_GRAND_TROC = time(18)
 FIN_DES_DEPOTS = (timedelta(days=7), time(12))
 DUREE_MAX_GRAND_TROC_S = 30.0
+# Repêchage : à la fin des 48 h de réponse (mardi 18 h), une seconde passe sur le stock du dimanche resté libre.
+# Il faut encore le temps de répondre (48 h) avant la fin des dépôts du dimanche midi.
+MARGE_REPECHAGE = DELAI_REPONSE
+
+# Fiabilité = (tenus + LISSAGE) / (tenus + manqués + LISSAGE) : 1 au départ, 0,9 après un premier manquement,
+# et un manquement pèse de moins en moins à mesure que les engagements tenus s'accumulent.
+LISSAGE_FIABILITE = 9
 
 
 class ErreurMetier(Exception):
@@ -43,12 +50,19 @@ def lien_echange(echange: m.Echange) -> str:
     return f"{get_settings().site_url}/#echange-{echange.id}"
 
 
-def construire_marche(session: Session) -> Marche:
+def construire_marche(session: Session, stock_avant: datetime | None = None) -> Marche:
+    """Le marché du moteur : comptes actifs, leurs souhaits et les objets disponibles.
+
+    ``stock_avant`` : seulement les objets publiés avant cette date (repêchage sur le stock du dimanche).
+    """
     marche = Marche()
     utilisateurs = session.scalars(
         select(m.Utilisateur).where(m.Utilisateur.suspendu_le.is_(None)).options(selectinload(m.Utilisateur.souhaits))
     ).all()
+    # Indice de chaque souhait dans la liste de son auteur : c'est ainsi que le moteur désigne les listes « contre ».
+    indice_souhait: dict[int, int] = {}
     for u in utilisateurs:
+        indice_souhait.update({s.id: i for i, s in enumerate(u.souhaits)})
         souhaits = [
             SouhaitMoteur(
                 categorie=s.categorie_slug,
@@ -60,9 +74,17 @@ def construire_marche(session: Session) -> Marche:
             for s in u.souhaits
         ]
         marche.ajouter_utilisateur(str(u.id), souhaits, zone=u.zone, fiabilite=u.fiabilite)
-    objets = session.scalars(select(m.Objet).where(m.Objet.statut == m.StatutObjet.disponible)).all()
-    for o in objets:
-        marche.ajouter_objet(str(o.id), str(o.proprietaire_id), o.categorie_slug, o.titre)
+    requete = select(m.Objet).where(m.Objet.statut == m.StatutObjet.disponible).options(selectinload(m.Objet.contre))
+    if stock_avant is not None:
+        requete = requete.where(m.Objet.cree_le <= stock_avant)
+    for o in session.scalars(requete).all():
+        if str(o.proprietaire_id) not in marche.utilisateurs:
+            continue  # compte suspendu
+        # Liste vide (souhaits tous supprimés) : l'objet repart contre n'importe lequel des souhaits.
+        contre = {indice_souhait[s.id] for s in o.contre if s.utilisateur_id == o.proprietaire_id}
+        marche.ajouter_objet(
+            str(o.id), str(o.proprietaire_id), o.categorie_slug, o.titre, contre=contre, contre_strict=o.contre_strict
+        )
     return marche
 
 
@@ -236,6 +258,7 @@ def repondre(session: Session, echange: m.Echange, utilisateur_id: int, accepte:
     if echange.statut != m.StatutEchange.propose:
         raise ErreurMetier("Cet échange n'attend plus de réponse.")
     if echange.expire_le < datetime.now(UTC):
+        _noter_manquements(echange)
         annuler(session, echange, "Le délai de réponse de 48 h est dépassé.")
         raise ErreurMetier("Le délai de réponse de 48 h est dépassé ; l'échange est annulé.")
     transfert = _transfert_du_receveur(echange, utilisateur_id)
@@ -255,6 +278,7 @@ def deposer(session: Session, echange: m.Echange, utilisateur_id: int) -> m.Echa
     if transfert.depose_le is not None:
         raise ErreurMetier("Votre dépôt est déjà enregistré.")
     transfert.depose_le = datetime.now(UTC)
+    noter_engagement(transfert.donneur, tenu=True)
     restants = [t for t in echange.transferts if t.depose_le is None]
     point = get_settings().point_de_depot
     if restants:
@@ -380,5 +404,69 @@ def taches_horaires(session: Session) -> tuple[int, int]:
             raison = "Tout le monde n'a pas répondu dans les 48 h."
         else:
             raison = "Tous les objets n'ont pas été déposés à temps : chacun récupère le sien."
+        _noter_manquements(echange)
         annuler(session, echange, raison)
     return rappels, len(expires)
+
+
+def noter_engagement(utilisateur: m.Utilisateur, tenu: bool) -> None:
+    """Compte un engagement tenu (objet déposé) ou manqué, et recalcule la fiabilité qui en découle.
+
+    La fiabilité entre dans la chance de réussite des boucles : le math trade évite ainsi, à égalité,
+    de faire dépendre une boucle de quelqu'un qui laisse souvent les autres en plan.
+    """
+    if tenu:
+        utilisateur.engagements_tenus += 1
+    else:
+        utilisateur.engagements_manques += 1
+    tenus = utilisateur.engagements_tenus + LISSAGE_FIABILITE
+    utilisateur.fiabilite = tenus / (tenus + utilisateur.engagements_manques)
+
+
+def _noter_manquements(echange: m.Echange) -> None:
+    """Échange expiré : qui n'a pas répondu dans les 48 h, ou qui a accepté sans déposer. Un refus n'en est pas un."""
+    for t in echange.transferts:
+        if echange.statut == m.StatutEchange.propose and t.reponse == m.Reponse.en_attente:
+            noter_engagement(t.receveur, tenu=False)
+        elif echange.statut == m.StatutEchange.accepte and t.depose_le is None:
+            noter_engagement(t.donneur, tenu=False)
+
+
+def repechage(session: Session) -> int | None:
+    """Repêchage du mardi : à la fin des 48 h de réponse au Grand Troc, une seconde passe du math trade.
+
+    Les boucles refusées ou restées sans réponse ont libéré des objets : on relance le math trade sur le stock
+    du dimanche resté libre (les objets publiés depuis attendent le dimanche suivant), sans reproposer un
+    objet à qui l'a refusé ni solliciter qui n'a pas répondu. Les boucles trouvées suivent le calendrier du
+    Grand Troc (48 h pour répondre, dépôts jusqu'au dimanche midi). Une seule fois par Grand Troc.
+    Renvoie le nombre d'objets repêchés, ou None s'il n'y avait rien à faire à cette heure.
+    """
+    maintenant = _maintenant()
+    grand_troc = dernier_grand_troc(session)
+    if grand_troc is None or grand_troc.repeche_le is not None:
+        return None
+    if maintenant < grand_troc.cree_le + DELAI_REPONSE or any(
+        e.statut == m.StatutEchange.propose for e in grand_troc.echanges
+    ):
+        return None  # les réponses ne sont pas toutes rentrées
+    grand_troc.repeche_le = maintenant
+    if maintenant + MARGE_REPECHAGE > fin_des_depots(grand_troc.jour):
+        return 0  # trop tard pour répondre et déposer avant dimanche : tout repart au prochain Grand Troc
+
+    contraintes = Contraintes()
+    for e in grand_troc.echanges:
+        if e.statut != m.StatutEchange.annule:
+            continue
+        refus = [t for t in e.transferts if t.reponse == m.Reponse.refusee]
+        for t in refus:
+            contraintes.transferts_refuses.add((str(t.donneur_id), str(t.objet_id), str(t.receveur_id)))
+        if not refus:  # annulé faute de réponse : ceux qui n'ont pas répondu ne sont pas resollicités
+            contraintes.utilisateurs_exclus.update(
+                str(t.receveur_id) for t in e.transferts if t.reponse == m.Reponse.en_attente
+            )
+    marche = construire_marche(session, stock_avant=grand_troc.cree_le)
+    solution = math_trade(marche, longueur_max=3, contraintes=contraintes, duree_max_s=DUREE_MAX_GRAND_TROC_S)
+    echanges = [proposer(session, b, grand_troc=grand_troc) for b in solution.boucles]
+    _sms_du_grand_troc(session, echanges)
+    grand_troc.nb_objets_repeches = solution.nb_objets_echanges
+    return solution.nb_objets_echanges
