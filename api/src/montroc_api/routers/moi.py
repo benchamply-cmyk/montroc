@@ -15,8 +15,8 @@ from ..schemas import (
     EchangeLecture,
     Moi,
     MoiModification,
+    MonObjet,
     ObjetCreation,
-    ObjetLecture,
     ObjetModification,
     PhotoSignature,
     SouhaitCreation,
@@ -76,7 +76,7 @@ def signature_photo(_utilisateur: UtilisateurConnecte):
     )
 
 
-@router.post("/objets", response_model=ObjetLecture, status_code=201)
+@router.post("/objets", response_model=MonObjet, status_code=201)
 def ajouter_objet(donnees: ObjetCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
     obtenir_ou_404(session, m.Categorie, donnees.categorie_slug)
     objet = m.Objet(proprietaire_id=utilisateur.id, **donnees.model_dump())
@@ -85,7 +85,7 @@ def ajouter_objet(donnees: ObjetCreation, utilisateur: UtilisateurConnecte, sess
     return objet
 
 
-@router.get("/objets", response_model=list[ObjetLecture])
+@router.get("/objets", response_model=list[MonObjet])
 def lister_objets(utilisateur: UtilisateurConnecte, session: SessionDep):
     return session.scalars(
         select(m.Objet)
@@ -94,7 +94,7 @@ def lister_objets(utilisateur: UtilisateurConnecte, session: SessionDep):
     ).all()
 
 
-@router.patch("/objets/{objet_id}", response_model=ObjetLecture)
+@router.patch("/objets/{objet_id}", response_model=MonObjet)
 def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: UtilisateurConnecte, session: SessionDep):
     objet = obtenir_ou_404(session, m.Objet, objet_id)
     if objet.proprietaire_id != utilisateur.id:

@@ -1,7 +1,8 @@
 """Formats d'entrée et de sortie de l'API (validation Pydantic)."""
 
 import re
-from datetime import date, datetime
+from datetime import datetime
+from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
 
@@ -106,6 +107,22 @@ def _photo_cloudinary(url: str) -> str:
     return url
 
 
+# Vinted (vinted.fr, vinted.be…) ou Leboncoin. Rien n'est téléchargé depuis ces sites : leurs conditions
+# d'utilisation interdisent la récupération automatique. Le lien est seulement gardé comme référence.
+_SITES_ORIGINE = re.compile(r"^(www\.)?(vinted\.[a-z]{2,3}(\.[a-z]{2})?|leboncoin\.fr)$")
+
+
+def _annonce_origine(url: str | None) -> str | None:
+    """Garde un lien d'annonce Vinted ou Leboncoin, sans les paramètres de suivi."""
+    if url is None or not url.strip():
+        return None
+    morceaux = urlsplit(url.strip())
+    hote = (morceaux.hostname or "").lower()
+    if morceaux.scheme not in ("http", "https") or not _SITES_ORIGINE.match(hote) or morceaux.path in ("", "/"):
+        raise ValueError("Collez le lien d'une annonce Vinted ou Leboncoin.")
+    return f"https://{hote}{morceaux.path}"
+
+
 class ObjetCreation(BaseModel):
     categorie_slug: str
     titre: str = Field(min_length=1, max_length=120)
@@ -113,8 +130,10 @@ class ObjetCreation(BaseModel):
     etat: EtatObjet
     photo_url: str = Field(max_length=500)
     photo_id: str | None = Field(default=None, max_length=200)
+    annonce_origine: str | None = Field(default=None, max_length=500)
 
     _photo = field_validator("photo_url")(_photo_cloudinary)
+    _origine = field_validator("annonce_origine")(_annonce_origine)
 
 
 class ObjetModification(BaseModel):
@@ -141,6 +160,12 @@ class ObjetLecture(Lecture):
     photo_url: str | None
     statut: StatutObjet
     cree_le: datetime
+
+
+class MonObjet(ObjetLecture):
+    """Mes objets : avec le lien de l'annonce d'origine, que les autres ne voient pas."""
+
+    annonce_origine: str | None
 
 
 class SouhaitCreation(BaseModel):
