@@ -125,6 +125,10 @@ class Utilisateur(Horodatage, Base):
     # Jamais montré aux autres membres.
     telephone: Mapped[str | None] = mapped_column(String(16))
     fiabilite: Mapped[float] = mapped_column(Float, default=1.0, server_default="1")
+    # Engagements tenus (objet déposé) et manqués (pas de réponse dans les 48 h, objet accepté non déposé) :
+    # la fiabilité en découle (services.noter_engagement). Un refus n'est pas un manquement.
+    engagements_tenus: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    engagements_manques: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     # Compte suspendu par la modération : plus de connexion, objets retirés des échanges.
     suspendu_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
@@ -135,6 +139,7 @@ class Utilisateur(Horodatage, Base):
 
     __table_args__ = (
         CheckConstraint("fiabilite >= 0 AND fiabilite <= 1", name="fiabilite_0_1"),
+        CheckConstraint("engagements_tenus >= 0 AND engagements_manques >= 0", name="engagements_positifs"),
         # E-mail unique sans tenir compte de la casse.
         Index("uq_utilisateurs_email_lower", func.lower(email), unique=True),
     )
@@ -161,7 +166,17 @@ class Objet(Horodatage, Base):
         index=True,
     )
 
+    # « Je le donne contre… » (comme les listes par objet de BoardGameGeek) : des souhaits de son propriétaire.
+    # Aucun : contre n'importe lequel de ses souhaits. ``contre_strict`` : seulement contre ceux-là ; sinon ce
+    # n'est qu'une préférence, et l'objet peut partir contre un autre de ses souhaits.
+    contre_strict: Mapped[bool] = mapped_column(default=False, server_default="false")
+
     proprietaire: Mapped[Utilisateur] = relationship(back_populates="objets")
+    contre: Mapped[list[Souhait]] = relationship(secondary="objets_contre", order_by="Souhait.id")
+
+    @property
+    def contre_souhait_ids(self) -> list[int]:
+        return [s.id for s in self.contre]
 
     __table_args__ = (
         CheckConstraint("length(trim(titre)) > 0", name="titre_non_vide"),
@@ -194,6 +209,15 @@ class Souhait(Horodatage, Base):
     )
 
 
+class ObjetContre(Base):
+    """Un souhait contre lequel le propriétaire de l'objet accepte de le donner."""
+
+    __tablename__ = "objets_contre"
+
+    objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), primary_key=True)
+    souhait_id: Mapped[int] = mapped_column(ForeignKey("souhaits.id", ondelete="CASCADE"), primary_key=True, index=True)
+
+
 class GrandTroc(Horodatage, Base):
     """Un passage du Grand Troc du dimanche : le math trade lancé une fois par semaine sur tout le stock."""
 
@@ -207,6 +231,9 @@ class GrandTroc(Horodatage, Base):
     nb_boucles: Mapped[int] = mapped_column(Integer)
     nb_objets: Mapped[int] = mapped_column(Integer)
     nb_participants: Mapped[int] = mapped_column(Integer)
+    # Repêchage du mardi 18 h : seconde passe sur ce qui s'est libéré (refus, absences de réponse).
+    repeche_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    nb_objets_repeches: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
     echanges: Mapped[list[Echange]] = relationship(back_populates="grand_troc")
 

@@ -82,6 +82,10 @@ section.view[hidden]{display:none}
 .item .t b{font-weight:600;display:block}
 .item .t span{font-size:13px;color:var(--muted)}
 .item .t a{color:inherit}
+.item{flex-wrap:wrap}
+.contre-edit{flex-basis:100%;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.contre-edit label{display:flex;gap:8px;align-items:center}
+.contre-edit .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:1.5px solid var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;background:var(--surface);display:inline-flex;gap:6px;align-items:center}
 .chip.open{border-style:dashed;border-color:var(--accent);color:var(--accent)}
@@ -637,8 +641,29 @@ $('#f-import-home').onsubmit=e=>{
 };
 
 /* Mes listes */
+let mesSouhaits=[];
+const nomSouhait=s=>s.categorie_slug?categories[s.categorie_slug]||s.categorie_slug:'Objet n° '+s.objet_id;
+/* « Je le donne contre… » : comme les listes par objet de BoardGameGeek. Aucun choix = contre n'importe lequel
+   de mes souhaits ; « seulement » = strict ; sinon une préférence, et l'objet peut partir contre un autre souhait. */
+function contreTexte(o){
+  const noms=mesSouhaits.filter(s=>o.contre_souhait_ids.includes(s.id)).map(nomSouhait);
+  if(!noms.length)return "Contre n'importe lequel de vos souhaits";
+  return `Contre ${noms.map(esc).join(', ')} · ${o.contre_strict?'seulement':'de préférence'}`;
+}
+function contreEditeur(o){
+  if(!mesSouhaits.length)return `<div class="contre-edit" hidden><span class="muted">Ajoutez d'abord des souhaits, à droite.</span></div>`;
+  return `<form class="contre-edit" data-objet="${o.id}" hidden>
+    <b>Je le donne contre…</b>
+    <div class="row">${mesSouhaits.map(s=>`<label><input type="checkbox" name="s" value="${s.id}" ${o.contre_souhait_ids.includes(s.id)?'checked':''}>${esc(nomSouhait(s))}</label>`).join('')}</div>
+    <label><input type="radio" name="strict" value="0" ${o.contre_strict?'':'checked'}>De préférence : sinon, contre un autre de mes souhaits</label>
+    <label><input type="radio" name="strict" value="1" ${o.contre_strict?'checked':''}>Seulement contre ces souhaits</label>
+    <span class="muted" style="font-size:13px">Rien de coché : contre n'importe lequel de vos souhaits. « Seulement » donne moins de boucles.</span>
+    <div class="row"><button class="btn primary" type="submit">Enregistrer</button></div>
+  </form>`;
+}
 async function chargerListes(){
   const [objets,souhaits]=await Promise.all([api('/moi/objets'),api('/moi/souhaits')]);
+  mesSouhaits=souhaits;
   $('#have-label').textContent=`J'ai · ${objets.length} objet${objets.length>1?'s':''}`;
   $('#items').innerHTML=objets.length?objets.map(o=>`
     <div class="item"><div class="thumb">${o.photo_url?`<img src="${esc(vignette(o.photo_url))}" alt="">`:''}</div>
@@ -646,11 +671,20 @@ async function chargerListes(){
       <span>${esc(ETATS[o.etat]||'État à préciser')} · ${esc(categories[o.categorie_slug]||o.categorie_slug)}${o.annonce_origine?` · <a href="${esc(o.annonce_origine)}" target="_blank" rel="noopener noreferrer">aussi en vente ailleurs</a>`:''}</span></div>
       ${o.statut==='disponible'?`<button class="linkbtn" data-retirer="${o.id}">Retirer</button>`:''}
       ${o.statut==='retire'&&o.photo_url?`<button class="linkbtn" data-remettre="${o.id}">Remettre</button>`:''}
+      <span class="muted" style="flex-basis:100%;font-size:13px">${contreTexte(o)} · <button class="linkbtn" data-contre="${o.id}">Choisir</button></span>
+      ${contreEditeur(o)}
     </div>`).join(''):'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>';
-  $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>`<span class="chip">${esc(s.categorie_slug?categories[s.categorie_slug]||s.categorie_slug:'Objet n° '+s.objet_id)}
+  $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>`<span class="chip">${esc(nomSouhait(s))}
     <button class="x" aria-label="Retirer ce souhait" data-souhait="${s.id}">×</button></span>`).join(''):'<p class="empty">Ajoutez ce qui vous serait utile.</p>';
 }
+$('#items').onsubmit=async e=>{
+  e.preventDefault(); const f=e.target; if(!f.dataset.objet)return;
+  const body={contre_souhait_ids:[...f.querySelectorAll('input[name=s]:checked')].map(i=>+i.value),contre_strict:f.strict.value==='1'};
+  try{await api('/moi/objets/'+f.dataset.objet,{method:'PATCH',body});toast('Enregistré');await chargerListes();chargerEchanges()}catch(err){toast(err.message)}
+};
 $('#items').onclick=async e=>{
+  const c=e.target.dataset.contre;
+  if(c){const ed=e.target.closest('.item').querySelector('.contre-edit'); ed.hidden=!ed.hidden; return}
   const r=e.target.dataset.retirer, m=e.target.dataset.remettre; if(!r&&!m)return;
   try{await api('/moi/objets/'+(r||m),{method:'PATCH',body:{statut:r?'retire':'disponible'}});await chargerListes();chargerEchanges()}catch(err){toast(err.message)}
 };

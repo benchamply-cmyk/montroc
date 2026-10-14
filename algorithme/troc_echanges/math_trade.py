@@ -17,13 +17,14 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 
-from . import empaquetage
+from . import empaquetage, solveur_exact
 from .boucles import cle_classement, enumerer_boucles
 from .flot import FlotCoutMin
 from .graphe import GrapheEchanges
 from .modele import Boucle, Contraintes, Marche, Transfert
 
 OBJECTIFS = ("echanges", "esperance")
+MOTEURS = ("auto", "exact", "heuristique")
 
 
 @dataclass
@@ -33,6 +34,7 @@ class Solution:
     duree_s: float
     candidats: int = 0
     stats: dict = field(default_factory=dict)
+    moteur: str = "heuristique"
 
     @property
     def nb_objets_echanges(self) -> int:
@@ -61,17 +63,28 @@ def math_trade(marche: Marche, longueur_max: int | None = 3, objectif: str = "ec
                options_par_transfert: int = 2, proba_min: float = 0.0,
                contraintes: Contraintes | None = None,
                taille_exacte: int = 400, limite_noeuds: int = 50_000,
-               duree_max_s: float = 10.0) -> Solution:
+               duree_max_s: float = 10.0, moteur: str = "auto") -> Solution:
     """Calcule l'ensemble de boucles qui maximise les échanges.
 
     - ``objectif="echanges"`` : maximise le nombre d'objets échangés
-      (TradeMaximizer), à égalité préfère les boucles les plus sûres ;
+      (TradeMaximizer), à égalité sert le plus de personnes différentes, puis
+      respecte le plus de préférences « contre », puis préfère les boucles les
+      plus sûres ;
     - ``objectif="esperance"`` : maximise le nombre d'objets échangés
       *attendu* (longueur × chance que tous acceptent), ce qui favorise les
       échanges directs et les acceptations automatiques. Mode bornée seulement.
+
+    ``moteur`` (mode borné, objectif « echanges », sans ``proba_min``) :
+    ``"exact"`` utilise le solveur CP-SAT d'OR-Tools (``solveur_exact``),
+    ``"heuristique"`` l'empaquetage de boucles énumérées, ``"auto"`` le solveur
+    exact s'il est installé et si le marché n'est pas trop grand
+    (``solveur_exact.MAX_COPIES_AUTO``), l'heuristique sinon ou s'il ne trouve
+    rien à temps.
     """
     if objectif not in OBJECTIFS:
         raise ValueError(f"objectif doit être parmi {OBJECTIFS}")
+    if moteur not in MOTEURS:
+        raise ValueError(f"moteur doit être parmi {MOTEURS}")
     debut = time.perf_counter()
     graphe = GrapheEchanges(marche, contraintes)
     if longueur_max is None:
@@ -80,14 +93,28 @@ def math_trade(marche: Marche, longueur_max: int | None = 3, objectif: str = "ec
         boucles = _trade_maximizer(graphe)
         return Solution(sorted(boucles, key=cle_classement), True, time.perf_counter() - debut)
 
+    exact_possible = objectif == "echanges" and proba_min == 0 and longueur_max in (2, 3)
+    if moteur == "exact" and not (exact_possible and solveur_exact.disponible()):
+        raise ValueError("Le moteur exact demande OR-Tools, l'objectif 'echanges' et proba_min=0.")
+    if moteur != "heuristique" and exact_possible:
+        limite = solveur_exact.MAX_COPIES_AUTO if moteur == "auto" else None
+        resultat = solveur_exact.resoudre(graphe, longueur_max, duree_max_s, max_copies=limite)
+        if resultat is not None:
+            boucles, optimal, stats = resultat
+            return Solution(sorted(boucles, key=cle_classement), optimal, time.perf_counter() - debut,
+                            stats=stats, moteur="exact")
+        # Pas d'OR-Tools, ou aucune solution trouvée à temps : l'heuristique prend le relais avec le temps restant.
+        duree_max_s = max(1.0, duree_max_s - (time.perf_counter() - debut))
+
     candidats = [b for b in enumerer_boucles(graphe, longueur_max, options_par_transfert)
                  if b.proba_reussite >= proba_min]
     eps = 1.0 / (len(candidats) + 1)
     rang_max = max((b.somme_rangs for b in candidats), default=1)
     poids, ressources = [], []
     for b in candidats:
-        # départage : boucle plus sûre, puis souhaits mieux classés (toujours < 1 au total)
-        departage = eps * (0.5 * b.proba_reussite + 0.5 * (1 - b.somme_rangs / (rang_max + 1)))
+        # départage : boucle plus sûre, puis souhaits mieux classés, puis préférences « contre » (toujours < 1)
+        departage = eps * (0.4 * b.proba_reussite + 0.3 * (1 - b.somme_rangs / (rang_max + 1))
+                           + 0.3 * b.preferences_respectees / b.longueur)
         base = b.longueur if objectif == "echanges" else b.longueur * b.proba_reussite
         poids.append(base + (departage if objectif == "echanges" else departage * 1e-3))
         ressources.append([("o", t.objet.id) for t in b.transferts]
@@ -109,6 +136,7 @@ def _trade_maximizer(graphe: GrapheEchanges) -> list[Boucle]:
     (objet non échangé, coût M) ou passe par un souhait d'un autre
     utilisateur (coût = rang du souhait). Chaque utilisateur doit renvoyer
     autant d'unités qu'il a d'objets : il reçoit donc autant qu'il donne.
+    Les listes « contre » des objets sont ignorées ici (mode de comparaison).
     """
     transferts = list(graphe.tous_les_transferts())
     if not transferts:

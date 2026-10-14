@@ -76,10 +76,21 @@ def signature_photo(_utilisateur: UtilisateurConnecte):
     )
 
 
+def _mes_souhaits(session, utilisateur: m.Utilisateur, ids: list[int]) -> list[m.Souhait]:
+    """Les souhaits d'une liste « contre » : seulement les miens."""
+    souhaits = session.scalars(
+        select(m.Souhait).where(m.Souhait.id.in_(set(ids)), m.Souhait.utilisateur_id == utilisateur.id)
+    ).all()
+    if len(souhaits) != len(set(ids)):
+        raise HTTPException(409, "Un objet ne se donne que contre vos propres souhaits.")
+    return list(souhaits)
+
+
 @router.post("/objets", response_model=MonObjet, status_code=201)
 def ajouter_objet(donnees: ObjetCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
     obtenir_ou_404(session, m.Categorie, donnees.categorie_slug)
-    objet = m.Objet(proprietaire_id=utilisateur.id, **donnees.model_dump())
+    contre = _mes_souhaits(session, utilisateur, donnees.contre_souhait_ids)
+    objet = m.Objet(proprietaire_id=utilisateur.id, contre=contre, **donnees.model_dump(exclude={"contre_souhait_ids"}))
     session.add(objet)
     session.commit()
     return objet
@@ -106,6 +117,10 @@ def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: Utili
         raise HTTPException(409, "Cet objet est engagé dans un échange.")
     if changements.get("statut") == m.StatutObjet.disponible and not (objet.photo_url and objet.etat):
         raise HTTPException(409, "Ajoutez une photo et l'état avant de remettre cet objet en ligne.")
+    if (ids := changements.pop("contre_souhait_ids", None)) is not None:
+        objet.contre = _mes_souhaits(session, utilisateur, ids)
+    if changements.get("contre_strict", False) is None:
+        del changements["contre_strict"]
     for champ, valeur in changements.items():
         setattr(objet, champ, valeur)
     session.commit()

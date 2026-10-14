@@ -18,12 +18,15 @@ erDiagram
     utilisateurs ||--o{ sessions : "connecté"
     objets ||--o{ signalements : "visé"
     utilisateurs ||--o{ signalements : "visé / auteur"
+    objets ||--o{ objets_contre : "je le donne contre"
+    souhaits ||--o{ objets_contre : "accepté en échange"
 
     categories { string slug PK  string libelle }
-    utilisateurs { int id PK  string email UK  string pseudo UK  string zone  string telephone  float fiabilite  timestamptz suspendu_le  timestamptz cree_le }
-    objets { int id PK  int proprietaire_id FK  string categorie_slug FK  string titre  text description  string etat  string photo_url  string statut }
+    utilisateurs { int id PK  string email UK  string pseudo UK  string zone  string telephone  float fiabilite  int engagements_tenus  int engagements_manques  timestamptz suspendu_le  timestamptz cree_le }
+    objets { int id PK  int proprietaire_id FK  string categorie_slug FK  string titre  text description  string etat  string photo_url  string statut  bool contre_strict }
     souhaits { int id PK  int utilisateur_id FK  string categorie_slug FK  int objet_id FK  int rang  int quantite  bool acceptation_auto }
-    grands_trocs { int id PK  date jour UK  int nb_boucles  int nb_objets  int nb_participants  bool optimal }
+    grands_trocs { int id PK  date jour UK  int nb_boucles  int nb_objets  int nb_participants  bool optimal  timestamptz repeche_le  int nb_objets_repeches }
+    objets_contre { int objet_id PK, FK  int souhait_id PK, FK }
     echanges { int id PK  int grand_troc_id FK  string statut  float proba_reussite  timestamptz expire_le  timestamptz rappel_envoye_le }
     transferts { int id PK  int echange_id FK  int position  int donneur_id FK  int receveur_id FK  int objet_id FK  string reponse  timestamptz depose_le  string code_retrait }
     jetons_connexion { int id PK  string email  string empreinte UK  timestamptz expire_le  timestamptz utilise_le }
@@ -42,6 +45,7 @@ Ces règles sont des **contraintes PostgreSQL** : même un bug dans l'API ne peu
 | Un e-mail ne sert qu'une fois, sans tenir compte des majuscules | index unique sur `lower(email)` |
 | Un pseudo est unique | `uq_utilisateurs_pseudo` |
 | La fiabilité est entre 0 et 1 | `ck_utilisateurs_fiabilite_0_1` |
+| Les compteurs d'engagements tenus et manqués sont positifs | `ck_utilisateurs_engagements_positifs` |
 | Un objet a un titre non vide et une catégorie existante | `ck_objets_titre_non_vide`, clé étrangère |
 | Un objet n'est proposé (`disponible`) qu'avec une photo et un état | `ck_objets_photo_et_etat_si_disponible` |
 | Un lien de connexion ou une session n'est stocké que sous forme d'empreinte, unique | `uq_jetons_connexion_empreinte`, `uq_sessions_empreinte` |
@@ -56,7 +60,9 @@ Ces règles sont des **contraintes PostgreSQL** : même un bug dans l'API ne peu
 Et dans l'API :
 - quand une boucle est enregistrée, ses objets sont **verrouillés** (`SELECT … FOR UPDATE`) puis passent en `reserve` : deux échanges simultanés ne peuvent pas réserver le même objet ;
 - un refus, un délai de 48 h dépassé ou des dépôts incomplets à la fin de la semaine (dimanche midi après le Grand Troc) **annulent** l'échange et remettent les objets en `disponible` ;
-- un objet retiré par la modération passe en `modere` : son propriétaire ne peut pas le remettre en ligne.
+- un objet retiré par la modération passe en `modere` : son propriétaire ne peut pas le remettre en ligne ;
+- la liste « je le donne contre… » d'un objet (`objets_contre`) ne contient que des souhaits de son propriétaire ;
+- la fiabilité découle des engagements : `(tenus + 9) / (tenus + manqués + 9)`. Un dépôt compte comme tenu ; ne pas répondre dans les 48 h, ou accepter sans déposer, comme manqué ; un refus ne compte pas.
 
 Les tests (`api/tests/test_base_de_donnees.py`) vérifient chacune de ces contraintes sur une vraie base PostgreSQL.
 

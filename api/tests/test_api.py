@@ -353,9 +353,10 @@ def test_rappel_puis_expiration(client, creer):
     (a, b, c), echange = creer.echange_abc()
     client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": True}, headers=b.headers)
 
-    assert client.post("/taches/horaires", headers=TACHES).json() == {"rappels_envoyes": 0, "echanges_expires": 0}
+    rien = {"rappels_envoyes": 0, "echanges_expires": 0, "objets_repeches": None}
+    assert client.post("/taches/horaires", headers=TACHES).json() == rien
     _decaler(echange["id"], 11)
-    assert client.post("/taches/horaires", headers=TACHES).json() == {"rappels_envoyes": 1, "echanges_expires": 0}
+    assert client.post("/taches/horaires", headers=TACHES).json() == {**rien, "rappels_envoyes": 1}
     assert sujets(c.email)[-1] == "Plus que 12 h pour répondre"
     assert "Plus que 12 h pour répondre" not in sujets(b.email)
     # Un seul rappel par échange.
@@ -365,14 +366,20 @@ def test_rappel_puis_expiration(client, creer):
     assert client.post("/taches/horaires", headers=TACHES).json()["echanges_expires"] == 1
     assert client.get(f"/echanges/{echange['id']}", headers=a.headers).json()["statut"] == "annule"
     assert len(client.get("/objets").json()) == 3
+    # Chloé n'a pas répondu : un engagement manqué, sa fiabilité baisse. Bruno a répondu : rien ne change.
+    assert client.get("/moi", headers=c.headers).json()["fiabilite"] == 0.9
+    assert client.get("/moi", headers=b.headers).json()["fiabilite"] == 1
 
 
 def test_depots_non_faits_dans_les_7_jours(client, creer):
-    (a, _, _), echange = creer.echange_abc(auto=True)
+    (a, b, c), echange = creer.echange_abc(auto=True)
     client.post(f"/echanges/{echange['id']}/depot", headers=a.headers)
     _decaler(echange["id"], -1)
     assert client.post("/taches/horaires", headers=TACHES).json()["echanges_expires"] == 1
     assert "chacun récupère le sien" in courriels.ENVOYES[-1].texte
+    # Alice a déposé (engagement tenu), Bruno et Chloé non (manqué).
+    fiabilites = [client.get("/moi", headers=p.headers).json()["fiabilite"] for p in (a, b, c)]
+    assert fiabilites == [1, 0.9, 0.9]
 
 
 def test_quitter_troc_annule_mes_echanges(client, creer):
@@ -381,3 +388,88 @@ def test_quitter_troc_annule_mes_echanges(client, creer):
     assert client.get(f"/echanges/{echange['id']}", headers=a.headers).json()["statut"] == "annule"
     assert {o["statut"] for o in client.get("/moi/objets", headers=a.headers).json()} == {"disponible"}
     assert sujets(a.email)[-1] == "Échange annulé"
+
+
+def test_je_le_donne_contre(client, creer):
+    a, b = creer.utilisateur("alice"), creer.utilisateur("bruno")
+    siege = creer.souhait(a, "siege-auto")
+    livres = creer.souhait(a, "livres")
+    poussette = creer.objet(a, "poussette")
+    creer.objet(b, "livres")
+    creer.souhait(b, "poussette")
+    assert client.get("/moi/objets", headers=a.headers).json()[0]["contre_souhait_ids"] == []
+    assert len(client.get("/moi/boucles", headers=a.headers).json()) == 1
+
+    # Seulement contre un siège auto : la boucle avec le livre de Bruno disparaît.
+    r = client.patch(
+        f"/moi/objets/{poussette}", json={"contre_souhait_ids": [siege], "contre_strict": True}, headers=a.headers
+    )
+    assert r.status_code == 200 and r.json()["contre_souhait_ids"] == [siege] and r.json()["contre_strict"]
+    assert client.get("/moi/boucles", headers=a.headers).json() == []
+    # De préférence seulement : elle revient.
+    client.patch(f"/moi/objets/{poussette}", json={"contre_strict": False}, headers=a.headers)
+    assert len(client.get("/moi/boucles", headers=a.headers).json()) == 1
+    assert client.get("/moi/objets", headers=a.headers).json()[0]["contre_souhait_ids"] == [siege]
+
+    # Seulement ses propres souhaits ; les autres ne voient pas la liste.
+    souhait_de_bruno = client.get("/moi/souhaits", headers=b.headers).json()[0]["id"]
+    r = client.patch(f"/moi/objets/{poussette}", json={"contre_souhait_ids": [souhait_de_bruno]}, headers=a.headers)
+    assert r.status_code == 409
+    assert "contre_souhait_ids" not in client.get(f"/objets/{poussette}").json()
+    # À la création aussi ; un souhait supprimé sort de la liste.
+    r = client.post(
+        "/moi/objets",
+        json={
+            "categorie_slug": "jouets",
+            "titre": "Lego",
+            "etat": "bon",
+            "photo_url": PHOTO,
+            "contre_souhait_ids": [siege, livres],
+            "contre_strict": True,
+        },
+        headers=a.headers,
+    )
+    assert r.status_code == 201 and r.json()["contre_souhait_ids"] == sorted([siege, livres])
+    client.delete(f"/moi/souhaits/{siege}", headers=a.headers)
+    lego = next(o for o in client.get("/moi/objets", headers=a.headers).json() if o["titre"] == "Lego")
+    assert lego["contre_souhait_ids"] == [livres]
+
+
+def test_repechage_du_mardi(client, creer, monkeypatch):
+    # Alice a une poussette et veut un siège ; Bruno et Chloé ont chacun un siège et veulent la poussette.
+    a, b, c = creer.utilisateur("alice"), creer.utilisateur("bruno"), creer.utilisateur("chloe")
+    creer.objet(a, "poussette")
+    creer.souhait(a, "siege-auto")
+    for p in (b, c):
+        creer.objet(p, "siege-auto")
+        creer.souhait(p, "poussette")
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 5))
+    (echange,) = client.post("/taches/grand-troc", headers=TACHES).json()["echanges"]
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE grands_trocs SET cree_le = :t"), {"t": _dimanche(18, 5)})
+        conn.execute(text("UPDATE objets SET cree_le = :t"), {"t": _dimanche(10)})
+    # Un objet publié après le Grand Troc attend le dimanche suivant.
+    david = creer.utilisateur("david")
+    creer.objet(david, "siege-auto")
+    creer.souhait(david, "poussette")
+    with engine.begin() as conn:
+        conn.execute(
+            text("UPDATE objets SET cree_le = :t WHERE proprietaire_id = :d"),
+            {"t": _dimanche(9, jour=19), "d": david.id},
+        )
+
+    # Le partenaire d'Alice refuse la poussette.
+    partenaire = b if any(t["receveur_id"] == b.id for t in echange["transferts"]) else c
+    autre = c if partenaire is b else b
+    client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": False}, headers=partenaire.headers)
+
+    # Lundi : trop tôt. Mardi 18 h 17 : le repêchage propose la poussette à l'autre, une seule fois.
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(12, jour=19))
+    assert client.post("/taches/horaires", headers=TACHES).json()["objets_repeches"] is None
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 17, jour=20))
+    assert client.post("/taches/horaires", headers=TACHES).json()["objets_repeches"] == 2
+    assert client.post("/taches/horaires", headers=TACHES).json()["objets_repeches"] is None
+    (repeche,) = [e for e in client.get("/moi/echanges", headers=a.headers).json() if e["statut"] == "propose"]
+    assert {t["receveur_id"] for t in repeche["transferts"]} == {a.id, autre.id}
+    assert repeche["grand_troc_jour"] == "2026-10-18"
+    assert client.get("/grand-troc").json()["dernier"]["nb_objets_repeches"] == 2
