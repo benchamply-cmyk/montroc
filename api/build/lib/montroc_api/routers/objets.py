@@ -19,8 +19,10 @@ def _normaliser(colonne):
 
 def _mots(q: str) -> list[str]:
     texte = q.lower().translate(str.maketrans(_ACCENTS, _SANS))
+    # « vélos » trouve « Vélo », « jeux » trouve « jeu de société » : on cherche le singulier.
+    mots = [mot[:-1] if len(mot) > 3 and mot[-1] in "sx" else mot for mot in texte.split()]
     # Les jokers de LIKE sont pris au pied de la lettre.
-    return [mot.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") for mot in texte.split()][:8]
+    return [mot.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") for mot in mots][:8]
 
 
 @router.get("", response_model=list[ObjetLecture])
