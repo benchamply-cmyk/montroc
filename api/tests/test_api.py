@@ -101,6 +101,7 @@ def test_recherche_libre_sans_compte(client, creer):
     # Sans en-tête d'authentification, sans accents ni majuscules, dans le titre ou la description.
     assert chercher("velo") == [velo]
     assert chercher("VÉLO enfant") == [velo]
+    assert chercher("Vélos") == [velo] and chercher("pouces") == [velo]  # pluriels
     assert chercher("elephants") == [romans]
     assert chercher("velo bd") == []  # tous les mots doivent correspondre
     assert chercher("50%") == [romans] and chercher("%") == [romans]  # pas de joker
