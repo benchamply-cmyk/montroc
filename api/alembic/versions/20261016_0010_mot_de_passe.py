@@ -10,7 +10,6 @@ import sqlalchemy as sa
 from alembic import op
 
 revision: str = "0010"
-# À passer à "0009" si le Feature Flag engine (migration 0009) arrive avant dans main.
 down_revision: str | Sequence[str] | None = "0008"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
