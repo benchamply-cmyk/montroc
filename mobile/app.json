@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "TrocTroc",
+    "slug": "troctroc",
+    "scheme": "troctroc",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#111318",
+    "ios": {
+      "bundleIdentifier": "fr.troctroc.app",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "fr.troctroc.app"
+    },
+    "plugins": ["expo-router", "expo-secure-store"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "api": "https://api.troctroc.fr"
+    }
+  }
+}
