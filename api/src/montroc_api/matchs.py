@@ -19,7 +19,7 @@ from troc_echanges import Transfert as TransfertMoteur
 from . import courriels
 from . import models as m
 from .config import get_settings
-from .services import ErreurMetier, proposer
+from .services import ErreurMetier, proposer, souhait_correspond
 
 ACTIFS = (m.StatutEchange.propose, m.StatutEchange.accepte)
 
@@ -71,6 +71,8 @@ class Carte:
     il_aime: list[m.Objet] = field(default_factory=list)
     # Mes objets qui répondent à ses souhaits : il y a des chances qu'il aime aussi.
     il_cherche: list[m.Objet] = field(default_factory=list)
+    # Ce qu'il a écrit pour décrire ces souhaits-là (« Je demande »).
+    sa_demande: str | None = None
 
     @property
     def score(self) -> tuple:
@@ -91,11 +93,14 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
     Un objet déjà aimé ou écarté ne revient pas.
     """
     mes_objets = _mes_objets(session, moi.id)
-    par_categorie = {s.categorie_slug: s for s in sorted(moi.souhaits, key=lambda s: -s.rang) if s.categorie_slug}
-    par_objet = {s.objet_id: s for s in moi.souhaits if s.objet_id}
+    # Mes souhaits, le préféré (rang 1) d'abord : une carte répond au premier qui lui correspond.
+    mes_souhaits = sorted(moi.souhaits, key=lambda s: (s.rang, s.id))
+    categories = {s.categorie_slug for s in mes_souhaits if s.categorie_slug}
+    precis = {s.objet_id for s in mes_souhaits if s.objet_id}
 
     # Ce que les autres cherchent parmi mes objets (souhaits) et ce qu'ils aiment déjà (coups de cœur).
     il_cherche: dict[int, list[m.Objet]] = {}
+    sa_demande: dict[int, str] = {}
     if mes_objets:
         for s in session.scalars(
             select(m.Souhait).where(
@@ -106,21 +111,20 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
                 ),
             )
         ):
-            liste = il_cherche.setdefault(s.utilisateur_id, [])
-            voulus = [
-                o
-                for o in mes_objets
-                if o.id == s.objet_id or (s.objet_id is None and o.categorie_slug == s.categorie_slug)
-            ]
-            liste += [o for o in voulus if o not in liste]
+            voulus = [o for o in mes_objets if souhait_correspond(s, o)]
+            if voulus:
+                liste = il_cherche.setdefault(s.utilisateur_id, [])
+                liste += [o for o in voulus if o not in liste]
+                if s.precisions:
+                    sa_demande.setdefault(s.utilisateur_id, s.precisions)
     il_aime = _coups_de_coeur_recus(session, mes_objets)
 
     deja_vus = select(m.Avis.objet_id).where(m.Avis.utilisateur_id == moi.id)
     criteres = [m.Objet.proprietaire_id.in_(set(il_cherche) | set(il_aime))]
-    if par_categorie:
-        criteres.append(m.Objet.categorie_slug.in_(par_categorie))
-    if par_objet:
-        criteres.append(m.Objet.id.in_(par_objet))
+    if categories:
+        criteres.append(m.Objet.categorie_slug.in_(categories))
+    if precis:
+        criteres.append(m.Objet.id.in_(precis))
     candidats = session.scalars(
         select(m.Objet)
         .join(m.Objet.proprietaire)
@@ -136,13 +140,17 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
     cartes = [
         Carte(
             objet=o,
-            souhait=par_objet.get(o.id) or par_categorie.get(o.categorie_slug),
+            souhait=next((s for s in mes_souhaits if souhait_correspond(s, o)), None),
             il_aime=il_aime.get(o.proprietaire_id, []),
             il_cherche=il_cherche.get(o.proprietaire_id, []),
+            sa_demande=sa_demande.get(o.proprietaire_id),
         )
         for o in candidats
         if meme_zone(moi, o.proprietaire)
     ]
+    # La requête prend toute la catégorie : on écarte ce qu'une sous-catégorie ou une taille demandées excluent,
+    # sauf si son propriétaire cherche ou aime déjà un de mes objets.
+    cartes = [c for c in cartes if c.souhait is not None or c.il_aime or c.il_cherche]
     cartes.sort(key=lambda c: c.score, reverse=True)
     return cartes[:limite]
 

@@ -28,6 +28,7 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 # Noms de contraintes stables : indispensable pour que les migrations Alembic restent lisibles.
@@ -160,6 +161,9 @@ class Objet(Horodatage, Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     proprietaire_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
     categorie_slug: Mapped[str] = mapped_column(ForeignKey("categories.slug"), index=True)
+    # Sous-catégorie et caractéristiques (taille, âge, marque…) : voir nomenclature.py, qui les valide.
+    sous_categorie_slug: Mapped[str | None] = mapped_column(String(50))
+    caracteristiques: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict, server_default="{}")
     titre: Mapped[str] = mapped_column(String(120))
     description: Mapped[str | None] = mapped_column(Text)
     etat: Mapped[EtatObjet | None] = mapped_column(_enum(EtatObjet, "etat_objet"))
@@ -205,6 +209,11 @@ class Souhait(Horodatage, Base):
     utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
     categorie_slug: Mapped[str | None] = mapped_column(ForeignKey("categories.slug"))
     objet_id: Mapped[int | None] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"))
+    # « Je demande » en détail : une sous-catégorie et des caractéristiques à choix fixes, qui filtrent les
+    # objets proposés (voir nomenclature.py), et une description libre de ce qui est cherché.
+    sous_categorie_slug: Mapped[str | None] = mapped_column(String(50))
+    caracteristiques: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict, server_default="{}")
+    precisions: Mapped[str | None] = mapped_column(Text)
     rang: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     quantite: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     acceptation_auto: Mapped[bool] = mapped_column(default=False, server_default="false")
@@ -213,6 +222,9 @@ class Souhait(Horodatage, Base):
 
     __table_args__ = (
         CheckConstraint("(categorie_slug IS NULL) <> (objet_id IS NULL)", name="categorie_ou_objet"),
+        CheckConstraint(
+            "sous_categorie_slug IS NULL OR categorie_slug IS NOT NULL", name="sous_categorie_d_une_categorie"
+        ),
         CheckConstraint("rang >= 1", name="rang_positif"),
         CheckConstraint("quantite >= 1", name="quantite_positive"),
     )

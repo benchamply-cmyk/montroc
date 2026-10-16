@@ -53,8 +53,25 @@ section.view[hidden]{display:none}
 .steps li::before{counter-increment:s;content:counter(s);font-family:var(--mono);font-size:13px;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center}
 .steps b{display:block}
 
-/* Listes */
-.lists{display:grid;gap:24px}
+/* Listes : « Je propose » et « Je demande », deux sections bien séparées */
+.lists{display:grid;gap:20px}
+.liste{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:var(--r);padding:18px 16px}
+.liste.demande{border-top-color:var(--mark)}
+.liste-tete{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.liste-tete>div{flex:1;min-width:0}
+.liste-tete h3{margin:0;font-family:var(--display);font-size:20px;letter-spacing:.02em;text-transform:uppercase}
+.liste-tete p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.liste-num{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:13px;background:var(--accent);color:var(--accent-ink)}
+.demande .liste-num{background:var(--mark)}
+.caracs{padding:12px;border:1px dashed var(--line);border-radius:10px}
+.demandes{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.demande-ligne{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.demande-ligne .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.demande-ligne .t b{font-weight:600}
+.demande-ligne .t span{font-size:13px;color:var(--muted)}
+.demande-ligne q{font-size:14px;font-style:italic}
+.demande-ligne .x{border:0;background:none;padding:2px 6px;color:var(--muted);font-size:20px;line-height:1}
+.demande-ligne .x:hover{color:var(--ink)}
 .list-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
 .items{display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
@@ -446,8 +463,10 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     </div>
 
     <div class="lists">
-      <div>
-        <div class="list-head"><span class="label" id="have-label">J'ai</span></div>
+      <section class="liste" aria-labelledby="titre-propose">
+        <div class="liste-tete"><span class="liste-num" aria-hidden="true">1</span>
+          <div><h3 id="titre-propose">Je propose</h3><p>Ce que vous êtes prêt à donner en échange.</p></div>
+          <span class="label" id="have-label"></span></div>
         <div class="items" id="items"></div>
         <details class="addobj" style="margin-top:14px">
           <summary class="btn primary">+ Proposer un objet</summary>
@@ -464,25 +483,40 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
             <label class="field"><span>Quoi ?</span><input class="input" name="titre" required maxlength="120" placeholder="Ex. poussette canne"></label>
             <div class="grid2">
               <label class="field"><span>Catégorie</span><select class="input" name="categorie_slug" required id="cat-obj"></select></label>
-              <label class="field"><span>État</span><select class="input" name="etat" required>
-                <option value="">Choisir…</option><option value="neuf">Neuf</option><option value="tres_bon">Très bon état</option>
-                <option value="bon">Bon état</option><option value="usage">Usagé, fonctionne</option></select></label>
+              <label class="field"><span>Type <span class="muted" style="font-weight:400">(facultatif)</span></span><select class="input" name="sous_categorie_slug" id="sous-cat-obj" disabled><option value="">Choisissez d'abord la catégorie</option></select></label>
             </div>
-            <label class="field"><span>Précisions <span class="muted" style="font-weight:400">(facultatif)</span></span><textarea class="input" name="description" maxlength="2000" placeholder="Taille, défauts, accessoires…"></textarea></label>
+            <div class="grid2 caracs" id="caracs-obj" hidden></div>
+            <label class="field"><span>État</span><select class="input" name="etat" required>
+              <option value="">Choisir…</option><option value="neuf">Neuf</option><option value="tres_bon">Très bon état</option>
+              <option value="bon">Bon état</option><option value="usage">Usagé, fonctionne</option></select></label>
+            <label class="field"><span>Précisions <span class="muted" style="font-weight:400">(facultatif)</span></span><textarea class="input" name="description" maxlength="2000" placeholder="Défauts, accessoires fournis, dimensions…"></textarea></label>
             <button class="cta" type="submit">Publier</button>
             <p class="err" id="obj-err" hidden></p>
           </form>
         </details>
-      </div>
+      </section>
 
-      <div>
-        <div class="list-head"><span class="label">Ça me serait utile</span></div>
-        <div class="chips" id="wishes"></div>
-        <form class="add" id="f-wish">
-          <select class="input" id="cat-wish" aria-label="Catégorie souhaitée" style="border-radius:999px"></select>
-          <button type="submit">Ajouter</button>
-        </form>
-      </div>
+      <section class="liste demande" aria-labelledby="titre-demande">
+        <div class="liste-tete"><span class="liste-num" aria-hidden="true">2</span>
+          <div><h3 id="titre-demande">Je demande</h3><p>Ce qui vous serait utile en retour.</p></div>
+          <span class="label" id="want-label"></span></div>
+        <div class="demandes" id="wishes"></div>
+        <details class="addobj" id="d-wish" style="margin-top:14px">
+          <summary class="btn primary">+ Ajouter une demande</summary>
+          <form class="stack" id="f-wish">
+            <div class="grid2">
+              <label class="field"><span>Catégorie</span><select class="input" name="categorie_slug" required id="cat-wish"></select></label>
+              <label class="field"><span>Type</span><select class="input" name="sous_categorie_slug" id="sous-cat-wish" disabled><option value="">Choisissez d'abord la catégorie</option></select></label>
+            </div>
+            <div class="grid2 caracs" id="caracs-wish" hidden></div>
+            <label class="field"><span>Décrivez ce que vous cherchez <span class="muted" style="font-weight:400">(facultatif)</span></span>
+              <textarea class="input" name="precisions" maxlength="500" placeholder="Ex. une poussette légère qui se plie d'une main, pour prendre le métro."></textarea></label>
+            <p class="muted" style="font-size:13px;margin:0">Le type et les choix ci-dessus trient les objets qui vous sont proposés : « Tous les types » et « Peu importe » vous ouvrent plus d'échanges. Votre description est montrée aux membres qui ont ce que vous cherchez.</p>
+            <button class="cta" type="submit">Ajouter à ma demande</button>
+            <p class="err" id="wish-err" hidden></p>
+          </form>
+        </details>
+      </section>
     </div>
 
     <div class="card">
@@ -764,8 +798,9 @@ $('#f-obj').onsubmit=async e=>{
   try{
     const photo=await envoyerPhoto(f.photo.files[0]); b.textContent='Publication…';
     await api('/moi/objets',{method:'POST',body:{titre:f.titre.value.trim(),categorie_slug:f.categorie_slug.value,etat:f.etat.value,
+      sous_categorie_slug:f.sous_categorie_slug.value||null,caracteristiques:Detail.valeurs(f),
       description:f.description.value.trim()||null,annonce_origine:annonce?annonce.lien:null,...photo}});
-    f.reset(); $('#photo-txt').innerHTML='<b>Ajouter une photo</b>'; $('#import-guide').hidden=true; f.closest('details').open=false;
+    f.reset(); Detail.remplir(f,false); $('#photo-txt').innerHTML='<b>Ajouter une photo</b>'; $('#import-guide').hidden=true; f.closest('details').open=false;
     toast(annonce?`Objet publié. Une fois troqué, pensez à retirer l'annonce ${annonce.site}.`:'Objet publié');
     await chargerListes(); chargerEchanges();
   }catch(err){$('#obj-err').textContent=err.message;$('#obj-err').hidden=false}
@@ -780,7 +815,7 @@ function guiderAnnonce(){
   if(!brut)return;
   if(!a){g.innerHTML=`<p class="err" style="font-size:14px">Ce lien n'est pas une annonce Vinted ou Leboncoin.</p>`;return}
   if(a.titre&&!f.titre.value.trim())f.titre.value=a.titre;
-  if(a.categorie&&!f.categorie_slug.value&&categories[a.categorie])f.categorie_slug.value=a.categorie;
+  if(a.categorie&&!f.categorie_slug.value&&categories[a.categorie]){f.categorie_slug.value=a.categorie;Detail.remplir(f,false)}
   g.innerHTML=`<p style="font-size:14px">Annonce ${esc(a.site)} reconnue. ${a.titre||a.categorie?'On a pré-rempli ce que dit le lien, vérifiez-le.':'Recopiez-la en quelques secondes :'}</p>
     <ol>
       <li><b>La photo</b> : reprenez celle de votre téléphone, c'est la vôtre.</li>
@@ -805,42 +840,81 @@ $('#f-import-home').onsubmit=e=>{
   $('#import-home-ok').hidden=false; const l=$('#f-login'); l.scrollIntoView({behavior:calme?'auto':'smooth',block:'center'}); l.email.focus({preventScroll:true});
 };
 
-/* Mes listes */
+/* Mes listes : « Je propose » (mes objets) et « Je demande » (mes souhaits), chacun avec sa catégorie,
+   son type (sous-catégorie) et ses caractéristiques (taille, âge, marque…), servis par GET /categories. */
+const Detail=(()=>{
+  let detail={}, charge=null;
+  const charger=()=>charge??=api('/categories').then(cats=>{detail=Object.fromEntries(cats.map(c=>[c.slug,c]))}).catch(err=>{charge=null;throw err});
+  const sousNom=(cat,sous)=>((detail[cat]?.sous_categories||[]).find(x=>x.slug===sous)||{}).libelle||'';
+  // « Poussette › Canne », déjà échappé
+  const nom=(cat,sous)=>esc(categories[cat]||cat)+(sous&&sousNom(cat,sous)?' › '+esc(sousNom(cat,sous)):'');
+  // « Taille : 4 ans · Marque : Petit Bateau », déjà échappé
+  function caracs(cat,valeurs){
+    const defs=detail[cat]?.caracteristiques||[];
+    return Object.entries(valeurs||{}).map(([k,v])=>`${esc((defs.find(d=>d.cle===k)||{}).libelle||k)} : ${esc(v)}`).join(' · ');
+  }
+  /* Remplit le type et les caractéristiques du formulaire selon la catégorie choisie. Une demande ne garde que
+     les caractéristiques à choix fixes (elles trient les objets proposés) ; un objet a aussi les champs libres. */
+  function remplir(f,demande){
+    const c=detail[f.categorie_slug.value], sc=f.sous_categorie_slug, zone=f.querySelector('.caracs');
+    sc.disabled=!c||!c.sous_categories.length;
+    sc.innerHTML=!c?'<option value="">Choisissez d\'abord la catégorie</option>'
+      :`<option value="">${demande?'Tous les types':(c.sous_categories.length?'Choisir…':'Pas de type pour cette catégorie')}</option>`
+        +c.sous_categories.map(x=>`<option value="${esc(x.slug)}">${esc(x.libelle)}</option>`).join('');
+    const defs=(c?.caracteristiques||[]).filter(d=>!demande||d.options);
+    zone.hidden=!defs.length;
+    zone.innerHTML=defs.map(d=>`<label class="field"><span>${esc(d.libelle)}</span>${d.options
+      ?`<select class="input" data-carac="${esc(d.cle)}"><option value="">${demande?'Peu importe':'Non précisé'}</option>${d.options.map(o=>`<option>${esc(o)}</option>`).join('')}</select>`
+      :`<input class="input" data-carac="${esc(d.cle)}" maxlength="60" placeholder="Facultatif">`}</label>`).join('');
+  }
+  const valeurs=f=>Object.fromEntries([...f.querySelectorAll('[data-carac]')].map(x=>[x.dataset.carac,x.value.trim()]).filter(([,v])=>v));
+  return {charger,nom,caracs,remplir,valeurs};
+})();
+$('#cat-obj').addEventListener('change',()=>Detail.remplir($('#f-obj'),false));
+$('#cat-wish').addEventListener('change',()=>Detail.remplir($('#f-wish'),true));
+
 let mesSouhaits=[];
-const nomSouhait=s=>s.categorie_slug?categories[s.categorie_slug]||s.categorie_slug:'Objet n° '+s.objet_id;
+const nomSouhait=s=>s.categorie_slug?Detail.nom(s.categorie_slug,s.sous_categorie_slug):'Objet n° '+s.objet_id;
 /* « Je le donne contre… » : comme les listes par objet de BoardGameGeek. Aucun choix = contre n'importe lequel
    de mes souhaits ; « seulement » = strict ; sinon une préférence, et l'objet peut partir contre un autre souhait. */
 function contreTexte(o){
   const noms=mesSouhaits.filter(s=>o.contre_souhait_ids.includes(s.id)).map(nomSouhait);
-  if(!noms.length)return "Contre n'importe lequel de vos souhaits";
-  return `Contre ${noms.map(esc).join(', ')} · ${o.contre_strict?'seulement':'de préférence'}`;
+  if(!noms.length)return "Contre n'importe laquelle de vos demandes";
+  return `Contre ${noms.join(', ')} · ${o.contre_strict?'seulement':'de préférence'}`;
 }
 function contreEditeur(o){
-  if(!mesSouhaits.length)return `<div class="contre-edit" hidden><span class="muted">Ajoutez d'abord des souhaits, à droite.</span></div>`;
+  if(!mesSouhaits.length)return `<div class="contre-edit" hidden><span class="muted">Ajoutez d'abord ce qui vous serait utile, dans « Je demande ».</span></div>`;
   return `<form class="contre-edit" data-objet="${o.id}" hidden>
     <b>Je le donne contre…</b>
-    <div class="row">${mesSouhaits.map(s=>`<label><input type="checkbox" name="s" value="${s.id}" ${o.contre_souhait_ids.includes(s.id)?'checked':''}>${esc(nomSouhait(s))}</label>`).join('')}</div>
-    <label><input type="radio" name="strict" value="0" ${o.contre_strict?'':'checked'}>De préférence : sinon, contre un autre de mes souhaits</label>
-    <label><input type="radio" name="strict" value="1" ${o.contre_strict?'checked':''}>Seulement contre ces souhaits</label>
-    <span class="muted" style="font-size:13px">Rien de coché : contre n'importe lequel de vos souhaits. « Seulement » donne moins de boucles.</span>
+    <div class="row">${mesSouhaits.map(s=>`<label><input type="checkbox" name="s" value="${s.id}" ${o.contre_souhait_ids.includes(s.id)?'checked':''}>${nomSouhait(s)}</label>`).join('')}</div>
+    <label><input type="radio" name="strict" value="0" ${o.contre_strict?'':'checked'}>De préférence : sinon, contre une autre de mes demandes</label>
+    <label><input type="radio" name="strict" value="1" ${o.contre_strict?'checked':''}>Seulement contre celles-ci</label>
+    <span class="muted" style="font-size:13px">Rien de coché : contre n'importe laquelle de vos demandes. « Seulement » donne moins de boucles.</span>
     <div class="row"><button class="btn primary" type="submit">Enregistrer</button></div>
   </form>`;
 }
+const pluriel=(n,mot)=>`${n} ${mot}${n>1?'s':''}`;
 async function chargerListes(){
-  const [objets,souhaits]=await Promise.all([api('/moi/objets'),api('/moi/souhaits')]);
+  const [objets,souhaits]=await Promise.all([api('/moi/objets'),api('/moi/souhaits'),Detail.charger()]);
   mesSouhaits=souhaits;
-  $('#have-label').textContent=`J'ai · ${objets.length} objet${objets.length>1?'s':''}`;
-  $('#items').innerHTML=objets.length?objets.map(o=>`
+  $('#have-label').textContent=pluriel(objets.length,'objet');
+  $('#want-label').textContent=pluriel(souhaits.length,'demande');
+  $('#items').innerHTML=objets.length?objets.map(o=>{const d=Detail.caracs(o.categorie_slug,o.caracteristiques);return `
     <div class="item"><div class="thumb">${o.photo_url?`<img src="${esc(vignette(o.photo_url))}" alt="">`:''}</div>
       <div class="t"><b>${esc(o.titre)}${STATUTS[o.statut]?`<span class="pill ${o.statut==='reserve'?'res':''}">${STATUTS[o.statut]}</span>`:''}</b>
-      <span>${esc(ETATS[o.etat]||'État à préciser')} · ${esc(categories[o.categorie_slug]||o.categorie_slug)}${o.annonce_origine?` · <a href="${esc(o.annonce_origine)}" target="_blank" rel="noopener noreferrer">aussi en vente ailleurs</a>`:''}</span></div>
+      <span>${esc(ETATS[o.etat]||'État à préciser')} · ${Detail.nom(o.categorie_slug,o.sous_categorie_slug)}${d?' · '+d:''}${o.annonce_origine?` · <a href="${esc(o.annonce_origine)}" target="_blank" rel="noopener noreferrer">aussi en vente ailleurs</a>`:''}</span></div>
       ${o.statut==='disponible'?`<button class="linkbtn" data-retirer="${o.id}">Retirer</button>`:''}
       ${o.statut==='retire'&&o.photo_url?`<button class="linkbtn" data-remettre="${o.id}">Remettre</button>`:''}
       <span class="muted" style="flex-basis:100%;font-size:13px">${contreTexte(o)} · <button class="linkbtn" data-contre="${o.id}">Choisir</button></span>
       ${contreEditeur(o)}
-    </div>`).join(''):'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>';
-  $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>`<span class="chip">${esc(nomSouhait(s))}
-    <button class="x" aria-label="Retirer ce souhait" data-souhait="${s.id}">×</button></span>`).join(''):'<p class="empty">Ajoutez ce qui vous serait utile.</p>';
+    </div>`}).join(''):'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>';
+  $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>{
+    const d=s.categorie_slug?Detail.caracs(s.categorie_slug,s.caracteristiques):'';
+    const detail=[s.categorie_slug&&!s.sous_categorie_slug?'Tous les types':'',d].filter(Boolean).join(' · ');
+    return `<div class="demande-ligne"><div class="t"><b>${nomSouhait(s)}</b>${detail?`<span>${detail}</span>`:''}
+      ${s.precisions?`<q>${esc(s.precisions)}</q>`:''}</div>
+      <button class="x" aria-label="Retirer cette demande" data-souhait="${s.id}">×</button></div>`}).join('')
+    :'<p class="empty">Qu\'est-ce qui vous serait utile ? Une catégorie entière ouvre le plus d\'échanges ; précisez le type, la taille ou décrivez-le si vous cherchez quelque chose de précis.</p>';
 }
 $('#items').onsubmit=async e=>{
   e.preventDefault(); const f=e.target; if(!f.dataset.objet)return;
@@ -858,8 +932,15 @@ $('#wishes').onclick=async e=>{
   try{await api('/moi/souhaits/'+id,{method:'DELETE'});await chargerListes();chargerEchanges()}catch(err){toast(err.message)}
 };
 $('#f-wish').onsubmit=async e=>{
-  e.preventDefault(); const slug=$('#cat-wish').value; if(!slug)return;
-  try{await api('/moi/souhaits',{method:'POST',body:{categorie_slug:slug}});await chargerListes();chargerEchanges()}catch(err){toast(err.message)}
+  e.preventDefault(); const f=e.target, b=f.querySelector('button[type=submit]'); if(!f.categorie_slug.value)return;
+  $('#wish-err').hidden=true; b.disabled=true;
+  try{
+    await api('/moi/souhaits',{method:'POST',body:{categorie_slug:f.categorie_slug.value,sous_categorie_slug:f.sous_categorie_slug.value||null,
+      caracteristiques:Detail.valeurs(f),precisions:f.precisions.value.trim()||null}});
+    f.reset(); Detail.remplir(f,true); f.closest('details').open=false; toast('Ajouté à votre demande');
+    await chargerListes(); chargerEchanges();
+  }catch(err){$('#wish-err').textContent=err.message;$('#wish-err').hidden=false}
+  finally{b.disabled=false}
 };
 
 /* Échanges */

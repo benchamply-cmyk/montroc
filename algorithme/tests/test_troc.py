@@ -149,6 +149,34 @@ class TestBouclesAutour(unittest.TestCase):
         m.utilisateurs["A"].souhaits = [Souhait(objet_id="sB")]
         self.assertEqual(len(boucles_autour(m, "A")), 1)
 
+    def test_sous_categorie_et_criteres(self):
+        """Une sous-catégorie ou une taille demandées écartent les objets qui en précisent une autre."""
+        m = Marche()
+        m.ajouter_utilisateur("A", [Souhait(categorie="siege")])
+        m.ajouter_objet("pA", "A", "poussette")
+        m.ajouter_utilisateur("B", [Souhait(categorie="poussette", sous_categorie="canne", criteres=(("age", "0-6 mois"),))])
+        m.ajouter_objet("sB", "B", "siege")
+        m.retirer_objet("pA")
+        m.ajouter_objet("pA", "A", "poussette", sous_categorie="trio")
+        self.assertEqual(boucles_autour(m, "A"), [])
+        m.retirer_objet("pA")
+        m.ajouter_objet("pA", "A", "poussette", sous_categorie="canne", caracteristiques={"age": "6-36 mois"})
+        self.assertEqual(boucles_autour(m, "A"), [])
+        m.retirer_objet("pA")
+        m.ajouter_objet("pA", "A", "poussette", sous_categorie="canne", caracteristiques={"age": "0-6 mois"})
+        self.assertEqual(len(boucles_autour(m, "A")), 1)
+        # Une caractéristique que l'objet ne précise pas ne l'écarte pas.
+        m.retirer_objet("pA")
+        m.ajouter_objet("pA", "A", "poussette", sous_categorie="canne")
+        self.assertEqual(len(boucles_autour(m, "A")), 1)
+        # Un souhait de toute la catégorie prend toutes les sous-catégories.
+        m.utilisateurs["B"].souhaits = [Souhait(categorie="poussette")]
+        m.retirer_objet("pA")
+        m.ajouter_objet("pA", "A", "poussette", sous_categorie="trio")
+        self.assertEqual(len(boucles_autour(m, "A")), 1)
+        with self.assertRaises(ValueError):
+            Souhait(objet_id="x", sous_categorie="canne")
+
     def test_souhait_invalide(self):
         with self.assertRaises(ValueError):
             Souhait()

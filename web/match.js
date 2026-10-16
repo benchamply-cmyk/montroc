@@ -11,8 +11,9 @@
   function pourquoi(c) {
     if (c.il_aime.length) return `<strong>${esc(c.proprietaire.pseudo)} aime votre ${titres(c.il_aime.slice(0, 2))}</strong> : un cœur et c'est un match.`;
     const lignes = [];
-    if (c.correspond_a_mes_souhaits) lignes.push(c.souhait_categorie ? `Répond à votre souhait <strong>${cat(c.souhait_categorie)}</strong>.` : 'Vous le cherchiez.');
+    if (c.correspond_a_mes_souhaits) lignes.push(c.souhait_categorie ? `Répond à votre demande <strong>${Detail.nom(c.souhait_categorie, c.souhait_sous_categorie)}</strong>.` : 'Vous le cherchiez.');
     if (c.il_cherche.length) lignes.push(`${esc(c.proprietaire.pseudo)} cherche ce que vous avez : ${titres(c.il_cherche.slice(0, 2))}.`);
+    if (c.sa_demande) lignes.push(`Sa demande : <q>${esc(c.sa_demande)}</q>`);
     return lignes.join(' ');
   }
 
@@ -22,7 +23,7 @@
     return `<article class="carte${c.il_aime.length ? ' chaude' : ''}" data-i="${i}" aria-label="${esc(o.titre)}">
       <div class="ph">${o.photo_url ? `<img src="${esc(vignette(o.photo_url, 640))}" alt="" loading="lazy">` : ''}${tag}</div>
       <div class="corps"><b>${esc(o.titre)}</b>
-        <span class="muted" style="font-size:14px">${esc(ETATS[o.etat] || '')}${o.etat ? ' · ' : ''}${cat(o.categorie_slug)} · ${esc(p.pseudo)}${p.zone ? ', ' + esc(p.zone) : ''}</span>
+        <span class="muted" style="font-size:14px">${esc(ETATS[o.etat] || '')}${o.etat ? ' · ' : ''}${Detail.nom(o.categorie_slug, o.sous_categorie_slug)}${Detail.caracs(o.categorie_slug, o.caracteristiques) ? ' · ' + Detail.caracs(o.categorie_slug, o.caracteristiques) : ''} · ${esc(p.pseudo)}${p.zone ? ', ' + esc(p.zone) : ''}</span>
         ${o.description ? `<span style="font-size:14px">${esc(o.description.slice(0, 140))}${o.description.length > 140 ? '…' : ''}</span>` : ''}
         <span class="pourquoi">${pourquoi(c)}</span>
         <div class="choix"><button class="non" type="button" data-avis="${o.id}">${CROIX}Non merci</button><button class="oui" type="button" data-avis="${o.id}" data-aime="1">${COEUR}J'aime</button></div>
@@ -66,7 +67,7 @@
   async function chargerMatch() {
     if (!moi) return;
     try {
-      [cartes, matchs] = await Promise.all([api('/match/carrousel?limite=30'), api('/match')]);
+      [cartes, matchs] = await Promise.all([api('/match/carrousel?limite=30'), api('/match'), Detail.charger()]);
       afficherCarrousel(); afficherMatchs();
     } catch (err) { toast(err.message); }
   }

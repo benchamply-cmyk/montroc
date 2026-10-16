@@ -2,10 +2,12 @@
 
 import re
 from datetime import date, datetime
+from typing import Annotated
 from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
 
+from . import nomenclature
 from .config import get_settings
 from .models import EtatObjet, MotifSignalement, Reponse, StatutEchange, StatutObjet, StatutSignalement
 
@@ -21,6 +23,25 @@ class CategorieCreation(BaseModel):
 
 class CategorieLecture(CategorieCreation, Lecture):
     pass
+
+
+class SousCategorie(BaseModel):
+    slug: str
+    libelle: str
+
+
+class CaracteristiqueLecture(BaseModel):
+    cle: str
+    libelle: str
+    # Choix fixes ; None : texte libre (qui décrit un objet, sans filtrer les demandes).
+    options: list[str] | None
+
+
+class CategorieDetaillee(CategorieLecture):
+    """Une catégorie avec ses sous-catégories et ses caractéristiques (voir nomenclature.py)."""
+
+    sous_categories: list[SousCategorie]
+    caracteristiques: list[CaracteristiqueLecture]
 
 
 # --- Connexion par lien magique ---
@@ -135,8 +156,13 @@ def _annonce_origine(url: str | None) -> str | None:
     return f"https://{hote}{morceaux.path}"
 
 
+Caracteristiques = Annotated[dict[str, str], Field(default_factory=dict, max_length=12)]
+
+
 class ObjetCreation(BaseModel):
     categorie_slug: str
+    sous_categorie_slug: str | None = Field(default=None, max_length=50)
+    caracteristiques: Caracteristiques
     titre: str = Field(min_length=1, max_length=120)
     description: str | None = Field(default=None, max_length=2000)
     etat: EtatObjet
@@ -150,6 +176,13 @@ class ObjetCreation(BaseModel):
     _photo = field_validator("photo_url")(_photo_cloudinary)
     _origine = field_validator("annonce_origine")(_annonce_origine)
 
+    @model_validator(mode="after")
+    def detail(self):
+        self.caracteristiques = nomenclature.verifier(
+            self.categorie_slug, self.sous_categorie_slug, self.caracteristiques, demande=False
+        )
+        return self
+
 
 class ObjetModification(BaseModel):
     titre: str | None = Field(default=None, min_length=1, max_length=120)
@@ -159,6 +192,9 @@ class ObjetModification(BaseModel):
     statut: StatutObjet | None = None
     contre_souhait_ids: list[int] | None = Field(default=None, max_length=50)
     contre_strict: bool | None = None
+    # Vérifiés avec la catégorie de l'objet, dans la route.
+    sous_categorie_slug: str | None = Field(default=None, max_length=50)
+    caracteristiques: dict[str, str] | None = Field(default=None, max_length=12)
 
     @model_validator(mode="after")
     def statut_manuel(self):
@@ -171,6 +207,8 @@ class ObjetLecture(Lecture):
     id: int
     proprietaire_id: int
     categorie_slug: str
+    sous_categorie_slug: str | None
+    caracteristiques: dict[str, str]
     titre: str
     description: str | None
     etat: EtatObjet | None
@@ -190,6 +228,11 @@ class MonObjet(ObjetLecture):
 class SouhaitCreation(BaseModel):
     categorie_slug: str | None = None
     objet_id: int | None = None
+    # « Je demande » en détail : sous-catégorie, caractéristiques à choix fixes (elles filtrent les objets
+    # proposés) et description libre de ce qui est cherché.
+    sous_categorie_slug: str | None = Field(default=None, max_length=50)
+    caracteristiques: Caracteristiques
+    precisions: str | None = Field(default=None, max_length=500)
     rang: int = Field(default=1, ge=1)
     quantite: int = Field(default=1, ge=1)
     acceptation_auto: bool = False
@@ -198,6 +241,10 @@ class SouhaitCreation(BaseModel):
     def categorie_ou_objet(self):
         if (self.categorie_slug is None) == (self.objet_id is None):
             raise ValueError("Un souhait porte soit sur une catégorie, soit sur un objet précis.")
+        self.caracteristiques = nomenclature.verifier(
+            self.categorie_slug, self.sous_categorie_slug, self.caracteristiques, demande=True
+        )
+        self.precisions = (self.precisions or "").strip() or None
         return self
 
 
@@ -206,6 +253,9 @@ class SouhaitLecture(Lecture):
     utilisateur_id: int
     categorie_slug: str | None
     objet_id: int | None
+    sous_categorie_slug: str | None
+    caracteristiques: dict[str, str]
+    precisions: str | None
     rang: int
     quantite: int
     acceptation_auto: bool
@@ -301,7 +351,10 @@ class CarteMatch(BaseModel):
     proprietaire: Membre
     # Le souhait auquel il répond : une catégorie, ou None pour un objet précis ou une simple réciprocité.
     souhait_categorie: str | None
+    souhait_sous_categorie: str | None = None
     correspond_a_mes_souhaits: bool
+    # Sa description libre (« Je demande ») des souhaits auxquels mes objets répondent.
+    sa_demande: str | None = None
     # Mes objets que son propriétaire aime déjà : « J'aime » fait un match tout de suite.
     il_aime: list[ObjetResume]
     # Mes objets qui répondent à ses souhaits.

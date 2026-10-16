@@ -42,7 +42,7 @@ class GrapheEchanges:
                 if s.objet_id is not None:
                     candidats = [disponibles[s.objet_id]] if s.objet_id in disponibles else []
                 else:
-                    candidats = par_categorie.get(s.categorie, [])
+                    candidats = [o for o in par_categorie.get(s.categorie, []) if s.correspond(o)]
                 for o in candidats:
                     if o.proprietaire == u.id:
                         continue

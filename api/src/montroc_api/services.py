@@ -50,11 +50,23 @@ def lien_echange(echange: m.Echange) -> str:
     return f"{get_settings().site_url}/#echange-{echange.id}"
 
 
+def souhait_correspond(souhait: m.Souhait, objet: m.Objet) -> bool:
+    """Même règle que le moteur (``troc_echanges.Souhait.correspond``) : l'objet précis, ou la catégorie,
+    sa sous-catégorie si le souhait en précise une, et les caractéristiques demandées que l'objet précise."""
+    if souhait.objet_id is not None:
+        return objet.id == souhait.objet_id
+    if objet.categorie_slug != souhait.categorie_slug:
+        return False
+    if souhait.sous_categorie_slug is not None and objet.sous_categorie_slug != souhait.sous_categorie_slug:
+        return False
+    return all(objet.caracteristiques.get(cle, valeur) == valeur for cle, valeur in souhait.caracteristiques.items())
+
+
 def construire_marche(session: Session, stock_avant: datetime | None = None) -> Marche:
     """Le marché du moteur : comptes actifs, leurs souhaits et les objets disponibles.
 
     Un « J'aime » du Match sur un objet encore disponible compte comme un souhait de cet objet précis
-    (s'il n'est pas déjà couvert par un souhait de sa catégorie) : un match qui n'a pas été conclu en 1 à 1
+    (s'il ne répond pas déjà à un de ses souhaits) : un match qui n'a pas été conclu en 1 à 1
     peut ainsi aboutir au Grand Troc, à deux ou dans une boucle à trois.
     ``stock_avant`` : seulement les objets publiés avant cette date (repêchage sur le stock du dimanche).
     """
@@ -62,14 +74,14 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
     utilisateurs = session.scalars(
         select(m.Utilisateur).where(m.Utilisateur.suspendu_le.is_(None)).options(selectinload(m.Utilisateur.souhaits))
     ).all()
-    coups_de_coeur: dict[int, list[tuple[int, str]]] = {}
-    for avis, categorie in session.execute(
-        select(m.Avis, m.Objet.categorie_slug)
+    coups_de_coeur: dict[int, list[m.Objet]] = {}
+    for avis, objet in session.execute(
+        select(m.Avis, m.Objet)
         .join(m.Avis.objet)
         .where(m.Avis.aime, m.Objet.statut == m.StatutObjet.disponible)
         .order_by(m.Avis.cree_le)
     ):
-        coups_de_coeur.setdefault(avis.utilisateur_id, []).append((avis.objet_id, categorie))
+        coups_de_coeur.setdefault(avis.utilisateur_id, []).append(objet)
     # Indice de chaque souhait dans la liste de son auteur : c'est ainsi que le moteur désigne les listes « contre ».
     indice_souhait: dict[int, int] = {}
     for u in utilisateurs:
@@ -81,16 +93,16 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
                 rang=s.rang,
                 quantite=s.quantite,
                 acceptation_auto=s.acceptation_auto,
+                sous_categorie=s.sous_categorie_slug,
+                criteres=tuple(sorted(s.caracteristiques.items())),
             )
             for s in u.souhaits
         ]
         # Après les souhaits : les indices des listes « contre » restent ceux des souhaits.
-        categories = {s.categorie_slug for s in u.souhaits if s.categorie_slug}
-        precis = {s.objet_id for s in u.souhaits if s.objet_id}
         souhaits += [
-            SouhaitMoteur(objet_id=str(objet_id))
-            for objet_id, categorie in coups_de_coeur.get(u.id, [])
-            if categorie not in categories and objet_id not in precis
+            SouhaitMoteur(objet_id=str(o.id))
+            for o in coups_de_coeur.get(u.id, [])
+            if not any(souhait_correspond(s, o) for s in u.souhaits)
         ]
         marche.ajouter_utilisateur(str(u.id), souhaits, zone=u.zone, fiabilite=u.fiabilite)
     requete = select(m.Objet).where(m.Objet.statut == m.StatutObjet.disponible).options(selectinload(m.Objet.contre))
@@ -102,7 +114,14 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
         # Liste vide (souhaits tous supprimés) : l'objet repart contre n'importe lequel des souhaits.
         contre = {indice_souhait[s.id] for s in o.contre if s.utilisateur_id == o.proprietaire_id}
         marche.ajouter_objet(
-            str(o.id), str(o.proprietaire_id), o.categorie_slug, o.titre, contre=contre, contre_strict=o.contre_strict
+            str(o.id),
+            str(o.proprietaire_id),
+            o.categorie_slug,
+            o.titre,
+            contre=contre,
+            contre_strict=o.contre_strict,
+            sous_categorie=o.sous_categorie_slug,
+            caracteristiques=o.caracteristiques,
         )
     return marche
 
