@@ -99,9 +99,17 @@
     if(email||!pop.email.value)pop.email.value=email||memo.get('troc.email')||'';
     (pop.email.value?pop.mot_de_passe:pop.email).focus();
   }
+  // Le serveur gratuit s'endort : la première requête peut échouer le temps qu'il redémarre (jusqu'à une minute).
+  // On réessaie tout seul plutôt que de laisser la personne face à une erreur.
   async function appeler(chemin,corps){
-    let r; try{r=await fetch(API+chemin,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(corps)})}
-    catch{throw new Error('Le serveur ne répond pas. Réessayez dans un instant.')}
+    let r;
+    for(let essai=0;;essai++){
+      try{r=await fetch(API+chemin,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(corps)})}catch{r=null}
+      if(r&&![502,503,504].includes(r.status))break;
+      if(essai>=6)throw new Error('Le serveur ne répond pas. Réessayez dans une minute.');
+      dire('Le serveur se réveille, encore quelques secondes…',true);
+      await new Promise(ok=>setTimeout(ok,10000));
+    }
     const d=await r.json().catch(()=>null);
     if(!r.ok){const x=d&&d.detail;throw new Error(typeof x==='string'?x:'Vérifiez votre e-mail et votre mot de passe.')}
     return d;
