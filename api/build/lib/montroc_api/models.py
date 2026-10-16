@@ -10,10 +10,12 @@ Toute modification de ce fichier s'accompagne d'une migration Alembic
 from __future__ import annotations
 
 import enum
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
+    Date,
     DateTime,
     Enum,
     Float,
@@ -26,6 +28,7 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 # Noms de contraintes stables : indispensable pour que les migrations Alembic restent lisibles.
@@ -63,10 +66,19 @@ class StatutObjet(enum.StrEnum):
 
 
 class EtatObjet(enum.StrEnum):
+    """Du meilleur au moins bon : une demande peut fixer un état minimum (même ordre que le moteur)."""
+
     neuf = "neuf"
+    comme_neuf = "comme_neuf"
     tres_bon = "tres_bon"
     bon = "bon"
-    usage = "usage"  # usagé, fonctionne
+    correct = "correct"  # anciennement « usagé, fonctionne »
+
+
+class ModeRecherche(enum.StrEnum):
+    precise = "precise"  # l'objet demandé, avec ses critères obligatoires
+    flexible = "flexible"  # aussi les alternatives acceptées
+    ouverte = "ouverte"  # tout objet des catégories d'intérêt (celle de la demande et celles des alternatives)
 
 
 class StatutEchange(enum.StrEnum):
@@ -119,17 +131,34 @@ class Utilisateur(Horodatage, Base):
     email: Mapped[str] = mapped_column(String(254))
     pseudo: Mapped[str] = mapped_column(String(40), unique=True)
     zone: Mapped[str | None] = mapped_column(String(80))  # ville au lancement
+    # Portable au format international (+33612345678), facultatif : SMS quand une boucle est proposée.
+    # Jamais montré aux autres membres.
+    telephone: Mapped[str | None] = mapped_column(String(16))
     fiabilite: Mapped[float] = mapped_column(Float, default=1.0, server_default="1")
+    # Engagements tenus (objet déposé) et manqués (pas de réponse dans les 48 h, objet accepté non déposé) :
+    # la fiabilité en découle (services.noter_engagement). Un refus n'est pas un manquement.
+    engagements_tenus: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    engagements_manques: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     # Compte suspendu par la modération : plus de connexion, objets retirés des échanges.
     suspendu_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Mot de passe facultatif (empreinte scrypt, voir motdepasse.py) : sans lui, on se connecte par lien magique.
+    # Après 5 essais faux, la connexion par mot de passe est bloquée 15 minutes (le lien magique reste possible).
+    mot_de_passe: Mapped[str | None] = mapped_column(String(200))
+    essais_mot_de_passe: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    bloque_jusqu_au: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     objets: Mapped[list[Objet]] = relationship(back_populates="proprietaire", cascade="all, delete-orphan")
     souhaits: Mapped[list[Souhait]] = relationship(
         back_populates="utilisateur", cascade="all, delete-orphan", order_by="Souhait.rang"
     )
 
+    @property
+    def a_un_mot_de_passe(self) -> bool:
+        return self.mot_de_passe is not None
+
     __table_args__ = (
         CheckConstraint("fiabilite >= 0 AND fiabilite <= 1", name="fiabilite_0_1"),
+        CheckConstraint("engagements_tenus >= 0 AND engagements_manques >= 0", name="engagements_positifs"),
         # E-mail unique sans tenir compte de la casse.
         Index("uq_utilisateurs_email_lower", func.lower(email), unique=True),
     )
@@ -141,12 +170,17 @@ class Objet(Horodatage, Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     proprietaire_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
     categorie_slug: Mapped[str] = mapped_column(ForeignKey("categories.slug"), index=True)
+    # Sous-catégorie et caractéristiques (taille, âge, marque…) : voir nomenclature.py, qui les valide.
+    sous_categorie_slug: Mapped[str | None] = mapped_column(String(50))
+    caracteristiques: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict, server_default="{}")
     titre: Mapped[str] = mapped_column(String(120))
     description: Mapped[str | None] = mapped_column(Text)
     etat: Mapped[EtatObjet | None] = mapped_column(_enum(EtatObjet, "etat_objet"))
     # Photo hébergée chez Cloudinary : l'adresse publique et l'identifiant (pour la supprimer).
     photo_url: Mapped[str | None] = mapped_column(String(500))
     photo_id: Mapped[str | None] = mapped_column(String(200))
+    # Annonce Vinted ou Leboncoin d'où l'objet a été recopié à la main (référence privée du propriétaire).
+    annonce_origine: Mapped[str | None] = mapped_column(String(500))
     statut: Mapped[StatutObjet] = mapped_column(
         _enum(StatutObjet, "statut_objet"),
         default=StatutObjet.disponible,
@@ -154,7 +188,19 @@ class Objet(Horodatage, Base):
         index=True,
     )
 
+    # « Je le donne contre… » (comme les listes par objet de BoardGameGeek) : des souhaits de son propriétaire.
+    # Aucun : contre n'importe lequel de ses souhaits. ``contre_strict`` : seulement contre ceux-là ; sinon ce
+    # n'est qu'une préférence, et l'objet peut partir contre un autre de ses souhaits.
+    contre_strict: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Modes d'échange possibles (nomenclature.MODES_ECHANGE) ; vide : tous.
+    modes_echange: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+
     proprietaire: Mapped[Utilisateur] = relationship(back_populates="objets")
+    contre: Mapped[list[Souhait]] = relationship(secondary="objets_contre", order_by="Souhait.id")
+
+    @property
+    def contre_souhait_ids(self) -> list[int]:
+        return [s.id for s in self.contre]
 
     __table_args__ = (
         CheckConstraint("length(trim(titre)) > 0", name="titre_non_vide"),
@@ -174,6 +220,22 @@ class Souhait(Horodatage, Base):
     utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
     categorie_slug: Mapped[str | None] = mapped_column(ForeignKey("categories.slug"))
     objet_id: Mapped[int | None] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"))
+    # « Je demande » en détail : une sous-catégorie, des critères obligatoires (``caracteristiques`` : un objet
+    # de la catégorie doit indiquer ces valeurs) et préférentiels (``preferences`` : ils améliorent l'échange
+    # sans écarter d'objet), voir nomenclature.py, et une description libre de ce qui est cherché.
+    sous_categorie_slug: Mapped[str | None] = mapped_column(String(50))
+    caracteristiques: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict, server_default="{}")
+    preferences: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict, server_default="{}")
+    precisions: Mapped[str | None] = mapped_column(Text)
+    etat_min: Mapped[EtatObjet | None] = mapped_column(_enum(EtatObjet, "etat_min"))
+    mode_recherche: Mapped[ModeRecherche] = mapped_column(
+        _enum(ModeRecherche, "mode_recherche"), default=ModeRecherche.flexible, server_default="flexible"
+    )
+    # Autres catégories ou sous-catégories acceptées : [{"categorie_slug": …, "sous_categorie_slug": … ou null}].
+    alternatives: Mapped[list[dict]] = mapped_column(JSONB, default=list, server_default="[]")
+    # Logistique : modes d'échange acceptés (vide : tous) et zones acceptées (vide : sa propre zone).
+    modes_echange: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    zones: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
     rang: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     quantite: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     acceptation_auto: Mapped[bool] = mapped_column(default=False, server_default="false")
@@ -182,9 +244,41 @@ class Souhait(Horodatage, Base):
 
     __table_args__ = (
         CheckConstraint("(categorie_slug IS NULL) <> (objet_id IS NULL)", name="categorie_ou_objet"),
+        CheckConstraint(
+            "sous_categorie_slug IS NULL OR categorie_slug IS NOT NULL", name="sous_categorie_d_une_categorie"
+        ),
         CheckConstraint("rang >= 1", name="rang_positif"),
         CheckConstraint("quantite >= 1", name="quantite_positive"),
     )
+
+
+class ObjetContre(Base):
+    """Un souhait contre lequel le propriétaire de l'objet accepte de le donner."""
+
+    __tablename__ = "objets_contre"
+
+    objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), primary_key=True)
+    souhait_id: Mapped[int] = mapped_column(ForeignKey("souhaits.id", ondelete="CASCADE"), primary_key=True, index=True)
+
+
+class GrandTroc(Horodatage, Base):
+    """Un passage du Grand Troc du dimanche : le math trade lancé une fois par semaine sur tout le stock."""
+
+    __tablename__ = "grands_trocs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    # Date du dimanche (heure de Paris) : unique, pour qu'une tâche relancée ne propose pas deux fois.
+    jour: Mapped[date] = mapped_column(Date, unique=True)
+    optimal: Mapped[bool] = mapped_column(Boolean)
+    duree_s: Mapped[float] = mapped_column(Float)
+    nb_boucles: Mapped[int] = mapped_column(Integer)
+    nb_objets: Mapped[int] = mapped_column(Integer)
+    nb_participants: Mapped[int] = mapped_column(Integer)
+    # Repêchage du mardi 18 h : seconde passe sur ce qui s'est libéré (refus, absences de réponse).
+    repeche_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    nb_objets_repeches: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+
+    echanges: Mapped[list[Echange]] = relationship(back_populates="grand_troc")
 
 
 class Echange(Horodatage, Base):
@@ -200,9 +294,14 @@ class Echange(Horodatage, Base):
         index=True,
     )
     proba_reussite: Mapped[float] = mapped_column(Float)
-    # Fin du délai en cours : réponses (48 h) tant que « propose », dépôts (7 jours) une fois « accepte ».
+    # Fin du délai en cours : réponses (48 h) tant que « propose », dépôts (dans la semaine) une fois « accepte ».
     expire_le: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     rappel_envoye_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Accord 1 à 1 conclu après un match (coups de cœur réciproques), à tout moment de la semaine.
+    par_match: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Le Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande ou un accord de match).
+    grand_troc_id: Mapped[int | None] = mapped_column(ForeignKey("grands_trocs.id", ondelete="SET NULL"), index=True)
+    grand_troc: Mapped[GrandTroc | None] = relationship(back_populates="echanges")
 
     transferts: Mapped[list[Transfert]] = relationship(
         back_populates="echange", cascade="all, delete-orphan", order_by="Transfert.position"
@@ -242,6 +341,22 @@ class Transfert(Base):
         CheckConstraint("donneur_id <> receveur_id", name="donneur_different_receveur"),
         CheckConstraint("position >= 0 AND position < 3", name="boucle_max_3"),
     )
+
+
+class Avis(Horodatage, Base):
+    """Le Match : « J'aime » ou « Non merci » sur un objet d'un autre membre, depuis le carrousel.
+
+    Deux personnes qui aiment chacune un objet de l'autre ont un match : elles peuvent conclure un accord
+    1 à 1 tout de suite. Au Grand Troc, un « J'aime » compte comme un souhait et un « Non merci » comme un refus.
+    """
+
+    __tablename__ = "avis"
+
+    utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), primary_key=True)
+    objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), primary_key=True, index=True)
+    aime: Mapped[bool] = mapped_column(Boolean)
+
+    objet: Mapped[Objet] = relationship()
 
 
 class JetonConnexion(Base):

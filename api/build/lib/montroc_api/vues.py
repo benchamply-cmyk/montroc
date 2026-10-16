@@ -5,9 +5,20 @@ from sqlalchemy.orm import Session
 
 from troc_echanges import Boucle
 
+from . import matchs
 from . import models as m
 from .config import get_settings
-from .schemas import BoucleProposee, EchangeLecture, EtapeBoucle, ObjetResume, TransfertLecture
+from .schemas import (
+    BoucleProposee,
+    CarteMatch,
+    EchangeLecture,
+    EtapeBoucle,
+    MatchLecture,
+    Membre,
+    ObjetLecture,
+    ObjetResume,
+    TransfertLecture,
+)
 
 
 def _voit_le_code(e: m.Echange, t: m.Transfert, lecteur_id: int | None) -> bool:
@@ -24,6 +35,8 @@ def echange(e: m.Echange, lecteur_id: int | None = None) -> EchangeLecture:
         proba_reussite=e.proba_reussite,
         cree_le=e.cree_le,
         expire_le=e.expire_le,
+        grand_troc_jour=e.grand_troc.jour if e.grand_troc else None,
+        par_match=e.par_match,
         point_de_depot=get_settings().point_de_depot or None,
         transferts=[
             TransfertLecture(
@@ -72,3 +85,26 @@ def boucles(session: Session, liste: list[Boucle]) -> list[BoucleProposee]:
         )
         for b in liste
     ]
+
+
+def carte(c: matchs.Carte) -> CarteMatch:
+    return CarteMatch(
+        objet=ObjetLecture.model_validate(c.objet),
+        proprietaire=Membre.model_validate(c.objet.proprietaire),
+        souhait_categorie=c.souhait.categorie_slug if c.souhait else None,
+        souhait_sous_categorie=c.souhait.sous_categorie_slug if c.souhait else None,
+        correspond_a_mes_souhaits=c.souhait is not None,
+        il_aime=[ObjetResume.model_validate(o) for o in c.il_aime],
+        il_cherche=[ObjetResume.model_validate(o) for o in c.il_cherche],
+        sa_demande=c.sa_demande,
+    )
+
+
+def match(x: matchs.Match) -> MatchLecture:
+    return MatchLecture(
+        avec=Membre.model_validate(x.avec),
+        ses_objets=[ObjetResume.model_validate(o) for o in x.ses_objets],
+        mes_objets=[ObjetResume.model_validate(o) for o in x.mes_objets],
+        depuis=x.depuis,
+        echange_id=x.echange.id if x.echange else None,
+    )

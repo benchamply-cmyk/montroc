@@ -20,6 +20,18 @@ def test_sante(client):
     assert client.get("/sante").json()["statut"] == "ok"
 
 
+def test_cors_apercus_netlify(client):
+    def autorise(origine):
+        r = client.options("/auth/connexion", headers={"Origin": origine, "Access-Control-Request-Method": "POST"})
+        return r.headers.get("access-control-allow-origin") == origine
+
+    assert autorise("https://troctroc.fr")
+    assert autorise("https://deploy-preview-29--troctroc.netlify.app")
+    assert autorise("https://troctroc.netlify.app")
+    assert not autorise("https://troctroc.netlify.app.pirate.fr")
+    assert not autorise("https://autre-site.netlify.app")
+
+
 def test_photo_et_etat_obligatoires(client, creer):
     alice = creer.utilisateur("alice")
     base = {"categorie_slug": "sport", "titre": "Vélo"}

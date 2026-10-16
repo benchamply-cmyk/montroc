@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://montroc:montroc@localhost:5432/montroc"
     # Origines autorisées à appeler l'API depuis un navigateur, séparées par des virgules.
     cors_origins: str = "http://localhost:8000,https://troctroc.fr,https://www.troctroc.fr"
+    # Aperçus Netlify des pull requests (deploy-preview-29--troctroc.netlify.app, *.champly.fr) : sans eux,
+    # la connexion échoue sur l'aperçu, le navigateur bloquant la réponse de l'API.
+    cors_regex: str = r"https://([a-z0-9-]+--)?troctroc\.netlify\.app|https://[a-z0-9-]+\.champly\.fr"
     environnement: str = "local"
     # Adresse du site, pour les liens dans les e-mails (lien magique, « une boucle vous attend »…).
     site_url: str = "https://troctroc.fr"

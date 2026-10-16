@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import func, select
 
 from .. import models as m
-from .. import services, vues
+from .. import nomenclature, services, vues
 from ..config import get_settings
 from ..deps import SessionDep, UtilisateurConnecte, obtenir_ou_404
 from ..schemas import (
@@ -15,8 +15,8 @@ from ..schemas import (
     EchangeLecture,
     Moi,
     MoiModification,
+    MonObjet,
     ObjetCreation,
-    ObjetLecture,
     ObjetModification,
     PhotoSignature,
     SouhaitCreation,
@@ -76,16 +76,27 @@ def signature_photo(_utilisateur: UtilisateurConnecte):
     )
 
 
-@router.post("/objets", response_model=ObjetLecture, status_code=201)
+def _mes_souhaits(session, utilisateur: m.Utilisateur, ids: list[int]) -> list[m.Souhait]:
+    """Les souhaits d'une liste « contre » : seulement les miens."""
+    souhaits = session.scalars(
+        select(m.Souhait).where(m.Souhait.id.in_(set(ids)), m.Souhait.utilisateur_id == utilisateur.id)
+    ).all()
+    if len(souhaits) != len(set(ids)):
+        raise HTTPException(409, "Un objet ne se donne que contre vos propres souhaits.")
+    return list(souhaits)
+
+
+@router.post("/objets", response_model=MonObjet, status_code=201)
 def ajouter_objet(donnees: ObjetCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
     obtenir_ou_404(session, m.Categorie, donnees.categorie_slug)
-    objet = m.Objet(proprietaire_id=utilisateur.id, **donnees.model_dump())
+    contre = _mes_souhaits(session, utilisateur, donnees.contre_souhait_ids)
+    objet = m.Objet(proprietaire_id=utilisateur.id, contre=contre, **donnees.model_dump(exclude={"contre_souhait_ids"}))
     session.add(objet)
     session.commit()
     return objet
 
 
-@router.get("/objets", response_model=list[ObjetLecture])
+@router.get("/objets", response_model=list[MonObjet])
 def lister_objets(utilisateur: UtilisateurConnecte, session: SessionDep):
     return session.scalars(
         select(m.Objet)
@@ -94,7 +105,7 @@ def lister_objets(utilisateur: UtilisateurConnecte, session: SessionDep):
     ).all()
 
 
-@router.patch("/objets/{objet_id}", response_model=ObjetLecture)
+@router.patch("/objets/{objet_id}", response_model=MonObjet)
 def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: UtilisateurConnecte, session: SessionDep):
     objet = obtenir_ou_404(session, m.Objet, objet_id)
     if objet.proprietaire_id != utilisateur.id:
@@ -106,6 +117,22 @@ def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: Utili
         raise HTTPException(409, "Cet objet est engagé dans un échange.")
     if changements.get("statut") == m.StatutObjet.disponible and not (objet.photo_url and objet.etat):
         raise HTTPException(409, "Ajoutez une photo et l'état avant de remettre cet objet en ligne.")
+    if (ids := changements.pop("contre_souhait_ids", None)) is not None:
+        objet.contre = _mes_souhaits(session, utilisateur, ids)
+    if changements.get("contre_strict", False) is None:
+        del changements["contre_strict"]
+    for champ in ("caracteristiques", "modes_echange"):
+        if champ in changements and changements[champ] is None:
+            del changements[champ]
+    if "sous_categorie_slug" in changements or "caracteristiques" in changements:
+        sous_categorie = changements.get("sous_categorie_slug", objet.sous_categorie_slug)
+        valeurs = changements.get("caracteristiques", objet.caracteristiques)
+        try:
+            changements["caracteristiques"] = nomenclature.verifier(
+                objet.categorie_slug, sous_categorie, valeurs, demande=False
+            )
+        except ValueError as e:
+            raise HTTPException(422, str(e)) from None
     for champ, valeur in changements.items():
         setattr(objet, champ, valeur)
     session.commit()
@@ -117,8 +144,9 @@ def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: Utili
 
 @router.post("/souhaits", response_model=SouhaitLecture, status_code=201)
 def ajouter_souhait(donnees: SouhaitCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
-    if donnees.categorie_slug is not None:
-        obtenir_ou_404(session, m.Categorie, donnees.categorie_slug)
+    for slug in {donnees.categorie_slug} | {a.categorie_slug for a in donnees.alternatives}:
+        if slug is not None:
+            obtenir_ou_404(session, m.Categorie, slug)
     if donnees.objet_id is not None:
         objet = obtenir_ou_404(session, m.Objet, donnees.objet_id)
         if objet.proprietaire_id == utilisateur.id:
