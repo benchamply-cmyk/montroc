@@ -156,11 +156,11 @@
 
   // Branchements sur le script principal : la vue se charge à l'ouverture, avec le reste du compte.
   const goAvant = go;
-  go = v => { goAvant(v); if (v === 'match' && moi) chargerMatch(); };
+  go = (v, o) => { goAvant(v, o); if (v === 'match' && moi) chargerMatch(); };
   const toutChargerAvant = toutCharger;
   toutCharger = async () => {
     await Promise.all([toutChargerAvant(), chargerMatch()]);
-    if (!dejaArrive && location.hash === '#match') { dejaArrive = true; history.replaceState(null, '', location.pathname); go('match'); }
+    if (!dejaArrive && location.hash === '#match') { dejaArrive = true; go('match'); }
   };
   document.addEventListener('tt:match', chargerMatch);
   if (moi) chargerMatch();

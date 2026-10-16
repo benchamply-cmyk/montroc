@@ -88,7 +88,7 @@
   function compte(oui){
     connecte=oui;
     c.querySelector('span').textContent=oui||memo.get('troc.email')?'Mon espace':'Se connecter';
-    c.setAttribute('href',oui?'/#mon-espace':'/#se-connecter');
+    c.setAttribute('href',oui?'/#monespace':'/#se-connecter');
     if(oui)ouvrirConnexion(false);
   }
   function dire(texte,ok){msg.textContent=texte;msg.classList.toggle('ok',!!ok);msg.hidden=!texte}
@@ -127,7 +127,7 @@
     try{
       const r=await appeler('/auth/connexion',{email:pop.email.value.trim(),mot_de_passe:pop.mot_de_passe.value});
       memo.set('troc.jeton',r.jeton); memo.set('troc.email',r.utilisateur.email); pop.reset(); compte(true);
-      if(window.TT.surConnexion)window.TT.surConnexion(r); else location.href='/#mon-espace';
+      if(window.TT.surConnexion)window.TT.surConnexion(r); else location.href='/#monespace';
     }catch(err){dire(err.message);pop.mot_de_passe.select()}
     finally{b.disabled=false;b.textContent='Se connecter'}
   };
