@@ -366,7 +366,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <span class="label">Se connecter ou créer un compte</span>
       <label class="field"><span>Votre e-mail</span><input class="input" type="email" name="email" required autocomplete="email" placeholder="vous@exemple.fr"></label>
       <button class="cta" type="submit">Commencer à troquer</button>
-      <p class="muted" style="font-size:14px">Pas de mot de passe : un lien valable 20 minutes arrive par e-mail.</p>
+      <p class="muted" style="font-size:14px">Un lien valable 20 minutes arrive par e-mail. Vous avez déjà un mot de passe ? <a href="/#mon-espace" id="login-mdp">Connectez-vous sans e-mail</a>.</p>
       <p class="status" id="login-ok" hidden></p>
     </form>
 
@@ -433,8 +433,11 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <div class="hero"><span class="label">Bienvenue</span><h2>Choisissez votre pseudo</h2>
       <p class="muted" id="signup-email"></p></div>
     <form class="stack" id="f-signup">
+      <input class="input" type="email" name="email" autocomplete="username" hidden>
       <label class="field"><span>Pseudo</span><input class="input" name="pseudo" required minlength="2" maxlength="40" autocomplete="nickname"></label>
       <label class="field"><span>Ville</span><input class="input" name="zone" maxlength="80" placeholder="Marseille" autocomplete="address-level2"></label>
+      <label class="field"><span>Mot de passe</span><input class="input" type="password" name="mot_de_passe" required minlength="8" maxlength="200" autocomplete="new-password">
+        <span class="muted" style="font-size:13px;font-weight:400">8 caractères minimum. La prochaine fois, connectez-vous avec « Mon espace » en haut de page, sans attendre d'e-mail.</span></label>
       <label class="field"><span>Téléphone portable (facultatif)</span><input class="input" type="tel" name="telephone" maxlength="30" placeholder="06 12 34 56 78" autocomplete="tel"></label>
       <p class="muted" style="font-size:14px">Avec votre portable, vous recevez un SMS en plus de l'e-mail quand le Grand Troc vous propose un échange : rien d'autre. Votre pseudo et votre ville sont visibles des personnes avec qui vous échangez. Votre e-mail et votre téléphone ne le sont jamais.</p>
       <button class="cta" type="submit">Créer mon compte</button>
@@ -444,6 +447,13 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
   <!-- LISTES -->
   <section class="view" id="v-lists" hidden>
     <div class="hero"><span class="label">Mon profil</span><h2>Ce que j'ai, ce qui me serait utile</h2></div>
+    <form class="card stack" id="f-mdp-rappel" hidden>
+      <span class="label">Plus besoin d'e-mail pour vous connecter</span>
+      <p class="muted" style="font-size:15px;margin:0">Choisissez un mot de passe : la prochaine fois, « Mon espace » en haut de page vous connecte tout de suite.</p>
+      <input class="input" type="email" name="email" autocomplete="username" hidden>
+      <label class="field"><span>Mot de passe</span><input class="input" type="password" name="mot_de_passe" required minlength="8" maxlength="200" autocomplete="new-password"></label>
+      <div class="btns"><button class="btn primary" type="submit">Enregistrer mon mot de passe</button><button class="btn" type="button" id="mdp-plus-tard">Plus tard</button></div>
+    </form>
 
     <div class="meter" aria-live="polite">
       <span class="label">Échanges possibles pour vous</span>
@@ -515,6 +525,11 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <form class="stack" id="f-phone">
         <label class="field"><span>Portable pour les SMS du Grand Troc (facultatif)</span><input class="input" type="tel" name="telephone" maxlength="30" placeholder="06 12 34 56 78" autocomplete="tel"></label>
         <div class="btns"><button class="btn" type="submit">Enregistrer le numéro</button></div>
+      </form>
+      <form class="stack" id="f-mdp">
+        <input class="input" type="email" name="email" autocomplete="username" hidden>
+        <label class="field"><span id="mdp-titre">Mot de passe</span><input class="input" type="password" name="mot_de_passe" required minlength="8" maxlength="200" autocomplete="new-password" placeholder="8 caractères minimum"></label>
+        <div class="btns"><button class="btn" type="submit" id="mdp-bouton">Enregistrer le mot de passe</button></div>
       </form>
       <div class="btns"><button class="btn" id="logout">Se déconnecter</button><button class="btn" id="delete-account">Supprimer mon compte</button></div>
     </div>
@@ -631,11 +646,18 @@ document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g
 
 /* Menu du haut : sur l'accueil, les liens « /#… » changent de vue sans recharger la page. */
 const calmeDefil=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
-function naviguer(h){
+async function naviguer(h){
   if(h==='#objets')return chercher('');
-  if(h==='#mon-espace'&&moi)return go('lists');
+  if(h==='#mon-espace'){
+    history.replaceState(null,'',location.pathname);
+    // Session gardée sur cet appareil mais pas encore relue (serveur qui se réveille) : on l'attend.
+    if(jeton&&!moi){toast('Ouverture de votre espace…'); await chargerSession()}
+    if(moi)return go('lists');
+    if(jeton)return toast("Le serveur ne répond pas pour l'instant. Réessayez dans un instant.");
+    go('home'); return TT.ouvrirConnexion();
+  }
   go('home');
-  if(h==='#se-connecter'||h==='#mon-espace'){history.replaceState(null,'',location.pathname);const f=$('#f-login');f.scrollIntoView({behavior:calmeDefil,block:'center'});f.email.focus({preventScroll:true});return}
+  if(h==='#se-connecter'){history.replaceState(null,'',location.pathname);const f=$('#f-login');f.scrollIntoView({behavior:calmeDefil,block:'center'});f.email.focus({preventScroll:true});return}
   history.replaceState(null,'',h||location.pathname);
   const cible=h&&document.getElementById(h.slice(1)); if(cible)cible.scrollIntoView({behavior:calmeDefil});
 }
@@ -683,9 +705,42 @@ function afficherSession(){
   document.body.classList.toggle('membre',!!moi);
   TT.compte(!!moi); $('#compte').title=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
   $('#tab-mod').hidden=!(moi&&moi.est_moderateur); $('#tabs').classList.toggle('n5',!!(moi&&moi.est_moderateur));
-  if(moi){$('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`; $('#f-phone').telephone.value=moi.telephone||''}
+  if(moi){$('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`; $('#f-phone').telephone.value=moi.telephone||'';
+    store.set('troc.email',moi.email); $$('#f-mdp [name=email],#f-mdp-rappel [name=email]').forEach(x=>x.value=moi.email);
+    $('#mdp-titre').textContent=moi.a_un_mot_de_passe?'Changer de mot de passe':'Choisir un mot de passe';
+    $('#mdp-bouton').textContent=moi.a_un_mot_de_passe?'Changer le mot de passe':'Enregistrer le mot de passe'}
+  else $('#f-mdp-rappel').hidden=true;
 }
 function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);afficherSession();go('home')}
+
+/* Relit le compte de la session gardée dans le navigateur. Une seule lecture à la fois ; sans réponse du
+   serveur, la session est gardée (pas de retour à la connexion). */
+let lectureSession=null;
+function chargerSession(){
+  if(!jeton)return Promise.resolve();
+  if(!moi)$$('[data-anon]').forEach(x=>x.hidden=true); // pas de « Se connecter » le temps de relire la session
+  return lectureSession??=api('/moi').then(m=>{moi=m}).catch(()=>{}).finally(()=>{lectureSession=null;afficherSession()});
+}
+async function ouvrirSession(r,vue){
+  jeton=r.jeton; store.set('troc.jeton',jeton); moi=r.utilisateur;
+  afficherSession(); await toutCharger(); go(vue);
+  if(!moi.a_un_mot_de_passe&&store.get('troc.mdp-plus-tard')!==moi.email)$('#f-mdp-rappel').hidden=false;
+  reprendreAnnonce();
+}
+// Connexion par mot de passe depuis la pop-up « Mon espace » (site.js).
+TT.surConnexion=async r=>{await ouvrirSession(r,'lists');toast('Bon retour '+moi.pseudo+' !')};
+$('#login-mdp').onclick=e=>{e.preventDefault();e.stopPropagation();scrollTo({top:0,behavior:calmeDefil});TT.ouvrirConnexion(true,$('#f-login').email.value.trim())};
+
+/* Mot de passe : à choisir après une connexion par e-mail, ou à changer dans « Mon compte ». */
+async function enregistrerMdp(e){
+  e.preventDefault(); const f=e.target, b=f.querySelector('button[type=submit]'); b.disabled=true;
+  try{moi=await api('/auth/mot-de-passe',{method:'PUT',body:{mot_de_passe:f.mot_de_passe.value}});
+    f.reset(); $('#f-mdp-rappel').hidden=true; afficherSession();
+    toast('Mot de passe enregistré : connectez-vous avec « Mon espace », sans e-mail')}
+  catch(err){toast(err.message)} finally{b.disabled=false}
+}
+$('#f-mdp').onsubmit=enregistrerMdp; $('#f-mdp-rappel').onsubmit=enregistrerMdp;
+$('#mdp-plus-tard').onclick=()=>{$('#f-mdp-rappel').hidden=true;store.set('troc.mdp-plus-tard',moi&&moi.email)};
 
 /* Connexion par lien magique */
 $('#f-login').onsubmit=async e=>{
@@ -698,13 +753,12 @@ $('#f-login').onsubmit=async e=>{
 let jetonLien=null;
 async function verifierLien(extra={}){
   const r=await api('/auth/verifier',{method:'POST',body:{jeton:jetonLien,...extra}});
-  if(r.inscription_requise){$('#signup-email').textContent=r.email;go('signup');return}
-  jeton=r.jeton; store.set('troc.jeton',jeton); moi=r.utilisateur; jetonLien=null;
-  afficherSession(); await toutCharger(); go(extra.pseudo?'lists':'trades'); toast('Bienvenue '+moi.pseudo+' !'); reprendreAnnonce();
+  if(r.inscription_requise){$('#signup-email').textContent=r.email;$$('#f-signup [name=email]').forEach(x=>x.value=r.email);go('signup');return}
+  jetonLien=null; await ouvrirSession(r,extra.pseudo||!r.utilisateur.a_un_mot_de_passe?'lists':'trades'); toast('Bienvenue '+moi.pseudo+' !');
 }
 $('#f-signup').onsubmit=async e=>{
   e.preventDefault();
-  try{await verifierLien({pseudo:e.target.pseudo.value.trim(),zone:e.target.zone.value.trim()||null,telephone:e.target.telephone.value.trim()||null})}catch(err){toast(err.message)}
+  try{await verifierLien({pseudo:e.target.pseudo.value.trim(),zone:e.target.zone.value.trim()||null,telephone:e.target.telephone.value.trim()||null,mot_de_passe:e.target.mot_de_passe.value})}catch(err){toast(err.message)}
 };
 $('#f-phone').onsubmit=async e=>{
   e.preventDefault(); const t=e.target.telephone.value.trim();
@@ -1057,7 +1111,7 @@ async function toutCharger(){
   try{await Promise.all([chargerListes(),chargerEchanges()])}catch(err){toast(err.message)}
 }
 async function demarrer(){
-  const gt=chargerGrandTroc();
+  const gt=chargerGrandTroc(), session=location.hash.startsWith('#connexion=')?null:chargerSession();
   try{const cats=await api('/categories'); categories=Object.fromEntries(cats.map(c=>[c.slug,c.libelle]));
     const opts=cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
     $('#cat-obj').innerHTML='<option value="">Choisir…</option>'+opts; $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
@@ -1067,8 +1121,7 @@ async function demarrer(){
     jetonLien=decodeURIComponent(h.slice(11)); history.replaceState(null,'',location.pathname);
     try{await verifierLien()}catch(err){toast(err.message)} return;
   }
-  if(jeton){try{moi=await api('/moi')}catch{moi=null}}
-  afficherSession();
+  await session;
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(['#objets','#se-connecter'].includes(h)||(h==='#mon-espace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
   if(!moi)return;

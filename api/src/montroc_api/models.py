@@ -132,11 +132,20 @@ class Utilisateur(Horodatage, Base):
     engagements_manques: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     # Compte suspendu par la modération : plus de connexion, objets retirés des échanges.
     suspendu_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Mot de passe facultatif (empreinte scrypt, voir motdepasse.py) : sans lui, on se connecte par lien magique.
+    # Après 5 essais faux, la connexion par mot de passe est bloquée 15 minutes (le lien magique reste possible).
+    mot_de_passe: Mapped[str | None] = mapped_column(String(200))
+    essais_mot_de_passe: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    bloque_jusqu_au: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     objets: Mapped[list[Objet]] = relationship(back_populates="proprietaire", cascade="all, delete-orphan")
     souhaits: Mapped[list[Souhait]] = relationship(
         back_populates="utilisateur", cascade="all, delete-orphan", order_by="Souhait.rang"
     )
+
+    @property
+    def a_un_mot_de_passe(self) -> bool:
+        return self.mot_de_passe is not None
 
     __table_args__ = (
         CheckConstraint("fiabilite >= 0 AND fiabilite <= 1", name="fiabilite_0_1"),
