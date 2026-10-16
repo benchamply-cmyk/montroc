@@ -544,7 +544,7 @@ details.plus summary::-webkit-details-marker{display:none}
       <span class="label">Se connecter ou créer un compte</span>
       <label class="field"><span>Votre e-mail</span><input class="input" type="email" name="email" required autocomplete="email" placeholder="vous@exemple.fr"></label>
       <button class="cta" type="submit">Commencer à troquer</button>
-      <p class="muted" style="font-size:14px">Un lien valable 20 minutes arrive par e-mail. Vous avez déjà un mot de passe ? <a href="/#mon-espace" id="login-mdp">Connectez-vous sans e-mail</a>.</p>
+      <p class="muted" style="font-size:14px">Un lien valable 20 minutes arrive par e-mail. Vous avez déjà un mot de passe ? <a href="/#monespace" id="login-mdp">Connectez-vous sans e-mail</a>.</p>
       <p class="status" id="login-ok" hidden></p>
     </form>
   </section>
@@ -813,9 +813,31 @@ async function api(chemin,{method='GET',body}={}){
   return data;
 }
 
+/* Historique : chaque vue ouverte a son adresse (#monespace, #echanges, #objet-12…) et sa propre entrée,
+   pour revenir à la vue précédente avec le bouton Précédent du navigateur ou le geste du trackpad. */
+const ADRESSES={home:'',lists:'#monespace',trades:'#echanges',drop:'#depot',mod:'#moderation',match:'#match',proposer:'#proposer'};
+function marquer(h,remplacer){
+  if(location.hash===h)return;
+  const url=h||location.pathname+location.search;
+  remplacer?history.replaceState(history.state,'',url):history.pushState({tt:1},'',url);
+}
+function suivre(h){
+  if(h==='#mon-espace'){h='#monespace';history.replaceState(history.state,'',h)} // ancienne adresse
+  if(h.startsWith('#objet-'))return ouvrirObjet(+h.slice(7));
+  if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} return chercher(q)}
+  if(h==='#objets')return chercher('');
+  if(h.startsWith('#echange-')){go('trades',{adresse:h});document.getElementById(h.slice(1))?.scrollIntoView();return}
+  const v=Object.keys(ADRESSES).find(k=>ADRESSES[k]===h);
+  if(v)return go(v,{remplacer:true});
+  naviguer(h);
+}
+addEventListener('popstate',()=>{TT.fermer();TT.ouvrirConnexion(false);suivre(location.hash)});
+
 const ESPACE=['lists','trades','drop','mod'];
-function go(v){
-  if(!moi&&!['home','signup','search','objet'].includes(v))v='home';
+function go(v,{adresse,remplacer=false}={}){
+  if(!moi&&!['home','signup','search','objet'].includes(v)){v='home';remplacer=true}
+  if(adresse===undefined)adresse=ADRESSES[v];
+  if(adresse!==undefined)marquer(adresse,remplacer);
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
   vueActuelle=v;
   document.body.classList.toggle('large',['home','search','objet'].includes(v));
@@ -828,28 +850,26 @@ function go(v){
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
 $('#tabs').addEventListener('click',e=>{
   const t=e.target.closest('[data-tab]')?.dataset.tab; if(!t)return;
-  if(t==='home'){history.replaceState(null,'',location.pathname);go('home')}
+  if(t==='home')go('home');
   else if(t==='search')chercher('');
   else if(t==='proposer')versProposer();
   else if(t==='match')moi?go('match'):versCompte();
-  else naviguer('#mon-espace');
+  else naviguer('#monespace');
 });
 
 /* Menu du haut : sur l'accueil, les liens « /#… » changent de vue sans recharger la page. */
 const calmeDefil=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
 async function naviguer(h){
   if(h==='#objets')return chercher('');
-  if(h==='#mon-espace'){
-    history.replaceState(null,'',location.pathname);
+  if(h==='#monespace'){
     // Session gardée sur cet appareil mais pas encore relue (serveur qui se réveille) : on l'attend.
     if(jeton&&!moi){toast('Ouverture de votre espace…'); await chargerSession()}
     if(moi)return go('lists');
     if(jeton)return toast("Le serveur ne répond pas pour l'instant. Réessayez dans un instant.");
     go('home'); return TT.ouvrirConnexion();
   }
-  go('home');
-  if(h==='#se-connecter'){history.replaceState(null,'',location.pathname);const f=$('#f-login');f.scrollIntoView({behavior:calmeDefil,block:'center'});f.email.focus({preventScroll:true});return}
-  history.replaceState(null,'',h||location.pathname);
+  if(h==='#se-connecter'){go('home',{remplacer:true});const f=$('#f-login');f.scrollIntoView({behavior:calmeDefil,block:'center'});f.email.focus({preventScroll:true});return}
+  go('home',{adresse:h||''});
   const cible=h&&document.getElementById(h.slice(1)); if(cible)cible.scrollIntoView({behavior:calmeDefil});
 }
 document.addEventListener('click',e=>{
@@ -1307,8 +1327,7 @@ let avantFiche={vue:'home',hash:''}, ficheObjet=null;
 const grande=url=>url.replace('/image/upload/','/image/upload/c_limit,w_1000,h_1000,q_auto,f_auto/');
 async function ouvrirObjet(id){
   if(vueActuelle!=='objet')avantFiche={vue:vueActuelle,hash:location.hash.startsWith('#objet-')?'':location.hash};
-  $('#fiche').innerHTML='<p class="empty">Chargement…</p>'; go('objet');
-  if(location.hash!=='#objet-'+id)history.replaceState(null,'','#objet-'+id);
+  $('#fiche').innerHTML='<p class="empty">Chargement…</p>'; go('objet',{adresse:'#objet-'+id});
   try{
     const o=await api('/objets/'+id); ficheObjet=o;
     const [qui]=await Promise.all([api('/utilisateurs/'+o.proprietaire_id).catch(()=>null),Detail.charger().catch(()=>{})]);
@@ -1340,7 +1359,11 @@ async function ouvrirObjet(id){
       </div>`;
   }catch(err){$('#fiche').innerHTML=`<p class="empty">${esc(err.message)}</p>`}
 }
-$('#objet-retour').onclick=()=>{history.replaceState(null,'',avantFiche.hash||location.pathname);go(avantFiche.vue==='objet'?'home':avantFiche.vue)};
+// Retour : comme le bouton Précédent si la fiche a été ouverte depuis le site, sinon vers la vue d'avant.
+$('#objet-retour').onclick=()=>{
+  if(history.state&&history.state.tt)return history.back();
+  const v=avantFiche.vue==='objet'?'home':avantFiche.vue; go(v,{remplacer:true,adresse:avantFiche.hash||undefined});
+};
 $('#fiche').addEventListener('click',async e=>{
   const o=ficheObjet; if(!o)return;
   if(e.target.closest('#fiche-aime')){const b=e.target.closest('#fiche-aime'); b.disabled=true;
@@ -1444,8 +1467,7 @@ async function chercher(q,cat=''){
   const ancre=q?'#recherche='+encodeURIComponent(q):'#objets';
   $('#f-search').q.value=q; $('#search-title').textContent=q?`« ${q} »`:cat?(categories[cat]||'Ce qui est proposé'):'Ce qui est proposé';
   $('#search-count').textContent='Recherche…'; $('#results').innerHTML='';
-  if(location.hash!==ancre)history.replaceState(null,'',ancre);
-  go('search');
+  go('search',{adresse:ancre});
   try{
     const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat);
     const objets=await api('/objets'+(p.size?'?'+p:''));
@@ -1457,7 +1479,7 @@ async function chercher(q,cat=''){
 }
 $('#f-search-home').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value,e.target.cat.value)};
 $('#f-search').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value)};
-$('#search-signup').onclick=()=>{history.replaceState(null,'',location.pathname);versCompte()};
+$('#search-signup').onclick=versCompte;
 
 /* Démarrage */
 async function toutCharger(){
@@ -1469,7 +1491,8 @@ async function demarrer(){
     const opts=cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
     $('#cat-obj').innerHTML=cats.map(c=>`<label><input type="radio" name="categorie_slug" value="${esc(c.slug)}" required><span>${(PICTOS[c.slug]||['📦'])[0]} ${esc(c.libelle)}</span></label>`).join(''); $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
   }catch(err){toast(err.message)}
-  const h=location.hash;
+  let h=location.hash;
+  if(h==='#mon-espace'){h='#monespace';history.replaceState(null,'',h)} // ancienne adresse de Mon espace
   if(h.startsWith('#connexion=')){
     jetonLien=decodeURIComponent(h.slice(11)); history.replaceState(null,'',location.pathname);
     try{await verifierLien()}catch(err){toast(err.message)} return;
@@ -1477,16 +1500,12 @@ async function demarrer(){
   await session;
   if(h.startsWith('#objet-')){if(moi)toutCharger(); ouvrirObjet(+h.slice(7)); return}
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
-  if(['#objets','#se-connecter'].includes(h)||(h==='#mon-espace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
+  if(['#objets','#se-connecter'].includes(h)||(h==='#monespace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
   if(!moi)return;
   await gt; await toutCharger();
-  if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}
-  else if(h==='#echanges')go('trades');
-  await toutCharger();
   if(store.get('troc.annonce'))reprendreAnnonce();
-  else if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}
-  else if(h==='#moderation'&&moi.est_moderateur)go('mod');
-  else if(h==='#mon-espace')go('lists');
+  else if(h==='#moderation'&&!moi.est_moderateur)go('home',{remplacer:true});
+  else if(h)suivre(h);
 }
 demarrer();
 </script>
