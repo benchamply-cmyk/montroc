@@ -60,6 +60,17 @@ class Verification(AvecTelephone):
     zone: str | None = Field(default=None, max_length=80, examples=["Marseille"])
     # Facultatif : pour recevoir un SMS quand le Grand Troc vous propose un échange.
     telephone: str | None = Field(default=None, max_length=30, examples=["06 12 34 56 78"])
+    # Facultatif : pour se connecter ensuite sans attendre d'e-mail.
+    mot_de_passe: str | None = Field(default=None, min_length=8, max_length=200)
+
+
+class ConnexionMotDePasse(BaseModel):
+    email: EmailStr
+    mot_de_passe: str = Field(min_length=1, max_length=200)
+
+
+class ChoixMotDePasse(BaseModel):
+    mot_de_passe: str = Field(min_length=8, max_length=200)
 
 
 class Moi(Lecture):
@@ -71,6 +82,7 @@ class Moi(Lecture):
     fiabilite: float
     cree_le: datetime
     est_moderateur: bool = False
+    a_un_mot_de_passe: bool = False
 
 
 class MoiModification(AvecTelephone):

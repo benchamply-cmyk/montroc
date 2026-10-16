@@ -43,6 +43,26 @@ header.site.colle{border-bottom-color:var(--line)}
 .compte{flex:none;display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);text-decoration:none;border-radius:999px;padding:9px 16px;font-weight:600;font-size:15px;white-space:nowrap}
 .compte svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
 .compte:hover{background:var(--mark)}
+/* Connexion par mot de passe, ouverte sous « Mon espace » */
+.compte-zone{position:relative;flex:none}
+.pop-cnx{position:absolute;right:0;top:calc(100% + 10px);width:min(340px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:0 18px 40px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:12px;z-index:30;animation:pop-in .18s ease-out}
+@keyframes pop-in{from{opacity:0;transform:translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.pop-cnx{animation:none}}
+.pop-titre{font-family:var(--display);font-size:15px;letter-spacing:-.01em}
+.pop-cnx label{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+.pop-cnx input{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);color:var(--ink);font:inherit;font-weight:400}
+.pop-cnx input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.pop-mdp{position:relative;display:block}
+.pop-mdp input{padding-right:84px}
+.pop-voir{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--muted);font-size:13px;padding:6px 8px}
+.pop-ok{background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:12px 18px;font-weight:600}
+.pop-ok:disabled{opacity:.6}
+.pop-msg{margin:0;font-size:14px;color:var(--danger)}
+.pop-msg.ok{color:var(--ok)}
+.pop-lien{border:0;background:none;padding:0;text-align:left;color:var(--muted);font-size:13px;text-decoration:underline;text-underline-offset:3px}
+.pop-lien:hover{color:var(--ink)}
+@media (max-width:959px){.pop-cnx{position:fixed;right:16px;top:calc(var(--haut) + 6px)}}
+
 .burger{display:none;flex:none;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:none;place-items:center;padding:0}
 .burger svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
 .burger path{transition:transform .25s,opacity .2s;transform-origin:center}
