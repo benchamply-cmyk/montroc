@@ -1,10 +1,9 @@
-/* Le Match : un carrousel d'objets qui répondent à mes souhaits, « J'aime » ou « Non merci » sur chacun,
+/* Le Match : une pile de cartes d'objets qui répondent à mes souhaits, à glisser à droite (« J'aime ») ou à gauche
+   (« Non merci »), comme sur une appli de rencontre,
    et mes matchs (un cœur de chaque côté) où je propose l'échange 1 à 1, à tout moment.
    Chargé après le script principal de index.html, dont il reprend api(), esc(), toast(), vignette()… */
 (() => {
   let cartes = [], matchs = [], dejaArrive = false;
-  const COEUR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
-  const CROIX = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   const titres = l => l.map(o => `« ${esc(o.titre)} »`).join(', ');
   const cat = slug => esc(categories[slug] || slug);
 
@@ -26,16 +25,66 @@
         <span class="muted" style="font-size:14px">${esc(ETATS[o.etat] || '')}${o.etat ? ' · ' : ''}${Detail.nom(o.categorie_slug, o.sous_categorie_slug)}${Detail.caracs(o.categorie_slug, o.caracteristiques) ? ' · ' + Detail.caracs(o.categorie_slug, o.caracteristiques) : ''} · ${esc(p.pseudo)}${p.zone ? ', ' + esc(p.zone) : ''}</span>
         ${o.description ? `<span style="font-size:14px">${esc(o.description.slice(0, 140))}${o.description.length > 140 ? '…' : ''}</span>` : ''}
         <span class="pourquoi">${pourquoi(c)}</span>
-        <div class="choix"><button class="non" type="button" data-avis="${o.id}">${CROIX}Non merci</button><button class="oui" type="button" data-avis="${o.id}" data-aime="1">${COEUR}J'aime</button></div>
-      </div></article>`;
+        <a class="voir" href="#objet-${o.id}" data-fiche="${o.id}">Voir la fiche</a>
+      </div><span class="sceau oui" aria-hidden="true">J'aime</span><span class="sceau non" aria-hidden="true">Non merci</span></article>`;
   }
 
+  // Deux cartes empilées : celle du dessus se glisse, celle du dessous attend.
   function afficherCarrousel() {
     const n = cartes.length;
     $('#carrousel-compte').textContent = n ? `${n} objet${n > 1 ? 's' : ''} pour vous` : '';
-    $('#carrousel').innerHTML = n ? cartes.map(carteHtml).join('')
-      : '<p class="empty">Plus rien à vous montrer pour l\'instant. Ajoutez des souhaits ou des objets : le carrousel se remplit dès qu\'un objet correspond.</p>';
-    $$('[data-defiler]').forEach(b => b.hidden = n < 2);
+    $('#carrousel').innerHTML = n ? cartes.slice(0, 2).map(carteHtml).reverse().join('')
+      : '<p class="empty">Plus rien à vous montrer pour l\'instant. Ajoutez des souhaits ou des objets : la pile se remplit dès qu\'un objet correspond.</p>';
+    const cs = $$('#carrousel .carte'); cs.forEach((c, j) => c.classList.toggle('devant', j === cs.length - 1));
+    $('#ronds').hidden = $('#match-aide').hidden = !n;
+  }
+
+  // Glisser la carte du dessus : au-delà d'un tiers de sa largeur, c'est un choix ; sinon elle revient.
+  let glisse = null;
+  $('#carrousel').addEventListener('pointerdown', e => {
+    const c = e.target.closest('.carte.devant'); if (!c || e.button || e.target.closest('a,button')) return;
+    glisse = {c, x: e.clientX, dx: 0, id: e.pointerId}; c.setPointerCapture(e.pointerId); c.classList.add('tenue');
+  });
+  $('#carrousel').addEventListener('pointermove', e => {
+    if (!glisse || e.pointerId !== glisse.id) return;
+    glisse.dx = e.clientX - glisse.x;
+    glisse.c.style.transform = `translateX(${glisse.dx}px) rotate(${glisse.dx / 18}deg)`;
+    glisse.c.style.setProperty('--oui', Math.max(0, Math.min(1, glisse.dx / 100)));
+    glisse.c.style.setProperty('--non', Math.max(0, Math.min(1, -glisse.dx / 100)));
+  });
+  const lacher = e => {
+    if (!glisse || e.pointerId !== glisse.id) return;
+    const {c, dx} = glisse; glisse = null; c.classList.remove('tenue');
+    if (Math.abs(dx) > c.offsetWidth / 3) { avis(dx > 0); return; }
+    c.style.transform = ''; c.style.removeProperty('--oui'); c.style.removeProperty('--non');
+  };
+  $('#carrousel').addEventListener('pointerup', lacher);
+  $('#carrousel').addEventListener('pointercancel', lacher);
+  $('#m-oui').onclick = () => avis(true);
+  $('#m-non').onclick = () => avis(false);
+  addEventListener('keydown', e => {
+    if ($('#v-match').hidden || e.target.closest('input,textarea,select') || document.querySelector('dialog[open]')) return;
+    if (e.key === 'ArrowRight') avis(true);
+    if (e.key === 'ArrowLeft') avis(false);
+  });
+
+  let enCours = false;
+  async function avis(aime) {
+    const c = cartes[0], carte = $('#carrousel .carte.devant'); if (!c || !carte || enCours) return;
+    enCours = true; const id = c.objet.id;
+    try {
+      const r = await api('/match/avis', {method: 'POST', body: {objet_id: id, aime}});
+      carte.style.transform = `translateX(${aime ? 130 : -130}%) rotate(${aime ? 18 : -18}deg)`; carte.style.opacity = 0;
+      await new Promise(ok => setTimeout(ok, calme ? 0 : 340));
+      cartes = cartes.filter(x => x.objet.id !== id); afficherCarrousel();
+      if (r.match) {
+        matchs = [r.match, ...matchs.filter(x => x.avec.id !== r.match.avec.id)]; afficherMatchs();
+        fenetre.dataset.avec = r.match.avec.id;
+        $('#match-qui').textContent = `${r.match.avec.pseudo} aime aussi un de vos objets. Proposez-lui l'échange quand vous voulez.`;
+        fenetre.showModal();
+      } else if (aime) toast('Noté ! Si l\'intérêt est réciproque, c\'est un match.');
+    } catch (err) { toast(err.message); carte.style.transform = ''; }
+    finally { enCours = false; }
   }
 
   function choix(nom, objets, coche) {
@@ -62,6 +111,7 @@
     $('#match-title').textContent = libres ? `${libres} match${libres > 1 ? 's' : ''} à conclure` : 'Ça vous plaît ?';
     $('#matchs').innerHTML = matchs.map(matchHtml).join('')
       || '<p class="empty">Pas encore de match. Un « J\'aime » sur un objet marqué « Match immédiat » en crée un tout de suite.</p>';
+    mesMatchs = matchs; afficherEspace();
   }
 
   async function chargerMatch() {
@@ -87,30 +137,8 @@
   });
 
   $('#v-match').addEventListener('click', async e => {
-    const d = e.target.closest('[data-defiler]');
-    if (d) { const r = $('#carrousel'), c = r.querySelector('.carte'); r.scrollBy({left: (c ? c.offsetWidth + 14 : 300) * d.dataset.defiler, behavior: calme ? 'auto' : 'smooth'}); return; }
-
     const v = e.target.closest('[data-voir-echange]');
     if (v) { e.preventDefault(); go('trades'); const c = document.getElementById('echange-' + v.dataset.voirEchange); if (c) c.scrollIntoView(); return; }
-
-    const b = e.target.closest('[data-avis]');
-    if (b) {
-      const aime = !!b.dataset.aime, carte = b.closest('.carte'), id = +b.dataset.avis;
-      carte.querySelectorAll('button').forEach(x => x.disabled = true);
-      try {
-        const r = await api('/match/avis', {method: 'POST', body: {objet_id: id, aime}});
-        carte.classList.add(aime ? 'part-d' : 'part-g');
-        await new Promise(ok => setTimeout(ok, calme ? 0 : 340));
-        cartes = cartes.filter(c => c.objet.id !== id); afficherCarrousel();
-        if (r.match) {
-          matchs = [r.match, ...matchs.filter(x => x.avec.id !== r.match.avec.id)]; afficherMatchs();
-          fenetre.dataset.avec = r.match.avec.id;
-          $('#match-qui').textContent = `${r.match.avec.pseudo} aime aussi un de vos objets. Proposez-lui l'échange quand vous voulez.`;
-          fenetre.showModal();
-        } else if (aime) toast('Noté ! Si l\'intérêt est réciproque, c\'est un match.');
-      } catch (err) { toast(err.message); carte.querySelectorAll('button').forEach(x => x.disabled = false); }
-      return;
-    }
 
     const a = e.target.closest('[data-accord]');
     if (a) {
@@ -134,5 +162,6 @@
     await Promise.all([toutChargerAvant(), chargerMatch()]);
     if (!dejaArrive && location.hash === '#match') { dejaArrive = true; history.replaceState(null, '', location.pathname); go('match'); }
   };
+  document.addEventListener('tt:match', chargerMatch);
   if (moi) chargerMatch();
 })();

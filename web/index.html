@@ -195,10 +195,9 @@ form.stack{display:flex;flex-direction:column;gap:14px}
 /* Le Match : carrousel d'objets (défilement horizontal aimanté), « J'aime » / « Non merci », mes matchs. */
 nav.tabs #tabs.in{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:1fr}
 .tag.m{background:var(--accent);color:var(--accent-ink)}
-.carrousel{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:2px;padding:2px 2px 10px;margin-inline:-2px;scrollbar-width:thin;overscroll-behavior-x:contain}
-.carte{flex:0 0 min(82%,340px);scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.6,0,.2,1),opacity .35s}
+.carte{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.6,0,.2,1),opacity .35s}
 .carte.chaude{border-color:var(--accent)}
-.carte .ph{aspect-ratio:4/3;background:var(--bg);position:relative}
+.carte .ph{aspect-ratio:1;background:var(--bg);position:relative}
 #matchs a.btn{align-self:flex-start;color:var(--ink);text-decoration:none}
 .carte .ph img{width:100%;height:100%;object-fit:cover;display:block}
 .carte .ph .tag{position:absolute;left:10px;top:10px}
@@ -206,17 +205,6 @@ nav.tabs #tabs.in{grid-template-columns:none;grid-auto-flow:column;grid-auto-col
 .carte .corps b{font-size:17px;overflow-wrap:anywhere}
 .carte .pourquoi{font-size:13px;color:var(--muted)}
 .carte .pourquoi strong{color:var(--ink);font-weight:600}
-.carte .choix{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto;padding-top:8px}
-.carte .choix button{border-radius:999px;padding:11px 8px;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px}
-.carte .non{border:1.5px solid var(--line);background:transparent}
-.carte .oui{border:0;background:var(--accent);color:var(--accent-ink)}
-.carte .choix svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
-.carte .oui svg{fill:currentColor;stroke:none}
-.carte.part-g{transform:translateX(-30%) rotate(-6deg);opacity:0}
-.carte.part-d{transform:translateX(30%) rotate(6deg);opacity:0}
-.carrousel-nav{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.carrousel-nav .btns button{width:40px;height:40px;padding:0;display:grid;place-items:center}
-.carrousel-nav svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
 .choix-objets{display:flex;gap:8px;flex-wrap:wrap}
 .choix-objets label{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:4px 10px 4px 4px;font-size:14px;cursor:pointer}
 .choix-objets label:has(input:checked){border-color:var(--accent)}
@@ -332,6 +320,111 @@ body.large .wrap{max-width:1120px}
   .acc-tuile{padding:22px;min-height:190px}
   .acc-login{max-width:520px;width:100%;margin-inline:auto}
 }
+/* Barre d'onglets en bas pour tout le monde sur téléphone (Accueil, Rechercher, Proposer, Match, Mon espace) ;
+   sur grand écran, seulement une fois connecté. */
+nav.tabs .in{max-width:560px}
+nav.tabs .plus .r{width:40px;height:40px;margin-top:-18px;border-radius:50%;background:var(--mark);color:#111318;display:grid;place-items:center;box-shadow:0 0 0 4px var(--surface)}
+nav.tabs .plus .r svg{width:22px;height:22px;stroke-width:2.4}
+nav.tabs .plus{color:var(--ink)}
+@media (max-width:759px){body{padding-bottom:96px}}
+@media (min-width:760px){body:not(.membre) nav.tabs{display:none}}
+a.result{color:inherit;text-decoration:none}
+a.result:hover b{text-decoration:underline;text-underline-offset:2px}
+/* Mon espace : l'action à faire d'abord */
+.profil{display:flex;align-items:center;gap:14px}
+.avatar{width:52px;height:52px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-family:var(--display);font-weight:700;font-size:22px}
+.afaire{display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:space-between;padding:18px;border-radius:18px;border:1.5px solid var(--mark);background:linear-gradient(135deg,color-mix(in srgb,var(--mark) 20%,var(--surface)),var(--surface) 75%)}
+.afaire.calme{border-color:var(--line);background:var(--surface)}
+.afaire:empty{display:none}
+.afaire .t{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 220px}
+.afaire .t b{font-family:var(--display);font-size:18px;line-height:1.2;overflow-wrap:anywhere}
+.afaire .t>span:last-child{color:var(--muted);font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stats:empty{display:none}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font-family:var(--display);font-size:24px;line-height:1.1}
+.stat span{font-size:12px;color:var(--muted);line-height:1.2}
+.onglets{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);margin-bottom:-8px}
+.onglets::-webkit-scrollbar{display:none}
+.onglets button{flex:none;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;font-size:15px;padding:10px 12px;border-bottom:2.5px solid transparent;display:flex;gap:6px;align-items:center;cursor:pointer}
+.onglets button small{font-family:var(--mono);font-size:11px;font-weight:500;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 6px;line-height:18px}
+.onglets button[aria-current="page"]{color:var(--ink);border-bottom-color:var(--mark)}
+#v-lists .liste{border-top-width:1px}
+#v-lists .liste-num{display:none}
+/* J'ai : les objets en vignettes, comme une vitrine, et une tuile « Ajouter » */
+#items.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;border:0}
+#items .item{flex-direction:column;align-items:stretch;gap:6px;padding:0;border:0;min-width:0}
+#items .item .thumb{width:100%;height:auto;aspect-ratio:1;border-radius:14px;overflow:hidden}
+#items .item .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+#items .item .linkbtn{align-self:flex-start}
+#items .item>.muted{flex-basis:auto!important}
+#items .item:has(.contre-edit:not([hidden])){grid-column:1/-1}
+#items .empty{grid-column:1/-1}
+.tuile-ajout{border:1.5px dashed var(--line);border-radius:14px;aspect-ratio:1;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted);font:inherit;font-weight:600;cursor:pointer}
+.tuile-ajout:hover{border-color:var(--mark);color:var(--mark)}
+.tuile-ajout svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.8}
+/* Proposer sur un seul écran */
+.proposer{max-width:620px;width:100%;margin-inline:auto}
+.proposer .photo-pick{min-height:170px}
+.proposer #photo-txt{display:flex;flex-direction:column;align-items:center;gap:6px}
+.proposer .rond{width:60px;height:60px;border-radius:50%;background:var(--mark);color:#111318;display:grid;place-items:center}
+.proposer .rond svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1.8}
+.puces{border:0;padding:0;margin:0;min-width:0;display:flex;flex-direction:column;gap:8px}
+.puces legend{font-size:14px;font-weight:600;padding:0;margin-bottom:8px}
+.puces-cat,.puces-etat{display:flex;flex-wrap:wrap;gap:8px}
+.puces label{position:relative;cursor:pointer}
+.puces input{position:absolute;opacity:0;inset:0;margin:0;pointer-events:none}
+.puces label span{display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--line);border-radius:999px;padding:8px 13px;font-size:14px;background:var(--surface);transition:border-color .15s}
+.puces label:hover span{border-color:var(--muted)}
+.puces input:checked+span{border-color:var(--mark);background:color-mix(in srgb,var(--mark) 16%,var(--surface));color:var(--ink);font-weight:600}
+.puces input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+details.plus{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+details.plus summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none}
+details.plus summary::-webkit-details-marker{display:none}
+.proposer>.acc-btn{width:100%}
+/* Fiche d'un objet */
+.retour{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;padding:4px 0;cursor:pointer;margin-bottom:-12px}
+.retour svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.retour:hover{color:var(--ink)}
+.fiche{display:grid;gap:20px}
+.fiche-photo{border-radius:18px;overflow:hidden;background:var(--surface);border:1px solid var(--line);aspect-ratio:1;display:grid;place-items:center}
+.fiche-photo img{width:100%;height:100%;object-fit:contain;display:block}
+.fiche-panneau{display:flex;flex-direction:column;gap:16px;min-width:0}
+.fiche-panneau h1{font-size:clamp(26px,5vw,34px);overflow-wrap:anywhere}
+.infos{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0;font-size:15px}
+.infos dt{color:var(--muted)}
+.infos dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.fiche-desc{white-space:pre-line;color:#D6D9E0;line-height:1.5}
+.fiche-membre{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.fiche-membre .avatar{width:42px;height:42px;font-size:18px}
+.fiche-membre div{display:flex;flex-direction:column;font-size:14px}
+.fiche-actions{display:flex;flex-direction:column;gap:10px}
+.fiche-actions .acc-btn{width:100%}
+.fiche-actions .note{font-size:14px}
+.signaler{align-self:flex-start}
+@media (min-width:760px){.fiche{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start}.fiche-panneau{position:sticky;top:90px}}
+/* Le Match : une pile de cartes à glisser, deux gros boutons ronds */
+.match-entete{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.pile-match{display:grid;max-width:400px;width:100%;margin:0 auto}
+.pile-match>*{grid-area:1/1}
+.pile-match .carte{touch-action:pan-y;user-select:none;position:relative}
+.pile-match .carte:not(.devant){transform:scale(.95) translateY(14px);opacity:.55;pointer-events:none}
+.pile-match .carte.devant{z-index:2;cursor:grab}
+.pile-match .carte.tenue{transition:none;cursor:grabbing}
+.pile-match .carte img{pointer-events:none}
+.carte .voir{align-self:flex-start;font-size:14px;color:var(--accent);font-weight:600;text-underline-offset:2px}
+.sceau{position:absolute;top:22px;font-family:var(--display);font-weight:700;font-size:20px;padding:4px 12px;border:3px solid;border-radius:10px;opacity:0;pointer-events:none;z-index:3}
+.sceau.oui{left:18px;color:var(--ok);transform:rotate(-12deg);opacity:var(--oui,0)}
+.sceau.non{right:18px;color:var(--danger,#FF6B6B);transform:rotate(12deg);opacity:var(--non,0)}
+.ronds{display:flex;justify-content:center;gap:28px;align-items:center}
+.ronds button{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.4);transition:transform .15s}
+.ronds button:active{transform:scale(.92)}
+.ronds .non{border:2px solid var(--line);background:var(--surface);color:var(--muted)}
+.ronds .oui{border:0;background:var(--accent);color:var(--accent-ink);width:76px;height:76px}
+.ronds svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:2.2}
+.ronds .oui svg{fill:currentColor;stroke:none;width:32px;height:32px}
+.aide{font-size:14px;text-align:center}
+@media (prefers-reduced-motion:reduce){.pile-match .carte{transition:none}}
 </style>
 </head>
 <body class="large">
@@ -494,7 +587,8 @@ body.large .wrap{max-width:1120px}
 
   <!-- LISTES -->
   <section class="view" id="v-lists" hidden>
-    <div class="hero"><span class="label">Mon profil</span><h2>Ce que j'ai, ce qui me serait utile</h2></div>
+    <div class="profil"><span class="avatar" id="esp-avatar" aria-hidden="true"></span>
+      <div><h2 id="esp-nom">Mon espace</h2><span class="muted" id="esp-zone"></span></div></div>
     <form class="card stack" id="f-mdp-rappel" hidden>
       <span class="label">Plus besoin d'e-mail pour vous connecter</span>
       <p class="muted" style="font-size:15px;margin:0">Choisissez un mot de passe : la prochaine fois, « Mon espace » en haut de page vous connecte tout de suite.</p>
@@ -503,51 +597,19 @@ body.large .wrap{max-width:1120px}
       <div class="btns"><button class="btn primary" type="submit">Enregistrer mon mot de passe</button><button class="btn" type="button" id="mdp-plus-tard">Plus tard</button></div>
     </form>
 
-    <div class="meter" aria-live="polite">
-      <span class="label">Échanges possibles pour vous</span>
-      <div class="num" id="m-num">0</div>
-      <div class="bar"><i id="m-bar" style="width:0%"></i></div>
-      <p class="muted" id="m-tip" style="font-size:14px">Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.</p>
-    </div>
+    <div class="afaire" id="afaire" aria-live="polite"></div>
+    <div class="stats" id="stats"></div>
+    <nav class="onglets" data-espace aria-label="Mon espace"></nav>
 
     <div class="lists">
-      <section class="liste" aria-labelledby="titre-propose">
+      <section class="liste" id="p-ai" aria-labelledby="titre-propose">
         <div class="liste-tete"><span class="liste-num" aria-hidden="true">1</span>
           <div><h3 id="titre-propose">Je propose</h3><p>Ce que vous êtes prêt à donner en échange.</p></div>
           <span class="label" id="have-label"></span></div>
         <div class="items" id="items"></div>
-        <details class="addobj" style="margin-top:14px">
-          <summary class="btn primary">+ Proposer un objet</summary>
-          <form class="stack" id="f-obj">
-            <div class="import">
-              <label class="field"><span>Déjà en vente sur Vinted ou Leboncoin ? <span class="muted" style="font-weight:400">(facultatif)</span></span>
-                <input class="input" type="url" name="annonce_origine" inputmode="url" maxlength="500" placeholder="Collez le lien de l'annonce"></label>
-              <div id="import-guide" hidden></div>
-            </div>
-            <label class="photo-pick" id="photo-pick">
-              <input type="file" name="photo" accept="image/*" required>
-              <span id="photo-txt"><b>Ajouter une photo</b><br><span class="muted" style="font-size:13px">Obligatoire. Prenez l'objet en entier, en lumière du jour.</span></span>
-            </label>
-            <label class="field"><span>Quoi ?</span><input class="input" name="titre" required maxlength="120" placeholder="Ex. poussette canne"></label>
-            <div class="grid2">
-              <label class="field"><span>Catégorie</span><select class="input" name="categorie_slug" required id="cat-obj"></select></label>
-              <label class="field"><span>Sous-catégorie <span class="muted" style="font-weight:400">(facultatif)</span></span><select class="input" name="sous_categorie_slug" id="sous-cat-obj" disabled><option value="">Choisissez d'abord la catégorie</option></select></label>
-            </div>
-            <div class="grid2 caracs" id="caracs-obj" hidden></div>
-            <label class="field"><span>État</span><select class="input" name="etat" required>
-              <option value="">Choisir…</option><option value="neuf">Neuf</option><option value="comme_neuf">Comme neuf</option>
-              <option value="tres_bon">Très bon état</option><option value="bon">Bon état</option><option value="correct">État correct</option></select></label>
-            <fieldset class="choix"><legend>Remise possible</legend><div class="row">
-              <label><input type="checkbox" name="mode" value="main_propre" checked>En main propre</label>
-              <label><input type="checkbox" name="mode" value="point_relais" checked>En point relais</label></div></fieldset>
-            <label class="field"><span>Précisions <span class="muted" style="font-weight:400">(facultatif)</span></span><textarea class="input" name="description" maxlength="2000" placeholder="Défauts, accessoires fournis, dimensions…"></textarea></label>
-            <button class="cta" type="submit">Publier</button>
-            <p class="err" id="obj-err" hidden></p>
-          </form>
-        </details>
       </section>
 
-      <section class="liste demande" aria-labelledby="titre-demande">
+      <section class="liste demande" id="p-cherche" aria-labelledby="titre-demande" hidden>
         <div class="liste-tete"><span class="liste-num" aria-hidden="true">2</span>
           <div><h3 id="titre-demande">Je demande</h3><p>Ce qui vous serait utile en retour.</p></div>
           <span class="label" id="want-label"></span></div>
@@ -601,9 +663,54 @@ body.large .wrap{max-width:1120px}
     </div>
   </section>
 
+  <!-- PROPOSER : tout sur un seul écran, le facultatif replié -->
+  <section class="view" id="v-proposer" hidden>
+    <form class="stack proposer" id="f-obj">
+      <h2>Proposer un objet</h2>
+      <label class="photo-pick" id="photo-pick">
+        <input type="file" name="photo" accept="image/*" required>
+        <span id="photo-txt"><span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><b>Ajouter une photo</b><span class="muted" style="font-size:13px">L'objet en entier, en lumière du jour.</span></span>
+      </label>
+      <label class="field"><span>Quoi ?</span><input class="input" name="titre" required maxlength="120" placeholder="Ex. poussette canne"></label>
+      <fieldset class="puces"><legend>Catégorie</legend><div class="puces-cat" id="cat-obj"></div></fieldset>
+      <div class="grid2">
+        <label class="field"><span>Sous-catégorie <span class="muted" style="font-weight:400">(facultatif)</span></span><select class="input" name="sous_categorie_slug" id="sous-cat-obj" disabled><option value="">Choisissez d'abord la catégorie</option></select></label>
+      </div>
+      <div class="grid2 caracs" id="caracs-obj" hidden></div>
+      <fieldset class="puces"><legend>État</legend><div class="puces-etat">
+        <label><input type="radio" name="etat" value="neuf" required><span>Neuf</span></label>
+        <label><input type="radio" name="etat" value="comme_neuf"><span>Comme neuf</span></label>
+        <label><input type="radio" name="etat" value="tres_bon"><span>Très bon</span></label>
+        <label><input type="radio" name="etat" value="bon"><span>Bon</span></label>
+        <label><input type="radio" name="etat" value="correct"><span>Correct</span></label></div></fieldset>
+      <details class="plus"><summary>+ Précisions et remise <span class="muted">(facultatif)</span></summary>
+        <div class="stack" style="display:flex;flex-direction:column;gap:14px;padding-top:12px">
+          <fieldset class="choix"><legend>Remise possible</legend><div class="row">
+            <label><input type="checkbox" name="mode" value="main_propre" checked>En main propre</label>
+            <label><input type="checkbox" name="mode" value="point_relais" checked>En point relais</label></div></fieldset>
+          <label class="field"><span>Précisions</span><textarea class="input" name="description" maxlength="2000" placeholder="Défauts, accessoires fournis, dimensions…"></textarea></label>
+        </div></details>
+      <details class="plus" id="d-annonce"><summary>+ Déjà en vente sur Vinted ou Leboncoin ?</summary>
+        <div class="import" style="padding-top:12px">
+          <label class="field"><span>Lien de l'annonce</span>
+            <input class="input" type="url" name="annonce_origine" inputmode="url" maxlength="500" placeholder="Collez le lien : on pré-remplit pour vous"></label>
+          <div id="import-guide" hidden></div>
+        </div></details>
+      <button class="acc-btn y" type="submit">Publier</button>
+      <p class="err" id="obj-err" hidden></p>
+    </form>
+  </section>
+
+  <!-- FICHE D'UN OBJET (publique) -->
+  <section class="view" id="v-objet" hidden>
+    <button class="retour" type="button" id="objet-retour"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Retour</button>
+    <div class="fiche" id="fiche"></div>
+  </section>
+
   <!-- ÉCHANGES -->
   <section class="view" id="v-trades" hidden>
-    <div class="hero"><span class="label">Pour vous</span><h2 id="trades-title">Vos échanges</h2></div>
+    <nav class="onglets" data-espace aria-label="Mon espace"></nav>
+    <div class="hero"><h2 id="trades-title">Vos échanges</h2></div>
     <div id="trades-current" style="display:flex;flex-direction:column;gap:16px"></div>
     <div class="card gt">
       <span class="tag a">Le Grand Troc du dimanche</span>
@@ -617,11 +724,13 @@ body.large .wrap{max-width:1120px}
 
   <!-- LE MATCH -->
   <section class="view" id="v-match" hidden>
-    <div class="hero"><span class="label">Le Match</span><h2 id="match-title">Ça vous plaît ?</h2>
-      <p class="muted">Des objets qui répondent à vos souhaits, ceux qui feraient un match tout de suite d'abord. Un cœur de chaque côté et vous échangez à deux, sans attendre dimanche.</p></div>
-    <div class="carrousel-nav"><span class="label" id="carrousel-compte"></span>
-      <div class="btns"><button class="btn" type="button" data-defiler="-1" aria-label="Objet précédent"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button class="btn" type="button" data-defiler="1" aria-label="Objet suivant"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div></div>
-    <div class="carrousel" id="carrousel" role="region" aria-roledescription="carrousel" aria-label="Objets pour vous" tabindex="0"></div>
+    <div class="match-entete"><h2 id="match-title">Ça vous plaît ?</h2><span class="muted" id="carrousel-compte"></span></div>
+    <div class="pile-match" id="carrousel" aria-live="polite"></div>
+    <div class="ronds" id="ronds" hidden>
+      <button class="non" type="button" id="m-non" aria-label="Non merci"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <button class="oui" type="button" id="m-oui" aria-label="J'aime"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+    </div>
+    <p class="muted aide" id="match-aide" hidden>Glissez la carte vers la droite si elle vous plaît, vers la gauche sinon (ou flèches ← → du clavier). Un cœur de chaque côté et vous échangez à deux, sans attendre dimanche.</p>
     <div class="list-head" style="margin:8px 0 -12px"><span class="label">Mes matchs</span></div>
     <div id="matchs" style="display:flex;flex-direction:column;gap:16px"></div>
     <p class="muted" style="font-size:14px">Pas de match pour un objet ? Il reste en lice pour le Grand Troc du dimanche, qui cherche aussi les boucles à trois. Vos « J'aime » y comptent comme des souhaits, et un « Non merci » ne vous sera pas reproposé.</p>
@@ -629,12 +738,14 @@ body.large .wrap{max-width:1120px}
 
   <!-- REMISE -->
   <section class="view" id="v-drop" hidden>
+    <nav class="onglets" data-espace aria-label="Mon espace"></nav>
     <div class="hero"><span class="label">Remise sécurisée</span><h2>Déposez, puis récupérez</h2></div>
     <div id="drops" style="display:flex;flex-direction:column;gap:22px"></div>
   </section>
 
   <!-- MODÉRATION -->
   <section class="view" id="v-mod" hidden>
+    <nav class="onglets" data-espace aria-label="Mon espace"></nav>
     <div class="hero"><span class="label">Modération</span><h2>Signalements à traiter</h2>
       <p class="muted" style="font-size:14px">Chaque décision est motivée : le texte est envoyé à la personne concernée, avec la possibilité de contester.</p></div>
     <div id="reports" style="display:flex;flex-direction:column;gap:16px"></div>
@@ -645,14 +756,13 @@ body.large .wrap{max-width:1120px}
 
 <footer class="site"></footer>
 
-<nav class="tabs" aria-label="Mon espace" data-auth hidden>
+<nav class="tabs" aria-label="Onglets">
   <div class="in" id="tabs">
-    <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Accueil</button>
-    <button data-go="lists"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Mes listes</button>
-    <button data-go="match"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Match<span class="badge" id="badge-match" hidden></span></button>
-    <button data-go="trades"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Échanges<span class="badge" id="badge" hidden></span></button>
-    <button data-go="drop"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12h16M9 8V5h6v3"/></svg>Dépôt</button>
-    <button data-go="mod" id="tab-mod" hidden><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Modération</button>
+    <button type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6h-6v6H4z"/></svg>Accueil</button>
+    <button type="button" data-tab="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Rechercher</button>
+    <button type="button" data-tab="proposer" class="plus"><span class="r"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Proposer</button>
+    <button type="button" data-tab="match"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Match<span class="badge" id="badge-match" hidden></span></button>
+    <button type="button" data-tab="lists"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Mon espace<span class="badge" id="badge" hidden></span></button>
   </div>
 </nav>
 <div class="toast" id="toast" role="status" hidden></div>
@@ -688,6 +798,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,2800)}
 
 const store={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch{}}};
+let vueActuelle='home', panneau='ai', mesObjets=[], mesMatchs=[];
 let jeton=store.get('troc.jeton'), moi=null, categories={}, echanges=[], boucles=[], grandTroc=null;
 
 async function api(chemin,{method='GET',body}={}){
@@ -702,15 +813,27 @@ async function api(chemin,{method='GET',body}={}){
   return data;
 }
 
+const ESPACE=['lists','trades','drop','mod'];
 function go(v){
-  if(!moi&&!['home','signup','search'].includes(v))v='home';
+  if(!moi&&!['home','signup','search','objet'].includes(v))v='home';
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
-  document.body.classList.toggle('large',v==='home'||v==='search');
-  $$('nav.tabs button').forEach(b=>{b.dataset.go===v?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
+  vueActuelle=v;
+  document.body.classList.toggle('large',['home','search','objet'].includes(v));
+  const onglet=ESPACE.includes(v)?'lists':v;
+  $$('nav.tabs button').forEach(b=>{b.dataset.tab===onglet?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
+  marquerOnglets();
   window.scrollTo(0,0);
   if(v==='mod')chargerSignalements();
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
+$('#tabs').addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab]')?.dataset.tab; if(!t)return;
+  if(t==='home'){history.replaceState(null,'',location.pathname);go('home')}
+  else if(t==='search')chercher('');
+  else if(t==='proposer')versProposer();
+  else if(t==='match')moi?go('match'):versCompte();
+  else naviguer('#mon-espace');
+});
 
 /* Menu du haut : sur l'accueil, les liens « /#… » changent de vue sans recharger la page. */
 const calmeDefil=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
@@ -766,12 +889,12 @@ const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function versCompte(){go('home');const f=$('#f-login');f.scrollIntoView({behavior:calme?'auto':'smooth',block:'center'});f.email.focus({preventScroll:true})}
 function versProposer(){
   if(!moi)return versCompte();
-  go('lists'); const f=$('#f-obj'), d=f.closest('details'); if(d)d.open=true;
-  f.scrollIntoView({behavior:calme?'auto':'smooth',block:'start'});
+  go('proposer');
 }
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-proposer]'))versProposer();
   else if(e.target.closest('[data-objets]'))chercher('');
+  else if(e.target.closest('[data-fiche]')){e.preventDefault();ouvrirObjet(+e.target.closest('[data-fiche]').dataset.fiche)}
   else if(e.target.closest('[data-vers-compte]'))versCompte();
   else{const c=e.target.closest('[data-cat]'); if(c)chercher('',c.dataset.cat)}
 });
@@ -784,8 +907,8 @@ function afficherCategories(cats){
   $('#f-search-home').cat.innerHTML='<option value="">Tout</option>'+cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
 }
 function carteObjet(o){
-  return `<article class="result"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}</div>
-    <b>${esc(o.titre)}</b><span>${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></article>`;
+  return `<a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}</div>
+    <b>${esc(o.titre)}</b><span>${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></a>`;
 }
 async function chargerFil(){
   try{
@@ -799,8 +922,8 @@ function afficherSession(){
   $$('[data-anon]').forEach(x=>x.hidden=!!moi); $$('[data-auth]').forEach(x=>x.hidden=!moi);
   document.body.classList.toggle('membre',!!moi);
   TT.compte(!!moi); $('#compte').title=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
-  $('#tab-mod').hidden=!(moi&&moi.est_moderateur); $('#tabs').classList.toggle('n5',!!(moi&&moi.est_moderateur));
-  if(moi){$('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`; $('#f-phone').telephone.value=moi.telephone||'';
+  if(moi){$('#esp-avatar').textContent=(moi.pseudo||'?')[0].toUpperCase(); $('#esp-nom').textContent=moi.pseudo; $('#esp-zone').textContent=moi.zone||'';
+    $('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`; $('#f-phone').telephone.value=moi.telephone||'';
     store.set('troc.email',moi.email); $$('#f-mdp [name=email],#f-mdp-rappel [name=email]').forEach(x=>x.value=moi.email);
     $('#mdp-titre').textContent=moi.a_un_mot_de_passe?'Changer de mot de passe':'Choisir un mot de passe';
     $('#mdp-bouton').textContent=moi.a_un_mot_de_passe?'Changer le mot de passe':'Enregistrer le mot de passe'}
@@ -881,6 +1004,7 @@ async function envoyerPhoto(fichier){
   const r=await fetch(s.url_envoi,{method:'POST',body:f}); if(!r.ok)throw new Error("La photo n'a pas pu être envoyée.");
   const d=await r.json(); return {photo_url:d.secure_url, photo_id:d.public_id};
 }
+const PHOTO_VIDE=$('#photo-txt').innerHTML;
 $('#f-obj').photo.onchange=e=>{
   const f=e.target.files[0]; if(!f)return; const u=URL.createObjectURL(f);
   $('#photo-txt').innerHTML=`<img src="${u}" alt="Aperçu de la photo"><span class="muted" style="font-size:13px">Changer de photo</span>`;
@@ -895,9 +1019,9 @@ $('#f-obj').onsubmit=async e=>{
     await api('/moi/objets',{method:'POST',body:{titre:f.titre.value.trim(),categorie_slug:f.categorie_slug.value,etat:f.etat.value,
       sous_categorie_slug:f.sous_categorie_slug.value||null,caracteristiques:Detail.valeurs(f),modes_echange:Detail.modes(f),
       description:f.description.value.trim()||null,annonce_origine:annonce?annonce.lien:null,...photo}});
-    f.reset(); Detail.remplir(f,false); $('#photo-txt').innerHTML='<b>Ajouter une photo</b>'; $('#import-guide').hidden=true; f.closest('details').open=false;
+    f.reset(); Detail.remplir(f,false); $('#photo-txt').innerHTML=PHOTO_VIDE; $('#import-guide').hidden=true; f.querySelectorAll('details').forEach(d=>d.open=false);
     toast(annonce?`Objet publié. Une fois troqué, pensez à retirer l'annonce ${annonce.site}.`:'Objet publié');
-    await chargerListes(); chargerEchanges();
+    panneau='ai'; go('lists'); await chargerListes(); chargerEchanges();
   }catch(err){$('#obj-err').textContent=err.message;$('#obj-err').hidden=false}
   finally{b.disabled=false;b.textContent='Publier'}
 };
@@ -923,9 +1047,8 @@ function guiderAnnonce(){
 $('#f-obj').annonce_origine.addEventListener('input',guiderAnnonce);
 function reprendreAnnonce(){
   const lien=store.get('troc.annonce'); if(!lien||!moi)return;
-  store.set('troc.annonce',null); go('lists');
-  const f=$('#f-obj'); f.closest('details').open=true; f.annonce_origine.value=lien; guiderAnnonce();
-  f.scrollIntoView({behavior:calme?'auto':'smooth',block:'start'});
+  store.set('troc.annonce',null); go('proposer');
+  const f=$('#f-obj'); $('#d-annonce').open=true; f.annonce_origine.value=lien; guiderAnnonce();
 }
 $('#f-import-home').onsubmit=e=>{
   e.preventDefault(); const a=AnnonceAilleurs.lire(e.target.lien.value);
@@ -1022,20 +1145,21 @@ function contreEditeur(o){
   </form>`;
 }
 const pluriel=(n,mot)=>`${n} ${mot}${n>1?'s':''}`;
+const AJOUTER='<button class="tuile-ajout" type="button" data-proposer><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ajouter</button>';
 async function chargerListes(){
   const [objets,souhaits]=await Promise.all([api('/moi/objets'),api('/moi/souhaits'),Detail.charger()]);
-  mesSouhaits=souhaits;
+  mesSouhaits=souhaits; mesObjets=objets;
   $('#have-label').textContent=pluriel(objets.length,'objet');
   $('#want-label').textContent=pluriel(souhaits.length,'demande');
   $('#items').innerHTML=objets.length?objets.map(o=>{const d=Detail.caracs(o.categorie_slug,o.caracteristiques);return `
-    <div class="item"><div class="thumb">${o.photo_url?`<img src="${esc(vignette(o.photo_url))}" alt="">`:''}</div>
+    <div class="item"><div class="thumb">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="">`:''}</div>
       <div class="t"><b>${esc(o.titre)}${STATUTS[o.statut]?`<span class="pill ${o.statut==='reserve'?'res':''}">${STATUTS[o.statut]}</span>`:''}</b>
       <span>${esc(ETATS[o.etat]||'État à préciser')} · ${Detail.nom(o.categorie_slug,o.sous_categorie_slug)}${d?' · '+d:''}${o.annonce_origine?` · <a href="${esc(o.annonce_origine)}" target="_blank" rel="noopener noreferrer">aussi en vente ailleurs</a>`:''}</span></div>
       ${o.statut==='disponible'?`<button class="linkbtn" data-retirer="${o.id}">Retirer</button>`:''}
       ${o.statut==='retire'&&o.photo_url?`<button class="linkbtn" data-remettre="${o.id}">Remettre</button>`:''}
       <span class="muted" style="flex-basis:100%;font-size:13px">${contreTexte(o)} · <button class="linkbtn" data-contre="${o.id}">Choisir</button></span>
       ${contreEditeur(o)}
-    </div>`}).join(''):'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>';
+    </div>`}).join('')+AJOUTER:'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>'+AJOUTER;
   $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>{
     const d=s.categorie_slug?Detail.caracs(s.categorie_slug,s.caracteristiques):'';
     const p=s.categorie_slug?Detail.caracs(s.categorie_slug,s.preferences):'';
@@ -1050,6 +1174,7 @@ async function chargerListes(){
       ${s.precisions?`<q>${esc(s.precisions)}</q>`:''}</div>
       <button class="x" aria-label="Retirer cette demande" data-souhait="${s.id}">×</button></div>`}).join('')
     :'<p class="empty">Qu\'est-ce qui vous serait utile ? Une catégorie entière ouvre le plus d\'échanges ; précisez la sous-catégorie, la taille ou décrivez-le si vous cherchez quelque chose de précis.</p>';
+  afficherEspace();
 }
 $('#items').onsubmit=async e=>{
   e.preventDefault(); const f=e.target; if(!f.dataset.objet)return;
@@ -1122,9 +1247,7 @@ async function chargerEchanges(){
   $('#trades-title').textContent=aRepondre?`${aRepondre} échange${aRepondre>1?'s':''} attend${aRepondre>1?'ent':''} votre réponse`:'Vos échanges';
   $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TrocTroc a de chances d\'en trouver une.</p>';
   $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Rien pour l\'instant. Élargissez vos souhaits : le prochain Grand Troc a lieu dimanche à 18 h.</p>';
-  const n=boucles.length; $('#m-num').textContent=n; $('#m-bar').style.width=Math.min(100,n*10)+'%';
-  $('#m-tip').textContent=n>=5?'Bel éventail. Vos chances de boucle sont élevées.':'Ajoutez des souhaits larges : chacun ouvre de nouvelles boucles.';
-  afficherDepots();
+  afficherDepots(); afficherEspace();
 }
 $('#v-trades').addEventListener('click',async e=>{
   const p=e.target.dataset.proposer, r=e.target.dataset.repondre;
@@ -1135,6 +1258,100 @@ $('#v-trades').addEventListener('click',async e=>{
     try{const x=await api(`/echanges/${r}/reponse`,{method:'POST',body:{accepte:!!e.target.dataset.oui}});
       toast(x.statut==='accepte'?'Tout le monde a accepté : place au dépôt !':x.statut==='annule'?'Échange décliné. TrocTroc cherche autre chose.':'Réponse enregistrée')}
     catch(err){toast(err.message)} chargerEchanges();}
+});
+
+/* Mon espace : d'abord la prochaine chose à faire, puis les chiffres et les onglets J'ai / Je cherche / Échanges / Dépôt. */
+let actionAFaire=null;
+function prochaineAction(){
+  const enAttente=echanges.find(e=>e.statut==='propose'&&e.transferts.some(t=>t.receveur_id===moi.id&&t.reponse==='en_attente'));
+  if(enAttente){const r=enAttente.transferts.find(t=>t.receveur_id===moi.id);
+    return {titre:`Répondez : ${r.donneur_pseudo} vous propose un échange`,detail:`Vous recevriez « ${r.objet.titre} ». Plus que ${heures(enAttente.expire_le)} h pour répondre.`,bouton:"Voir l'échange",faire:()=>go('trades')}}
+  const aDeposer=echanges.find(e=>e.statut==='accepte'&&e.transferts.some(t=>t.donneur_id===moi.id&&!t.depose_le));
+  if(aDeposer){const d=aDeposer.transferts.find(t=>t.donneur_id===moi.id);
+    return {titre:`Déposez « ${d.objet.titre} »`,detail:aDeposer.point_de_depot?`${aDeposer.point_de_depot} · code ${d.code_retrait||''}`:'Le lieu de dépôt va être indiqué.',bouton:'Voir le dépôt',faire:()=>go('drop')}}
+  const m=mesMatchs.find(x=>!x.echange_id);
+  if(m)return {titre:`C'est un match avec ${m.avec.pseudo} !`,detail:'Choisissez ce que vous échangez, et proposez-le.',bouton:'Conclure',faire:()=>{go('match');document.getElementById('match-'+m.avec.id)?.scrollIntoView({block:'center'})}};
+  if(!mesObjets.length)return {titre:'Proposez votre premier objet',detail:"Une photo, un titre, une catégorie : c'est tout.",bouton:'Proposer un objet',faire:versProposer};
+  if(!mesSouhaits.length)return {titre:'Dites ce qui vous serait utile',detail:"Une catégorie large ouvre le plus d'échanges.",bouton:'Ajouter une demande',faire:()=>{montrerPanneau('cherche');$('#d-wish').open=true}};
+  return {titre:'Rien à faire pour l\'instant',detail:'Faites un tour du Match : un cœur de chaque côté et c\'est échangé.',bouton:'Ouvrir le Match',faire:()=>go('match'),calme:true};
+}
+function afficherEspace(){
+  if(!moi)return;
+  actionAFaire=prochaineAction();
+  $('#afaire').className='afaire'+(actionAFaire.calme?' calme':'');
+  $('#afaire').innerHTML=`<div class="t"><span class="label">À faire</span><b>${esc(actionAFaire.titre)}</b><span>${esc(actionAFaire.detail)}</span></div>
+    <button class="acc-btn ${actionAFaire.calme?'g':'y'}" type="button" id="afaire-btn">${esc(actionAFaire.bouton)}</button>`;
+  const faits=echanges.filter(e=>e.statut==='termine').length;
+  $('#stats').innerHTML=[[mesObjets.filter(o=>o.statut==='disponible').length,'objets proposés'],[mesSouhaits.length,'souhaits'],[boucles.length,'échanges possibles'],[faits,'échanges faits']]
+    .map(([n,l])=>`<div class="stat"><b>${n}</b><span>${l}</span></div>`).join('');
+  marquerOnglets();
+}
+$('#afaire').addEventListener('click',e=>{if(e.target.closest('#afaire-btn')&&actionAFaire)actionAFaire.faire()});
+function marquerOnglets(){
+  if(!moi)return;
+  const enCours=echanges.filter(e=>e.statut==='propose'||e.statut==='accepte').length;
+  const ongl=[['ai',"J'ai",mesObjets.length],['cherche','Je cherche',mesSouhaits.length],['trades','Échanges',enCours],['drop','Dépôt','']];
+  if(moi.est_moderateur)ongl.push(['mod','Modération','']);
+  const actif=vueActuelle==='lists'?panneau:vueActuelle;
+  const html=ongl.map(([k,l,n])=>`<button type="button" data-onglet="${k}"${k===actif?' aria-current="page"':''}>${l}${n!==''?`<small>${n}</small>`:''}</button>`).join('');
+  $$('[data-espace]').forEach(x=>x.innerHTML=html);
+}
+function montrerPanneau(k){panneau=k; go('lists'); $('#p-ai').hidden=k!=='ai'; $('#p-cherche').hidden=k!=='cherche'; marquerOnglets()}
+document.addEventListener('click',e=>{
+  const o=e.target.closest('[data-onglet]')?.dataset.onglet; if(!o)return;
+  ['ai','cherche'].includes(o)?montrerPanneau(o):go(o);
+});
+
+/* Fiche d'un objet : grande photo, ce qu'il faut savoir, qui le propose, et l'action (J'aime ou créer un compte). */
+let avantFiche={vue:'home',hash:''}, ficheObjet=null;
+const grande=url=>url.replace('/image/upload/','/image/upload/c_limit,w_1000,h_1000,q_auto,f_auto/');
+async function ouvrirObjet(id){
+  if(vueActuelle!=='objet')avantFiche={vue:vueActuelle,hash:location.hash.startsWith('#objet-')?'':location.hash};
+  $('#fiche').innerHTML='<p class="empty">Chargement…</p>'; go('objet');
+  if(location.hash!=='#objet-'+id)history.replaceState(null,'','#objet-'+id);
+  try{
+    const o=await api('/objets/'+id); ficheObjet=o;
+    const [qui]=await Promise.all([api('/utilisateurs/'+o.proprietaire_id).catch(()=>null),Detail.charger().catch(()=>{})]);
+    const pseudo=qui?qui.pseudo:'Un membre', d=Detail.caracs(o.categorie_slug,o.caracteristiques);
+    const nomCat=o.sous_categorie_slug?Detail.nom(o.categorie_slug,o.sous_categorie_slug):esc(categories[o.categorie_slug]||o.categorie_slug);
+    const mien=moi&&o.proprietaire_id===moi.id, dispo=o.statut==='disponible';
+    let actions;
+    if(!dispo)actions='<p class="status">Cet objet a déjà trouvé preneur.</p>';
+    else if(mien)actions=`<p class="muted">C'est votre objet.</p><button class="acc-btn g" type="button" data-onglet="ai">Voir mes objets</button>`;
+    else if(moi)actions=`<button class="acc-btn a" type="button" id="fiche-aime">♥ J'aime</button>
+      <button class="acc-btn g" type="button" id="fiche-souhait">Ajouter « ${nomCat} » à mes souhaits</button>
+      <p class="muted note">Si ${esc(pseudo)} aime un de vos objets, c'est un match : vous échangez à deux, tout de suite.</p>`;
+    else actions=`<button class="acc-btn y" type="button" data-vers-compte>Créer mon compte pour l'échanger</button>
+      <p class="muted note">C'est gratuit. Ajoutez ce que vous pouvez donner : TrocTroc vous propose l'échange, même à trois.</p>`;
+    $('#fiche').innerHTML=`<div class="fiche-photo">${o.photo_url?`<img src="${esc(grande(o.photo_url))}" alt="${esc(o.titre)}">`:''}</div>
+      <div class="fiche-panneau">
+        <h1>${esc(o.titre)}</h1>
+        <dl class="infos">
+          ${o.etat?`<dt>État</dt><dd>${esc(ETATS[o.etat]||'')}</dd>`:''}
+          <dt>Catégorie</dt><dd>${nomCat}</dd>
+          ${d?`<dt>Détails</dt><dd>${d}</dd>`:''}
+          ${qui&&qui.zone?`<dt>Où</dt><dd>${esc(qui.zone)}</dd>`:''}
+          ${o.modes_echange.length?`<dt>Remise</dt><dd>${o.modes_echange.map(m=>MODES[m]||m).join(', ')}</dd>`:''}
+        </dl>
+        ${o.description?`<p class="fiche-desc">${esc(o.description)}</p>`:''}
+        <div class="fiche-membre"><span class="avatar" aria-hidden="true">${esc(pseudo[0].toUpperCase())}</span><div><b>${esc(pseudo)}</b>${qui?`<span class="muted">Membre depuis ${new Date(qui.cree_le).toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</span>`:''}</div></div>
+        <div class="fiche-actions">${actions}</div>
+        ${moi&&!mien?`<button class="linkbtn signaler" type="button" data-signaler="${o.id}" data-titre="${esc(o.titre)}">Signaler cet objet</button>`:''}
+      </div>`;
+  }catch(err){$('#fiche').innerHTML=`<p class="empty">${esc(err.message)}</p>`}
+}
+$('#objet-retour').onclick=()=>{history.replaceState(null,'',avantFiche.hash||location.pathname);go(avantFiche.vue==='objet'?'home':avantFiche.vue)};
+$('#fiche').addEventListener('click',async e=>{
+  const o=ficheObjet; if(!o)return;
+  if(e.target.closest('#fiche-aime')){const b=e.target.closest('#fiche-aime'); b.disabled=true;
+    try{const r=await api('/match/avis',{method:'POST',body:{objet_id:o.id,aime:true}});
+      b.textContent='♥ Vous aimez'; document.dispatchEvent(new Event('tt:match'));
+      toast(r.match?`C'est un match avec ${r.match.avec.pseudo} ! Concluez-le dans Match.`:'Noté ! Si l\'intérêt est réciproque, c\'est un match.')}
+    catch(err){toast(err.message);b.disabled=false}}
+  if(e.target.closest('#fiche-souhait')){const b=e.target.closest('#fiche-souhait'); b.disabled=true;
+    try{await api('/moi/souhaits',{method:'POST',body:{categorie_slug:o.categorie_slug,sous_categorie_slug:o.sous_categorie_slug}});
+      b.textContent='Ajouté à vos souhaits'; toast('Ajouté à vos souhaits'); chargerListes(); chargerEchanges()}
+    catch(err){toast(err.message);b.disabled=false}}
 });
 
 /* Dépôt */
@@ -1250,7 +1467,7 @@ async function demarrer(){
   const gt=chargerGrandTroc(), session=location.hash.startsWith('#connexion=')?null:chargerSession();
   try{const cats=await api('/categories'); categories=Object.fromEntries(cats.map(c=>[c.slug,c.libelle])); afficherCategories(cats); chargerFil();
     const opts=cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
-    $('#cat-obj').innerHTML='<option value="">Choisir…</option>'+opts; $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
+    $('#cat-obj').innerHTML=cats.map(c=>`<label><input type="radio" name="categorie_slug" value="${esc(c.slug)}" required><span>${(PICTOS[c.slug]||['📦'])[0]} ${esc(c.libelle)}</span></label>`).join(''); $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
   }catch(err){toast(err.message)}
   const h=location.hash;
   if(h.startsWith('#connexion=')){
@@ -1258,6 +1475,7 @@ async function demarrer(){
     try{await verifierLien()}catch(err){toast(err.message)} return;
   }
   await session;
+  if(h.startsWith('#objet-')){if(moi)toutCharger(); ouvrirObjet(+h.slice(7)); return}
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(['#objets','#se-connecter'].includes(h)||(h==='#mon-espace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
   if(!moi)return;
