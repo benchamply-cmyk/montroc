@@ -298,7 +298,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <p class="muted">Dites ce que vous avez et ce qui vous serait utile. TrocTroc trouve l'échange, même à trois.</p>
     </div>
 
-    <div class="card match-home">
+    <div class="card match-home" data-fonctionnalite="match">
       <span class="tag m">Le Match, à tout moment</span>
       <h2>Un cœur de chaque côté, <span class="hl">et c'est échangé.</span></h2>
       <p class="muted">Faites défiler les objets qui répondent à vos souhaits et dites « J'aime » ou « Non merci ». Quand la personne aime aussi un de vos objets, c'est un match : vous concluez l'échange à deux, tout de suite, sans attendre dimanche.</p>
@@ -318,7 +318,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <div class="center"><div><b>1 boucle</b><br><span class="muted" style="font-size:12px">3 personnes servies</span></div></div>
     </div>
 
-    <div class="card gt" id="grand-troc">
+    <div class="card gt" id="grand-troc" data-fonctionnalite="grand_troc">
       <span class="tag a">Le Grand Troc du dimanche</span>
       <div class="gt-cd"><b data-gt-quand>Chaque dimanche à 18 h</b><span class="gt-reste" data-gt-reste aria-live="polite"></span></div>
       <p class="muted">Pour tout ce qui n'a pas trouvé de match : une fois par semaine, TrocTroc cherche les boucles à trois et les échanges à deux que personne n'a vus. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
@@ -337,7 +337,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <p class="muted" style="font-size:14px">Sans compte. Vous voyez les objets proposés en ce moment.</p>
     </form>
 
-    <form class="card stack troquez" id="f-import-home">
+    <form class="card stack troquez" id="f-import-home" data-fonctionnalite="import_annonce">
       <span class="label">Votre annonce ne part pas ?</span>
       <h2>Troquez-<em>la.</em></h2>
       <p class="muted" style="font-size:15px">Un objet qui attend depuis des mois sur <a href="https://www.vinted.fr" target="_blank" rel="noopener noreferrer">Vinted</a> ou <a href="https://www.leboncoin.fr" target="_blank" rel="noopener noreferrer">Leboncoin</a> ? Collez le lien de l'annonce : on vous aide à le proposer ici, sans prix, contre quelque chose qui vous servira.</p>
@@ -373,8 +373,8 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <ol class="steps">
       <li><div><b>J'ai</b><span class="muted">Une photo par objet. L'état est obligatoire.</span></div></li>
       <li><div><b>Ça me serait utile</b><span class="muted">Des catégories plutôt qu'un modèle exact.</span></div></li>
-      <li><div><b>Le Match, quand vous voulez</b><span class="muted">Un cœur de chaque côté : vous échangez à deux, tout de suite.</span></div></li>
-      <li><div><b>Dimanche, 18 h : le Grand Troc</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui, puis la semaine pour déposer.</span></div></li>
+      <li data-fonctionnalite="match"><div><b>Le Match, quand vous voulez</b><span class="muted">Un cœur de chaque côté : vous échangez à deux, tout de suite.</span></div></li>
+      <li data-fonctionnalite="grand_troc"><div><b>Dimanche, 18 h : le Grand Troc</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui, puis la semaine pour déposer.</span></div></li>
     </ol>
     </div>
 
@@ -384,7 +384,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <ul class="gratuit">
         <li>Publier vos objets et vos souhaits</li>
         <li>Chercher, même sans compte</li>
-        <li>Participer au Grand Troc du dimanche</li>
+        <li data-fonctionnalite="grand_troc">Participer au Grand Troc du dimanche</li>
         <li>Échanger en main propre</li>
       </ul>
       <p class="muted" style="font-size:14px">Vous êtes une entreprise ou une collectivité ? Voir l'offre <a href="/pros/">Professionnels</a> ou <a href="/collectivites/">Collectivités</a>.</p>
@@ -442,7 +442,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
         <details class="addobj" style="margin-top:14px">
           <summary class="btn primary">+ Proposer un objet</summary>
           <form class="stack" id="f-obj">
-            <div class="import">
+            <div class="import" data-fonctionnalite="import_annonce">
               <label class="field"><span>Déjà en vente sur Vinted ou Leboncoin ? <span class="muted" style="font-weight:400">(facultatif)</span></span>
                 <input class="input" type="url" name="annonce_origine" inputmode="url" maxlength="500" placeholder="Collez le lien de l'annonce"></label>
               <div id="import-guide" hidden></div>
@@ -490,7 +490,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
   <section class="view" id="v-trades" hidden>
     <div class="hero"><span class="label">Pour vous</span><h2 id="trades-title">Vos échanges</h2></div>
     <div id="trades-current" style="display:flex;flex-direction:column;gap:16px"></div>
-    <div class="card gt">
+    <div class="card gt" data-fonctionnalite="grand_troc">
       <span class="tag a">Le Grand Troc du dimanche</span>
       <div class="gt-cd"><b data-gt-quand>Chaque dimanche à 18 h</b><span class="gt-reste" data-gt-reste aria-live="polite"></span></div>
       <p class="muted">Pour tout ce qui n'a pas trouvé de match : une fois par semaine, TrocTroc cherche les boucles à trois et les échanges à deux que personne n'a vus. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
@@ -509,7 +509,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <div class="carrousel" id="carrousel" role="region" aria-roledescription="carrousel" aria-label="Objets pour vous" tabindex="0"></div>
     <div class="list-head" style="margin:8px 0 -12px"><span class="label">Mes matchs</span></div>
     <div id="matchs" style="display:flex;flex-direction:column;gap:16px"></div>
-    <p class="muted" style="font-size:14px">Pas de match pour un objet ? Il reste en lice pour le Grand Troc du dimanche, qui cherche aussi les boucles à trois. Vos « J'aime » y comptent comme des souhaits, et un « Non merci » ne vous sera pas reproposé.</p>
+    <p class="muted" style="font-size:14px" data-fonctionnalite="grand_troc">Pas de match pour un objet ? Il reste en lice pour le Grand Troc du dimanche, qui cherche aussi les boucles à trois. Vos « J'aime » y comptent comme des souhaits, et un « Non merci » ne vous sera pas reproposé.</p>
   </section>
 
   <!-- REMISE -->
@@ -523,6 +523,11 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <div class="hero"><span class="label">Modération</span><h2>Signalements à traiter</h2>
       <p class="muted" style="font-size:14px">Chaque décision est motivée : le texte est envoyé à la personne concernée, avec la possibilité de contester.</p></div>
     <div id="reports" style="display:flex;flex-direction:column;gap:16px"></div>
+    <div class="list-head" style="margin:8px 0 -12px"><span class="label">Fonctionnalités du site</span></div>
+    <div class="card stack" id="fonctions">
+      <p class="muted" style="font-size:14px">Allumez ou éteignez une fonctionnalité pour tout le monde, tout de suite, sans toucher au code.</p>
+      <div id="liste-fonctions" style="display:flex;flex-direction:column;gap:14px"></div>
+    </div>
   </section>
 
   <footer class="legal">Un contenu vous semble illicite ou dangereux ? Utilisez « Signaler » sur l'objet concerné.</footer>
@@ -534,7 +539,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
   <div class="in" id="tabs">
     <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Accueil</button>
     <button data-go="lists"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Mes listes</button>
-    <button data-go="match"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Match<span class="badge" id="badge-match" hidden></span></button>
+    <button data-go="match" data-fonctionnalite="match"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Match<span class="badge" id="badge-match" hidden></span></button>
     <button data-go="trades"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Échanges<span class="badge" id="badge" hidden></span></button>
     <button data-go="drop"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12h16M9 8V5h6v3"/></svg>Dépôt</button>
     <button data-go="mod" id="tab-mod" hidden><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Modération</button>
@@ -591,7 +596,7 @@ function go(v){
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
   $$('nav.tabs button').forEach(b=>{b.dataset.go===v?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   window.scrollTo(0,0);
-  if(v==='mod')chargerSignalements();
+  if(v==='mod'){chargerSignalements();chargerFonctionnalites()}
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
 
@@ -921,6 +926,21 @@ $('#reports').onclick=async e=>{
   if(motivation.length<10){toast('Rédigez une motivation (10 caractères au moins).');return}
   try{await api(`/moderation/signalements/${c.dataset.id}/decision`,{method:'POST',body:{retenir:d==='1',suspendre_compte:c.querySelector('[name=suspendre]').checked,motivation}});
     toast('Décision enregistrée et envoyée');chargerSignalements()}catch(err){toast(err.message)}
+};
+
+/* Feature Flag engine (voir site.js et docs/07-fonctionnalites.md) : interrupteurs réservés à la modération. */
+async function chargerFonctionnalites(){
+  let liste; try{liste=await api('/moderation/fonctionnalites')}catch(err){toast(err.message);return}
+  $('#liste-fonctions').innerHTML=liste.map(f=>`<label style="display:flex;gap:12px;align-items:flex-start">
+    <input type="checkbox" data-fonction="${esc(f.cle)}"${f.active?' checked':''} style="margin-top:4px">
+    <span><b>${esc(f.nom)}</b> <span class="tag ${f.active?'m':'a'}">${f.active?'Allumée':'Éteinte'}</span><br>
+      <span class="muted" style="font-size:14px">${esc(f.description)}${f.modifie_par?` Changé par ${esc(f.modifie_par)} le ${new Date(f.modifie_le).toLocaleString('fr-FR')}.`:''}</span></span></label>`).join('');
+}
+$('#liste-fonctions').onchange=async e=>{
+  const c=e.target.dataset.fonction; if(!c)return; e.target.disabled=true;
+  try{const f=await api('/moderation/fonctionnalites/'+c,{method:'PUT',body:{active:e.target.checked}});
+    TTF.regler(c,f.active); toast(`${f.nom} : ${f.active?'allumée':'éteinte'}`)}catch(err){toast(err.message)}
+  chargerFonctionnalites();
 };
 
 /* Grand Troc du dimanche : date du prochain passage, compte à rebours et bilan du dernier. */

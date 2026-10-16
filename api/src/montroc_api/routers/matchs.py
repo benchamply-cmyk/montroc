@@ -3,11 +3,11 @@
 from fastapi import APIRouter, Query
 
 from .. import matchs, vues
-from ..deps import SessionDep, UtilisateurConnecte
+from ..deps import SessionDep, UtilisateurConnecte, exiger
 from ..schemas import AccordCreation, AvisCreation, CarteMatch, EchangeLecture, MatchLecture, ResultatAvis
 from .echanges import metier
 
-router = APIRouter(prefix="/match", tags=["match"])
+router = APIRouter(prefix="/match", tags=["match"], dependencies=[exiger("match")])
 
 
 @router.get("/carrousel", response_model=list[CarteMatch])

@@ -12,6 +12,7 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
+.eteinte{display:none!important} /* fonctionnalité éteinte (Feature Flag engine, voir site.js) */
 html{scroll-padding-top:calc(var(--haut) + 12px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
 button{font:inherit;color:inherit;cursor:pointer}

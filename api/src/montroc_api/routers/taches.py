@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from .. import services, vues
+from .. import fonctionnalites, services, vues
 from ..deps import SecretTaches, SessionDep
 from ..schemas import GrandTrocLecture, ResultatGrandTroc, ResultatTaches
 from .echanges import metier
@@ -16,7 +16,7 @@ def horaires(session: SessionDep):
     repêchage du mardi une fois toutes les réponses au Grand Troc rentrées."""
     rappels, expires = services.taches_horaires(session)
     session.flush()
-    repeches = services.repechage(session)
+    repeches = services.repechage(session) if fonctionnalites.est_active(session, "grand_troc") else None
     session.commit()
     return ResultatTaches(rappels_envoyes=rappels, echanges_expires=expires, objets_repeches=repeches)
 
@@ -27,6 +27,8 @@ def grand_troc(session: SessionDep, force: bool = False):
 
     Sans effet avant l'heure ou si le Grand Troc du jour a déjà eu lieu ; ``force`` le lance tout de suite.
     """
+    if not fonctionnalites.est_active(session, "grand_troc"):
+        return ResultatGrandTroc(lance=False, message="Le Grand Troc est désactivé.", grand_troc=None, echanges=[])
     resultat, echanges, lance, message = metier(services.lancer_grand_troc, session, force)
     return ResultatGrandTroc(
         lance=lance,

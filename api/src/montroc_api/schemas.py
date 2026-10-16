@@ -409,3 +409,19 @@ class Decision(BaseModel):
     # Signalement retenu : l'objet visé est retiré ; avec ce choix, le compte concerné est aussi suspendu.
     suspendre_compte: bool = False
     motivation: str = Field(min_length=10, max_length=2000)
+
+
+class FonctionnaliteLecture(BaseModel):
+    """Feature Flag engine : une fonctionnalité du catalogue et son état, pour l'onglet Modération."""
+
+    cle: str
+    nom: str
+    description: str
+    active: bool
+    par_defaut: bool
+    modifie_le: datetime | None
+    modifie_par: str | None
+
+
+class FonctionnaliteReglage(BaseModel):
+    active: bool

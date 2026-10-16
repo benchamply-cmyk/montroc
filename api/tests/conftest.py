@@ -55,8 +55,8 @@ def base_vide():
     yield
     with engine.begin() as conn:
         tables = (
-            "avis, signalements, sessions, jetons_connexion, transferts, echanges, grands_trocs, souhaits, objets, "
-            "utilisateurs"
+            "fonctionnalites, avis, signalements, sessions, jetons_connexion, transferts, echanges, grands_trocs, "
+            "souhaits, objets, utilisateurs"
         )
         conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
 

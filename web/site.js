@@ -1,3 +1,15 @@
+/* Feature Flag engine : l'API dit quelles fonctionnalités sont allumées (GET /fonctionnalites). Tout élément
+   marqué data-fonctionnalite="match" (par exemple) disparaît quand « match » est éteinte. Les scripts
+   attendent TTF.pret puis demandent TTF.actif('match'). Sans réponse de l'API, tout reste
+   affiché : l'API refuse de toute façon les routes d'une fonctionnalité éteinte. */
+(()=>{
+  const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001':'https://api.troctroc.fr';
+  let etats={};
+  function appliquer(){document.querySelectorAll('[data-fonctionnalite]').forEach(x=>x.classList.toggle('eteinte',etats[x.dataset.fonctionnalite]===false))}
+  const pret=fetch(API+'/fonctionnalites').then(r=>r.ok?r.json():{}).catch(()=>({})).then(e=>{etats=e;appliquer();return e});
+  window.TTF={pret,actif:cle=>etats[cle]!==false,regler(cle,active){etats[cle]=active;appliquer()},appliquer};
+})();
+
 /* Menu du haut et pied de page, communs à toutes les pages.
    Sur l'accueil, index.html intercepte les liens « /#… » pour changer de vue sans recharger,
    et appelle TT.compte() quand la session change. */
@@ -12,7 +24,7 @@
     <ul>
       <li><a href="/#concept">Le concept</a></li>
       <li><a href="/#comment-ca-marche">Comment ça marche</a></li>
-      <li><a href="/#grand-troc">Le Grand Troc</a></li>
+      <li data-fonctionnalite="grand_troc"><a href="/#grand-troc">Le Grand Troc</a></li>
       <li><a href="/#objets">Voir les objets</a></li>
       <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Pour qui ?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <ul id="pour-qui" hidden>
@@ -74,4 +86,5 @@
   let jeton=null; try{jeton=localStorage.getItem('troc.jeton')}catch{}
   compte(!!jeton);
   window.TT={compte,fermer};
+  TTF.appliquer();
 })();

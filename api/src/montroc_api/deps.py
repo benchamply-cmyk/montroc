@@ -10,6 +10,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from . import fonctionnalites
 from . import models as m
 from .config import get_settings
 from .db import get_session
@@ -69,6 +70,18 @@ def _secret_taches(x_taches_secret: Annotated[str, Header()] = "") -> None:
     attendu = get_settings().taches_secret
     if not attendu or not hmac.compare_digest(x_taches_secret, attendu):
         raise HTTPException(403, "Secret des tâches planifiées absent ou incorrect.")
+
+
+def exiger(cle: str):
+    """Dépendance de route : 404 si la fonctionnalité ``cle`` est éteinte (Feature Flag engine)."""
+    if cle not in fonctionnalites.CATALOGUE:
+        raise ValueError(f"Fonctionnalité inconnue : {cle}")
+
+    def _verifier(session: SessionDep) -> None:
+        if not fonctionnalites.est_active(session, cle):
+            raise HTTPException(404, f"{fonctionnalites.CATALOGUE[cle].nom} est désactivé pour le moment.")
+
+    return Depends(_verifier)
 
 
 UtilisateurOptionnel = Annotated[m.Utilisateur | None, Depends(_utilisateur_optionnel)]

@@ -316,6 +316,20 @@ class Avis(Horodatage, Base):
     objet: Mapped[Objet] = relationship()
 
 
+class EtatFonctionnalite(Base):
+    """Feature Flag engine : l'état choisi pour une fonctionnalité du catalogue (voir fonctionnalites.py).
+
+    Sans ligne ici, la fonctionnalité garde son état par défaut, déclaré dans le code.
+    """
+
+    __tablename__ = "fonctionnalites"
+
+    cle: Mapped[str] = mapped_column(String(50), primary_key=True)
+    active: Mapped[bool] = mapped_column(Boolean)
+    modifie_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    modifie_par: Mapped[str] = mapped_column(String(320))
+
+
 class JetonConnexion(Base):
     """Lien magique envoyé par e-mail : à usage unique, valable 20 minutes. Seule l'empreinte est stockée."""
 

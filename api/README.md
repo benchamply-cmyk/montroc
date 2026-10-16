@@ -26,6 +26,8 @@ make tests
 | `POST /match/avis` | « J'aime » / « Non merci » sur un objet ; renvoie le match si l'intérêt est réciproque |
 | `GET /match`, `POST /match/accord` | mes matchs ; proposer l'échange 1 à 1 à un match, à tout moment (48 h pour répondre, 7 jours pour déposer) |
 | `GET /grand-troc` | date du prochain Grand Troc du dimanche et bilan du dernier (public) |
+| `GET /fonctionnalites` | Feature Flag engine : quelles fonctionnalités sont allumées (public) |
+| `GET /moderation/fonctionnalites`, `PUT /moderation/fonctionnalites/{cle}` | allumer ou éteindre une fonctionnalité (modération), voir [docs/07-fonctionnalites.md](../docs/07-fonctionnalites.md) |
 | `POST /taches/horaires`, `POST /taches/grand-troc` | tâches planifiées (en-tête `X-Taches-Secret`) ; `?force=true` lance le Grand Troc tout de suite |
 
 Les routes personnelles demandent l'en-tête `Authorization: Bearer <jeton>`. En local, sans SMTP configuré, les e-mails (dont le lien de connexion) s'affichent dans la console de l'API.

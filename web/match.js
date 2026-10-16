@@ -64,7 +64,8 @@
   }
 
   async function chargerMatch() {
-    if (!moi) return;
+    await TTF.pret;
+    if (!moi || !TTF.actif('match')) return;
     try {
       [cartes, matchs] = await Promise.all([api('/match/carrousel?limite=30'), api('/match')]);
       afficherCarrousel(); afficherMatchs();
@@ -127,7 +128,8 @@
 
   // Branchements sur le script principal : la vue se charge à l'ouverture, avec le reste du compte.
   const goAvant = go;
-  go = v => { goAvant(v); if (v === 'match' && moi) chargerMatch(); };
+  // Le Match éteint (Feature Flag engine) : l'onglet disparaît et un lien #match ramène à l'accueil.
+  go = v => { if (v === 'match' && !TTF.actif('match')) v = 'home'; goAvant(v); if (v === 'match' && moi) chargerMatch(); };
   const toutChargerAvant = toutCharger;
   toutCharger = async () => {
     await Promise.all([toutChargerAvant(), chargerMatch()]);
