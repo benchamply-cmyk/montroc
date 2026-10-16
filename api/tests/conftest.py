@@ -110,12 +110,13 @@ def creer(client):
             return r.json()["id"]
 
         def boucle_abc(self, auto=False):
-            """A a une poussette et veut un siège ; B a un siège et veut un vélo ; C a un vélo et veut une poussette."""
+            """A a une poussette (enfant) et veut une lampe (maison) ; B a une lampe et veut un vélo (sport) ;
+            C a un vélo et veut une poussette."""
             a, b, c = self.utilisateur("alice"), self.utilisateur("bruno"), self.utilisateur("chloe")
-            objets = (self.objet(a, "poussette"), self.objet(b, "siege-auto"), self.objet(c, "velo"))
-            self.souhait(a, "siege-auto", acceptation_auto=auto)
-            self.souhait(b, "velo", acceptation_auto=auto)
-            self.souhait(c, "poussette", acceptation_auto=auto)
+            objets = (self.objet(a, "enfant"), self.objet(b, "maison"), self.objet(c, "sport"))
+            self.souhait(a, "maison", acceptation_auto=auto)
+            self.souhait(b, "sport", acceptation_auto=auto)
+            self.souhait(c, "enfant", acceptation_auto=auto)
             return (a, b, c), objets
 
         def echange_abc(self, auto=False):

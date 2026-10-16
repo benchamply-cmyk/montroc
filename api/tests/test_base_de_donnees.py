@@ -14,7 +14,7 @@ def executer(sql):
 
 def test_categories_de_base_presentes(client):
     slugs = {c["slug"] for c in client.get("/categories").json()}
-    assert {"poussette", "siege-auto", "velo"} <= slugs
+    assert {"mode", "enfant", "sport", "divers"} <= slugs
 
 
 @pytest.mark.parametrize(
@@ -44,7 +44,7 @@ def test_contraintes_refusent_les_donnees_incoherentes(creer, sql):
 
 def test_suppression_utilisateur_en_cascade(client, creer):
     a = creer.utilisateur("alice")
-    creer.objet(a, "velo")
-    creer.souhait(a, "poussette")
+    creer.objet(a, "sport")
+    creer.souhait(a, "enfant")
     assert client.delete("/moi", headers=a.headers).status_code == 204
     assert client.get("/objets").json() == []

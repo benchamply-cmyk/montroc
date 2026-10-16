@@ -7,7 +7,7 @@ MOTIF = {"motif": "dangereux", "explication": "Ce siège auto fait l'objet d'un 
 
 def test_signaler_avec_ou_sans_compte(client, creer):
     alice, bruno = creer.utilisateur("alice"), creer.utilisateur("bruno")
-    o = creer.objet(alice, "siege-auto")
+    o = creer.objet(alice, "maison")
     r = client.post("/signalements", json={"objet_id": o, **MOTIF}, headers=bruno.headers)
     assert r.status_code == 201 and r.json()["statut"] == "ouvert"
     assert courriels.ENVOYES[-2].sujet == "Signalement reçu" and courriels.ENVOYES[-2].destinataire == bruno.email
@@ -40,7 +40,7 @@ def test_retenir_retire_l_objet_et_annule_l_echange(client, creer):
     modo = creer.utilisateur("modo", email="modo@exemple.fr")
 
     ouverts = client.get("/moderation/signalements", headers=modo.headers).json()
-    assert [x["id"] for x in ouverts] == [s["id"]] and ouverts[0]["objet"]["titre"] == "poussette"
+    assert [x["id"] for x in ouverts] == [s["id"]] and ouverts[0]["objet"]["titre"] == "enfant"
 
     decision = {"retenir": True, "motivation": "Modèle rappelé par le fabricant en 2025."}
     r = client.post(f"/moderation/signalements/{s['id']}/decision", json=decision, headers=modo.headers)
@@ -63,7 +63,7 @@ def test_retenir_retire_l_objet_et_annule_l_echange(client, creer):
 
 def test_suspendre_un_compte(client, creer):
     alice, bruno = creer.utilisateur("alice"), creer.utilisateur("bruno")
-    creer.objet(alice, "velo")
+    creer.objet(alice, "sport")
     s = client.post(
         "/signalements",
         json={"utilisateur_id": alice.id, "motif": "arnaque", "explication": "Demande de l'argent en message privé."},
@@ -85,7 +85,7 @@ def test_suspendre_un_compte(client, creer):
 
 def test_rejeter(client, creer):
     alice, bruno = creer.utilisateur("alice"), creer.utilisateur("bruno")
-    o = creer.objet(alice, "velo")
+    o = creer.objet(alice, "sport")
     s = client.post("/signalements", json={"objet_id": o, **MOTIF}, headers=bruno.headers).json()
     modo = creer.utilisateur("modo", email="modo@exemple.fr")
     decision = {"retenir": False, "motivation": "L'objet est conforme à nos règles."}
