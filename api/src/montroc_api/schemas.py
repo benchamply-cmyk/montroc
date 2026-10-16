@@ -35,6 +35,8 @@ class CaracteristiqueLecture(BaseModel):
     libelle: str
     # Choix fixes ; None : texte libre (qui décrit un objet, sans filtrer les demandes).
     options: list[str] | None
+    # Sous-catégories où elle se précise ; None : toute la catégorie.
+    pour: list[str] | None = None
 
 
 class CategorieDetaillee(CategorieLecture):

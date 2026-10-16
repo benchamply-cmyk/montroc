@@ -483,7 +483,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
             <label class="field"><span>Quoi ?</span><input class="input" name="titre" required maxlength="120" placeholder="Ex. poussette canne"></label>
             <div class="grid2">
               <label class="field"><span>Catégorie</span><select class="input" name="categorie_slug" required id="cat-obj"></select></label>
-              <label class="field"><span>Type <span class="muted" style="font-weight:400">(facultatif)</span></span><select class="input" name="sous_categorie_slug" id="sous-cat-obj" disabled><option value="">Choisissez d'abord la catégorie</option></select></label>
+              <label class="field"><span>Sous-catégorie <span class="muted" style="font-weight:400">(facultatif)</span></span><select class="input" name="sous_categorie_slug" id="sous-cat-obj" disabled><option value="">Choisissez d'abord la catégorie</option></select></label>
             </div>
             <div class="grid2 caracs" id="caracs-obj" hidden></div>
             <label class="field"><span>État</span><select class="input" name="etat" required>
@@ -506,12 +506,12 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
           <form class="stack" id="f-wish">
             <div class="grid2">
               <label class="field"><span>Catégorie</span><select class="input" name="categorie_slug" required id="cat-wish"></select></label>
-              <label class="field"><span>Type</span><select class="input" name="sous_categorie_slug" id="sous-cat-wish" disabled><option value="">Choisissez d'abord la catégorie</option></select></label>
+              <label class="field"><span>Sous-catégorie</span><select class="input" name="sous_categorie_slug" id="sous-cat-wish" disabled><option value="">Choisissez d'abord la catégorie</option></select></label>
             </div>
             <div class="grid2 caracs" id="caracs-wish" hidden></div>
             <label class="field"><span>Décrivez ce que vous cherchez <span class="muted" style="font-weight:400">(facultatif)</span></span>
               <textarea class="input" name="precisions" maxlength="500" placeholder="Ex. une poussette légère qui se plie d'une main, pour prendre le métro."></textarea></label>
-            <p class="muted" style="font-size:13px;margin:0">Le type et les choix ci-dessus trient les objets qui vous sont proposés : « Tous les types » et « Peu importe » vous ouvrent plus d'échanges. Votre description est montrée aux membres qui ont ce que vous cherchez.</p>
+            <p class="muted" style="font-size:13px;margin:0">La sous-catégorie et les choix ci-dessus trient les objets qui vous sont proposés : « Toutes les sous-catégories » et « Peu importe » vous ouvrent plus d'échanges. Votre description est montrée aux membres qui ont ce que vous cherchez.</p>
             <button class="cta" type="submit">Ajouter à ma demande</button>
             <p class="err" id="wish-err" hidden></p>
           </form>
@@ -841,7 +841,7 @@ $('#f-import-home').onsubmit=e=>{
 };
 
 /* Mes listes : « Je propose » (mes objets) et « Je demande » (mes souhaits), chacun avec sa catégorie,
-   son type (sous-catégorie) et ses caractéristiques (taille, âge, marque…), servis par GET /categories. */
+   sa sous-catégorie et ses caractéristiques (taille, âge, marque…), servis par GET /categories. */
 const Detail=(()=>{
   let detail={}, charge=null;
   const charger=()=>charge??=api('/categories').then(cats=>{detail=Object.fromEntries(cats.map(c=>[c.slug,c]))}).catch(err=>{charge=null;throw err});
@@ -853,25 +853,34 @@ const Detail=(()=>{
     const defs=detail[cat]?.caracteristiques||[];
     return Object.entries(valeurs||{}).map(([k,v])=>`${esc((defs.find(d=>d.cle===k)||{}).libelle||k)} : ${esc(v)}`).join(' · ');
   }
-  /* Remplit le type et les caractéristiques du formulaire selon la catégorie choisie. Une demande ne garde que
-     les caractéristiques à choix fixes (elles trient les objets proposés) ; un objet a aussi les champs libres. */
+  /* Remplit la sous-catégorie et les caractéristiques du formulaire selon la catégorie choisie. Une demande ne
+     garde que les caractéristiques à choix fixes (elles trient les objets proposés) ; un objet a aussi les champs
+     libres. Une caractéristique propre à certaines sous-catégories (la pointure des chaussures) n'apparaît qu'une
+     fois l'une d'elles choisie. */
   function remplir(f,demande){
-    const c=detail[f.categorie_slug.value], sc=f.sous_categorie_slug, zone=f.querySelector('.caracs');
+    const c=detail[f.categorie_slug.value], sc=f.sous_categorie_slug;
     sc.disabled=!c||!c.sous_categories.length;
     sc.innerHTML=!c?'<option value="">Choisissez d\'abord la catégorie</option>'
-      :`<option value="">${demande?'Tous les types':(c.sous_categories.length?'Choisir…':'Pas de type pour cette catégorie')}</option>`
+      :`<option value="">${demande?'Toutes les sous-catégories':(c.sous_categories.length?'Choisir…':'Pas de sous-catégorie')}</option>`
         +c.sous_categories.map(x=>`<option value="${esc(x.slug)}">${esc(x.libelle)}</option>`).join('');
-    const defs=(c?.caracteristiques||[]).filter(d=>!demande||d.options);
+    remplirCaracs(f,demande);
+  }
+  function remplirCaracs(f,demande){
+    const c=detail[f.categorie_slug.value], sous=f.sous_categorie_slug.value, zone=f.querySelector('.caracs'), avant=valeurs(f);
+    const defs=(c?.caracteristiques||[]).filter(d=>(!demande||d.options)&&(!d.pour||d.pour.includes(sous)));
     zone.hidden=!defs.length;
     zone.innerHTML=defs.map(d=>`<label class="field"><span>${esc(d.libelle)}</span>${d.options
       ?`<select class="input" data-carac="${esc(d.cle)}"><option value="">${demande?'Peu importe':'Non précisé'}</option>${d.options.map(o=>`<option>${esc(o)}</option>`).join('')}</select>`
       :`<input class="input" data-carac="${esc(d.cle)}" maxlength="60" placeholder="Facultatif">`}</label>`).join('');
+    zone.querySelectorAll('[data-carac]').forEach(x=>{if(avant[x.dataset.carac])x.value=avant[x.dataset.carac]});
   }
   const valeurs=f=>Object.fromEntries([...f.querySelectorAll('[data-carac]')].map(x=>[x.dataset.carac,x.value.trim()]).filter(([,v])=>v));
-  return {charger,nom,caracs,remplir,valeurs};
+  return {charger,nom,caracs,remplir,remplirCaracs,valeurs};
 })();
 $('#cat-obj').addEventListener('change',()=>Detail.remplir($('#f-obj'),false));
 $('#cat-wish').addEventListener('change',()=>Detail.remplir($('#f-wish'),true));
+$('#sous-cat-obj').addEventListener('change',()=>Detail.remplirCaracs($('#f-obj'),false));
+$('#sous-cat-wish').addEventListener('change',()=>Detail.remplirCaracs($('#f-wish'),true));
 
 let mesSouhaits=[];
 const nomSouhait=s=>s.categorie_slug?Detail.nom(s.categorie_slug,s.sous_categorie_slug):'Objet n° '+s.objet_id;
@@ -910,11 +919,11 @@ async function chargerListes(){
     </div>`}).join(''):'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>';
   $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>{
     const d=s.categorie_slug?Detail.caracs(s.categorie_slug,s.caracteristiques):'';
-    const detail=[s.categorie_slug&&!s.sous_categorie_slug?'Tous les types':'',d].filter(Boolean).join(' · ');
+    const detail=[s.categorie_slug&&!s.sous_categorie_slug?'Toutes les sous-catégories':'',d].filter(Boolean).join(' · ');
     return `<div class="demande-ligne"><div class="t"><b>${nomSouhait(s)}</b>${detail?`<span>${detail}</span>`:''}
       ${s.precisions?`<q>${esc(s.precisions)}</q>`:''}</div>
       <button class="x" aria-label="Retirer cette demande" data-souhait="${s.id}">×</button></div>`}).join('')
-    :'<p class="empty">Qu\'est-ce qui vous serait utile ? Une catégorie entière ouvre le plus d\'échanges ; précisez le type, la taille ou décrivez-le si vous cherchez quelque chose de précis.</p>';
+    :'<p class="empty">Qu\'est-ce qui vous serait utile ? Une catégorie entière ouvre le plus d\'échanges ; précisez la sous-catégorie, la taille ou décrivez-le si vous cherchez quelque chose de précis.</p>';
 }
 $('#items').onsubmit=async e=>{
   e.preventDefault(); const f=e.target; if(!f.dataset.objet)return;

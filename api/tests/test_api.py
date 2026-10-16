@@ -22,7 +22,7 @@ def test_sante(client):
 
 def test_photo_et_etat_obligatoires(client, creer):
     alice = creer.utilisateur("alice")
-    base = {"categorie_slug": "velo", "titre": "Vélo"}
+    base = {"categorie_slug": "sport", "titre": "Vélo"}
     for manque in ({"etat": "bon"}, {"photo_url": PHOTO}):
         assert client.post("/moi/objets", json={**base, **manque}, headers=alice.headers).status_code == 422
     ailleurs = {**base, "etat": "bon", "photo_url": "https://exemple.fr/photo.jpg"}
@@ -40,7 +40,7 @@ def test_photo_et_etat_obligatoires(client, creer):
 def test_objet_recopie_d_une_annonce(client, creer):
     """Le lien Vinted ou Leboncoin est gardé, nettoyé, et visible du seul propriétaire."""
     alice = creer.utilisateur("alice")
-    base = {"categorie_slug": "velo", "titre": "Vélo", "etat": "bon", "photo_url": PHOTO}
+    base = {"categorie_slug": "sport", "titre": "Vélo", "etat": "bon", "photo_url": PHOTO}
     mauvais_liens = ("https://ebay.fr/itm/1", "https://www.vinted.fr/", "javascript:alert(1)", "vinted.fr/items/1")
     for mauvais in mauvais_liens:
         r = client.post("/moi/objets", json={**base, "annonce_origine": mauvais}, headers=alice.headers)
@@ -65,21 +65,21 @@ def test_signature_cloudinary(client, creer):
 
 def test_on_ne_touche_qu_a_ses_objets(client, creer):
     alice, bruno = creer.utilisateur("alice"), creer.utilisateur("bruno")
-    o = creer.objet(alice, "velo")
+    o = creer.objet(alice, "sport")
     assert client.patch(f"/moi/objets/{o}", json={"titre": "X"}, headers=bruno.headers).status_code == 404
     assert (
         client.patch(f"/moi/objets/{o}", json={"statut": "retire"}, headers=alice.headers).json()["statut"] == "retire"
     )
     assert client.get("/objets").json() == []
     assert client.patch(f"/moi/objets/{o}", json={"statut": "disponible"}, headers=alice.headers).status_code == 200
-    s = creer.souhait(alice, "livres")
+    s = creer.souhait(alice, "culture")
     assert client.delete(f"/moi/souhaits/{s}", headers=bruno.headers).status_code == 404
     assert client.delete(f"/moi/souhaits/{s}", headers=alice.headers).status_code == 204
 
 
 def test_souhait_invalide(client, creer):
     a = creer.utilisateur("alice")
-    o = creer.objet(a, "velo")
+    o = creer.objet(a, "sport")
     assert client.post("/moi/souhaits", json={}, headers=a.headers).status_code == 422
     assert client.post("/moi/souhaits", json={"objet_id": o}, headers=a.headers).status_code == 409
     assert client.post("/moi/souhaits", json={"categorie_slug": "inconnue"}, headers=a.headers).status_code == 404
@@ -88,22 +88,22 @@ def test_souhait_invalide(client, creer):
 def test_filtrer_objets(client, creer):
     a = creer.utilisateur("alice", zone="Marseille")
     b = creer.utilisateur("bruno", zone="Paris")
-    creer.objet(a, "velo")
-    creer.objet(b, "velo")
-    creer.objet(b, "livres")
-    assert len(client.get("/objets", params={"categorie": "velo"}).json()) == 2
+    creer.objet(a, "sport")
+    creer.objet(b, "sport")
+    creer.objet(b, "culture")
+    assert len(client.get("/objets", params={"categorie": "sport"}).json()) == 2
     assert len(client.get("/objets", params={"zone": "Paris"}).json()) == 2
 
 
 def test_recherche_libre_sans_compte(client, creer):
     a = creer.utilisateur("alice")
     b = creer.utilisateur("bruno")
-    velo = creer.objet(a, "velo", titre="Vélo enfant 16 pouces")
-    creer.objet(a, "livres", titre="Lot de BD")
+    velo = creer.objet(a, "sport", titre="Vélo enfant 16 pouces")
+    creer.objet(a, "culture", titre="Lot de BD")
     r = client.post(
         "/moi/objets",
         json={
-            "categorie_slug": "livres",
+            "categorie_slug": "culture",
             "titre": "Romans",
             "description": "Trois ÉLÉPHANTS et un 50% polar",
             "etat": "bon",
@@ -128,8 +128,8 @@ def test_recherche_libre_sans_compte(client, creer):
     assert chercher("   ") == chercher("") and len(chercher("")) == 3
     # Le libellé de la catégorie compte aussi.
     libelle = client.get("/categories").json()
-    livres = next(c["libelle"] for c in libelle if c["slug"] == "livres")
-    assert set(chercher(livres.split()[0])) >= {romans}
+    livres = next(c["libelle"] for c in libelle if c["slug"] == "culture")
+    assert set(chercher(livres.split()[0].strip(","))) >= {romans}
     assert "email" not in client.get("/objets", params={"q": "velo"}).json()[0]
     # Retiré ou compte suspendu : plus trouvable.
     client.patch(f"/moi/objets/{velo}", json={"statut": "retire"}, headers=a.headers)
@@ -238,10 +238,10 @@ def test_date_du_prochain_grand_troc():
 def test_grand_troc_du_dimanche(client, creer, monkeypatch):
     (a, b, c), _ = creer.boucle_abc()
     d, e = creer.utilisateur("david"), creer.utilisateur("emma")
-    creer.objet(d, "livres")
-    creer.objet(e, "jouets")
-    creer.souhait(d, "jouets")
-    creer.souhait(e, "livres")
+    creer.objet(d, "culture")
+    creer.objet(e, "mode")
+    creer.souhait(d, "mode")
+    creer.souhait(e, "culture")
 
     assert client.post("/taches/grand-troc").status_code == 403
     assert client.post("/taches/grand-troc", headers={"X-Taches-Secret": "faux"}).status_code == 403
@@ -290,16 +290,16 @@ def test_sms_quand_le_grand_troc_propose(client, creer, monkeypatch):
     a = creer.utilisateur("alice", telephone="06 12 34 56 78")
     b = creer.utilisateur("bruno", telephone="+33 7 11 22 33 44")
     c, d = creer.utilisateur("chloe"), creer.utilisateur("david")
-    creer.objet(a, "poussette")
-    creer.objet(a, "livres")
-    creer.objet(b, "velo")
-    creer.objet(c, "siege-auto")
-    creer.objet(d, "jouets")
-    creer.souhait(a, "velo")
-    creer.souhait(b, "poussette")
-    creer.souhait(a, "jouets")
-    creer.souhait(d, "livres")
-    creer.souhait(c, "jouets")  # Chloé ne boucle avec personne
+    creer.objet(a, "enfant")
+    creer.objet(a, "culture")
+    creer.objet(b, "sport")
+    creer.objet(c, "maison")
+    creer.objet(d, "mode")
+    creer.souhait(a, "sport")
+    creer.souhait(b, "enfant")
+    creer.souhait(a, "mode")
+    creer.souhait(d, "culture")
+    creer.souhait(c, "mode")  # Chloé ne boucle avec personne
     monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 5))
     r = client.post("/taches/grand-troc", headers=TACHES).json()
     assert len(r["echanges"]) == 2
@@ -392,11 +392,11 @@ def test_quitter_troc_annule_mes_echanges(client, creer):
 
 def test_je_le_donne_contre(client, creer):
     a, b = creer.utilisateur("alice"), creer.utilisateur("bruno")
-    siege = creer.souhait(a, "siege-auto")
-    livres = creer.souhait(a, "livres")
-    poussette = creer.objet(a, "poussette")
-    creer.objet(b, "livres")
-    creer.souhait(b, "poussette")
+    siege = creer.souhait(a, "maison")
+    livres = creer.souhait(a, "culture")
+    poussette = creer.objet(a, "enfant")
+    creer.objet(b, "culture")
+    creer.souhait(b, "enfant")
     assert client.get("/moi/objets", headers=a.headers).json()[0]["contre_souhait_ids"] == []
     assert len(client.get("/moi/boucles", headers=a.headers).json()) == 1
 
@@ -420,7 +420,7 @@ def test_je_le_donne_contre(client, creer):
     r = client.post(
         "/moi/objets",
         json={
-            "categorie_slug": "jouets",
+            "categorie_slug": "mode",
             "titre": "Lego",
             "etat": "bon",
             "photo_url": PHOTO,
@@ -438,11 +438,11 @@ def test_je_le_donne_contre(client, creer):
 def test_repechage_du_mardi(client, creer, monkeypatch):
     # Alice a une poussette et veut un siège ; Bruno et Chloé ont chacun un siège et veulent la poussette.
     a, b, c = creer.utilisateur("alice"), creer.utilisateur("bruno"), creer.utilisateur("chloe")
-    creer.objet(a, "poussette")
-    creer.souhait(a, "siege-auto")
+    creer.objet(a, "enfant")
+    creer.souhait(a, "maison")
     for p in (b, c):
-        creer.objet(p, "siege-auto")
-        creer.souhait(p, "poussette")
+        creer.objet(p, "maison")
+        creer.souhait(p, "enfant")
     monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 5))
     (echange,) = client.post("/taches/grand-troc", headers=TACHES).json()["echanges"]
     with engine.begin() as conn:
@@ -450,8 +450,8 @@ def test_repechage_du_mardi(client, creer, monkeypatch):
         conn.execute(text("UPDATE objets SET cree_le = :t"), {"t": _dimanche(10)})
     # Un objet publié après le Grand Troc attend le dimanche suivant.
     david = creer.utilisateur("david")
-    creer.objet(david, "siege-auto")
-    creer.souhait(david, "poussette")
+    creer.objet(david, "maison")
+    creer.souhait(david, "enfant")
     with engine.begin() as conn:
         conn.execute(
             text("UPDATE objets SET cree_le = :t WHERE proprietaire_id = :d"),
