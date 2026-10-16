@@ -19,19 +19,9 @@ from troc_echanges import Transfert as TransfertMoteur
 from . import courriels
 from . import models as m
 from .config import get_settings
-from .services import ErreurMetier, proposer, souhait_correspond
+from .services import ErreurMetier, proposer, souhait_correspond, souhait_moteur, zone_acceptee
 
 ACTIFS = (m.StatutEchange.propose, m.StatutEchange.accepte)
-
-
-def _zone(z: str | None) -> str | None:
-    return z.strip().lower() if z and z.strip() else None
-
-
-def meme_zone(a: m.Utilisateur, b: m.Utilisateur) -> bool:
-    """Comme au Grand Troc : une ville inconnue ne bloque pas, deux villes différentes oui."""
-    za, zb = _zone(a.zone), _zone(b.zone)
-    return za is None or zb is None or za == zb
 
 
 def lien_match() -> str:
@@ -95,7 +85,7 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
     mes_objets = _mes_objets(session, moi.id)
     # Mes souhaits, le préféré (rang 1) d'abord : une carte répond au premier qui lui correspond.
     mes_souhaits = sorted(moi.souhaits, key=lambda s: (s.rang, s.id))
-    categories = {s.categorie_slug for s in mes_souhaits if s.categorie_slug}
+    categories = set().union(*(souhait_moteur(s).categories_visees() for s in mes_souhaits))
     precis = {s.objet_id for s in mes_souhaits if s.objet_id}
 
     # Ce que les autres cherchent parmi mes objets (souhaits) et ce qu'ils aiment déjà (coups de cœur).
@@ -108,10 +98,12 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
                 or_(
                     m.Souhait.categorie_slug.in_({o.categorie_slug for o in mes_objets}),
                     m.Souhait.objet_id.in_({o.id for o in mes_objets}),
+                    # Alternatives d'autres catégories : vérifiées par souhait_correspond.
+                    m.Souhait.alternatives != [],
                 ),
             )
         ):
-            voulus = [o for o in mes_objets if souhait_correspond(s, o)]
+            voulus = [o for o in mes_objets if souhait_correspond(s, o) and zone_acceptee(s, s.utilisateur, moi)]
             if voulus:
                 liste = il_cherche.setdefault(s.utilisateur_id, [])
                 liste += [o for o in voulus if o not in liste]
@@ -137,17 +129,22 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
         )
         .options(selectinload(m.Objet.proprietaire))
     )
-    cartes = [
-        Carte(
-            objet=o,
-            souhait=next((s for s in mes_souhaits if souhait_correspond(s, o)), None),
-            il_aime=il_aime.get(o.proprietaire_id, []),
-            il_cherche=il_cherche.get(o.proprietaire_id, []),
-            sa_demande=sa_demande.get(o.proprietaire_id),
+    cartes = []
+    for o in candidats:
+        souhait = next(
+            (s for s in mes_souhaits if souhait_correspond(s, o) and zone_acceptee(s, moi, o.proprietaire)), None
         )
-        for o in candidats
-        if meme_zone(moi, o.proprietaire)
-    ]
+        if souhait is None and not zone_acceptee(None, moi, o.proprietaire):
+            continue
+        cartes.append(
+            Carte(
+                objet=o,
+                souhait=souhait,
+                il_aime=il_aime.get(o.proprietaire_id, []),
+                il_cherche=il_cherche.get(o.proprietaire_id, []),
+                sa_demande=sa_demande.get(o.proprietaire_id),
+            )
+        )
     # La requête prend toute la catégorie : on écarte ce qu'une sous-catégorie ou une taille demandées excluent,
     # sauf si son propriétaire cherche ou aime déjà un de mes objets.
     cartes = [c for c in cartes if c.souhait is not None or c.il_aime or c.il_cherche]

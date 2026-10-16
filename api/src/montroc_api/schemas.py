@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, mo
 
 from . import nomenclature
 from .config import get_settings
-from .models import EtatObjet, MotifSignalement, Reponse, StatutEchange, StatutObjet, StatutSignalement
+from .models import EtatObjet, ModeRecherche, MotifSignalement, Reponse, StatutEchange, StatutObjet, StatutSignalement
 
 
 class Lecture(BaseModel):
@@ -161,6 +161,20 @@ def _annonce_origine(url: str | None) -> str | None:
 Caracteristiques = Annotated[dict[str, str], Field(default_factory=dict, max_length=12)]
 
 
+def _modes_echange(modes: list[str] | None) -> list[str] | None:
+    if modes is None:
+        return None
+    inconnus = set(modes) - set(nomenclature.MODES_ECHANGE)
+    if inconnus:
+        raise ValueError(f"Mode d'échange inconnu : {', '.join(sorted(inconnus))}.")
+    # Tous cochés = aucun précisé : la liste vide les accepte tous.
+    propres = sorted(set(modes))
+    return [] if len(propres) == len(nomenclature.MODES_ECHANGE) else propres
+
+
+ModesEchange = Annotated[list[str], Field(default_factory=list, max_length=len(nomenclature.MODES_ECHANGE))]
+
+
 class ObjetCreation(BaseModel):
     categorie_slug: str
     sous_categorie_slug: str | None = Field(default=None, max_length=50)
@@ -174,8 +188,10 @@ class ObjetCreation(BaseModel):
     # « Je le donne contre… » : des souhaits du propriétaire ; vide = contre n'importe lequel de ses souhaits.
     contre_souhait_ids: list[int] = Field(default_factory=list, max_length=50)
     contre_strict: bool = False
+    modes_echange: ModesEchange
 
     _photo = field_validator("photo_url")(_photo_cloudinary)
+    _modes = field_validator("modes_echange")(_modes_echange)
     _origine = field_validator("annonce_origine")(_annonce_origine)
 
     @model_validator(mode="after")
@@ -197,6 +213,9 @@ class ObjetModification(BaseModel):
     # Vérifiés avec la catégorie de l'objet, dans la route.
     sous_categorie_slug: str | None = Field(default=None, max_length=50)
     caracteristiques: dict[str, str] | None = Field(default=None, max_length=12)
+    modes_echange: list[str] | None = Field(default=None, max_length=len(nomenclature.MODES_ECHANGE))
+
+    _modes = field_validator("modes_echange")(_modes_echange)
 
     @model_validator(mode="after")
     def statut_manuel(self):
@@ -216,6 +235,7 @@ class ObjetLecture(Lecture):
     etat: EtatObjet | None
     photo_url: str | None
     statut: StatutObjet
+    modes_echange: list[str]
     cree_le: datetime
 
 
@@ -227,17 +247,34 @@ class MonObjet(ObjetLecture):
     contre_strict: bool
 
 
+class Alternative(BaseModel):
+    """Une autre catégorie (ou une de ses sous-catégories) acceptée par une demande flexible ou ouverte."""
+
+    categorie_slug: str
+    sous_categorie_slug: str | None = Field(default=None, max_length=50)
+
+
 class SouhaitCreation(BaseModel):
     categorie_slug: str | None = None
     objet_id: int | None = None
-    # « Je demande » en détail : sous-catégorie, caractéristiques à choix fixes (elles filtrent les objets
-    # proposés) et description libre de ce qui est cherché.
+    # « Je demande » en détail : sous-catégorie, critères obligatoires (``caracteristiques``) et préférentiels
+    # (``preferences``), état minimum, et description libre de ce qui est cherché.
     sous_categorie_slug: str | None = Field(default=None, max_length=50)
     caracteristiques: Caracteristiques
+    preferences: Caracteristiques
     precisions: str | None = Field(default=None, max_length=500)
+    etat_min: EtatObjet | None = None
+    # Recherche précise, flexible (avec des alternatives) ou ouverte (toutes les catégories d'intérêt).
+    mode_recherche: ModeRecherche = ModeRecherche.flexible
+    alternatives: list[Alternative] = Field(default_factory=list, max_length=20)
+    # Logistique : modes d'échange acceptés (vide : tous) et autres zones acceptées que la sienne.
+    modes_echange: ModesEchange
+    zones: list[Annotated[str, Field(min_length=1, max_length=80)]] = Field(default_factory=list, max_length=10)
     rang: int = Field(default=1, ge=1)
     quantite: int = Field(default=1, ge=1)
     acceptation_auto: bool = False
+
+    _modes = field_validator("modes_echange")(_modes_echange)
 
     @model_validator(mode="after")
     def categorie_ou_objet(self):
@@ -246,6 +283,22 @@ class SouhaitCreation(BaseModel):
         self.caracteristiques = nomenclature.verifier(
             self.categorie_slug, self.sous_categorie_slug, self.caracteristiques, demande=True
         )
+        self.preferences = nomenclature.verifier(
+            self.categorie_slug, self.sous_categorie_slug, self.preferences, demande=True
+        )
+        if set(self.caracteristiques) & set(self.preferences):
+            raise ValueError("Un critère est soit obligatoire, soit préférentiel.")
+        if self.categorie_slug is None and (self.alternatives or self.etat_min):
+            raise ValueError("Un objet précis se demande sans alternative ni état minimum.")
+        vues = set()
+        for a in self.alternatives:
+            if a.sous_categorie_slug is not None:
+                nomenclature.verifier(a.categorie_slug, a.sous_categorie_slug, {}, demande=True)
+            cle = (a.categorie_slug, a.sous_categorie_slug)
+            if cle in vues or cle == (self.categorie_slug, self.sous_categorie_slug):
+                raise ValueError("Une alternative est donnée deux fois.")
+            vues.add(cle)
+        self.zones = sorted({" ".join(z.split()) for z in self.zones if z.strip()})
         self.precisions = (self.precisions or "").strip() or None
         return self
 
@@ -257,7 +310,13 @@ class SouhaitLecture(Lecture):
     objet_id: int | None
     sous_categorie_slug: str | None
     caracteristiques: dict[str, str]
+    preferences: dict[str, str]
     precisions: str | None
+    etat_min: EtatObjet | None
+    mode_recherche: ModeRecherche
+    alternatives: list[Alternative]
+    modes_echange: list[str]
+    zones: list[str]
     rang: int
     quantite: int
     acceptation_auto: bool

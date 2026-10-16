@@ -64,6 +64,11 @@ section.view[hidden]{display:none}
 .liste-num{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:13px;background:var(--accent);color:var(--accent-ink)}
 .demande .liste-num{background:var(--mark)}
 .caracs{padding:12px;border:1px dashed var(--line);border-radius:10px}
+.caracs .niveau{margin-top:4px;font-size:13px;padding:6px 8px}
+.choix{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin:0;min-width:0}
+.choix legend{font-size:14px;font-weight:600;padding:0 4px}
+.choix .row{display:flex;gap:8px 14px;flex-wrap:wrap}
+.choix label{display:flex;gap:6px;align-items:center;font-size:14px}
 .demandes{display:flex;flex-direction:column;border-top:1px solid var(--line)}
 .demande-ligne{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
 .demande-ligne .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -487,8 +492,11 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
             </div>
             <div class="grid2 caracs" id="caracs-obj" hidden></div>
             <label class="field"><span>État</span><select class="input" name="etat" required>
-              <option value="">Choisir…</option><option value="neuf">Neuf</option><option value="tres_bon">Très bon état</option>
-              <option value="bon">Bon état</option><option value="usage">Usagé, fonctionne</option></select></label>
+              <option value="">Choisir…</option><option value="neuf">Neuf</option><option value="comme_neuf">Comme neuf</option>
+              <option value="tres_bon">Très bon état</option><option value="bon">Bon état</option><option value="correct">État correct</option></select></label>
+            <fieldset class="choix"><legend>Remise possible</legend><div class="row">
+              <label><input type="checkbox" name="mode" value="main_propre" checked>En main propre</label>
+              <label><input type="checkbox" name="mode" value="point_relais" checked>En point relais</label></div></fieldset>
             <label class="field"><span>Précisions <span class="muted" style="font-weight:400">(facultatif)</span></span><textarea class="input" name="description" maxlength="2000" placeholder="Défauts, accessoires fournis, dimensions…"></textarea></label>
             <button class="cta" type="submit">Publier</button>
             <p class="err" id="obj-err" hidden></p>
@@ -509,9 +517,24 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
               <label class="field"><span>Sous-catégorie</span><select class="input" name="sous_categorie_slug" id="sous-cat-wish" disabled><option value="">Choisissez d'abord la catégorie</option></select></label>
             </div>
             <div class="grid2 caracs" id="caracs-wish" hidden></div>
+            <div class="grid2">
+              <label class="field"><span>État minimum</span><select class="input" name="etat_min">
+                <option value="">Peu importe</option><option value="correct">État correct</option><option value="bon">Bon état</option>
+                <option value="tres_bon">Très bon état</option><option value="comme_neuf">Comme neuf</option><option value="neuf">Neuf</option></select></label>
+              <label class="field"><span>Recherche</span><select class="input" name="mode_recherche" id="mode-wish">
+                <option value="flexible">Flexible : j'accepte aussi d'autres choix</option>
+                <option value="precise">Précise : seulement ce que je décris</option>
+                <option value="ouverte">Ouverte : toute la catégorie et celles cochées</option></select></label>
+            </div>
+            <fieldset class="choix" id="alt-wish" hidden><legend>J'accepte aussi…</legend><div class="row"></div></fieldset>
+            <fieldset class="choix"><legend>Remise acceptée</legend><div class="row">
+              <label><input type="checkbox" name="mode" value="main_propre" checked>En main propre</label>
+              <label><input type="checkbox" name="mode" value="point_relais" checked>En point relais</label></div></fieldset>
+            <label class="field"><span>Autres villes acceptées <span class="muted" style="font-weight:400">(facultatif, en plus de la vôtre)</span></span>
+              <input class="input" name="zones" maxlength="300" placeholder="Ex. Aix-en-Provence, Aubagne"></label>
             <label class="field"><span>Décrivez ce que vous cherchez <span class="muted" style="font-weight:400">(facultatif)</span></span>
               <textarea class="input" name="precisions" maxlength="500" placeholder="Ex. une poussette légère qui se plie d'une main, pour prendre le métro."></textarea></label>
-            <p class="muted" style="font-size:13px;margin:0">La sous-catégorie et les choix ci-dessus trient les objets qui vous sont proposés : « Toutes les sous-catégories » et « Peu importe » vous ouvrent plus d'échanges. Votre description est montrée aux membres qui ont ce que vous cherchez.</p>
+            <p class="muted" style="font-size:13px;margin:0">Un critère « obligatoire » écarte les objets qui ne l'indiquent pas ; « de préférence » les fait passer en premier sans en écarter. « Toutes les sous-catégories », « Peu importe » et les autres choix acceptés vous ouvrent plus d'échanges. Votre description est montrée aux membres qui ont ce que vous cherchez.</p>
             <button class="cta" type="submit">Ajouter à ma demande</button>
             <p class="err" id="wish-err" hidden></p>
           </form>
@@ -612,7 +635,8 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 /* Le site parle à l'API (api.troctroc.fr, ou localhost en développement). La session est un jeton
    gardé dans le navigateur et envoyé dans l'en-tête Authorization. */
 const API = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8001' : 'https://api.troctroc.fr';
-const ETATS = {neuf:'Neuf', tres_bon:'Très bon état', bon:'Bon état', usage:'Usagé, fonctionne'};
+const ETATS = {neuf:'Neuf', comme_neuf:'Comme neuf', tres_bon:'Très bon état', bon:'Bon état', correct:'État correct', usage:'Usagé, fonctionne'};
+const MODES = {main_propre:'en main propre', point_relais:'en point relais'};
 const STATUTS = {disponible:'', reserve:'réservé', retire:'retiré', modere:'retiré par la modération'};
 const MOTIFS = {dangereux:'Produit dangereux', illegal:'Illicite', contrefacon:'Contrefaçon', arnaque:'Arnaque', inapproprie:'Inapproprié', autre:'Autre'};
 
@@ -798,7 +822,7 @@ $('#f-obj').onsubmit=async e=>{
   try{
     const photo=await envoyerPhoto(f.photo.files[0]); b.textContent='Publication…';
     await api('/moi/objets',{method:'POST',body:{titre:f.titre.value.trim(),categorie_slug:f.categorie_slug.value,etat:f.etat.value,
-      sous_categorie_slug:f.sous_categorie_slug.value||null,caracteristiques:Detail.valeurs(f),
+      sous_categorie_slug:f.sous_categorie_slug.value||null,caracteristiques:Detail.valeurs(f),modes_echange:Detail.modes(f),
       description:f.description.value.trim()||null,annonce_origine:annonce?annonce.lien:null,...photo}});
     f.reset(); Detail.remplir(f,false); $('#photo-txt').innerHTML='<b>Ajouter une photo</b>'; $('#import-guide').hidden=true; f.closest('details').open=false;
     toast(annonce?`Objet publié. Une fois troqué, pensez à retirer l'annonce ${annonce.site}.`:'Objet publié');
@@ -853,10 +877,9 @@ const Detail=(()=>{
     const defs=detail[cat]?.caracteristiques||[];
     return Object.entries(valeurs||{}).map(([k,v])=>`${esc((defs.find(d=>d.cle===k)||{}).libelle||k)} : ${esc(v)}`).join(' · ');
   }
-  /* Remplit la sous-catégorie et les caractéristiques du formulaire selon la catégorie choisie. Une demande ne
-     garde que les caractéristiques à choix fixes (elles trient les objets proposés) ; un objet a aussi les champs
-     libres. Une caractéristique propre à certaines sous-catégories (la pointure des chaussures) n'apparaît qu'une
-     fois l'une d'elles choisie. */
+  /* Remplit la sous-catégorie et les caractéristiques du formulaire selon la catégorie choisie. Dans une demande,
+     chaque caractéristique est un critère obligatoire ou de préférence. Une caractéristique propre à certaines
+     sous-catégories (la pointure des chaussures) n'apparaît qu'une fois l'une d'elles choisie. */
   function remplir(f,demande){
     const c=detail[f.categorie_slug.value], sc=f.sous_categorie_slug;
     sc.disabled=!c||!c.sous_categories.length;
@@ -867,20 +890,45 @@ const Detail=(()=>{
   }
   function remplirCaracs(f,demande){
     const c=detail[f.categorie_slug.value], sous=f.sous_categorie_slug.value, zone=f.querySelector('.caracs'), avant=valeurs(f);
-    const defs=(c?.caracteristiques||[]).filter(d=>(!demande||d.options)&&(!d.pour||d.pour.includes(sous)));
+    const niveaux=Object.fromEntries([...f.querySelectorAll('[data-niveau]')].map(x=>[x.dataset.niveau,x.value]));
+    const defs=(c?.caracteristiques||[]).filter(d=>!d.pour||d.pour.includes(sous));
     zone.hidden=!defs.length;
     zone.innerHTML=defs.map(d=>`<label class="field"><span>${esc(d.libelle)}</span>${d.options
       ?`<select class="input" data-carac="${esc(d.cle)}"><option value="">${demande?'Peu importe':'Non précisé'}</option>${d.options.map(o=>`<option>${esc(o)}</option>`).join('')}</select>`
-      :`<input class="input" data-carac="${esc(d.cle)}" maxlength="60" placeholder="Facultatif">`}</label>`).join('');
+      :`<input class="input" data-carac="${esc(d.cle)}" maxlength="60" placeholder="${demande?'Peu importe':'Facultatif'}">`}${demande
+      ?`<select class="input niveau" data-niveau="${esc(d.cle)}" aria-label="${esc(d.libelle)} : obligatoire ou de préférence"><option value="o">Obligatoire</option><option value="p">De préférence</option></select>`:''}</label>`).join('');
     zone.querySelectorAll('[data-carac]').forEach(x=>{if(avant[x.dataset.carac])x.value=avant[x.dataset.carac]});
+    zone.querySelectorAll('[data-niveau]').forEach(x=>{if(niveaux[x.dataset.niveau])x.value=niveaux[x.dataset.niveau]});
+    if(demande)remplirAlternatives(f);
   }
+  /* « J'accepte aussi… » : les autres sous-catégories de la catégorie (recherche flexible, une fois une
+     sous-catégorie choisie) et les autres catégories entières. Rien en recherche précise. */
+  function remplirAlternatives(f){
+    const zone=f.querySelector('#alt-wish'), cat=f.categorie_slug.value, sous=f.sous_categorie_slug.value, mode=f.mode_recherche.value;
+    const avant=new Set(alternatives(f).map(a=>a.categorie_slug+'|'+(a.sous_categorie_slug||'')));
+    const choix=[];
+    if(mode==='flexible'&&sous)for(const x of detail[cat]?.sous_categories||[])if(x.slug!==sous)choix.push([cat+'|'+x.slug,x.libelle]);
+    for(const slug of Object.keys(detail))if(slug!==cat)choix.push([slug+'|',categories[slug]||slug]);
+    zone.hidden=!cat||mode==='precise';
+    zone.querySelector('.row').innerHTML=choix.map(([v,l])=>`<label><input type="checkbox" name="alt" value="${esc(v)}" ${avant.has(v)?'checked':''}>${esc(l)}</label>`).join('');
+  }
+  const alternatives=f=>[...f.querySelectorAll('input[name=alt]:checked')].filter(()=>f.mode_recherche.value!=='precise')
+    .map(x=>{const [c,sc]=x.value.split('|');return {categorie_slug:c,sous_categorie_slug:sc||null}});
   const valeurs=f=>Object.fromEntries([...f.querySelectorAll('[data-carac]')].map(x=>[x.dataset.carac,x.value.trim()]).filter(([,v])=>v));
-  return {charger,nom,caracs,remplir,remplirCaracs,valeurs};
+  // Critères d'une demande : obligatoires (caracteristiques) et de préférence (preferences).
+  function criteres(f){
+    const o={}, p={};
+    for(const [k,v] of Object.entries(valeurs(f)))(f.querySelector(`[data-niveau="${CSS.escape(k)}"]`)?.value==='p'?p:o)[k]=v;
+    return {caracteristiques:o,preferences:p};
+  }
+  const modes=f=>[...f.querySelectorAll('input[name=mode]:checked')].map(x=>x.value);
+  return {charger,nom,caracs,remplir,remplirCaracs,remplirAlternatives,alternatives,valeurs,criteres,modes};
 })();
 $('#cat-obj').addEventListener('change',()=>Detail.remplir($('#f-obj'),false));
 $('#cat-wish').addEventListener('change',()=>Detail.remplir($('#f-wish'),true));
 $('#sous-cat-obj').addEventListener('change',()=>Detail.remplirCaracs($('#f-obj'),false));
 $('#sous-cat-wish').addEventListener('change',()=>Detail.remplirCaracs($('#f-wish'),true));
+$('#mode-wish').addEventListener('change',()=>Detail.remplirAlternatives($('#f-wish')));
 
 let mesSouhaits=[];
 const nomSouhait=s=>s.categorie_slug?Detail.nom(s.categorie_slug,s.sous_categorie_slug):'Objet n° '+s.objet_id;
@@ -919,7 +967,14 @@ async function chargerListes(){
     </div>`}).join(''):'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>';
   $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>{
     const d=s.categorie_slug?Detail.caracs(s.categorie_slug,s.caracteristiques):'';
-    const detail=[s.categorie_slug&&!s.sous_categorie_slug?'Toutes les sous-catégories':'',d].filter(Boolean).join(' · ');
+    const p=s.categorie_slug?Detail.caracs(s.categorie_slug,s.preferences):'';
+    const alt=s.alternatives.map(a=>a.sous_categorie_slug?Detail.nom(a.categorie_slug,a.sous_categorie_slug):esc(categories[a.categorie_slug]||a.categorie_slug));
+    const detail=[s.categorie_slug&&!s.sous_categorie_slug?'Toutes les sous-catégories':'',d,p?'de préférence '+p:'',
+      s.etat_min?esc(ETATS[s.etat_min])+' au minimum':'',
+      s.mode_recherche==='precise'?'Recherche précise':s.mode_recherche==='ouverte'?'Recherche ouverte':'',
+      alt.length?'ou '+alt.join(', '):'',
+      s.modes_echange.length?'Seulement '+s.modes_echange.map(m=>MODES[m]).join(', '):'',
+      s.zones.length?'Aussi à '+esc(s.zones.join(', ')):''].filter(Boolean).join(' · ');
     return `<div class="demande-ligne"><div class="t"><b>${nomSouhait(s)}</b>${detail?`<span>${detail}</span>`:''}
       ${s.precisions?`<q>${esc(s.precisions)}</q>`:''}</div>
       <button class="x" aria-label="Retirer cette demande" data-souhait="${s.id}">×</button></div>`}).join('')
@@ -945,7 +1000,9 @@ $('#f-wish').onsubmit=async e=>{
   $('#wish-err').hidden=true; b.disabled=true;
   try{
     await api('/moi/souhaits',{method:'POST',body:{categorie_slug:f.categorie_slug.value,sous_categorie_slug:f.sous_categorie_slug.value||null,
-      caracteristiques:Detail.valeurs(f),precisions:f.precisions.value.trim()||null}});
+      ...Detail.criteres(f),precisions:f.precisions.value.trim()||null,etat_min:f.etat_min.value||null,
+      mode_recherche:f.mode_recherche.value,alternatives:Detail.alternatives(f),modes_echange:Detail.modes(f),
+      zones:f.zones.value.split(',').map(z=>z.trim()).filter(Boolean)}});
     f.reset(); Detail.remplir(f,true); f.closest('details').open=false; toast('Ajouté à votre demande');
     await chargerListes(); chargerEchanges();
   }catch(err){$('#wish-err').textContent=err.message;$('#wish-err').hidden=false}

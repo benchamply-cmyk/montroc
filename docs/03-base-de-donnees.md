@@ -25,8 +25,8 @@ erDiagram
 
     categories { string slug PK  string libelle }
     utilisateurs { int id PK  string email UK  string pseudo UK  string zone  string telephone  float fiabilite  int engagements_tenus  int engagements_manques  timestamptz suspendu_le  timestamptz cree_le }
-    objets { int id PK  int proprietaire_id FK  string categorie_slug FK  string titre  text description  string etat  string photo_url  string statut  bool contre_strict }
-    souhaits { int id PK  int utilisateur_id FK  string categorie_slug FK  int objet_id FK  int rang  int quantite  bool acceptation_auto }
+    objets { int id PK  int proprietaire_id FK  string categorie_slug FK  string titre  text description  string etat  string photo_url  string statut  bool contre_strict  jsonb modes_echange }
+    souhaits { int id PK  int utilisateur_id FK  string categorie_slug FK  int objet_id FK  jsonb caracteristiques  jsonb preferences  string etat_min  string mode_recherche  jsonb alternatives  jsonb modes_echange  jsonb zones  int rang  int quantite  bool acceptation_auto }
     grands_trocs { int id PK  date jour UK  int nb_boucles  int nb_objets  int nb_participants  bool optimal  timestamptz repeche_le  int nb_objets_repeches }
     objets_contre { int objet_id PK, FK  int souhait_id PK, FK }
     avis { int utilisateur_id PK, FK  int objet_id PK, FK  bool aime  timestamptz cree_le }

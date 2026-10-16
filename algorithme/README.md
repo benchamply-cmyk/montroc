@@ -46,7 +46,22 @@ m.ajouter_utilisateur("Alice", [Souhait(categorie="siege-auto"), Souhait(categor
 m.ajouter_objet("p1", "Alice", "poussette", contre={0}, contre_strict=True)   # seulement contre un siège auto
 ```
 
-Un utilisateur a une **zone** (les échanges restent dans la même ville si `meme_zone=True`) et une **fiabilité** (0 à 1, à relier à la réputation) qui entre dans l'estimation de réussite.
+Un utilisateur a une **zone** (les échanges restent dans la même ville si `meme_zone=True`), une **fiabilité** (0 à 1, à relier à la réputation) qui entre dans l'estimation de réussite, et une **priorité** d'équité (1 par défaut, voir plus bas).
+
+### Les dix règles du matching
+
+Celles du document « Catégories et caractéristiques » (section 13), telles que le moteur les applique :
+
+1. **Intercatégories** : seul compte ce que chacun demande ; une boucle peut mêler poussette, perceuse et livre.
+2. **Critères obligatoires** : `Souhait.criteres` (paires clé, valeur : taille, marque, modèle…). Un objet de la catégorie du souhait doit indiquer cette valeur (sans tenir compte des majuscules ni des espaces) ; un objet qui ne l'indique pas est écarté. `etat_min` fixe l'état minimum (`ETATS` : correct, bon, très bon, comme neuf, neuf).
+3. **Recherche flexible** : `Souhait.alternatives`, d'autres (catégorie, sous-catégorie ou None) acceptées, et `mode` : `"precise"` (l'objet demandé seulement), `"flexible"` (défaut : aussi les alternatives), `"ouverte"` (tout objet de la catégorie du souhait et de celles des alternatives). Les critères ne jugent que les objets de la catégorie du souhait. `Souhait.preferences` : critères **préférentiels**, qui n'écartent rien mais améliorent la qualité.
+4. **Boucles de 2, 3, 4 personnes ou plus** (`longueur_max` jusqu'à 6). Au-delà de 3, la longueur baisse si l'énumération dépasse `BUDGET_CYCLES` chemins, puis si le solveur exact manquerait de mémoire, jusqu'à 3. `sol.stats["longueur_max"]` dit celle retenue.
+5. **Optimisation** : d'abord le nombre d'objets échangés, puis l'équité, puis la qualité (`Boucle.qualite` : objet visé plutôt qu'alternative, critères préférentiels, préférences « contre »), puis la sûreté.
+6. **Exclusivité** : un objet part au plus une fois, un souhait ne reçoit pas plus que sa quantité.
+7. **Logistique** : `Objet.modes` et `Souhait.modes` (main propre, point relais ; vide : tous) doivent avoir un mode commun ; le lieu de l'objet (`Objet.zone`, sinon la zone de son propriétaire) doit être dans `Souhait.zones`, ou à défaut dans la zone du receveur.
+8. **Disponibilité** : un objet `disponible=False` (réservé, échangé) n'entre pas dans le graphe.
+9. **Validation** : le moteur ne fait que proposer ; l'API demande l'accord de chaque participant (sauf « acceptation automatique » cochée d'avance) avant tout dépôt.
+10. **Équité** : à nombre d'objets égal, on sert le plus de personnes, chacune comptée avec sa `priorite`. L'API la calcule ainsi, règle publique : 1 + (3 − objets reçus ces 4 dernières semaines), au moins 1.
 
 La chance de réussite d'une boucle est le produit des acceptations de chaque participant : 49 % pour un échange à 2, 34 % pour une boucle à 3 avec 70 % d'acceptation, comme dans l'étude.
 
@@ -54,8 +69,8 @@ La chance de réussite d'une boucle est le produit des acceptations de chaque pa
 
 Comme TradeMaximizer sur BoardGameGeek, on cherche le **maximum d'échanges simultanés**, sous forme de boucles, avec deux modes :
 
-1. **`longueur_max=3` (mode de lancement)**, boucles de 2 et 3 personnes, avec deux moteurs (`moteur=`) :
-   - **`"exact"`** (`solveur_exact.py`, CP-SAT d'OR-Tools) : on énumère les cycles de *personnes* et le solveur choisit les objets, sans en écarter aucun. Objectifs dans l'ordre : le plus d'objets échangés, puis le plus de **personnes différentes servies** (comme `USERS-TRADING` de TradeMaximizer), puis le plus de préférences « contre » respectées, puis les boucles les plus sûres et les souhaits les mieux classés. `sol.optimal` dit si le nombre d'objets est prouvé maximal.
+1. **`longueur_max=3` (ou 4, 5, 6 ; le Grand Troc demande 4)**, boucles de 2 à `longueur_max` personnes, avec deux moteurs (`moteur=`) :
+   - **`"exact"`** (`solveur_exact.py`, CP-SAT d'OR-Tools) : on énumère les cycles de *personnes* et le solveur choisit les objets, sans en écarter aucun. Objectifs dans l'ordre : le plus d'objets échangés, puis le plus de **personnes différentes servies** (comme `USERS-TRADING` de TradeMaximizer), pondérées par leur priorité d'équité, puis la meilleure qualité, puis les boucles les plus sûres et les souhaits les mieux classés. `sol.optimal` dit si le nombre d'objets est prouvé maximal.
    - **`"heuristique"`** : on énumère les boucles d'objets (au plus `options_par_transfert` objets par couple de personnes), puis on choisit le meilleur ensemble compatible par groupes indépendants : recherche exacte jusqu'à 400 boucles candidates, glouton et amélioration locale au-delà. Son « optimal » ne vaut que parmi les boucles énumérées.
    - **`"auto"`** (défaut) : l'exact si OR-Tools est installé et si le marché reste sous `solveur_exact.MAX_COPIES_AUTO` (6 000 copies de cycles, environ 2 400 personnes sur le banc d'essai, pour rester sous les 512 Mo de Render gratuit) ; l'heuristique sinon, ou si l'exact ne trouve rien dans le temps imparti (`duree_max_s`, 10 s par défaut).
 2. **`longueur_max=None` (TradeMaximizer pur)**. Boucles de longueur illimitée, résolu **exactement** par un flot de coût minimal, comme le vrai TradeMaximizer : maximum d'objets échangés, puis préférence aux souhaits les mieux classés. Utile pour comparer et mesurer ce qu'on perd en limitant à 3 (les boucles obtenues sont souvent très longues, donc irréalistes au lancement).
@@ -65,6 +80,8 @@ Deux objectifs pour le mode borné :
 - `objectif="esperance"` : maximum d'objets échangés **attendus** une fois les refus pris en compte (longueur × chance de réussite). Favorise les échanges directs et les acceptations automatiques. Moteur heuristique seulement.
 
 Autres réglages : `proba_min` (écarter les boucles trop risquées), `options_par_transfert` (combien d'objets différents essayer entre deux mêmes personnes, 2 par défaut).
+
+**Boucles à 4** (même banc d'essai, `benchmark.ville`, budget 30 s) : à 500 personnes, 176 objets échangés contre 110 avec des boucles de 3 (+60 %), en 3,5 s ; dès 1 000 personnes, le solveur exact dépasserait sa limite de mémoire avec des boucles de 4, le moteur revient donc à 3 (698 objets, 2,2 s).
 
 ## Gestion des refus
 

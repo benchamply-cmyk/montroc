@@ -1,5 +1,9 @@
 """Graphe des échanges possibles : un arc v → u existe si v possède un objet
-qui correspond à un souhait de u (v peut donner à u)."""
+qui correspond à un souhait de u (v peut donner à u).
+
+Un objet n'y entre que s'il est disponible, et un transfert que si la
+logistique suit : un mode d'échange commun (``Souhait.correspond``) et le lieu
+de l'objet dans une zone acceptée par le receveur."""
 from __future__ import annotations
 
 from collections import defaultdict
@@ -25,7 +29,7 @@ class GrapheEchanges:
         par_categorie: dict[str, list] = defaultdict(list)
         disponibles = {}
         for o in marche.objets.values():
-            if o.id in c.objets_indisponibles or o.proprietaire in c.utilisateurs_exclus:
+            if not o.disponible or o.id in c.objets_indisponibles or o.proprietaire in c.utilisateurs_exclus:
                 continue
             disponibles[o.id] = o
             par_categorie[o.categorie].append(o)
@@ -42,18 +46,20 @@ class GrapheEchanges:
                 if s.objet_id is not None:
                     candidats = [disponibles[s.objet_id]] if s.objet_id in disponibles else []
                 else:
-                    candidats = [o for o in par_categorie.get(s.categorie, []) if s.correspond(o)]
+                    candidats = [o for cat in sorted(s.categories_visees())
+                                 for o in par_categorie.get(cat, []) if s.correspond(o)]
                 for o in candidats:
                     if o.proprietaire == u.id:
                         continue
                     if (o.proprietaire, o.id, u.id) in c.transferts_refuses:
                         continue
-                    if marche.meme_zone and not self._meme_zone(o.proprietaire, u.id):
+                    if not self._zone_acceptee(o, s, u.id):
                         continue
                     t = Transfert(
                         donneur=o.proprietaire, receveur=u.id, objet=o, souhait_idx=i,
                         rang=s.rang, auto=s.acceptation_auto,
                         proba_acceptation=marche.p_auto if s.acceptation_auto else marche.p_acceptation,
+                        qualite=s.qualite(o),
                     )
                     precedent = vus.get(o.id)
                     if precedent is None or self._ordre(t) < self._ordre(precedent):
@@ -66,14 +72,21 @@ class GrapheEchanges:
             options.sort(key=self._ordre)
             self.succ[v].add(u)
 
-    def _meme_zone(self, a: str, b: str) -> bool:
-        za = self.marche.utilisateurs[a].zone
-        zb = self.marche.utilisateurs[b].zone
-        return za is None or zb is None or za == zb
+    def _zone_acceptee(self, objet, souhait, receveur: str) -> bool:
+        """Le lieu de l'objet (le sien, sinon la zone de son propriétaire) est-il dans une zone acceptée ?
+        Lieu inconnu : accepté. Sans zones précisées sur le souhait, même zone que le receveur
+        (si ``Marche.meme_zone``)."""
+        zone = objet.zone or self.marche.utilisateurs[objet.proprietaire].zone
+        if zone is None:
+            return True
+        if souhait.zones:
+            return zone in souhait.zones
+        za = self.marche.utilisateurs[receveur].zone
+        return not self.marche.meme_zone or za is None or za == zone
 
     @staticmethod
     def _ordre(t: Transfert):
-        return (not t.auto, t.rang, t.objet.id)
+        return (not t.auto, t.rang, -t.qualite, t.objet.id)
 
     def tous_les_transferts(self):
         for options in self.transferts.values():

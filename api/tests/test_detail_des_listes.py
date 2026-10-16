@@ -72,8 +72,9 @@ def test_demande_detaillee_avec_description_libre(client, creer):
     souhait = r.json()
     assert souhait["precisions"] == "Légère, qui se plie d'une main, pour prendre le métro."
     assert client.get("/moi/souhaits", headers=alice.headers).json()[0]["sous_categorie_slug"] == "enfant-poussettes"
-    # Une demande ne filtre que sur des choix fixes : pas de marque.
-    assert _souhait(client, alice, "enfant", caracteristiques={"marque": "Yoyo"}).status_code == 422
+    # La marque (saisie libre) peut aussi se demander ; une caractéristique d'une autre catégorie, non.
+    assert _souhait(client, alice, "enfant", caracteristiques={"marque": "Yoyo"}).status_code == 201
+    assert _souhait(client, alice, "enfant", caracteristiques={"plateforme": "PC"}).status_code == 422
     # Un souhait d'objet précis n'a pas de sous-catégorie.
     r = client.post(
         "/moi/souhaits", json={"objet_id": 1, "sous_categorie_slug": "enfant-poussettes"}, headers=alice.headers
@@ -82,8 +83,9 @@ def test_demande_detaillee_avec_description_libre(client, creer):
 
 
 def test_la_demande_detaillee_filtre_les_echanges_et_le_match(client, creer):
-    """Bruno demande un manteau en 4 ans : le 8 ans d'Alice n'est pas proposé, celui de Chloé (4 ans) oui,
-    celui sans taille de Denis aussi."""
+    """Bruno demande un manteau en 4 ans (critère obligatoire) : le 8 ans d'Alice n'est pas proposé, celui de
+    Chloé (4 ans) oui, celui sans taille de Denis non plus. En critère préférentiel, tous le sont, celui de
+    Chloé en premier."""
     alice, bruno, chloe, denis = (creer.utilisateur(p) for p in ("alice", "bruno", "chloe", "denis"))
     manteau = {"sous_categorie_slug": "enfant-vetements"}
     a = _objet(client, alice, "enfant", **manteau, caracteristiques={"taille": "8 ans"}).json()["id"]
@@ -91,7 +93,7 @@ def test_la_demande_detaillee_filtre_les_echanges_et_le_match(client, creer):
     d = _objet(client, denis, "enfant", **manteau).json()["id"]
     pull = _objet(client, denis, "enfant", sous_categorie_slug="enfant-vetements-bebe").json()["id"]
     creer.objet(bruno, "sport")
-    _souhait(client, bruno, "enfant", **manteau, caracteristiques={"taille": "4 ans"})
+    souhait = _souhait(client, bruno, "enfant", **manteau, caracteristiques={"taille": "4 ans"}).json()["id"]
     for qui in (alice, chloe, denis):
         creer.souhait(qui, "sport")
     eva = creer.utilisateur("eva")  # Eva ne cherche rien de ce qu'a Bruno : le carrousel suit la demande
@@ -99,14 +101,20 @@ def test_la_demande_detaillee_filtre_les_echanges_et_le_match(client, creer):
 
     boucles = client.get("/moi/boucles", headers=bruno.headers).json()
     recus = {e["objet"]["id"] for b in boucles for e in b["etapes"] if e["receveur_id"] == bruno.id}
-    assert recus == {c, d}
+    assert recus == {c}
     cartes = {x["objet"]["id"]: x for x in client.get("/match/carrousel", headers=bruno.headers).json()}
-    # Le manteau en 8 ans et le pull restent montrés, mais seulement parce qu'Alice et Denis cherchent un vélo
-    # comme celui de Bruno : ils ne répondent pas à sa demande.
-    assert not cartes[a]["correspond_a_mes_souhaits"] and not cartes[pull]["correspond_a_mes_souhaits"]
-    assert cartes[c]["correspond_a_mes_souhaits"] and cartes[d]["correspond_a_mes_souhaits"]
+    # Les manteaux en 8 ans et sans taille, et le pull, restent montrés, mais seulement parce qu'Alice et Denis
+    # cherchent un vélo comme celui de Bruno : ils ne répondent pas à sa demande.
+    assert not any(cartes[x]["correspond_a_mes_souhaits"] for x in (a, d, pull))
+    assert cartes[c]["correspond_a_mes_souhaits"]
     assert cartes[c]["souhait_sous_categorie"] == "enfant-vetements"
     assert e not in cartes
+
+    client.delete(f"/moi/souhaits/{souhait}", headers=bruno.headers)
+    _souhait(client, bruno, "enfant", **manteau, preferences={"taille": "4 ans"})
+    boucles = client.get("/moi/boucles", headers=bruno.headers).json()
+    recus = [e["objet"]["id"] for b in boucles for e in b["etapes"] if e["receveur_id"] == bruno.id]
+    assert set(recus) == {a, c, d} and recus[0] == c
     # Ce que Bruno a écrit dans « Je demande » est montré à ceux qui ont ce qu'il cherche.
     client.post(
         "/moi/souhaits",

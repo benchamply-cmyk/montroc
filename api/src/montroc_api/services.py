@@ -10,10 +10,11 @@ import secrets
 from datetime import UTC, date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from troc_echanges import Boucle, Contraintes, Marche, boucles_autour, math_trade
+from troc_echanges import Objet as ObjetMoteur
 from troc_echanges import Souhait as SouhaitMoteur
 
 from . import courriels, sms
@@ -33,6 +34,8 @@ DIMANCHE = 6
 HEURE_GRAND_TROC = time(18)
 FIN_DES_DEPOTS = (timedelta(days=7), time(12))
 DUREE_MAX_GRAND_TROC_S = 30.0
+# Boucles de 2 à 4 personnes ; le moteur raccourcit à 3 si le marché est trop grand pour les calculer.
+LONGUEUR_GRAND_TROC = 4
 # Repêchage : à la fin des 48 h de réponse (mardi 18 h), une seconde passe sur le stock du dimanche resté libre.
 # Il faut encore le temps de répondre (48 h) avant la fin des dépôts du dimanche midi.
 MARGE_REPECHAGE = DELAI_REPONSE
@@ -40,6 +43,11 @@ MARGE_REPECHAGE = DELAI_REPONSE
 # Fiabilité = (tenus + LISSAGE) / (tenus + manqués + LISSAGE) : 1 au départ, 0,9 après un premier manquement,
 # et un manquement pèse de moins en moins à mesure que les engagements tenus s'accumulent.
 LISSAGE_FIABILITE = 9
+
+# Équité, règle publique : à nombre d'objets échangés égal, le Grand Troc sert d'abord ceux qui ont le moins reçu
+# ces 4 dernières semaines. Priorité = 1 + (3 - objets reçus), au moins 1 : 4 pour qui n'a rien reçu, 1 dès 3.
+FENETRE_EQUITE = timedelta(days=28)
+PLAFOND_EQUITE = 3
 
 
 class ErreurMetier(Exception):
@@ -50,16 +58,74 @@ def lien_echange(echange: m.Echange) -> str:
     return f"{get_settings().site_url}/#echange-{echange.id}"
 
 
+def zone(z: str | None) -> str | None:
+    """Zone comparable : « Marseille » et « marseille » sont la même ville."""
+    return " ".join(z.split()).lower() if z and z.strip() else None
+
+
+def souhait_moteur(s: m.Souhait) -> SouhaitMoteur:
+    return SouhaitMoteur(
+        categorie=s.categorie_slug,
+        objet_id=None if s.objet_id is None else str(s.objet_id),
+        rang=s.rang,
+        quantite=s.quantite,
+        acceptation_auto=s.acceptation_auto,
+        sous_categorie=s.sous_categorie_slug,
+        criteres=tuple(sorted(s.caracteristiques.items())),
+        preferences=tuple(sorted(s.preferences.items())),
+        etat_min=s.etat_min and s.etat_min.value,
+        alternatives=tuple((a["categorie_slug"], a.get("sous_categorie_slug")) for a in s.alternatives),
+        mode=s.mode_recherche.value,
+        modes=frozenset(s.modes_echange),
+        zones=frozenset(zone(z) for z in s.zones),
+    )
+
+
+def objet_moteur(o: m.Objet, contre=frozenset()) -> ObjetMoteur:
+    return ObjetMoteur(
+        str(o.id),
+        str(o.proprietaire_id),
+        o.categorie_slug,
+        o.titre,
+        contre=frozenset(contre),
+        contre_strict=o.contre_strict,
+        sous_categorie=o.sous_categorie_slug,
+        caracteristiques=tuple(sorted(o.caracteristiques.items())),
+        etat=o.etat and o.etat.value,
+        modes=frozenset(o.modes_echange),
+        disponible=o.statut == m.StatutObjet.disponible,
+    )
+
+
 def souhait_correspond(souhait: m.Souhait, objet: m.Objet) -> bool:
-    """Même règle que le moteur (``troc_echanges.Souhait.correspond``) : l'objet précis, ou la catégorie,
-    sa sous-catégorie si le souhait en précise une, et les caractéristiques demandées que l'objet précise."""
-    if souhait.objet_id is not None:
-        return objet.id == souhait.objet_id
-    if objet.categorie_slug != souhait.categorie_slug:
-        return False
-    if souhait.sous_categorie_slug is not None and objet.sous_categorie_slug != souhait.sous_categorie_slug:
-        return False
-    return all(objet.caracteristiques.get(cle, valeur) == valeur for cle, valeur in souhait.caracteristiques.items())
+    """La règle du moteur (``troc_echanges.Souhait.correspond``) : l'objet précis, ou l'objet visé ou une
+    alternative selon le mode de recherche, l'état minimum, les critères obligatoires et un mode d'échange commun.
+    La zone se vérifie à part (``zone_acceptee``)."""
+    return souhait_moteur(souhait).correspond(objet_moteur(objet))
+
+
+def zone_acceptee(souhait: m.Souhait | None, receveur: m.Utilisateur, donneur: m.Utilisateur) -> bool:
+    """Comme au Grand Troc : la zone du donneur parmi celles de la demande si elle en précise, sinon la même
+    que le receveur ; une ville inconnue ne bloque pas."""
+    zd = zone(donneur.zone)
+    if zd is None:
+        return True
+    if souhait is not None and souhait.zones:
+        return zd in {zone(z) for z in souhait.zones}
+    zr = zone(receveur.zone)
+    return zr is None or zr == zd
+
+
+def priorites(session: Session) -> dict[int, int]:
+    """Priorité d'équité de ceux qui ont reçu un objet ces 4 dernières semaines (les autres : la plus haute)."""
+    depuis = _maintenant() - FENETRE_EQUITE
+    recus = session.execute(
+        select(m.Transfert.receveur_id, func.count())
+        .join(m.Transfert.echange)
+        .where(m.Echange.cree_le >= depuis, m.Echange.statut != m.StatutEchange.annule)
+        .group_by(m.Transfert.receveur_id)
+    )
+    return {u: 1 + max(0, PLAFOND_EQUITE - n) for u, n in recus}
 
 
 def construire_marche(session: Session, stock_avant: datetime | None = None) -> Marche:
@@ -69,6 +135,7 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
     (s'il ne répond pas déjà à un de ses souhaits) : un match qui n'a pas été conclu en 1 à 1
     peut ainsi aboutir au Grand Troc, à deux ou dans une boucle à trois.
     ``stock_avant`` : seulement les objets publiés avant cette date (repêchage sur le stock du dimanche).
+    Chacun reçoit sa priorité d'équité (``priorites``).
     """
     marche = Marche()
     utilisateurs = session.scalars(
@@ -84,27 +151,23 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
         coups_de_coeur.setdefault(avis.utilisateur_id, []).append(objet)
     # Indice de chaque souhait dans la liste de son auteur : c'est ainsi que le moteur désigne les listes « contre ».
     indice_souhait: dict[int, int] = {}
+    priorite = priorites(session)
     for u in utilisateurs:
         indice_souhait.update({s.id: i for i, s in enumerate(u.souhaits)})
-        souhaits = [
-            SouhaitMoteur(
-                categorie=s.categorie_slug,
-                objet_id=None if s.objet_id is None else str(s.objet_id),
-                rang=s.rang,
-                quantite=s.quantite,
-                acceptation_auto=s.acceptation_auto,
-                sous_categorie=s.sous_categorie_slug,
-                criteres=tuple(sorted(s.caracteristiques.items())),
-            )
-            for s in u.souhaits
-        ]
+        souhaits = [souhait_moteur(s) for s in u.souhaits]
         # Après les souhaits : les indices des listes « contre » restent ceux des souhaits.
         souhaits += [
             SouhaitMoteur(objet_id=str(o.id))
             for o in coups_de_coeur.get(u.id, [])
             if not any(souhait_correspond(s, o) for s in u.souhaits)
         ]
-        marche.ajouter_utilisateur(str(u.id), souhaits, zone=u.zone, fiabilite=u.fiabilite)
+        marche.ajouter_utilisateur(
+            str(u.id),
+            souhaits,
+            zone=zone(u.zone),
+            fiabilite=u.fiabilite,
+            priorite=priorite.get(u.id, 1 + PLAFOND_EQUITE),
+        )
     requete = select(m.Objet).where(m.Objet.statut == m.StatutObjet.disponible).options(selectinload(m.Objet.contre))
     if stock_avant is not None:
         requete = requete.where(m.Objet.cree_le <= stock_avant)
@@ -113,16 +176,7 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
             continue  # compte suspendu
         # Liste vide (souhaits tous supprimés) : l'objet repart contre n'importe lequel des souhaits.
         contre = {indice_souhait[s.id] for s in o.contre if s.utilisateur_id == o.proprietaire_id}
-        marche.ajouter_objet(
-            str(o.id),
-            str(o.proprietaire_id),
-            o.categorie_slug,
-            o.titre,
-            contre=contre,
-            contre_strict=o.contre_strict,
-            sous_categorie=o.sous_categorie_slug,
-            caracteristiques=o.caracteristiques,
-        )
+        marche.objets[str(o.id)] = objet_moteur(o, contre)
     return marche
 
 
@@ -290,7 +344,7 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
 
     solution = math_trade(
         construire_marche(session),
-        longueur_max=3,
+        longueur_max=LONGUEUR_GRAND_TROC,
         contraintes=contraintes_du_match(session),
         duree_max_s=DUREE_MAX_GRAND_TROC_S,
     )
@@ -546,7 +600,9 @@ def repechage(session: Session) -> int | None:
                 str(t.receveur_id) for t in e.transferts if t.reponse == m.Reponse.en_attente
             )
     marche = construire_marche(session, stock_avant=grand_troc.cree_le)
-    solution = math_trade(marche, longueur_max=3, contraintes=contraintes, duree_max_s=DUREE_MAX_GRAND_TROC_S)
+    solution = math_trade(
+        marche, longueur_max=LONGUEUR_GRAND_TROC, contraintes=contraintes, duree_max_s=DUREE_MAX_GRAND_TROC_S
+    )
     echanges = [proposer(session, b, grand_troc=grand_troc) for b in solution.boucles]
     _sms_du_grand_troc(session, echanges)
     grand_troc.nb_objets_repeches = solution.nb_objets_echanges
