@@ -9,40 +9,22 @@
 <meta name="description" content="TrocTroc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/site.css">
 <style>
 /* Layout : une seule colonne étroite, comme un carnet ; une boucle animée sert de signature ; barre d'onglets en bas. */
-:root{
-  /* Thème sombre unique, quel que soit le réglage de l'appareil. */
-  --bg:#111318; --surface:#1A1D24; --ink:#F2F3F6; --muted:#A3A9B6; --line:#2C303A;
-  --accent:#8B97FF; --accent-ink:#111318; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
-  --display:"Unbounded", "Arial Black", system-ui, sans-serif;
-  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono:"DM Mono", ui-monospace, Menlo, monospace;
-  --r:14px;
-  color-scheme:dark;
-}
 
-*{box-sizing:border-box}
-[hidden]{display:none!important}
 img{max-width:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding-inline:16px;padding-block:env(safe-area-inset-top,0px) 96px}
-.wrap{max-width:520px;margin:0 auto}
-button{font:inherit;color:inherit;cursor:pointer}
+body.membre{padding-bottom:96px}
+.wrap{max-width:520px;margin:0 auto;padding-inline:16px}
 button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 h1,h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;text-wrap:balance;margin:0}
-h1{font-size:clamp(30px,8vw,44px);line-height:1.05}
+h1,.h1{font-size:clamp(30px,8vw,44px);line-height:1.05}
 h2{font-size:22px;line-height:1.15}
 p{margin:0}
 .muted{color:var(--muted)}
 .label{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .hl{background:linear-gradient(transparent 58%,var(--mark) 58%,var(--mark) 92%,transparent 92%);padding:0 .08em}
 
-header.top{display:flex;justify-content:space-between;align-items:center;padding-block:20px 8px}
-.logo{border:0;background:none;padding:0;color:var(--ink);font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px}
-.logo svg{width:24px;height:24px;transition:transform .6s cubic-bezier(.6,0,.2,1)}
-.logo:hover svg{transform:rotate(120deg)}
-.logo-2{color:var(--mark)}
-.who{font-family:var(--mono);font-size:12px;color:var(--muted)}
 
 section.view{display:flex;flex-direction:column;gap:28px;padding-block:20px}
 section.view[hidden]{display:none}
@@ -144,7 +126,7 @@ nav.tabs button[aria-current="page"]{color:var(--ink);font-weight:600}
 nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--accent);color:var(--accent-ink);font-size:10px;font-family:var(--mono);border-radius:999px;padding:0 5px;line-height:16px}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:6;max-width:calc(100% - 32px)}
 /* Titre : les mots montent un à un, le surligneur passe sous « utile », puis le mot change toutes les 2,4 s. */
-h1 .w{display:inline-block;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i)*70ms)}
+.h1 .w{display:inline-block;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i)*70ms)}
 @keyframes rise{from{opacity:0;transform:translateY(18px)}}
 .rot{display:inline-grid;vertical-align:bottom;overflow:hidden;padding:0 .08em;transition:width .45s cubic-bezier(.6,0,.2,1);
   background:linear-gradient(var(--mark),var(--mark)) no-repeat 0 78%/0% 34%;animation:sweep .8s .75s cubic-bezier(.6,0,.2,1) forwards}
@@ -169,7 +151,7 @@ h1 .w{display:inline-block;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;anim
 .tk b{color:var(--ink);font-weight:500}
 .tk i{font-style:normal;color:var(--mark);padding-inline:6px}
 @media (prefers-reduced-motion:reduce){
-  h1 .w,.ambient i,.marq .track{animation:none}
+  .h1 .w,.ambient i,.marq .track{animation:none}
   .rot{animation:none;background-size:100% 34%}
   .marq{overflow-x:auto}
   .bar i{transition:none}
@@ -228,22 +210,56 @@ dialog{border:1px solid var(--line);border-radius:var(--r);background:var(--surf
 dialog::backdrop{background:rgba(0,0,0,.65)}
 footer.legal{font-size:13px;color:var(--muted);padding-block:12px 0;text-align:center}
 nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
+/* Premier écran de l'accueil : le texte de présentation seul, sur toute la hauteur de l'écran. */
+.intro{min-height:calc(100svh - var(--haut));display:flex;flex-direction:column;justify-content:center;gap:14px;padding-block:24px 8px;position:relative}
+.intro>*{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*80ms)}
+.intro-marque{font-family:var(--display);font-weight:700;font-size:clamp(46px,14vw,72px);line-height:1;letter-spacing:-.04em}
+.intro-titre{font-size:clamp(26px,7vw,36px);line-height:1.12;margin-bottom:6px}
+.intro p:not(.intro-marque){color:#D6D9E0;font-size:17px;line-height:1.55}
+.intro p strong{color:var(--ink)}
+.intro p.intro-chapo{color:var(--ink);font-size:19px}
+.intro p.intro-fort{font-family:var(--display);font-weight:700;color:var(--ink);font-size:19px;line-height:1.3;margin-top:6px}
+.intro p.intro-verbes{font-family:var(--mono);font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--mark);display:flex;flex-wrap:wrap;gap:4px 14px}
+.intro-suite{align-self:center;margin-top:18px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);text-decoration:none;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.intro-suite svg{width:22px;height:22px;stroke:var(--ink);fill:none;stroke-width:1.8;animation:bob 1.8s ease-in-out infinite}
+.intro-suite:hover{color:var(--ink)}
+@keyframes bob{50%{transform:translateY(6px)}}
+/* Sur grand écran, le texte d'introduction sort de la colonne étroite pour tenir sur un écran. */
+@media (min-width:900px){.intro{width:760px;margin-inline:calc((100% - 760px)/2)}.intro p:not(.intro-marque){max-width:66ch}}
+@media (prefers-reduced-motion:reduce){.intro>*,.intro-suite svg{animation:none}}
+/* Sections de l'accueil visées par le menu (Le concept, Comment ça marche, Particuliers) */
+.bloc{display:flex;flex-direction:column;gap:12px}
+.gratuit{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.gratuit li::before{content:"✓";color:var(--ok);margin-right:10px}
+#particuliers a{color:var(--ink);text-underline-offset:2px}
 </style>
 </head>
 <body>
+<header class="site"></header>
 
 <div class="wrap">
-  <header class="top">
-    <button class="logo" type="button" data-go="home" aria-label="TrocTroc, retour à l'accueil"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset=".5" stop-color="var(--mark)"/><stop offset="1" stop-color="var(--ok)"/></linearGradient></defs><circle cx="12" cy="12" r="9" fill="none" stroke="url(#logo-g)" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="var(--accent)"/><circle cx="19.8" cy="16.5" r="2.6" fill="var(--ok)"/><circle cx="4.2" cy="16.5" r="2.6" fill="var(--mark)"/></svg><span>Troc<span class="logo-2">Troc</span></span></button>
-    <span class="who" id="who"></span>
-  </header>
 
   <!-- ACCUEIL -->
   <section class="view" id="v-home">
     <div class="ambient" aria-hidden="true"><i></i><i></i></div>
-    <div class="hero">
+    <!-- Premier écran : le texte de présentation seul ; le reste de l'accueil vient en faisant défiler. -->
+    <div class="intro" id="intro">
+      <p class="intro-marque" style="--i:0"><span>Troc</span><span class="logo-2">Troc</span></p>
+      <h1 class="intro-titre" style="--i:1">Le troc se réinvente. <span class="hl">Tout le monde y gagne.</span></h1>
+      <p class="intro-chapo" style="--i:2">Donnez une nouvelle vie aux objets que vous n'utilisez plus.<br>Échangez-les contre d'autres dont vous avez besoin.<br>Et tout ça sans dépenser d'argent&nbsp;!</p>
+      <p style="--i:3">Notre plateforme trouve les bonnes combinaisons d'échanges pour vous, et même entre plusieurs personnes pour créer une boucle d'utilisateurs satisfaits.</p>
+      <p style="--i:4">Créez votre liste d'objets que vous rendez disponibles et de ceux dont vous avez besoin, et provoquez un match.</p>
+      <p style="--i:5"><strong>Pas de match trouvé&nbsp;? On a une solution.</strong><br>Chaque dimanche, TrocTroc recherche tous les échanges et combinaisons possibles entre nos utilisateurs. Ne recherchez plus pendant des heures, ne perdez pas espoir&nbsp;: on vous envoie une notification une fois par semaine, vous n'avez plus qu'à valider la proposition.</p>
+      <p style="--i:6">Il ne vous reste plus qu'à déposer ou envoyer vos objets et récupérer les nouveaux.</p>
+      <p class="intro-fort" style="--i:7">Vous proposez. Vous choisissez. TrocTroc s'occupe du reste.</p>
+      <p style="--i:8">Simple, économique et accessible à tous.</p>
+      <p class="intro-verbes" style="--i:9"><span>Réutiliser.</span> <span>Échanger.</span> <span>Économiser.</span> <span>Simplifier.</span></p>
+      <a class="intro-suite" href="/#decouvrir" aria-label="Découvrir la suite" style="--i:12"><span>Découvrir</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+    </div>
+
+    <div class="hero" id="decouvrir">
       <span class="label">Pas de prix. Pas de monnaie.</span>
-      <h1 aria-label="Ce qui dort chez vous est utile à quelqu'un."><span aria-hidden="true"><span class="w" style="--i:0">Ce</span> <span class="w" style="--i:1">qui</span> <span class="w" style="--i:2">dort</span> <span class="w" style="--i:3">chez</span> <span class="w" style="--i:4">vous</span> <span class="w" style="--i:5">est</span> <span class="w" style="--i:6"><span class="rot" id="rot"><span class="on">utile</span><span>précieux</span><span>cher</span></span></span> <span class="w" style="--i:7">à</span> <span class="w" style="--i:8">quelqu'un.</span></span></h1>
+      <h2 class="h1" aria-label="Ce qui dort chez vous est utile à quelqu'un."><span aria-hidden="true"><span class="w" style="--i:0">Ce</span> <span class="w" style="--i:1">qui</span> <span class="w" style="--i:2">dort</span> <span class="w" style="--i:3">chez</span> <span class="w" style="--i:4">vous</span> <span class="w" style="--i:5">est</span> <span class="w" style="--i:6"><span class="rot" id="rot"><span class="on">utile</span><span>précieux</span><span>cher</span></span></span> <span class="w" style="--i:7">à</span> <span class="w" style="--i:8">quelqu'un.</span></span></h2>
       <p class="muted">Dites ce que vous avez et ce qui vous serait utile. TrocTroc trouve l'échange, même à trois.</p>
     </div>
 
@@ -260,7 +276,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <div class="center"><div><b>1 boucle</b><br><span class="muted" style="font-size:12px">3 personnes servies</span></div></div>
     </div>
 
-    <div class="card gt">
+    <div class="card gt" id="grand-troc">
       <span class="tag a">Le Grand Troc du dimanche</span>
       <div class="gt-cd"><b data-gt-quand>Chaque dimanche à 18 h</b><span class="gt-reste" data-gt-reste aria-live="polite"></span></div>
       <p class="muted">Une fois par semaine, TrocTroc cherche toutes les boucles d'un coup, sur tous les objets. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
@@ -300,17 +316,36 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <button class="cta ghost" data-go="trades">Mes échanges</button>
     </div>
 
+    <div class="bloc" id="concept">
+    <span class="label">Le concept</span>
     <div class="rules">
       <div><b>Sans argent</b><span>Un objet contre un objet. Jamais d'euros, jamais de points.</span></div>
       <div><b>À plusieurs</b><span>Pas besoin de trouver la bonne personne. TrocTroc ferme la boucle pour vous.</span></div>
       <div><b>En confiance</b><span>Chacun dépose, chacun récupère. Personne ne part les mains vides.</span></div>
     </div>
 
+    </div>
+
+    <div class="bloc" id="comment-ca-marche">
+    <span class="label">Comment ça marche</span>
     <ol class="steps">
       <li><div><b>J'ai</b><span class="muted">Une photo par objet. L'état est obligatoire.</span></div></li>
       <li><div><b>Ça me serait utile</b><span class="muted">Des catégories plutôt qu'un modèle exact.</span></div></li>
       <li><div><b>Dimanche, 18 h : le Grand Troc</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui, puis la semaine pour déposer.</span></div></li>
     </ol>
+    </div>
+
+    <div class="card bloc" id="particuliers">
+      <span class="label">Pour les particuliers</span>
+      <h2>Tout est <span class="hl">gratuit</span>.</h2>
+      <ul class="gratuit">
+        <li>Publier vos objets et vos souhaits</li>
+        <li>Chercher, même sans compte</li>
+        <li>Participer au Grand Troc du dimanche</li>
+        <li>Échanger en main propre</li>
+      </ul>
+      <p class="muted" style="font-size:14px">Vous êtes une entreprise ou une collectivité ? Voir l'offre <a href="/pros/">Professionnels</a> ou <a href="/collectivites/">Collectivités</a>.</p>
+    </div>
   </section>
 
   <!-- RECHERCHE (sans compte) -->
@@ -438,7 +473,9 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
   <footer class="legal">Un contenu vous semble illicite ou dangereux ? Utilisez « Signaler » sur l'objet concerné.</footer>
 </div>
 
-<nav class="tabs" aria-label="Navigation">
+<footer class="site"></footer>
+
+<nav class="tabs" aria-label="Mon espace" data-auth hidden>
   <div class="in" id="tabs">
     <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Accueil</button>
     <button data-go="lists"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Mes listes</button>
@@ -464,6 +501,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
   </form>
 </dialog>
 
+<script src="/site.js"></script>
 <script src="annonce.js"></script>
 <script>
 /* Le site parle à l'API (api.troctroc.fr, ou localhost en développement). La session est un jeton
@@ -501,6 +539,22 @@ function go(v){
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
 
+/* Menu du haut : sur l'accueil, les liens « /#… » changent de vue sans recharger la page. */
+const calmeDefil=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+function naviguer(h){
+  if(h==='#objets')return chercher('');
+  if(h==='#mon-espace'&&moi)return go('lists');
+  go('home');
+  if(h==='#se-connecter'||h==='#mon-espace'){history.replaceState(null,'',location.pathname);const f=$('#f-login');f.scrollIntoView({behavior:calmeDefil,block:'center'});f.email.focus({preventScroll:true});return}
+  history.replaceState(null,'',h||location.pathname);
+  const cible=h&&document.getElementById(h.slice(1)); if(cible)cible.scrollIntoView({behavior:calmeDefil});
+}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a[href="/"],a[href^="/#"]');
+  if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
+  e.preventDefault(); TT.fermer(); naviguer(a.getAttribute('href').slice(1));
+});
+
 /* Animations de l'accueil (coupées si l'appareil demande moins de mouvement). */
 const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
 (()=>{ // le mot surligné change une fois le titre apparu
@@ -536,7 +590,8 @@ const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function afficherSession(){
   $$('[data-anon]').forEach(x=>x.hidden=!!moi); $$('[data-auth]').forEach(x=>x.hidden=!moi);
-  $('#who').textContent=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
+  document.body.classList.toggle('membre',!!moi);
+  TT.compte(!!moi); $('#compte').title=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
   $('#tab-mod').hidden=!(moi&&moi.est_moderateur); $('#tabs').classList.toggle('n5',!!(moi&&moi.est_moderateur));
   if(moi){$('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`; $('#f-phone').telephone.value=moi.telephone||''}
 }
@@ -840,17 +895,19 @@ setInterval(afficherGrandTroc,30e3);
 
 /* Recherche libre : aucun compte nécessaire, l'API ne renvoie que les objets en ligne. */
 async function chercher(q){
-  q=q.trim(); if(!q)return;
-  $('#f-search').q.value=q; $('#search-title').textContent=`« ${q} »`;
+  q=q.trim(); // vide : tout ce qui est proposé en ce moment (« Voir les objets » du menu)
+  const ancre=q?'#recherche='+encodeURIComponent(q):'#objets';
+  $('#f-search').q.value=q; $('#search-title').textContent=q?`« ${q} »`:'Ce qui est proposé';
   $('#search-count').textContent='Recherche…'; $('#results').innerHTML='';
-  if(location.hash!=='#recherche='+encodeURIComponent(q))history.replaceState(null,'','#recherche='+encodeURIComponent(q));
+  if(location.hash!==ancre)history.replaceState(null,'',ancre);
   go('search');
   try{
-    const objets=await api('/objets?q='+encodeURIComponent(q));
+    const objets=await api(q?'/objets?q='+encodeURIComponent(q):'/objets');
     $('#search-count').textContent=objets.length?`${objets.length>=200?'Plus de 200':objets.length} objet${objets.length>1?'s':''} disponible${objets.length>1?'s':''}`:'';
     $('#results').innerHTML=objets.length?objets.map(o=>`
       <article class="result"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}</div>
         <b>${esc(o.titre)}</b><span>${esc(ETATS[o.etat]||'')}${o.etat?' · ':''}${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></article>`).join('')
+      :!q?`<p class="empty">Aucun objet proposé pour l'instant. Soyez le premier : créez un compte et ajoutez ce qui dort chez vous.</p>`
       :`<p class="empty">Rien pour « ${esc(q)} » pour l'instant. Essayez un mot plus large (« vélo » plutôt qu'un modèle), ou créez un compte : votre souhait sera servi dès qu'un objet arrive.</p>`;
   }catch(err){$('#search-count').textContent='';toast(err.message)}
 }
@@ -876,6 +933,7 @@ async function demarrer(){
   if(jeton){try{moi=await api('/moi')}catch{moi=null}}
   afficherSession();
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
+  if(['#objets','#se-connecter'].includes(h)||(h==='#mon-espace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
   if(!moi)return;
   await gt; await toutCharger();
   if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}
@@ -884,6 +942,7 @@ async function demarrer(){
   if(store.get('troc.annonce'))reprendreAnnonce();
   else if(h.startsWith('#echange-')){go('trades');const c=document.getElementById(h.slice(1)); if(c)c.scrollIntoView()}
   else if(h==='#moderation'&&moi.est_moderateur)go('mod');
+  else if(h==='#mon-espace')go('lists');
 }
 demarrer();
 </script>
