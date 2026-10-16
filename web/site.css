@@ -1,0 +1,117 @@
+/* Socle commun à toutes les pages : couleurs, typo, menu du haut et pied de page.
+   Le menu et le pied sont écrits par site.js, pour n'avoir qu'une seule version. */
+:root{
+  /* Thème sombre unique, quel que soit le réglage de l'appareil. */
+  --bg:#111318; --surface:#1A1D24; --ink:#F2F3F6; --muted:#A3A9B6; --line:#2C303A;
+  --accent:#8B97FF; --accent-ink:#111318; --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
+  --display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"DM Mono", ui-monospace, Menlo, monospace;
+  --r:14px; --haut:64px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:calc(var(--haut) + 12px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
+button{font:inherit;color:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.logo{border:0;background:none;padding:0;color:var(--ink);text-decoration:none;font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px;flex:none}
+.logo svg{width:24px;height:24px;transition:transform .6s cubic-bezier(.6,0,.2,1)}
+.logo:hover svg{transform:rotate(120deg)}
+.logo-2{color:var(--mark)}
+
+/* Menu du haut : collé en haut de l'écran, liens en typo blanche, « Se connecter » toujours visible à droite. */
+header.site{position:sticky;top:0;z-index:20;border-bottom:1px solid transparent;transition:border-color .2s}
+/* Le flou est sur un pseudo-élément : posé sur l'en-tête, il enfermerait le menu mobile (position:fixed) dans ses 64 px. */
+header.site::before{content:"";position:absolute;inset:0;z-index:-1;background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+header.site.colle{border-bottom-color:var(--line)}
+.site-in{max-width:1120px;margin:0 auto;padding:0 16px;height:var(--haut);display:flex;align-items:center;gap:20px}
+.menu{flex:1;display:flex;justify-content:center}
+.menu ul{list-style:none;margin:0;padding:0}
+.menu>ul{display:flex;align-items:center;gap:4px}
+.menu a,.menu .sous>button{display:flex;align-items:center;gap:6px;color:var(--ink);text-decoration:none;font-weight:500;font-size:15px;padding:8px 12px;border-radius:999px;border:0;background:none;white-space:nowrap;
+  background-image:linear-gradient(var(--mark),var(--mark));background-repeat:no-repeat;background-position:12px calc(100% - 4px);background-size:0 2px;transition:background-size .25s cubic-bezier(.6,0,.2,1)}
+.menu a:hover,.menu .sous>button:hover,.menu [aria-current="page"],.menu .sous.actif>button{background-size:calc(100% - 24px) 2px}
+.menu .sous{position:relative}
+.menu .sous>button svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .2s}
+.menu .sous>button[aria-expanded="true"] svg{transform:rotate(180deg)}
+.menu .sous>ul{position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);min-width:240px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.menu .sous>ul a{border-radius:10px;padding:10px 12px;justify-content:space-between;background-image:none}
+.menu .sous>ul a:hover,.menu .sous>ul a[aria-current="page"]{background-color:var(--bg)}
+.menu small{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+.compte{flex:none;display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);text-decoration:none;border-radius:999px;padding:9px 16px;font-weight:600;font-size:15px;white-space:nowrap}
+.compte svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.compte:hover{background:var(--mark)}
+.burger{display:none;flex:none;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:none;place-items:center;padding:0}
+.burger svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
+.burger path{transition:transform .25s,opacity .2s;transform-origin:center}
+.burger[aria-expanded="true"] .b1{transform:translateY(5px) rotate(45deg)}
+.burger[aria-expanded="true"] .b2{opacity:0}
+.burger[aria-expanded="true"] .b3{transform:translateY(-5px) rotate(-45deg)}
+
+/* Mobile et tablette : le menu passe dans le bouton ☰ et s'ouvre en plein écran. */
+@media (max-width:959px){
+  .site-in{gap:10px}
+  .logo{margin-right:auto}
+  .burger{display:grid}
+  .compte{padding:8px 14px;font-size:14px}
+  .menu{position:fixed;left:0;right:0;top:var(--haut);bottom:0;background:var(--bg);display:block;padding:12px 16px 40px;overflow-y:auto;
+    opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .2s,transform .2s,visibility 0s .2s}
+  .menu.ouvert{opacity:1;visibility:visible;transform:none;transition:opacity .2s,transform .2s}
+  .menu>ul{flex-direction:column;align-items:stretch;gap:0;max-width:520px;margin:0 auto}
+  .menu>ul>li{border-bottom:1px solid var(--line)}
+  .menu>ul>li>a,.menu .sous>button{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;padding:18px 0;border-radius:0;width:100%;justify-content:space-between;background-position:0 calc(100% - 12px)}
+  .menu>ul>li>a:hover,.menu .sous>button:hover,.menu>ul>li>a[aria-current="page"],.menu .sous.actif>button{background-size:3em 2px}
+  .menu .sous>button svg{width:18px;height:18px}
+  .menu .sous>ul{position:static;transform:none;min-width:0;background:none;border:0;box-shadow:none;padding:0 0 14px}
+  .menu .sous>ul a{font-size:17px;padding:10px 0}
+  .menu .sous>ul a:hover,.menu .sous>ul a[aria-current="page"]{background:none;color:var(--mark)}
+  body.menu-ouvert{overflow:hidden}
+}
+@media (max-width:360px){.compte svg{display:none}.logo{font-size:18px}}
+
+/* Pied de page commun */
+footer.site{border-top:1px solid var(--line);margin-top:56px;padding:28px 16px 32px;color:var(--muted);font-size:14px}
+footer.site .in{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-start;justify-content:space-between}
+footer.site nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 20px}
+footer.site a{color:var(--ink);text-decoration:none}
+footer.site a:hover{text-decoration:underline;text-decoration-color:var(--mark);text-underline-offset:3px}
+footer.site .pilote{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+footer.site .pilote b{color:var(--mark);font-weight:500}
+
+/* Pages d'information (pros, collectivités, FAQ, pages légales) */
+.page main{max-width:720px;margin:0 auto;padding:40px 16px 0}
+.page h1,.page h2,.page h3{font-family:var(--display);font-weight:700;letter-spacing:-.02em;text-wrap:balance;margin:0}
+.page h1{font-size:clamp(30px,6vw,46px);line-height:1.08;margin:10px 0 16px}
+.page h2{font-size:22px;line-height:1.2;margin:44px 0 12px}
+.page h3{font-size:16px;line-height:1.3;margin:24px 0 6px}
+.page p,.page li{color:#D6D9E0}
+.page p{margin:0 0 12px}
+.page ul,.page ol{padding-left:20px;margin:0 0 12px}
+.page li{margin-bottom:6px}
+.page main a{color:var(--ink);text-decoration-color:var(--mark);text-underline-offset:3px}
+.page .label{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.page .chapo{font-size:19px;line-height:1.5;color:var(--muted)}
+.page .maj{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:32px}
+.page .hl{background:linear-gradient(transparent 58%,var(--mark) 58%,var(--mark) 92%,transparent 92%);padding:0 .08em;color:var(--ink)}
+.cartes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:20px 0}
+.carte{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:6px}
+.carte b{font-family:var(--display);font-size:15px}
+.carte span{font-size:14px;color:var(--muted);line-height:1.45}
+.appel{margin:36px 0 0;padding:24px;border-radius:var(--r);border:1.5px solid color-mix(in srgb,var(--mark) 45%,var(--line));background:var(--surface);display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.appel h2{margin:0}
+.appel p{margin:0}
+.bouton{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink)!important;text-decoration:none;border-radius:999px;padding:13px 22px;font-weight:600}
+.bouton:hover{background:var(--mark)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq details:first-of-type{border-top:1px solid var(--line)}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:16px 0;font-weight:600;font-size:17px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--mono);font-size:20px;color:var(--mark);flex:none;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details>div{padding:0 0 14px}
+.a-completer{background:color-mix(in srgb,var(--mark) 20%,transparent);color:var(--mark);border-radius:4px;padding:0 4px;font-family:var(--mono);font-size:.9em}
+@media (prefers-reduced-motion:reduce){
+  .menu,.menu.ouvert,.burger path,.logo svg,.menu a,.menu .sous>button{transition:none}
+}
