@@ -212,10 +212,7 @@ footer.legal{font-size:13px;color:var(--muted);padding-block:12px 0;text-align:c
 nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 /* Premier écran de l'accueil : le texte de présentation seul, sur toute la hauteur de l'écran. */
 .intro{min-height:calc(100svh - var(--haut));display:flex;flex-direction:column;justify-content:center;gap:14px;padding-block:24px 8px;position:relative}
-.intro>*{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
-.intro>:nth-child(2){animation-delay:.08s}.intro>:nth-child(3){animation-delay:.16s}.intro>:nth-child(4){animation-delay:.24s}
-.intro>:nth-child(5){animation-delay:.32s}.intro>:nth-child(6){animation-delay:.4s}.intro>:nth-child(7){animation-delay:.48s}
-.intro>:nth-child(8){animation-delay:.56s}.intro>:nth-child(9){animation-delay:.64s}.intro>:nth-child(10){animation-delay:.9s}
+.intro>*{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*80ms)}
 .intro-marque{font-family:var(--display);font-weight:700;font-size:clamp(46px,14vw,72px);line-height:1;letter-spacing:-.04em}
 .intro-titre{font-size:clamp(26px,7vw,36px);line-height:1.12;margin-bottom:6px}
 .intro p:not(.intro-marque){color:#D6D9E0;font-size:17px;line-height:1.55}
@@ -246,16 +243,17 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <div class="ambient" aria-hidden="true"><i></i><i></i></div>
     <!-- Premier écran : le texte de présentation seul ; le reste de l'accueil vient en faisant défiler. -->
     <div class="intro" id="intro">
-      <p class="intro-marque"><span>Troc</span><span class="logo-2">Troc</span></p>
-      <h1 class="intro-titre">Le troc se réinvente. <span class="hl">Tout le monde y gagne.</span></h1>
-      <p class="intro-chapo">Donnez une nouvelle vie aux objets que vous n'utilisez plus en les échangeant contre ceux dont vous avez besoin, sans dépenser d'argent&nbsp;!</p>
-      <p>Avec TrocTroc, plus besoin de trouver quelqu'un qui possède ce que vous recherchez et qui souhaite exactement ce que vous proposez.</p>
-      <p>Notre plateforme trouve les bonnes combinaisons d'échanges pour vous, même entre plusieurs personnes&nbsp;!</p>
-      <p>Chaque dimanche, TrocTroc recherche les échanges possibles. Il ne vous reste plus qu'à déposer vos objets et récupérer les nouveaux.</p>
-      <p class="intro-fort">Vous proposez. Vous choisissez. TrocTroc s'occupe du reste.</p>
-      <p>Simple, économique et accessible à tous.</p>
-      <p class="intro-verbes"><span>Réutiliser.</span> <span>Échanger.</span> <span>Économiser.</span> <span>Simplifier.</span></p>
-      <a class="intro-suite" href="/#decouvrir" aria-label="Découvrir la suite"><span>Découvrir</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+      <p class="intro-marque" style="--i:0"><span>Troc</span><span class="logo-2">Troc</span></p>
+      <h1 class="intro-titre" style="--i:1">Le troc se réinvente. <span class="hl">Tout le monde y gagne.</span></h1>
+      <p class="intro-chapo" style="--i:2">Donnez une nouvelle vie aux objets que vous n'utilisez plus.<br>Échangez-les contre d'autres dont vous avez besoin.<br>Et tout ça sans dépenser d'argent&nbsp;!</p>
+      <p style="--i:3">Notre plateforme trouve les bonnes combinaisons d'échanges pour vous, et même entre plusieurs personnes pour créer une boucle d'utilisateurs satisfaits.</p>
+      <p style="--i:4">Crée ta liste d'objets que tu rends disponibles et de ceux dont tu as besoin, et provoque un match.</p>
+      <p style="--i:5">Pas d'échange immédiat possible&nbsp;? Chaque dimanche, TrocTroc recherche les échanges possibles entre tous nos utilisateurs.</p>
+      <p style="--i:6">Il ne vous reste plus qu'à déposer ou envoyer vos objets et récupérer les nouveaux.</p>
+      <p class="intro-fort" style="--i:7">Vous proposez. Vous choisissez. TrocTroc s'occupe du reste.</p>
+      <p style="--i:8">Simple, économique et accessible à tous.</p>
+      <p class="intro-verbes" style="--i:9"><span>Réutiliser.</span> <span>Échanger.</span> <span>Économiser.</span> <span>Simplifier.</span></p>
+      <a class="intro-suite" href="/#decouvrir" aria-label="Découvrir la suite" style="--i:12"><span>Découvrir</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
     </div>
 
     <div class="hero" id="decouvrir">
