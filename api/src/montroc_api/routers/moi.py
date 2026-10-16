@@ -121,8 +121,9 @@ def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: Utili
         objet.contre = _mes_souhaits(session, utilisateur, ids)
     if changements.get("contre_strict", False) is None:
         del changements["contre_strict"]
-    if changements.get("caracteristiques", False) is None:
-        del changements["caracteristiques"]
+    for champ in ("caracteristiques", "modes_echange"):
+        if champ in changements and changements[champ] is None:
+            del changements[champ]
     if "sous_categorie_slug" in changements or "caracteristiques" in changements:
         sous_categorie = changements.get("sous_categorie_slug", objet.sous_categorie_slug)
         valeurs = changements.get("caracteristiques", objet.caracteristiques)
@@ -143,8 +144,9 @@ def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: Utili
 
 @router.post("/souhaits", response_model=SouhaitLecture, status_code=201)
 def ajouter_souhait(donnees: SouhaitCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
-    if donnees.categorie_slug is not None:
-        obtenir_ou_404(session, m.Categorie, donnees.categorie_slug)
+    for slug in {donnees.categorie_slug} | {a.categorie_slug for a in donnees.alternatives}:
+        if slug is not None:
+            obtenir_ou_404(session, m.Categorie, slug)
     if donnees.objet_id is not None:
         objet = obtenir_ou_404(session, m.Objet, donnees.objet_id)
         if objet.proprietaire_id == utilisateur.id:

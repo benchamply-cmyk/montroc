@@ -132,9 +132,10 @@ class TestBouclesAutour(unittest.TestCase):
     def test_limite_a_deux(self):
         self.assertEqual(boucles_autour(marche_abc(), "A", longueur_max=2), [])
 
-    def test_longueur_4_refusee(self):
-        with self.assertRaises(ValueError):
-            boucles_autour(marche_abc(), "A", longueur_max=4)
+    def test_longueur_hors_bornes_refusee(self):
+        for lm in (1, 7):
+            with self.assertRaises(ValueError):
+                boucles_autour(marche_abc(), "A", longueur_max=lm)
 
     def test_zone(self):
         m = marche_abc()
@@ -165,10 +166,10 @@ class TestBouclesAutour(unittest.TestCase):
         m.retirer_objet("pA")
         m.ajouter_objet("pA", "A", "poussette", sous_categorie="canne", caracteristiques={"age": "0-6 mois"})
         self.assertEqual(len(boucles_autour(m, "A")), 1)
-        # Une caractéristique que l'objet ne précise pas ne l'écarte pas.
+        # Un critère obligatoire que l'objet ne précise pas l'écarte aussi.
         m.retirer_objet("pA")
         m.ajouter_objet("pA", "A", "poussette", sous_categorie="canne")
-        self.assertEqual(len(boucles_autour(m, "A")), 1)
+        self.assertEqual(boucles_autour(m, "A"), [])
         # Un souhait de toute la catégorie prend toutes les sous-catégories.
         m.utilisateurs["B"].souhaits = [Souhait(categorie="poussette")]
         m.retirer_objet("pA")
@@ -403,6 +404,136 @@ class TestRobustesse(unittest.TestCase):
         m = marche_abc()
         c = Contraintes(objets_indisponibles={"sB"})
         self.assertEqual(math_trade(m, contraintes=c).boucles, [])
+
+
+def marche_paire(souhait_de_a: Souhait, **objet_de_b):
+    """A a une poussette et veut ce que décrit ``souhait_de_a`` ; B a l'objet ``bB`` et veut une poussette."""
+    m = Marche()
+    m.ajouter_utilisateur("A", [souhait_de_a])
+    m.ajouter_utilisateur("B", [Souhait(categorie="poussette")])
+    m.ajouter_objet("pA", "A", "poussette")
+    m.ajouter_objet("bB", "B", **{"categorie": "bricolage", **objet_de_b})
+    return m
+
+
+def echange_possible(m) -> bool:
+    return bool(boucles_autour(m, "A"))
+
+
+class TestReglesDuMatching(unittest.TestCase):
+    """Les dix règles du document « Catégories et caractéristiques » (section 13)."""
+
+    def test_1_intercategories(self):
+        sol = math_trade(marche_abc())
+        self.assertEqual(sol.nb_objets_echanges, 3)
+        self.assertEqual(len({t.objet.categorie for t in sol.boucles[0].transferts}), 3)
+
+    def test_2_criteres_obligatoires(self):
+        bosch = Souhait(categorie="bricolage", criteres=(("marque", "Bosch"),))
+        self.assertTrue(echange_possible(marche_paire(bosch, caracteristiques={"marque": " bosch "})))
+        self.assertFalse(echange_possible(marche_paire(bosch, caracteristiques={"marque": "Makita"})))
+        self.assertFalse(echange_possible(marche_paire(bosch)), "marque non précisée")
+
+    def test_2_etat_minimum(self):
+        tres_bon = Souhait(categorie="bricolage", etat_min="tres_bon")
+        self.assertFalse(echange_possible(marche_paire(tres_bon, etat="bon")))
+        self.assertTrue(echange_possible(marche_paire(tres_bon, etat="comme_neuf")))
+        self.assertFalse(echange_possible(marche_paire(tres_bon)), "état non précisé")
+        with self.assertRaises(ValueError):
+            Souhait(categorie="x", etat_min="usage")
+
+    def test_3_alternatives_et_modes_de_recherche(self):
+        def souhait(mode, alternatives=(("bricolage", "perceuses"),)):
+            return Souhait(categorie="velo", alternatives=alternatives, mode=mode)
+
+        perceuse = {"sous_categorie": "perceuses"}
+        self.assertTrue(echange_possible(marche_paire(souhait("flexible"), **perceuse)))
+        self.assertFalse(echange_possible(marche_paire(souhait("precise"), **perceuse)))
+        self.assertFalse(echange_possible(marche_paire(souhait("flexible"), sous_categorie="scies")))
+        # Ouverte : toute la catégorie d'intérêt, quelle que soit la sous-catégorie.
+        self.assertTrue(echange_possible(marche_paire(souhait("ouverte"), sous_categorie="scies")))
+        # Les critères du souhait (catégorie vélo) ne s'appliquent pas à une alternative d'une autre catégorie.
+        avec_critere = Souhait(categorie="velo", criteres=(("taille", "M"),), alternatives=(("bricolage", None),))
+        self.assertTrue(echange_possible(marche_paire(avec_critere)))
+        with self.assertRaises(ValueError):
+            Souhait(categorie="velo", mode="au hasard")
+
+    def test_3_5_objet_vise_puis_preferences(self):
+        """À nombre d'objets égal, l'objet visé passe avant l'alternative, et le critère préférentiel compte."""
+        for moteur in ("heuristique",) + (("exact",) if solveur_exact.disponible() else ()):
+            m = Marche()
+            m.ajouter_utilisateur("A", [Souhait(categorie="velo", alternatives=(("trottinette", None),),
+                                                preferences=(("couleur", "Rouge"),))])
+            m.ajouter_utilisateur("B", [Souhait(categorie="poussette")])
+            m.ajouter_objet("pA", "A", "poussette")
+            m.ajouter_objet("t", "B", "trottinette")
+            m.ajouter_objet("v_bleu", "B", "velo", caracteristiques={"couleur": "Bleu"})
+            m.ajouter_objet("v_rouge", "B", "velo", caracteristiques={"couleur": "rouge"})
+            sol = math_trade(m, moteur=moteur)
+            self.assertEqual(sol.nb_objets_echanges, 2)
+            self.assertIn("v_rouge", sol.boucles[0].objets, moteur)
+
+    def test_4_boucles_de_quatre_et_cinq(self):
+        m = Marche()
+        noms = "ABCDE"
+        for k, u in enumerate(noms):
+            m.ajouter_utilisateur(u, [Souhait(categorie=f"c{(k + 1) % 5}")])
+        for k, u in enumerate(noms):
+            m.ajouter_objet(f"o{u}", u, f"c{k}")
+        self.assertEqual(math_trade(m, longueur_max=4).nb_objets_echanges, 0)
+        for moteur in ("heuristique",) + (("exact",) if solveur_exact.disponible() else ()):
+            sol = math_trade(m, longueur_max=5, moteur=moteur)
+            self.assertEqual([b.longueur for b in sol.boucles], [5], moteur)
+            self.assertEqual(len(boucles_autour(m, "C", longueur_max=5)), 1)
+
+    @AVEC_ORTOOLS
+    def test_4_boucles_de_quatre_contre_force_brute(self):
+        for seed in range(25):
+            m = marche_aleatoire(seed, n_users=6, n_cat=5)
+            sol = math_trade(m, longueur_max=4, moteur="exact")
+            verifier_solution(self, m, sol, 4)
+            self.assertEqual(sol.stats["longueur_max"], 4)
+            self.assertEqual(sol.nb_objets_echanges, optimum_force_brute_borne(m, 4), f"seed {seed}")
+            self.assertGreaterEqual(sol.nb_objets_echanges, math_trade(m, longueur_max=3).nb_objets_echanges)
+
+    def test_4_longueur_reduite_si_incalculable(self):
+        m = marche_aleatoire(3, n_users=12, n_cat=4)
+        self.assertEqual(math_trade(m, longueur_max=5, budget_cycles=10).stats["longueur_max"], 3)
+        self.assertEqual(math_trade(m, longueur_max=5).stats["longueur_max"], 5)
+
+    def test_7_modes_d_echange(self):
+        relais = Souhait(categorie="bricolage", modes={"point_relais"})
+        self.assertFalse(echange_possible(marche_paire(relais, modes={"main_propre"})))
+        self.assertTrue(echange_possible(marche_paire(relais, modes={"main_propre", "point_relais"})))
+        self.assertTrue(echange_possible(marche_paire(relais)), "objet sans mode précisé : tous")
+
+    def test_7_zones(self):
+        souhait = Souhait(categorie="bricolage", zones={"Marseille 6e", "Marseille 5e"})
+        m = marche_paire(souhait)
+        m.utilisateurs["B"].zone = "Marseille 1er"
+        self.assertFalse(echange_possible(m))
+        m.utilisateurs["B"].zone = "Marseille 5e"
+        self.assertTrue(echange_possible(m), "zone acceptée même si différente de celle de A")
+        # Le lieu de l'objet passe avant la zone de son propriétaire.
+        m = marche_paire(souhait, zone="Marseille 6e")
+        m.utilisateurs["B"].zone = "Lyon"
+        self.assertTrue(echange_possible(m))
+
+    def test_8_objet_indisponible(self):
+        self.assertFalse(echange_possible(marche_paire(Souhait(categorie="bricolage"), disponible=False)))
+
+    def test_10_equite(self):
+        """C et D veulent la poussette de A et ont ce qu'il veut : à égalité, la plus forte priorité passe."""
+        for moteur in ("heuristique",) + (("exact",) if solveur_exact.disponible() else ()):
+            for prioritaire in ("C", "D"):
+                m = Marche()
+                m.ajouter_utilisateur("A", [Souhait(categorie="velo")])
+                m.ajouter_objet("pA", "A", "poussette")
+                for u in "CD":
+                    m.ajouter_utilisateur(u, [Souhait(categorie="poussette")], priorite=3 if u == prioritaire else 1)
+                    m.ajouter_objet(f"v{u}", u, "velo")
+                sol = math_trade(m, moteur=moteur)
+                self.assertEqual(set(sol.participants), {"A", prioritaire}, moteur)
 
 
 if __name__ == "__main__":

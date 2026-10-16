@@ -66,10 +66,19 @@ class StatutObjet(enum.StrEnum):
 
 
 class EtatObjet(enum.StrEnum):
+    """Du meilleur au moins bon : une demande peut fixer un état minimum (même ordre que le moteur)."""
+
     neuf = "neuf"
+    comme_neuf = "comme_neuf"
     tres_bon = "tres_bon"
     bon = "bon"
-    usage = "usage"  # usagé, fonctionne
+    correct = "correct"  # anciennement « usagé, fonctionne »
+
+
+class ModeRecherche(enum.StrEnum):
+    precise = "precise"  # l'objet demandé, avec ses critères obligatoires
+    flexible = "flexible"  # aussi les alternatives acceptées
+    ouverte = "ouverte"  # tout objet des catégories d'intérêt (celle de la demande et celles des alternatives)
 
 
 class StatutEchange(enum.StrEnum):
@@ -183,6 +192,8 @@ class Objet(Horodatage, Base):
     # Aucun : contre n'importe lequel de ses souhaits. ``contre_strict`` : seulement contre ceux-là ; sinon ce
     # n'est qu'une préférence, et l'objet peut partir contre un autre de ses souhaits.
     contre_strict: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Modes d'échange possibles (nomenclature.MODES_ECHANGE) ; vide : tous.
+    modes_echange: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
 
     proprietaire: Mapped[Utilisateur] = relationship(back_populates="objets")
     contre: Mapped[list[Souhait]] = relationship(secondary="objets_contre", order_by="Souhait.id")
@@ -209,11 +220,22 @@ class Souhait(Horodatage, Base):
     utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
     categorie_slug: Mapped[str | None] = mapped_column(ForeignKey("categories.slug"))
     objet_id: Mapped[int | None] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"))
-    # « Je demande » en détail : une sous-catégorie et des caractéristiques à choix fixes, qui filtrent les
-    # objets proposés (voir nomenclature.py), et une description libre de ce qui est cherché.
+    # « Je demande » en détail : une sous-catégorie, des critères obligatoires (``caracteristiques`` : un objet
+    # de la catégorie doit indiquer ces valeurs) et préférentiels (``preferences`` : ils améliorent l'échange
+    # sans écarter d'objet), voir nomenclature.py, et une description libre de ce qui est cherché.
     sous_categorie_slug: Mapped[str | None] = mapped_column(String(50))
     caracteristiques: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict, server_default="{}")
+    preferences: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict, server_default="{}")
     precisions: Mapped[str | None] = mapped_column(Text)
+    etat_min: Mapped[EtatObjet | None] = mapped_column(_enum(EtatObjet, "etat_min"))
+    mode_recherche: Mapped[ModeRecherche] = mapped_column(
+        _enum(ModeRecherche, "mode_recherche"), default=ModeRecherche.flexible, server_default="flexible"
+    )
+    # Autres catégories ou sous-catégories acceptées : [{"categorie_slug": …, "sous_categorie_slug": … ou null}].
+    alternatives: Mapped[list[dict]] = mapped_column(JSONB, default=list, server_default="[]")
+    # Logistique : modes d'échange acceptés (vide : tous) et zones acceptées (vide : sa propre zone).
+    modes_echange: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    zones: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
     rang: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     quantite: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     acceptation_auto: Mapped[bool] = mapped_column(default=False, server_default="false")

@@ -3,11 +3,31 @@
 Aucune notion de prix ni de monnaie : un utilisateur publie des objets
 disponibles et liste des souhaits (une catégorie, ou un objet précis).
 Un échange est une boucle de transferts où chacun donne un objet et en reçoit un.
+
+Les catégories rangent les objets ; un échange peut toujours mêler des
+catégories différentes (une poussette contre une perceuse) : seul compte ce
+que chacun demande.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from math import prod
+
+# États d'un objet, du moins bon au meilleur : un souhait peut exiger un état minimum.
+ETATS = ("correct", "bon", "tres_bon", "comme_neuf", "neuf")
+# Recherche précise : l'objet demandé seulement ; flexible : aussi les alternatives acceptées ;
+# ouverte : tout objet des catégories d'intérêt (celle du souhait et celles des alternatives).
+MODES_RECHERCHE = ("precise", "flexible", "ouverte")
+# Qualité d'un transfert (départage, après le nombre d'objets et l'équité) : l'objet visé en premier
+# plutôt qu'une alternative, puis chaque critère préférentiel respecté, puis chaque préférence « contre ».
+QUALITE_CIBLE = 2
+QUALITE_PREFERENCE = 1
+QUALITE_CONTRE = 2
+
+
+def _norme(valeur: str) -> str:
+    """Comparaison des valeurs sans tenir compte de la casse ni des espaces (marques en saisie libre)."""
+    return " ".join(str(valeur).split()).casefold()
 
 
 @dataclass(frozen=True)
@@ -30,6 +50,12 @@ class Objet:
     # en paires (clé, valeur) : facultatives, elles affinent les souhaits qui les précisent.
     sous_categorie: str | None = None
     caracteristiques: tuple[tuple[str, str], ...] = ()
+    # État (une valeur de ``ETATS``), modes d'échange possibles (vide : tous), lieu (vide : la zone
+    # de son propriétaire) ; un objet réservé ou échangé n'est pas ``disponible``.
+    etat: str | None = None
+    modes: frozenset[str] = frozenset()
+    zone: str | None = None
+    disponible: bool = True
 
     def accepte(self, recu: Transfert) -> bool:
         """Peut-on donner cet objet en recevant ``recu`` dans la même boucle ?"""
@@ -47,16 +73,28 @@ class Souhait:
     - ``categorie`` : n'importe quel objet de cette catégorie convient
       (souhait « large », recommandé par l'étude) ;
     - ``objet_id`` : un objet précis ;
-    - ``rang`` : 1 = souhait préféré (sert à départager, comme les listes
-      ordonnées de TradeMaximizer) ;
+    - ``rang`` : 1 = souhait préféré (niveau de priorité, sert à départager,
+      comme les listes ordonnées de TradeMaximizer) ;
     - ``quantite`` : nombre d'objets que l'utilisateur veut recevoir pour ce
       souhait (évite de recevoir trois poussettes) ;
     - ``acceptation_auto`` : case « j'accepte automatiquement un échange
       contre cet objet » (engagement préalable, section 2 de l'étude) ;
     - ``sous_categorie`` : seulement les objets de cette sous-catégorie ;
-    - ``criteres`` : paires (clé, valeur), par exemple (« taille », « 4 ans ») :
-      un objet qui donne une autre valeur pour la clé ne convient pas, un objet
-      qui ne la précise pas convient encore.
+    - ``criteres`` : critères obligatoires, paires (clé, valeur), par exemple
+      (« taille », « 4 ans ») ou (« marque », « Bosch ») : un objet de la
+      catégorie du souhait doit indiquer cette valeur ;
+    - ``preferences`` : critères préférentiels, mêmes paires : ils n'écartent
+      aucun objet, ils améliorent la qualité de l'échange ;
+    - ``etat_min`` : état minimum accepté (une valeur de ``ETATS``) ;
+    - ``alternatives`` : autres (catégorie, sous-catégorie ou None) acceptées ;
+    - ``mode`` : ``"precise"``, ``"flexible"`` ou ``"ouverte"`` (``MODES_RECHERCHE``) ;
+    - ``modes`` : modes d'échange acceptés (main propre, point relais…), vide : tous ;
+    - ``zones`` : zones géographiques acceptées ; vide : la règle du marché
+      (même zone que soi si ``Marche.meme_zone``).
+
+    Les critères (obligatoires et préférentiels) portent sur la catégorie du
+    souhait ; une alternative d'une autre catégorie n'est jugée que sur sa
+    catégorie, sa sous-catégorie, l'état minimum et la logistique.
     """
     categorie: str | None = None
     objet_id: str | None = None
@@ -65,24 +103,72 @@ class Souhait:
     acceptation_auto: bool = False
     sous_categorie: str | None = None
     criteres: tuple[tuple[str, str], ...] = ()
+    preferences: tuple[tuple[str, str], ...] = ()
+    etat_min: str | None = None
+    alternatives: tuple[tuple[str, str | None], ...] = ()
+    mode: str = "flexible"
+    modes: frozenset[str] = frozenset()
+    zones: frozenset[str] = frozenset()
 
     def __post_init__(self):
         if (self.categorie is None) == (self.objet_id is None):
             raise ValueError("Un souhait porte soit sur une catégorie, soit sur un objet précis.")
         if self.rang < 1 or self.quantite < 1:
             raise ValueError("rang et quantite doivent être >= 1.")
-        if self.sous_categorie is not None and self.categorie is None:
-            raise ValueError("Une sous-catégorie précise un souhait de catégorie.")
+        if self.categorie is None and (self.sous_categorie is not None or self.criteres or self.preferences
+                                       or self.alternatives):
+            raise ValueError("Une sous-catégorie, des critères ou des alternatives précisent un souhait de catégorie.")
+        if self.mode not in MODES_RECHERCHE:
+            raise ValueError(f"mode doit être parmi {MODES_RECHERCHE}.")
+        if self.etat_min is not None and self.etat_min not in ETATS:
+            raise ValueError(f"etat_min doit être parmi {ETATS}.")
+        object.__setattr__(self, "modes", frozenset(self.modes))
+        object.__setattr__(self, "zones", frozenset(self.zones))
+
+    def categories_visees(self) -> set[str]:
+        """Les catégories où chercher des objets pour ce souhait."""
+        if self.categorie is None:
+            return set()
+        if self.mode == "precise":
+            return {self.categorie}
+        return {self.categorie} | {c for c, _ in self.alternatives}
+
+    def _vise(self, objet: Objet) -> bool | None:
+        """True : l'objet visé en premier ; False : une alternative acceptée ; None : ni l'un ni l'autre."""
+        if objet.categorie == self.categorie and self.sous_categorie in (None, objet.sous_categorie):
+            return True
+        if self.mode == "precise":
+            return None
+        if self.mode == "ouverte":
+            return False if objet.categorie in self.categories_visees() else None
+        if any(objet.categorie == c and sc in (None, objet.sous_categorie) for c, sc in self.alternatives):
+            return False
+        return None
 
     def correspond(self, objet: Objet) -> bool:
+        if self.modes and objet.modes and not (self.modes & objet.modes):
+            return False
         if self.objet_id is not None:
             return objet.id == self.objet_id
+        if self._vise(objet) is None:
+            return False
+        if self.etat_min is not None and (objet.etat not in ETATS
+                                          or ETATS.index(objet.etat) < ETATS.index(self.etat_min)):
+            return False
         if objet.categorie != self.categorie:
-            return False
-        if self.sous_categorie is not None and objet.sous_categorie != self.sous_categorie:
-            return False
-        siennes = dict(objet.caracteristiques)
-        return all(siennes.get(cle, valeur) == valeur for cle, valeur in self.criteres)
+            return True
+        siennes = {cle: _norme(v) for cle, v in objet.caracteristiques}
+        return all(siennes.get(cle) == _norme(valeur) for cle, valeur in self.criteres)
+
+    def qualite(self, objet: Objet) -> int:
+        """Qualité d'un objet qui correspond : visé en premier, puis critères préférentiels respectés."""
+        if self.objet_id is not None:
+            return QUALITE_CIBLE
+        q = QUALITE_CIBLE if self._vise(objet) else 0
+        if objet.categorie == self.categorie:
+            siennes = {cle: _norme(v) for cle, v in objet.caracteristiques}
+            q += QUALITE_PREFERENCE * sum(siennes.get(cle) == _norme(v) for cle, v in self.preferences)
+        return q
 
 
 @dataclass
@@ -93,6 +179,9 @@ class Utilisateur:
     # Probabilité qu'il aille au bout (dépôt de l'objet) : sert à estimer la
     # réussite d'une boucle. Peut être alimentée par la réputation.
     fiabilite: float = 1.0
+    # Équité : poids de cette personne quand on départage des solutions qui échangent autant d'objets
+    # (1 = normal ; plus pour qui a peu reçu récemment, voir l'API).
+    priorite: int = 1
 
 
 @dataclass(frozen=True)
@@ -106,6 +195,7 @@ class Transfert:
     rang: int
     auto: bool
     proba_acceptation: float  # probabilité que le receveur dise oui
+    qualite: int = 0  # voir Souhait.qualite
 
     @property
     def cle(self) -> tuple[str, str, str]:
@@ -151,6 +241,11 @@ class Boucle:
         n = len(self.transferts)
         return sum(self.transferts[k].objet.prefere(self.transferts[k - 1]) for k in range(n))
 
+    @property
+    def qualite(self) -> int:
+        """Qualité de la boucle : objets visés en premier, critères préférentiels, préférences « contre »."""
+        return sum(t.qualite for t in self.transferts) + QUALITE_CONTRE * self.preferences_respectees
+
     def decrire(self) -> str:
         etapes = [f"{t.donneur} donne « {t.objet.titre or t.objet.id} » à {t.receveur}"
                   for t in self.transferts]
@@ -182,16 +277,19 @@ class Marche:
         self.utilisateurs: dict[str, Utilisateur] = {}
         self.objets: dict[str, Objet] = {}
 
-    def ajouter_utilisateur(self, id: str, souhaits=(), zone=None, fiabilite=1.0) -> Utilisateur:
+    def ajouter_utilisateur(self, id: str, souhaits=(), zone=None, fiabilite=1.0, priorite=1) -> Utilisateur:
         if id in self.utilisateurs:
             raise ValueError(f"Utilisateur {id!r} déjà présent.")
-        u = Utilisateur(id, list(souhaits), zone, fiabilite)
+        if priorite < 1:
+            raise ValueError("priorite doit être >= 1.")
+        u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite)
         self.utilisateurs[id] = u
         return u
 
     def ajouter_objet(self, id: str, proprietaire: str, categorie: str, titre: str = "",
                       contre=(), contre_strict: bool = False, sous_categorie: str | None = None,
-                      caracteristiques=()) -> Objet:
+                      caracteristiques=(), etat: str | None = None, modes=(), zone: str | None = None,
+                      disponible: bool = True) -> Objet:
         if id in self.objets:
             raise ValueError(f"Objet {id!r} déjà présent.")
         if proprietaire not in self.utilisateurs:
@@ -200,8 +298,11 @@ class Marche:
         contre = frozenset(contre)
         if any(not 0 <= i < nb_souhaits for i in contre):
             raise ValueError(f"« contre » doit désigner des souhaits de {proprietaire!r}.")
+        if etat is not None and etat not in ETATS:
+            raise ValueError(f"etat doit être parmi {ETATS}.")
         caracteristiques = tuple(sorted(dict(caracteristiques).items()))
-        o = Objet(id, proprietaire, categorie, titre, contre, contre_strict, sous_categorie, caracteristiques)
+        o = Objet(id, proprietaire, categorie, titre, contre, contre_strict, sous_categorie, caracteristiques,
+                  etat, frozenset(modes), zone, disponible)
         self.objets[id] = o
         return o
 

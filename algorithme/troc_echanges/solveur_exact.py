@@ -1,4 +1,4 @@
-"""Math trade borné (boucles de 2 et 3) résolu exactement par programmation par contraintes.
+"""Math trade borné (boucles de 2 à ``longueur_max`` personnes) résolu exactement par programmation par contraintes.
 
 Utilise le solveur CP-SAT de Google OR-Tools (licence Apache 2.0), s'il est
 installé ; sinon ``math_trade`` garde l'empaquetage heuristique.
@@ -15,9 +15,11 @@ propriétaire reçoit, dans la même boucle, un des souhaits de la liste.
 
 Objectifs, dans l'ordre (chaque étape garde le résultat de la précédente) :
 1. le plus d'objets échangés ;
-2. le plus de personnes différentes servies (comme la métrique USERS-TRADING
-   de TradeMaximizer) ;
-3. le plus de préférences « contre » respectées ;
+2. équité : le plus de personnes différentes servies (comme la métrique
+   USERS-TRADING de TradeMaximizer), chacune comptée avec son poids
+   ``Utilisateur.priorite`` (plus fort pour qui a peu reçu récemment) ;
+3. la meilleure qualité : objets visés plutôt qu'alternatives, critères
+   préférentiels et préférences « contre » respectés (``Boucle.qualite``) ;
 4. les boucles les plus sûres, puis les souhaits les mieux classés.
 """
 from __future__ import annotations
@@ -27,7 +29,7 @@ import time
 
 from .boucles import cycles_utilisateurs, options_du_cycle
 from .graphe import GrapheEchanges
-from .modele import Boucle
+from .modele import QUALITE_CONTRE, Boucle
 
 try:
     from ortools.sat.python import cp_model
@@ -44,6 +46,10 @@ MAX_COPIES_AUTO = 6_000
 FILS = 2
 
 
+class TropGrand(Exception):
+    """Le problème dépasse ``max_copies`` : la mémoire ne suffirait pas."""
+
+
 def disponible() -> bool:
     return cp_model is not None
 
@@ -51,8 +57,8 @@ def disponible() -> bool:
 def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
              fils: int = FILS, max_copies: int | None = None) -> tuple[list[Boucle], bool, dict] | None:
     """Renvoie (boucles, nombre d'objets prouvé maximal ?, statistiques), ou None si
-    OR-Tools manque, si le problème dépasse ``max_copies`` ou si aucune solution
-    n'a été trouvée dans le temps imparti."""
+    OR-Tools manque ou si aucune solution n'a été trouvée dans le temps imparti.
+    Lève ``TropGrand`` si le problème dépasse ``max_copies``."""
     if cp_model is None:
         return None
     debut = time.perf_counter()
@@ -62,14 +68,14 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
         options = options_du_cycle(graphe, cycle)
         cycles.append((cycle, options, min(len(o) for o in options)))
     if max_copies is not None and sum(q for _, _, q in cycles) > max_copies:
-        return None
+        raise TropGrand
     modele = cp_model.CpModel()
 
     copies = []          # (cycle, variable « copie active », [[(variable, transfert)] par étape])
     par_objet: dict[str, list] = {}
     par_souhait: dict[tuple[str, int], list] = {}
     par_personne: dict[str, list] = {}
-    preferences, couts = [], []
+    qualites, couts = [], []
     variables = []       # copies et transferts : la solution d'une étape sert d'indice à la suivante
 
     for cycle, options, nb_copies in cycles:
@@ -91,6 +97,8 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
                     par_objet.setdefault(t.objet.id, []).append(x)
                     par_souhait.setdefault(t.cle_souhait, []).append(x)
                     couts.append((x, _cout(marche, t)))
+                    if t.qualite:
+                        qualites.append((x, t.qualite))
             for k in range(n):
                 # cycle[k] donne à l'étape k et reçoit à l'étape k - 1.
                 for x, t in etapes[k]:
@@ -103,7 +111,7 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
                         bonus = modele.new_bool_var("")
                         modele.add(bonus <= x)
                         modele.add(bonus <= sum(recus))
-                        preferences.append(bonus)
+                        qualites.append((bonus, QUALITE_CONTRE))
             for u in cycle:
                 par_personne.setdefault(u, []).append(active)
             copies.append((cycle, active, etapes))
@@ -117,16 +125,16 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
         if len(xs) > graphe.capacite_souhait[cle]:
             modele.add(sum(xs) <= graphe.capacite_souhait[cle])
     servis = []
-    for actives in par_personne.values():
+    for u, actives in par_personne.items():
         s = modele.new_bool_var("")
         modele.add(s <= sum(actives))
-        servis.append(s)
+        servis.append((s, marche.utilisateurs[u].priorite))
 
     objets = sum(len(cycle) * active for cycle, active, _ in copies)
     etapes_objectif = [
         (objets, True),
-        (sum(servis), True),
-        (sum(preferences), True),
+        (sum(p * s for s, p in servis), True),
+        (sum(q * x for x, q in qualites), True),
         (sum(c * x for x, c in couts), False),
     ]
 

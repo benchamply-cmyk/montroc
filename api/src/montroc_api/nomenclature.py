@@ -2,10 +2,12 @@
 
 Une seule source, ici : l'API la sert avec les catégories (GET /categories) et valide ce que chacun
 enregistre. Les sous-catégories affinent les souhaits (« Je demande une poussette ») ; les
-caractéristiques à choix fixes (taille, âge…) aussi : un objet qui précise une autre valeur n'est pas
-proposé, un objet qui ne la précise pas l'est encore. Les caractéristiques libres (marque…) ne servent
-qu'à décrire un objet. Une caractéristique peut ne valoir que pour certaines sous-catégories (la
-pointure pour les chaussures) : elle n'est alors demandée qu'une fois l'une d'elles choisie.
+caractéristiques aussi, à deux niveaux : un critère obligatoire écarte tout objet de la catégorie qui
+n'indique pas cette valeur, un critère préférentiel n'écarte rien mais fait préférer les objets qui
+l'indiquent (indifférent : on ne le renseigne pas). Les valeurs libres (marque, modèle…) se comparent
+sans tenir compte des majuscules ni des espaces. Une caractéristique peut ne valoir que pour certaines
+sous-catégories (la pointure pour les chaussures) : elle n'est alors demandée qu'une fois l'une d'elles
+choisie.
 
 Les catégories elles-mêmes sont en base (table ``categories``) : les 10 d'ici y sont créées par la
 migration 0012, dans l'ordre de ``DETAIL``, qui est aussi celui du site. Une catégorie créée par la
@@ -21,13 +23,15 @@ from dataclasses import dataclass
 class Caracteristique:
     cle: str
     libelle: str
-    # Choix fixes (liste déroulante) ; None : texte libre, qui ne sert qu'à décrire un objet.
+    # Choix fixes (liste déroulante) ; None : texte libre (marque, modèle…).
     options: tuple[str, ...] | None = None
     # Sous-catégories (slugs) où elle a un sens ; None : toute la catégorie.
     pour: tuple[str, ...] | None = None
 
 
 LONGUEUR_LIBRE = 60
+# Modes d'échange (logistique) : un objet et une demande sans mode précisé les acceptent tous.
+MODES_ECHANGE = {"main_propre": "Main propre", "point_relais": "Point relais"}
 OUI_NON = ("Oui", "Non")
 MARQUE = Caracteristique("marque", "Marque")
 MODELE = Caracteristique("modele", "Modèle")
@@ -439,7 +443,7 @@ def caracteristiques(categorie: str) -> tuple[Caracteristique, ...]:
 def verifier(categorie: str | None, sous_categorie: str | None, valeurs: dict[str, str], demande: bool) -> dict:
     """Vérifie une sous-catégorie et des caractéristiques ; renvoie les valeurs nettoyées (vides retirées).
 
-    ``demande`` : pour un souhait, seules les caractéristiques à choix fixes comptent (elles filtrent).
+    ``demande`` : pour un souhait (critères obligatoires ou préférentiels).
     Lève ``ValueError`` avec un message pour la personne.
     """
     if categorie is None:
@@ -455,7 +459,7 @@ def verifier(categorie: str | None, sous_categorie: str | None, valeurs: dict[st
         if not valeur:
             continue
         c = connues.get(cle)
-        if c is None or (demande and c.options is None):
+        if c is None:
             raise ValueError(f"Caractéristique inconnue pour cette catégorie : {cle}.")
         if c.pour is not None and sous_categorie not in c.pour:
             raise ValueError(f"« {c.libelle} » ne se précise pas pour cette sous-catégorie.")
