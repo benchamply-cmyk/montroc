@@ -49,6 +49,12 @@ Au redémarrage, la migration `0003` s'applique toute seule. Les objets déjà p
 
 Render gratuit n'a pas de tâches planifiées : c'est GitHub Actions ([`.github/workflows/taches.yml`](../.github/workflows/taches.yml)) qui appelle l'API toutes les heures (rappels « plus que 12 h », échanges expirés) et le dimanche (Grand Troc).
 
+### Le Match, à tout moment
+
+Onglet **Match** du site : un carrousel d'objets qui répondent à mes souhaits (ou dont le propriétaire cherche ce que j'ai). Sur chacun, « J'aime » ou « Non merci ». Quand deux personnes aiment chacune un objet de l'autre, c'est un **match** (e-mail « C'est un match avec … ») : l'une propose l'échange 1 à 1 (e-mail « … vous propose un échange »), l'autre a **48 h** pour dire oui, puis chacun dépose dans les **7 jours**. Aucun réglage à faire, cela marche tous les jours de la semaine.
+
+Le Grand Troc du dimanche ne s'occupe plus que de ce que le Match n'a pas conclu : les boucles à trois et les échanges à deux sans match. Un « J'aime » y compte comme un souhait de l'objet, et un « Non merci » comme un refus (l'objet ne vous sera pas proposé).
+
 ### Le Grand Troc du dimanche
 
 Les boucles ne sont plus proposées au fil de l'eau : chaque **dimanche à 18 h (heure de Paris)**, le math trade tourne une fois sur tout le stock, comme les math trades de BoardGameGeek. Toutes les propositions arrivent en même temps (e-mail « Grand Troc : une boucle vous attend »), chacun a **48 h** pour répondre (jusqu'au mardi 18 h, rappel 12 h avant), puis les dépôts se font **dans la semaine, jusqu'au dimanche suivant midi** : les objets d'un échange incomplet repartent dans le Grand Troc du soir même.
@@ -67,6 +73,7 @@ Les boucles ne sont plus proposées au fil de l'eau : chaque **dimanche à 18 h 
 1. Sur https://troctroc.fr, saisis ton e-mail : le lien arrive (en cas de doute, Brevo → *Transactional → Logs* montre chaque envoi ; regarde aussi les spams la première fois et marque-le « pas un spam »).
 2. Choisis ton pseudo, publie un objet avec photo, ajoute un souhait.
 3. Avec un deuxième compte (une autre adresse), publie l'objet que tu souhaites et souhaite le tien : l'échange apparaît dans « Aperçu pour dimanche » ; lance le Grand Troc à la main (ci-dessus) pour le recevoir tout de suite.
+   Ou, sans attendre : avec chaque compte, ouvre l'onglet **Match** et mets « J'aime » sur l'objet de l'autre ; le second « J'aime » fait le match, et « Proposer l'échange » l'envoie.
 4. Ton compte modérateur voit l'onglet **Modération**.
 
 ## Modération et DSA

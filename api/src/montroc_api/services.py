@@ -53,12 +53,23 @@ def lien_echange(echange: m.Echange) -> str:
 def construire_marche(session: Session, stock_avant: datetime | None = None) -> Marche:
     """Le marché du moteur : comptes actifs, leurs souhaits et les objets disponibles.
 
+    Un « J'aime » du Match sur un objet encore disponible compte comme un souhait de cet objet précis
+    (s'il n'est pas déjà couvert par un souhait de sa catégorie) : un match qui n'a pas été conclu en 1 à 1
+    peut ainsi aboutir au Grand Troc, à deux ou dans une boucle à trois.
     ``stock_avant`` : seulement les objets publiés avant cette date (repêchage sur le stock du dimanche).
     """
     marche = Marche()
     utilisateurs = session.scalars(
         select(m.Utilisateur).where(m.Utilisateur.suspendu_le.is_(None)).options(selectinload(m.Utilisateur.souhaits))
     ).all()
+    coups_de_coeur: dict[int, list[tuple[int, str]]] = {}
+    for avis, categorie in session.execute(
+        select(m.Avis, m.Objet.categorie_slug)
+        .join(m.Avis.objet)
+        .where(m.Avis.aime, m.Objet.statut == m.StatutObjet.disponible)
+        .order_by(m.Avis.cree_le)
+    ):
+        coups_de_coeur.setdefault(avis.utilisateur_id, []).append((avis.objet_id, categorie))
     # Indice de chaque souhait dans la liste de son auteur : c'est ainsi que le moteur désigne les listes « contre ».
     indice_souhait: dict[int, int] = {}
     for u in utilisateurs:
@@ -72,6 +83,14 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
                 acceptation_auto=s.acceptation_auto,
             )
             for s in u.souhaits
+        ]
+        # Après les souhaits : les indices des listes « contre » restent ceux des souhaits.
+        categories = {s.categorie_slug for s in u.souhaits if s.categorie_slug}
+        precis = {s.objet_id for s in u.souhaits if s.objet_id}
+        souhaits += [
+            SouhaitMoteur(objet_id=str(objet_id))
+            for objet_id, categorie in coups_de_coeur.get(u.id, [])
+            if categorie not in categories and objet_id not in precis
         ]
         marche.ajouter_utilisateur(str(u.id), souhaits, zone=u.zone, fiabilite=u.fiabilite)
     requete = select(m.Objet).where(m.Objet.statut == m.StatutObjet.disponible).options(selectinload(m.Objet.contre))
@@ -88,8 +107,22 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
     return marche
 
 
+def contraintes_du_match(session: Session) -> Contraintes:
+    """Les « Non merci » du Match : le Grand Troc ne propose pas un objet à qui l'a écarté."""
+    contraintes = Contraintes()
+    for utilisateur_id, objet_id, proprietaire_id in session.execute(
+        select(m.Avis.utilisateur_id, m.Avis.objet_id, m.Objet.proprietaire_id)
+        .join(m.Avis.objet)
+        .where(m.Avis.aime.is_(False), m.Objet.statut == m.StatutObjet.disponible)
+    ):
+        contraintes.transferts_refuses.add((str(proprietaire_id), str(objet_id), str(utilisateur_id)))
+    return contraintes
+
+
 def suggestions(session: Session, utilisateur_id: int, limite: int = 10) -> list[Boucle]:
-    return boucles_autour(construire_marche(session), str(utilisateur_id), limite=limite)
+    return boucles_autour(
+        construire_marche(session), str(utilisateur_id), limite=limite, contraintes=contraintes_du_match(session)
+    )
 
 
 def _code_retrait() -> str:
@@ -97,11 +130,16 @@ def _code_retrait() -> str:
 
 
 def proposer(
-    session: Session, boucle: Boucle, auteur_id: int | None = None, grand_troc: m.GrandTroc | None = None
+    session: Session,
+    boucle: Boucle,
+    auteur_id: int | None = None,
+    grand_troc: m.GrandTroc | None = None,
+    par_match: bool = False,
 ) -> m.Echange:
     """Enregistre une boucle, réserve ses objets et prévient les participants. À appeler dans une transaction.
 
     ``auteur_id`` : le participant qui a choisi cette boucle ; la proposer vaut accord pour sa part.
+    ``par_match`` : accord 1 à 1 proposé après un match (voir ``matchs.conclure``).
     """
     ids = [int(t.objet.id) for t in boucle.transferts]
     # Verrou ligne : deux propositions simultanées ne peuvent pas réserver le même objet.
@@ -114,7 +152,10 @@ def proposer(
 
     maintenant = datetime.now(UTC)
     echange = m.Echange(
-        proba_reussite=boucle.proba_reussite, expire_le=maintenant + DELAI_REPONSE, grand_troc=grand_troc
+        proba_reussite=boucle.proba_reussite,
+        expire_le=maintenant + DELAI_REPONSE,
+        grand_troc=grand_troc,
+        par_match=par_match,
     )
     for i, t in enumerate(boucle.transferts):
         # Souhait coché « j'accepte d'office », ou boucle choisie par le receveur : pas besoin de redemander.
@@ -136,16 +177,28 @@ def proposer(
         for t in echange.transferts:
             if t.reponse == m.Reponse.en_attente:
                 donne = _transfert_du_donneur(echange, t.receveur_id).objet.titre
-                courriels.apres_validation(
-                    session,
-                    courriels.boucle_vous_attend,
-                    t.receveur.email,
-                    t.receveur.pseudo,
-                    donne,
-                    t.objet.titre,
-                    lien_echange(echange),
-                    grand_troc is not None,
-                )
+                if par_match:
+                    courriels.apres_validation(
+                        session,
+                        courriels.accord_propose,
+                        t.receveur.email,
+                        t.receveur.pseudo,
+                        t.donneur.pseudo,
+                        donne,
+                        t.objet.titre,
+                        lien_echange(echange),
+                    )
+                else:
+                    courriels.apres_validation(
+                        session,
+                        courriels.boucle_vous_attend,
+                        t.receveur.email,
+                        t.receveur.pseudo,
+                        donne,
+                        t.objet.titre,
+                        lien_echange(echange),
+                        grand_troc is not None,
+                    )
                 # Au Grand Troc, un seul SMS par personne pour toutes ses boucles : envoyé par lancer_grand_troc.
                 if grand_troc is None and t.receveur.telephone:
                     courriels.apres_validation(
@@ -162,7 +215,8 @@ def proposer_par_objets(session: Session, objet_ids: list[int], auteur_id: int) 
             "si elle est toujours possible."
         )
     cible = tuple(str(i) for i in objet_ids)
-    for b in boucles_autour(construire_marche(session), str(auteur_id), limite=None, options_par_transfert=10):
+    marche, contraintes = construire_marche(session), contraintes_du_match(session)
+    for b in boucles_autour(marche, str(auteur_id), limite=None, options_par_transfert=10, contraintes=contraintes):
         if b.objets == cible:
             return proposer(session, b, auteur_id)
     raise ErreurMetier("Ces objets ne forment pas une boucle d'échange valide pour vous.")
@@ -194,6 +248,9 @@ def dernier_grand_troc(session: Session) -> m.GrandTroc | None:
 def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTroc | None, list[m.Echange], bool, str]:
     """Le Grand Troc du dimanche : maximum d'objets échangés sur tout le stock, une seule fois par dimanche.
 
+    Il complète le Match (accords 1 à 1 à tout moment) : il trouve les boucles à trois et les échanges à deux
+    que personne n'a vus, sur les objets sans match ou dont le match n'a pas été conclu.
+
     La tâche planifiée appelle cette fonction plusieurs fois le dimanche (l'heure d'été change l'heure UTC) :
     elle ne fait rien avant 18 h, ni si le Grand Troc du jour a déjà eu lieu. ``force`` lance le Grand Troc
     tout de suite, quel que soit le jour (lancement manuel) ; il reste unique par jour.
@@ -212,7 +269,12 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
     if deja is not None:
         return deja, [], False, "Le Grand Troc de ce jour a déjà eu lieu."
 
-    solution = math_trade(construire_marche(session), longueur_max=3, duree_max_s=DUREE_MAX_GRAND_TROC_S)
+    solution = math_trade(
+        construire_marche(session),
+        longueur_max=3,
+        contraintes=contraintes_du_match(session),
+        duree_max_s=DUREE_MAX_GRAND_TROC_S,
+    )
     grand_troc = m.GrandTroc(
         jour=jour,
         optimal=solution.optimal,
@@ -453,7 +515,7 @@ def repechage(session: Session) -> int | None:
     if maintenant + MARGE_REPECHAGE > fin_des_depots(grand_troc.jour):
         return 0  # trop tard pour répondre et déposer avant dimanche : tout repart au prochain Grand Troc
 
-    contraintes = Contraintes()
+    contraintes = contraintes_du_match(session)
     for e in grand_troc.echanges:
         if e.statut != m.StatutEchange.annule:
             continue

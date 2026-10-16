@@ -254,7 +254,9 @@ class Echange(Horodatage, Base):
     # Fin du délai en cours : réponses (48 h) tant que « propose », dépôts (dans la semaine) une fois « accepte ».
     expire_le: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     rappel_envoye_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    # Le Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande).
+    # Accord 1 à 1 conclu après un match (coups de cœur réciproques), à tout moment de la semaine.
+    par_match: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Le Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande ou un accord de match).
     grand_troc_id: Mapped[int | None] = mapped_column(ForeignKey("grands_trocs.id", ondelete="SET NULL"), index=True)
     grand_troc: Mapped[GrandTroc | None] = relationship(back_populates="echanges")
 
@@ -296,6 +298,22 @@ class Transfert(Base):
         CheckConstraint("donneur_id <> receveur_id", name="donneur_different_receveur"),
         CheckConstraint("position >= 0 AND position < 3", name="boucle_max_3"),
     )
+
+
+class Avis(Horodatage, Base):
+    """Le Match : « J'aime » ou « Non merci » sur un objet d'un autre membre, depuis le carrousel.
+
+    Deux personnes qui aiment chacune un objet de l'autre ont un match : elles peuvent conclure un accord
+    1 à 1 tout de suite. Au Grand Troc, un « J'aime » compte comme un souhait et un « Non merci » comme un refus.
+    """
+
+    __tablename__ = "avis"
+
+    utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), primary_key=True)
+    objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), primary_key=True, index=True)
+    aime: Mapped[bool] = mapped_column(Boolean)
+
+    objet: Mapped[Objet] = relationship()
 
 
 class JetonConnexion(Base):

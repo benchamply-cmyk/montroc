@@ -20,6 +20,8 @@ erDiagram
     utilisateurs ||--o{ signalements : "visé / auteur"
     objets ||--o{ objets_contre : "je le donne contre"
     souhaits ||--o{ objets_contre : "accepté en échange"
+    utilisateurs ||--o{ avis : "J'aime / Non merci"
+    objets ||--o{ avis : "vu dans le carrousel"
 
     categories { string slug PK  string libelle }
     utilisateurs { int id PK  string email UK  string pseudo UK  string zone  string telephone  float fiabilite  int engagements_tenus  int engagements_manques  timestamptz suspendu_le  timestamptz cree_le }
@@ -27,7 +29,8 @@ erDiagram
     souhaits { int id PK  int utilisateur_id FK  string categorie_slug FK  int objet_id FK  int rang  int quantite  bool acceptation_auto }
     grands_trocs { int id PK  date jour UK  int nb_boucles  int nb_objets  int nb_participants  bool optimal  timestamptz repeche_le  int nb_objets_repeches }
     objets_contre { int objet_id PK, FK  int souhait_id PK, FK }
-    echanges { int id PK  int grand_troc_id FK  string statut  float proba_reussite  timestamptz expire_le  timestamptz rappel_envoye_le }
+    avis { int utilisateur_id PK, FK  int objet_id PK, FK  bool aime  timestamptz cree_le }
+    echanges { int id PK  int grand_troc_id FK  bool par_match  string statut  float proba_reussite  timestamptz expire_le  timestamptz rappel_envoye_le }
     transferts { int id PK  int echange_id FK  int position  int donneur_id FK  int receveur_id FK  int objet_id FK  string reponse  timestamptz depose_le  string code_retrait }
     jetons_connexion { int id PK  string email  string empreinte UK  timestamptz expire_le  timestamptz utilise_le }
     sessions { int id PK  int utilisateur_id FK  string empreinte UK  timestamptz expire_le }
