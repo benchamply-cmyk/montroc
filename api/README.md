@@ -22,6 +22,9 @@ make tests
 | `GET /categories`, `GET /objets`, `GET /objets/{id}`, `GET /utilisateurs/{id}` | lecture publique, sans compte (`GET /objets?q=vélo enfant` : recherche libre dans le titre, la description et la catégorie) |
 | `POST /signalements` | signaler un objet ou un compte (avec ou sans compte) |
 | `GET /moderation/signalements`, `POST /moderation/signalements/{id}/decision`, `POST /categories` | modération (comptes listés dans `MODERATEURS`) |
+| `GET /match/carrousel` | le Match : objets qui répondent à mes souhaits, ceux qui feraient un match tout de suite d'abord |
+| `POST /match/avis` | « J'aime » / « Non merci » sur un objet ; renvoie le match si l'intérêt est réciproque |
+| `GET /match`, `POST /match/accord` | mes matchs ; proposer l'échange 1 à 1 à un match, à tout moment (48 h pour répondre, 7 jours pour déposer) |
 | `GET /grand-troc` | date du prochain Grand Troc du dimanche et bilan du dernier (public) |
 | `POST /taches/horaires`, `POST /taches/grand-troc` | tâches planifiées (en-tête `X-Taches-Secret`) ; `?force=true` lance le Grand Troc tout de suite |
 

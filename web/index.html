@@ -195,6 +195,41 @@ form.stack{display:flex;flex-direction:column;gap:14px}
 .notice{font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .err{color:var(--danger)}
 .empty{color:var(--muted);font-size:15px;padding:8px 0}
+/* Le Match : carrousel d'objets (défilement horizontal aimanté), « J'aime » / « Non merci », mes matchs. */
+nav.tabs #tabs.in{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:1fr}
+.match-home{border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
+.tag.m{background:var(--accent);color:var(--accent-ink)}
+.carrousel{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:2px;padding:2px 2px 10px;margin-inline:-2px;scrollbar-width:thin;overscroll-behavior-x:contain}
+.carte{flex:0 0 min(82%,340px);scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.6,0,.2,1),opacity .35s}
+.carte.chaude{border-color:var(--accent)}
+.carte .ph{aspect-ratio:4/3;background:var(--bg);position:relative}
+#matchs a.btn{align-self:flex-start;color:var(--ink);text-decoration:none}
+.carte .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.carte .ph .tag{position:absolute;left:10px;top:10px}
+.carte .corps{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.carte .corps b{font-size:17px;overflow-wrap:anywhere}
+.carte .pourquoi{font-size:13px;color:var(--muted)}
+.carte .pourquoi strong{color:var(--ink);font-weight:600}
+.carte .choix{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto;padding-top:8px}
+.carte .choix button{border-radius:999px;padding:11px 8px;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px}
+.carte .non{border:1.5px solid var(--line);background:transparent}
+.carte .oui{border:0;background:var(--accent);color:var(--accent-ink)}
+.carte .choix svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.carte .oui svg{fill:currentColor;stroke:none}
+.carte.part-g{transform:translateX(-30%) rotate(-6deg);opacity:0}
+.carte.part-d{transform:translateX(30%) rotate(6deg);opacity:0}
+.carrousel-nav{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.carrousel-nav .btns button{width:40px;height:40px;padding:0;display:grid;place-items:center}
+.carrousel-nav svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.choix-objets{display:flex;gap:8px;flex-wrap:wrap}
+.choix-objets label{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:4px 10px 4px 4px;font-size:14px;cursor:pointer}
+.choix-objets label:has(input:checked){border-color:var(--accent)}
+.choix-objets input{position:absolute;opacity:0;pointer-events:none}
+.choix-objets img{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.coeur{display:inline-block;color:var(--danger)}
+dialog.its-a-match{text-align:center}
+dialog.its-a-match h2{font-size:28px}
+@media (prefers-reduced-motion:reduce){.carte{transition:none}}
 /* Grand Troc du dimanche : le rendez-vous de la semaine, avec son compte à rebours. */
 .gt{border-color:color-mix(in srgb,var(--mark) 45%,var(--line))}
 .gt-cd{display:flex;align-items:baseline;justify-content:space-between;gap:6px 12px;flex-wrap:wrap}
@@ -247,6 +282,13 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
       <p class="muted">Dites ce que vous avez et ce qui vous serait utile. TrocTroc trouve l'échange, même à trois.</p>
     </div>
 
+    <div class="card match-home">
+      <span class="tag m">Le Match, à tout moment</span>
+      <h2>Un cœur de chaque côté, <span class="hl">et c'est échangé.</span></h2>
+      <p class="muted">Faites défiler les objets qui répondent à vos souhaits et dites « J'aime » ou « Non merci ». Quand la personne aime aussi un de vos objets, c'est un match : vous concluez l'échange à deux, tout de suite, sans attendre dimanche.</p>
+      <button class="cta" type="button" data-go="match" data-auth hidden>Voir les objets pour moi</button>
+    </div>
+
     <div class="loop" aria-label="Exemple de troc en chaîne à trois personnes">
       <svg viewBox="0 0 300 300" aria-hidden="true">
         <circle class="ring" cx="150" cy="150" r="110"/>
@@ -263,7 +305,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <div class="card gt">
       <span class="tag a">Le Grand Troc du dimanche</span>
       <div class="gt-cd"><b data-gt-quand>Chaque dimanche à 18 h</b><span class="gt-reste" data-gt-reste aria-live="polite"></span></div>
-      <p class="muted">Une fois par semaine, TrocTroc cherche toutes les boucles d'un coup, sur tous les objets. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
+      <p class="muted">Pour tout ce qui n'a pas trouvé de match : une fois par semaine, TrocTroc cherche les boucles à trois et les échanges à deux que personne n'a vus. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
       <p class="muted" data-gt-bilan hidden></p>
     </div>
 
@@ -309,6 +351,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <ol class="steps">
       <li><div><b>J'ai</b><span class="muted">Une photo par objet. L'état est obligatoire.</span></div></li>
       <li><div><b>Ça me serait utile</b><span class="muted">Des catégories plutôt qu'un modèle exact.</span></div></li>
+      <li><div><b>Le Match, quand vous voulez</b><span class="muted">Un cœur de chaque côté : vous échangez à deux, tout de suite.</span></div></li>
       <li><div><b>Dimanche, 18 h : le Grand Troc</b><span class="muted">Un échange direct ou une boucle à trois. Vous avez 48 h pour dire oui, puis la semaine pour déposer.</span></div></li>
     </ol>
   </section>
@@ -415,11 +458,23 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
     <div class="card gt">
       <span class="tag a">Le Grand Troc du dimanche</span>
       <div class="gt-cd"><b data-gt-quand>Chaque dimanche à 18 h</b><span class="gt-reste" data-gt-reste aria-live="polite"></span></div>
-      <p class="muted">Une fois par semaine, TrocTroc cherche toutes les boucles d'un coup, sur tous les objets. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
+      <p class="muted">Pour tout ce qui n'a pas trouvé de match : une fois par semaine, TrocTroc cherche les boucles à trois et les échanges à deux que personne n'a vus. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
       <p class="muted" data-gt-bilan hidden></p>
     </div>
     <div class="list-head" style="margin:8px 0 -12px"><span class="label" id="possible-title">Aperçu pour dimanche</span></div>
     <div id="trades-possible" style="display:flex;flex-direction:column;gap:16px"></div>
+  </section>
+
+  <!-- LE MATCH -->
+  <section class="view" id="v-match" hidden>
+    <div class="hero"><span class="label">Le Match</span><h2 id="match-title">Ça vous plaît ?</h2>
+      <p class="muted">Des objets qui répondent à vos souhaits, ceux qui feraient un match tout de suite d'abord. Un cœur de chaque côté et vous échangez à deux, sans attendre dimanche.</p></div>
+    <div class="carrousel-nav"><span class="label" id="carrousel-compte"></span>
+      <div class="btns"><button class="btn" type="button" data-defiler="-1" aria-label="Objet précédent"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button class="btn" type="button" data-defiler="1" aria-label="Objet suivant"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button></div></div>
+    <div class="carrousel" id="carrousel" role="region" aria-roledescription="carrousel" aria-label="Objets pour vous" tabindex="0"></div>
+    <div class="list-head" style="margin:8px 0 -12px"><span class="label">Mes matchs</span></div>
+    <div id="matchs" style="display:flex;flex-direction:column;gap:16px"></div>
+    <p class="muted" style="font-size:14px">Pas de match pour un objet ? Il reste en lice pour le Grand Troc du dimanche, qui cherche aussi les boucles à trois. Vos « J'aime » y comptent comme des souhaits, et un « Non merci » ne vous sera pas reproposé.</p>
   </section>
 
   <!-- REMISE -->
@@ -442,6 +497,7 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
   <div class="in" id="tabs">
     <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/></svg>Accueil</button>
     <button data-go="lists"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9"/></svg>Mes listes</button>
+    <button data-go="match"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>Match<span class="badge" id="badge-match" hidden></span></button>
     <button data-go="trades"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>Échanges<span class="badge" id="badge" hidden></span></button>
     <button data-go="drop"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M4 12h16M9 8V5h6v3"/></svg>Dépôt</button>
     <button data-go="mod" id="tab-mod" hidden><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>Modération</button>
@@ -720,7 +776,7 @@ function carteEchange(e){
   else if(e.statut==='propose')bas=`<p class="status">C'est noté. On attend ${attente.join(' et ')}.</p>`;
   else bas=`<p class="status">Tout le monde a dit oui : place au dépôt.</p><button class="btn" data-go="drop">Voir le dépôt</button>`;
   return `<article class="card featured" id="echange-${e.id}">
-    <span class="tag a">${e.grand_troc_jour?'Grand Troc · ':''}${ts.length===3?'Boucle à trois':'Échange direct'}</span>
+    <span class="tag ${e.par_match?'m':'a'}">${e.par_match?'Match · ':e.grand_troc_jour?'Grand Troc · ':''}${ts.length===3?'Boucle à trois':'Échange direct'}</span>
     ${chaine(ts)}${recap(ts)}
     ${e.statut==='propose'?`<div class="acc">${ts.map(t=>`<span class="dot ${t.reponse==='acceptee'?'on':''}"></span>`).join('')}<span>${oui}/${ts.length} ont accepté · ${heures(e.expire_le)} h restantes</span></div>`:''}
     ${bas}</article>`;
@@ -887,5 +943,6 @@ async function demarrer(){
 }
 demarrer();
 </script>
+<script src="match.js"></script>
 </body>
 </html>

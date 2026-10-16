@@ -266,8 +266,59 @@ class EchangeLecture(BaseModel):
     expire_le: datetime
     # Le dimanche du Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande).
     grand_troc_jour: date | None = None
+    # Accord 1 à 1 conclu après un match.
+    par_match: bool = False
     point_de_depot: str | None = None
     transferts: list[TransfertLecture]
+
+
+# --- Le Match ---
+
+
+class Membre(Lecture):
+    id: int
+    pseudo: str
+    zone: str | None
+    fiabilite: float
+
+
+class CarteMatch(BaseModel):
+    """Un objet du carrousel, avec ce qui le rend prometteur."""
+
+    objet: ObjetLecture
+    proprietaire: Membre
+    # Le souhait auquel il répond : une catégorie, ou None pour un objet précis ou une simple réciprocité.
+    souhait_categorie: str | None
+    correspond_a_mes_souhaits: bool
+    # Mes objets que son propriétaire aime déjà : « J'aime » fait un match tout de suite.
+    il_aime: list[ObjetResume]
+    # Mes objets qui répondent à ses souhaits.
+    il_cherche: list[ObjetResume]
+
+
+class AvisCreation(BaseModel):
+    objet_id: int
+    aime: bool
+
+
+class MatchLecture(BaseModel):
+    avec: Membre
+    ses_objets: list[ObjetResume]
+    mes_objets: list[ObjetResume]
+    depuis: datetime
+    # L'accord 1 à 1 en cours entre vous deux, s'il y en a un.
+    echange_id: int | None
+
+
+class ResultatAvis(BaseModel):
+    match: MatchLecture | None
+
+
+class AccordCreation(BaseModel):
+    """Proposer l'accord d'un match : je donne ``mon_objet_id``, je reçois ``son_objet_id``."""
+
+    mon_objet_id: int
+    son_objet_id: int
 
 
 class ReponseEchange(BaseModel):

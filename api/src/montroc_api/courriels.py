@@ -154,6 +154,24 @@ def boucle_vous_attend(email: str, pseudo: str, donne: str, recoit: str, lien: s
     )
 
 
+def c_est_un_match(email: str, pseudo: str, avec: str, lien: str) -> None:
+    envoyer(
+        email,
+        f"C'est un match avec {avec}",
+        f"Bonjour {pseudo},\n\n{avec} aime un de vos objets, et vous aimez un des siens. Vous pouvez conclure "
+        f"l'échange tout de suite, sans attendre dimanche : {lien}",
+    )
+
+
+def accord_propose(email: str, pseudo: str, avec: str, donne: str, recoit: str, lien: str) -> None:
+    envoyer(
+        email,
+        f"{avec} vous propose un échange",
+        f"Bonjour {pseudo},\n\nVous avez un match avec {avec}, qui vous propose un échange : vous donnez "
+        f"« {donne} » et vous recevez « {recoit} ».\n\nVous avez 48 h pour dire oui ou non : {lien}",
+    )
+
+
 def plus_que_12_h(email: str, pseudo: str, recoit: str, lien: str) -> None:
     envoyer(
         email,
