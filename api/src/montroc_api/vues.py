@@ -92,9 +92,11 @@ def carte(c: matchs.Carte) -> CarteMatch:
         objet=ObjetLecture.model_validate(c.objet),
         proprietaire=Membre.model_validate(c.objet.proprietaire),
         souhait_categorie=c.souhait.categorie_slug if c.souhait else None,
+        souhait_sous_categorie=c.souhait.sous_categorie_slug if c.souhait else None,
         correspond_a_mes_souhaits=c.souhait is not None,
         il_aime=[ObjetResume.model_validate(o) for o in c.il_aime],
         il_cherche=[ObjetResume.model_validate(o) for o in c.il_cherche],
+        sa_demande=c.sa_demande,
     )
 
 

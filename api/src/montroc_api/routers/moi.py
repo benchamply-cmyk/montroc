@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import func, select
 
 from .. import models as m
-from .. import services, vues
+from .. import nomenclature, services, vues
 from ..config import get_settings
 from ..deps import SessionDep, UtilisateurConnecte, obtenir_ou_404
 from ..schemas import (
@@ -121,6 +121,17 @@ def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: Utili
         objet.contre = _mes_souhaits(session, utilisateur, ids)
     if changements.get("contre_strict", False) is None:
         del changements["contre_strict"]
+    if changements.get("caracteristiques", False) is None:
+        del changements["caracteristiques"]
+    if "sous_categorie_slug" in changements or "caracteristiques" in changements:
+        sous_categorie = changements.get("sous_categorie_slug", objet.sous_categorie_slug)
+        valeurs = changements.get("caracteristiques", objet.caracteristiques)
+        try:
+            changements["caracteristiques"] = nomenclature.verifier(
+                objet.categorie_slug, sous_categorie, valeurs, demande=False
+            )
+        except ValueError as e:
+            raise HTTPException(422, str(e)) from None
     for champ, valeur in changements.items():
         setattr(objet, champ, valeur)
     session.commit()

@@ -26,6 +26,10 @@ class Objet:
     titre: str = ""
     contre: frozenset[int] = frozenset()
     contre_strict: bool = False
+    # Sous-catégorie (« poussette canne » dans « poussette ») et caractéristiques (taille, âge…),
+    # en paires (clé, valeur) : facultatives, elles affinent les souhaits qui les précisent.
+    sous_categorie: str | None = None
+    caracteristiques: tuple[tuple[str, str], ...] = ()
 
     def accepte(self, recu: Transfert) -> bool:
         """Peut-on donner cet objet en recevant ``recu`` dans la même boucle ?"""
@@ -48,24 +52,37 @@ class Souhait:
     - ``quantite`` : nombre d'objets que l'utilisateur veut recevoir pour ce
       souhait (évite de recevoir trois poussettes) ;
     - ``acceptation_auto`` : case « j'accepte automatiquement un échange
-      contre cet objet » (engagement préalable, section 2 de l'étude).
+      contre cet objet » (engagement préalable, section 2 de l'étude) ;
+    - ``sous_categorie`` : seulement les objets de cette sous-catégorie ;
+    - ``criteres`` : paires (clé, valeur), par exemple (« taille », « 4 ans ») :
+      un objet qui donne une autre valeur pour la clé ne convient pas, un objet
+      qui ne la précise pas convient encore.
     """
     categorie: str | None = None
     objet_id: str | None = None
     rang: int = 1
     quantite: int = 1
     acceptation_auto: bool = False
+    sous_categorie: str | None = None
+    criteres: tuple[tuple[str, str], ...] = ()
 
     def __post_init__(self):
         if (self.categorie is None) == (self.objet_id is None):
             raise ValueError("Un souhait porte soit sur une catégorie, soit sur un objet précis.")
         if self.rang < 1 or self.quantite < 1:
             raise ValueError("rang et quantite doivent être >= 1.")
+        if self.sous_categorie is not None and self.categorie is None:
+            raise ValueError("Une sous-catégorie précise un souhait de catégorie.")
 
     def correspond(self, objet: Objet) -> bool:
         if self.objet_id is not None:
             return objet.id == self.objet_id
-        return objet.categorie == self.categorie
+        if objet.categorie != self.categorie:
+            return False
+        if self.sous_categorie is not None and objet.sous_categorie != self.sous_categorie:
+            return False
+        siennes = dict(objet.caracteristiques)
+        return all(siennes.get(cle, valeur) == valeur for cle, valeur in self.criteres)
 
 
 @dataclass
@@ -173,7 +190,8 @@ class Marche:
         return u
 
     def ajouter_objet(self, id: str, proprietaire: str, categorie: str, titre: str = "",
-                      contre=(), contre_strict: bool = False) -> Objet:
+                      contre=(), contre_strict: bool = False, sous_categorie: str | None = None,
+                      caracteristiques=()) -> Objet:
         if id in self.objets:
             raise ValueError(f"Objet {id!r} déjà présent.")
         if proprietaire not in self.utilisateurs:
@@ -182,7 +200,8 @@ class Marche:
         contre = frozenset(contre)
         if any(not 0 <= i < nb_souhaits for i in contre):
             raise ValueError(f"« contre » doit désigner des souhaits de {proprietaire!r}.")
-        o = Objet(id, proprietaire, categorie, titre, contre, contre_strict)
+        caracteristiques = tuple(sorted(dict(caracteristiques).items()))
+        o = Objet(id, proprietaire, categorie, titre, contre, contre_strict, sous_categorie, caracteristiques)
         self.objets[id] = o
         return o
 
