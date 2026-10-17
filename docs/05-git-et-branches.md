@@ -57,7 +57,9 @@ Tant qu'on est en bêta, la version commence par `0.`.
 Pour sortir une version :
 1. dans la PR, ajouter une ligne sous « À venir » dans `CHANGELOG.md` ;
 2. au moment d'étiqueter, renommer « À venir » en `[0.5.0] – date`, et changer `VERSION` en haut de `web/site.js` (elle s'affiche dans le pied de page) ;
-3. après la fusion : `git switch main && git pull && git tag -a v0.5.0 -m "v0.5.0" && git push origin v0.5.0`, puis *Releases → Draft a new release* sur GitHub, avec le texte du journal.
+3. à la fusion, le workflow **Versions** (`.github/workflows/versions.yml`) voit une `VERSION` sans étiquette : il crée l'étiquette `v0.5.0` et la *Release* GitHub avec le texte du journal. Rien à faire à la main.
+
+Les branches fusionnées se suppriment seules si l'option *Settings → General → Automatically delete head branches* est cochée sur GitHub.
 
 ## Feuille de route
 
