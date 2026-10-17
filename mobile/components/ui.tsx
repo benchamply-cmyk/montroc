@@ -42,7 +42,7 @@ export function Bouton(p: { titre: string; onPress: () => void; secondaire?: boo
 export function Champ(p: TextInputProps & { libelle: string }) {
   return (
     <View style={{ gap: 6 }}>
-      <Text style={s.discret}>{p.libelle}</Text>
+      <Text style={[s.discret, { textAlign: 'left' }]}>{p.libelle}</Text>
       <TextInput placeholderTextColor={couleurs.discret} style={s.champ} {...p} />
     </View>
   );
