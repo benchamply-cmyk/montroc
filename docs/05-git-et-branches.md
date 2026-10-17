@@ -15,8 +15,11 @@
 | `docs/` | documentation seule | `docs/guide-dns` |
 | `chore/` | outillage, dépendances, CI | `chore/maj-fastapi` |
 | `db/` | migration de données délicate | `db/fusion-categories` |
+| `mobile/` | application mobile (Expo) | `mobile/notifications` |
 
-En minuscules, mots séparés par des tirets, sans accents.
+En minuscules, mots séparés par des tirets, sans accents. Le sujet dit **ce que la branche change**, pour qu'on comprenne l'évolution rien qu'en lisant la liste des branches.
+
+Les fils de discussion Claude reçoivent d'office une branche `claude/project-thread-xxxx`. Pour qu'ils suivent cette règle, les instructions du projet leur demandent de créer leur branche sous la forme `type/sujet`.
 
 ## Le cycle d'une fonctionnalité
 
@@ -41,7 +44,22 @@ Une phrase à l'impératif qui dit ce que fait le commit, en français : « Ajou
 
 ## Versions
 
-Quand une étape importante est en ligne, on marque `main` avec une étiquette : `git tag -a v0.1.0 -m "Première mise en ligne" && git push --tags`, puis *Releases → Draft a new release* sur GitHub.
+Chaque version est une étiquette Git `vMAJEUR.MINEUR.CORRECTIF` posée sur `main`, et décrite dans [CHANGELOG.md](../CHANGELOG.md).
+
+| Ce qui change | Chiffre qui monte | Exemple |
+|---|---|---|
+| un lot de nouvelles fonctionnalités | MINEUR | `v0.4.1` → `v0.5.0` |
+| une correction, un petit ajustement | CORRECTIF | `v0.5.0` → `v0.5.1` |
+| le lancement public | MAJEUR | `v0.9.3` → `v1.0.0` |
+
+Tant qu'on est en bêta, la version commence par `0.`.
+
+Pour sortir une version :
+1. dans la PR, ajouter une ligne sous « À venir » dans `CHANGELOG.md` ;
+2. au moment d'étiqueter, renommer « À venir » en `[0.5.0] – date`, et changer `VERSION` en haut de `web/site.js` (elle s'affiche dans le pied de page) ;
+3. à la fusion, le workflow **Versions** (`.github/workflows/versions.yml`) voit une `VERSION` sans étiquette : il crée l'étiquette `v0.5.0` et la *Release* GitHub avec le texte du journal. Rien à faire à la main.
+
+Les branches fusionnées se suppriment seules si l'option *Settings → General → Automatically delete head branches* est cochée sur GitHub.
 
 ## Feuille de route
 

@@ -1,0 +1,75 @@
+name: Versions
+
+# À chaque arrivée sur main : si la version écrite en haut de web/site.js (VERSION) n'a pas encore
+# d'étiquette, on crée l'étiquette vX.Y.Z et la Release GitHub, avec le texte de CHANGELOG.md.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  etiquettes:
+    name: Étiquettes et releases
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Versions passées (une seule fois)
+        run: |
+          creer() { # version, commit
+            gh release view "v$1" >/dev/null 2>&1 && return
+            awk -v v="$1" '$0 ~ "^## \\[" v "\\]" {ok=1; next} /^(## )?\[/ {ok=0} ok' CHANGELOG.md > notes.md
+            gh release create "v$1" --target "$2" --title "v$1" --notes-file notes.md
+          }
+          creer 0.1.0 9096857ce6992018137ecb49ebb4aa6c741daf9a
+          creer 0.2.0 8499834cb37e3281aa17644587f2ccb3fa9e574f
+          creer 0.3.0 46d63b091f0c642a624ebccfff7184747390b084
+          creer 0.4.0 827fec4645404179f7bda7d1f1e23cd490b713be
+
+      - name: Version actuelle
+        run: |
+          v=$(sed -n "s/.*const VERSION='\([0-9.]*\)'.*/\1/p" web/site.js)
+          if [ -z "$v" ]; then echo "VERSION introuvable dans web/site.js"; exit 1; fi
+          if gh release view "v$v" >/dev/null 2>&1; then echo "v$v existe déjà"; exit 0; fi
+          awk -v v="$v" '$0 ~ "^## \\[" v "\\]" {ok=1; next} /^(## )?\[/ {ok=0} ok' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then echo "Pas de section [$v] dans CHANGELOG.md"; exit 1; fi
+          gh release create "v$v" --target "$GITHUB_SHA" --title "v$v" --notes-file notes.md
+
+      # Ménage décidé par Ben le 2026-10-17 : branches dont la PR est déjà fusionnée dans main.
+      # Une branche n'est supprimée que si elle pointe encore sur le commit attendu (rien de neuf dessus).
+      - name: Ménage des anciennes branches (une seule fois)
+        run: |
+          while read -r branche commit; do
+            actuel=$(gh api "repos/$GH_REPO/git/ref/heads/$branche" --jq .object.sha 2>/dev/null) || continue
+            if [ "$actuel" = "$commit" ]; then
+              gh api -X DELETE "repos/$GH_REPO/git/refs/heads/$branche" && echo "supprimée : $branche"
+            else
+              echo "gardée (nouveaux commits) : $branche"
+            fi
+          done <<'LISTE'
+          claude/app-mobile 818fb70a798979c28edcabe844e0044cd55e04d1
+          claude/app-mobile-objets-souhaits 86aea204c3c242df96253798c67b9aceaa43b21d
+          claude/init-montroc-scdbjm ca216899264d715696d0f4d1391890de0d7f1640
+          claude/project-thread-08z1b0 68f9129ca4e890164d732c0f5b226223e537d2cc
+          claude/project-thread-2ey1xd 2c01f5fa0c04adcac7465b5403e4c2854d11ac3f
+          claude/project-thread-2y1e6a 84b686da57ffecbfc3effdcda6b951bb3b9cea47
+          claude/project-thread-3s0px1 e37db4199ea8cd69fb6be22f568112ce61f69be4
+          claude/project-thread-4py8qm 8cbe779bfb2db6c115a61e72eebf5b5d3c916807
+          claude/project-thread-7frly9 776d35b992508cda7069b95cfcceb01d97bcaaab
+          claude/project-thread-8qicqo 8077d60ae221d9cd308eabb8e6bdfbe43393c90d
+          claude/project-thread-dvl25j 5c3bac36beb82f810268d6be48e3efd245094c95
+          claude/project-thread-ec8t1y 5451aec907bc50f340f721d4181d2aaf2dff77d9
+          claude/project-thread-lqw8kb 3aa2bfa2553d389b47ee82d25b2bff1614ef485f
+          claude/project-thread-sqqzxx 718e5299d6746b4c697eda8ebb35d128fcd57f01
+          claude/project-thread-sxrsnh e4e497408579ec16427cdf245036d41b77951765
+          claude/project-thread-vzhilz 4bafe9a7765d462e06762787f81586a66eb095b5
+          claude/project-thread-yshdee 6f68303ec3b1b7c35810f0fd65e9af137dccb8f4
+          claude/setup-montroc-itplnk d0a8f3769a2bccaa064b0d48ebb5f40164b49ea7
+          fix/retrait-troctroc-cloud 9753bcecba3c8aaf47e618f18b9422a32f2f7c34
+          LISTE
