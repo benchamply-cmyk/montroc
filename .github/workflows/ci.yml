@@ -61,3 +61,21 @@ jobs:
       - name: Tests
         working-directory: api
         run: pytest
+
+  mobile:
+    name: Application mobile
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - name: Installation
+        run: npm ci
+      - name: Vérification TypeScript
+        run: npx tsc --noEmit

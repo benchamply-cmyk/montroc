@@ -14,7 +14,17 @@
     "android": {
       "package": "fr.troctroc.app"
     },
-    "plugins": ["expo-router", "expo-secure-store"],
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "TrocTroc a besoin de vos photos pour montrer les objets que vous proposez.",
+          "cameraPermission": "TrocTroc a besoin de l'appareil photo pour photographier les objets que vous proposez."
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     },

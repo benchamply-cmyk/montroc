@@ -48,6 +48,38 @@ export function Champ(p: TextInputProps & { libelle: string }) {
   );
 }
 
+/** Choix parmi quelques valeurs, en puces : une seule (ou aucune si `facultatif`), ou plusieurs avec `multiple`. */
+export function Puces(p: {
+  libelle?: string;
+  options: { valeur: string; libelle: string }[];
+  choisies: string[];
+  onChange: (choisies: string[]) => void;
+  multiple?: boolean;
+  facultatif?: boolean;
+}) {
+  function basculer(valeur: string) {
+    const deja = p.choisies.includes(valeur);
+    if (p.multiple) p.onChange(deja ? p.choisies.filter((v) => v !== valeur) : [...p.choisies, valeur]);
+    else if (deja) p.facultatif && p.onChange([]);
+    else p.onChange([valeur]);
+  }
+  return (
+    <View style={{ gap: 6 }}>
+      {p.libelle && <Text style={[s.discret, { textAlign: 'left' }]}>{p.libelle}</Text>}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        {p.options.map((o) => {
+          const active = p.choisies.includes(o.valeur);
+          return (
+            <Pressable key={o.valeur} onPress={() => basculer(o.valeur)} style={[s.puce, active && s.puceActive]}>
+              <Text style={[s.puceTexte, active && { color: couleurs.accentEncre }]}>{o.libelle}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
 export function Vignette({ objet, droite }: { objet: ObjetResume; droite?: ReactNode }) {
   return (
     <View style={s.vignette}>
@@ -83,6 +115,9 @@ export const s = StyleSheet.create({
     padding: 14,
     fontSize: 16,
   },
+  puce: { borderWidth: 1, borderColor: couleurs.trait, borderRadius: 999, paddingVertical: 8, paddingHorizontal: 14 },
+  puceActive: { backgroundColor: couleurs.accent, borderColor: couleurs.accent },
+  puceTexte: { color: couleurs.encre, fontSize: 14 },
   vignette: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, backgroundColor: couleurs.surface, borderRadius: rayon },
   vignettePhoto: { width: 56, height: 56, borderRadius: 10, backgroundColor: couleurs.trait },
 });
