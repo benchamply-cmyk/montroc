@@ -2,6 +2,7 @@
    Sur l'accueil, index.html intercepte les liens « /#… » pour changer de vue sans recharger,
    et appelle TT.compte() quand la session change. */
 (()=>{
+  const VERSION='0.4.1'; // à changer à chaque version, voir CHANGELOG.md
   const LOGO='<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--accent)"/><stop offset=".5" stop-color="var(--mark)"/><stop offset="1" stop-color="var(--ok)"/></linearGradient></defs><circle cx="12" cy="12" r="9" fill="none" stroke="url(#logo-g)" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="var(--accent)"/><circle cx="19.8" cy="16.5" r="2.6" fill="var(--ok)"/><circle cx="4.2" cy="16.5" r="2.6" fill="var(--mark)"/></svg>';
   const PERSO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
 
@@ -49,7 +50,7 @@
     <li><a href="/confidentialite/">Confidentialité</a></li>
     <li><a href="/regles/">Règles et signalements</a></li>
   </ul></nav>
-  <p class="pilote" style="margin:0">Pilote : <b>Département (13) Bouches-du-Rhône</b></p>
+  <p class="pilote" style="margin:0">Pilote : <b>Département (13) Bouches-du-Rhône</b> · <a class="version" href="https://github.com/benchamply-cmyk/montroc/blob/main/CHANGELOG.md">v${VERSION}</a></p>
 </div>`;
   if(!haut)return;
 
