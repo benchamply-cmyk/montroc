@@ -22,3 +22,9 @@ export const ETATS: Record<string, string> = {
   bon: 'Bon état',
   correct: 'État correct',
 };
+
+// Mêmes clés que nomenclature.MODES_ECHANGE côté API.
+export const MODES_ECHANGE: Record<string, string> = {
+  main_propre: 'Main propre',
+  point_relais: 'Point relais',
+};

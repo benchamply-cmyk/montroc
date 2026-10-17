@@ -80,3 +80,51 @@ export interface InfosGrandTroc {
   prochain: string;
   dernier: { jour: string; nb_boucles: number; nb_objets: number; nb_participants: number } | null;
 }
+
+export interface Caracteristique {
+  cle: string;
+  libelle: string;
+  // Choix fixes ; null : texte libre (marque, modèle…).
+  options: string[] | null;
+  // Sous-catégories où elle se précise ; null : toute la catégorie.
+  pour: string[] | null;
+}
+
+export interface CategorieDetaillee extends Categorie {
+  sous_categories: Categorie[];
+  caracteristiques: Caracteristique[];
+}
+
+export type ModeRecherche = 'precise' | 'flexible' | 'ouverte';
+
+export interface Souhait {
+  id: number;
+  categorie_slug: string | null;
+  objet_id: number | null;
+  sous_categorie_slug: string | null;
+  caracteristiques: Record<string, string>;
+  preferences: Record<string, string>;
+  precisions: string | null;
+  etat_min: Etat | null;
+  mode_recherche: ModeRecherche;
+  modes_echange: string[];
+  zones: string[];
+  rang: number;
+  quantite: number;
+  acceptation_auto: boolean;
+}
+
+export interface PhotoSignature {
+  url_envoi: string;
+  api_key: string;
+  timestamp: number;
+  folder: string;
+  signature: string;
+}
+
+export interface EchangeLecture {
+  id: number;
+  statut: string;
+  expire_le: string;
+  par_match: boolean;
+}
