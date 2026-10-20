@@ -15,6 +15,7 @@ Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis pas
 
 - Math trade : un souhait comblé ne reçoit plus d'autre objet au repêchage, au Grand Troc suivant ni pendant un accord du Match (chaque transfert garde le souhait qu'il sert).
 - Grand Troc : la base enregistre les boucles de 4 personnes (jusqu'à 6) ; avant, la première boucle de 4 trouvée faisait échouer tout le Grand Troc.
+- Math trade : un objet qui remplit plusieurs souhaits du receveur peut combler le second quand le premier est déjà servi ; le moteur exact et le mode illimité ne ratent plus ces échanges.
 
 ## [0.4.1] – 2026-10-17
 

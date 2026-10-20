@@ -9,6 +9,10 @@ s'échangent deux paires d'objets) ; pour chaque copie active, le solveur choisi
 un transfert par étape. Aucun objet n'est écarté d'avance : c'est ce qui manquait
 à l'énumération des boucles, limitée à quelques objets par couple de personnes.
 
+Un objet qui remplit plusieurs souhaits du receveur y figure une fois par souhait
+(``GrapheEchanges.variantes``) : si le premier est déjà servi, il peut en combler
+un autre.
+
 Contraintes : chaque objet part au plus une fois, chaque souhait ne reçoit pas
 plus que sa quantité, et un objet à liste « contre » stricte ne part que si son
 propriétaire reçoit, dans la même boucle, un des souhaits de la liste.
@@ -65,8 +69,9 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
     marche = graphe.marche
     cycles = []
     for cycle in cycles_utilisateurs(graphe, longueur_max):
-        options = options_du_cycle(graphe, cycle)
-        cycles.append((cycle, options, min(len(o) for o in options)))
+        options = options_du_cycle(graphe, cycle, variantes=True)
+        # Autant de copies que d'objets différents à l'étape la plus pauvre (un objet ne part qu'une fois).
+        cycles.append((cycle, options, min(len({t.objet.id for t in o}) for o in options)))
     if max_copies is not None and sum(q for _, _, q in cycles) > max_copies:
         raise TropGrand
     modele = cp_model.CpModel()

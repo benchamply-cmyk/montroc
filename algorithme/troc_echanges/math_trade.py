@@ -165,7 +165,7 @@ def _trade_maximizer(graphe: GrapheEchanges) -> list[Boucle]:
     autant d'unités qu'il a d'objets : il reçoit donc autant qu'il donne.
     Les listes « contre » des objets sont ignorées ici (mode de comparaison).
     """
-    transferts = list(graphe.tous_les_transferts())
+    transferts = list(graphe.tous_les_transferts(variantes=True))
     if not transferts:
         return []
     objets = {}
