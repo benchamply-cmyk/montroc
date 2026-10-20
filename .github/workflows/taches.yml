@@ -7,9 +7,13 @@ on:
   schedule:
     - cron: "17 * * * *"  # toutes les heures : rappels « plus que 12 h », échanges expirés
     # Grand Troc du dimanche, 18 h à Paris : 16 h UTC en heure d'été, 17 h UTC en heure d'hiver. On appelle
-    # aux deux heures ; l'API ne lance rien avant 18 h (heure de Paris) ni deux fois le même dimanche.
+    # à quatre heures ; l'API ne lance rien avant 18 h (heure de Paris) ni deux fois le même dimanche. Les
+    # créneaux de 18 h et 19 h UTC rattrapent un déclenchement retardé ou sauté par GitHub : sans eux, en
+    # heure d'hiver, un seul créneau (17 h UTC) tombait après 18 h à Paris.
     - cron: "7 16 * * 0"
     - cron: "7 17 * * 0"
+    - cron: "7 18 * * 0"
+    - cron: "7 19 * * 0"
   workflow_dispatch:
     inputs:
       tache:
@@ -31,7 +35,8 @@ jobs:
             echo "tache=grand-troc?force=true" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "tache=${{ inputs.tache }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.schedule }}" = "7 16 * * 0" ] || [ "${{ github.event.schedule }}" = "7 17 * * 0" ]; then
+          elif [ "${{ github.event.schedule }}" != "17 * * * *" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            # Les créneaux du dimanche (tous sauf la tâche horaire).
             echo "tache=grand-troc" >> "$GITHUB_OUTPUT"
           else
             echo "tache=horaires" >> "$GITHUB_OUTPUT"
