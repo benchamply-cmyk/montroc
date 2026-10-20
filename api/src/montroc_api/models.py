@@ -342,7 +342,8 @@ class Transfert(Base):
         UniqueConstraint("echange_id", "position", name="uq_transferts_echange_position"),
         UniqueConstraint("echange_id", "objet_id", name="uq_transferts_echange_objet"),
         CheckConstraint("donneur_id <> receveur_id", name="donneur_different_receveur"),
-        CheckConstraint("position >= 0 AND position < 3", name="boucle_max_3"),
+        # Jusqu'à 6 personnes, la limite du moteur (troc_echanges.boucles.LONGUEUR_MAX_ABSOLUE).
+        CheckConstraint("position >= 0 AND position < 6", name="boucle_max_6"),
     )
 
 
