@@ -6,6 +6,7 @@ retenues sous forme d'``Echange``. Les e-mails des moments clés partent d'ici,
 une fois la transaction validée.
 """
 
+import json
 import logging
 import secrets
 from datetime import UTC, date, datetime, time, timedelta
@@ -389,7 +390,13 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
         duree_max_s=DUREE_MAX_GRAND_TROC_S,
     )
     grand_troc = m.GrandTroc(
-        jour=jour, optimal=solution.optimal, duree_s=solution.duree_s, nb_boucles=0, nb_objets=0, nb_participants=0
+        jour=jour,
+        optimal=solution.optimal,
+        duree_s=solution.duree_s,
+        nb_boucles=0,
+        nb_objets=0,
+        nb_participants=0,
+        calcul=trace_du_calcul(solution),
     )
     session.add(grand_troc)
     session.flush()
@@ -413,6 +420,20 @@ def _proposer_les_boucles(session: Session, boucles: list[Boucle], grand_troc: m
         except ErreurMetier as e:
             journal.warning("Grand Troc %s : boucle %s sautée (%s)", grand_troc.jour, b.objets, e)
     return echanges
+
+
+def trace_du_calcul(solution) -> dict:
+    """Ce que le moteur a fait, à garder avec le Grand Troc : moteur (exact ou heuristique), optimum prouvé,
+    longueur de boucle retenue, statuts des étapes de CP-SAT, nombre de copies ou de boucles candidates…
+    Sans cette trace, impossible de savoir après coup si la production a basculé en mode dégradé."""
+    trace = {
+        "moteur": solution.moteur,
+        "optimal": solution.optimal,
+        "duree_s": round(solution.duree_s, 3),
+        "candidats": solution.candidats,
+        **solution.stats,
+    }
+    return json.loads(json.dumps(trace, default=str))  # JSON pur : nombres, textes, listes
 
 
 def _sms_du_grand_troc(session: Session, echanges: list[m.Echange]) -> None:
@@ -659,4 +680,5 @@ def repechage(session: Session) -> int | None:
     echanges = _proposer_les_boucles(session, solution.boucles, grand_troc)
     _sms_du_grand_troc(session, echanges)
     grand_troc.nb_objets_repeches = sum(len(e.transferts) for e in echanges)
+    grand_troc.calcul_repechage = trace_du_calcul(solution)
     return grand_troc.nb_objets_repeches

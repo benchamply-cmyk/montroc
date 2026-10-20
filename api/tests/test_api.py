@@ -485,6 +485,8 @@ def test_repechage_du_mardi(client, creer, monkeypatch):
     assert {t["receveur_id"] for t in repeche["transferts"]} == {a.id, autre.id}
     assert repeche["grand_troc_jour"] == "2026-10-18"
     assert client.get("/grand-troc").json()["dernier"]["nb_objets_repeches"] == 2
+    with engine.begin() as conn:
+        assert conn.execute(text("SELECT calcul_repechage FROM grands_trocs")).scalar()["moteur"]
 
 
 def test_grand_troc_boucle_a_quatre(client, creer, monkeypatch):
@@ -499,6 +501,19 @@ def test_grand_troc_boucle_a_quatre(client, creer, monkeypatch):
     assert r.status_code == 200, r.text
     (echange,) = r.json()["echanges"]
     assert sorted(t["position"] for t in echange["transferts"]) == [0, 1, 2, 3]
+
+
+def test_grand_troc_garde_la_trace_du_calcul(client, creer, monkeypatch):
+    creer.boucle_abc()
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 5))
+    assert client.post("/taches/grand-troc", headers=TACHES).json()["lance"]
+    with engine.begin() as conn:
+        calcul, repechage = conn.execute(text("SELECT calcul, calcul_repechage FROM grands_trocs")).one()
+    assert calcul["moteur"] in ("exact", "heuristique") and calcul["longueur_max"] == 4
+    assert calcul["optimal"] is True and "duree_s" in calcul
+    if calcul["moteur"] == "exact":
+        assert calcul["etapes"][0] == "OPTIMAL"
+    assert repechage is None  # rempli par le repêchage du mardi
 
 
 def test_grand_troc_saute_une_boucle_devenue_impossible(client, creer, monkeypatch):

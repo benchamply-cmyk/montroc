@@ -277,6 +277,10 @@ class GrandTroc(Horodatage, Base):
     # Repêchage du mardi 18 h : seconde passe sur ce qui s'est libéré (refus, absences de réponse).
     repeche_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     nb_objets_repeches: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    # Trace de chaque calcul (``services.trace_du_calcul``) : moteur utilisé (exact ou heuristique), longueur
+    # de boucle retenue, statuts de CP-SAT, durée… Pour savoir si la production a basculé en mode dégradé.
+    calcul: Mapped[dict] = mapped_column(JSONB, default=dict, server_default="{}")
+    calcul_repechage: Mapped[dict | None] = mapped_column(JSONB)
 
     echanges: Mapped[list[Echange]] = relationship(back_populates="grand_troc")
 
