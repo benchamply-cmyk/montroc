@@ -6,6 +6,7 @@ retenues sous forme d'``Echange``. Les e-mails des moments clés partent d'ici,
 une fois la transaction validée.
 """
 
+import json
 import secrets
 from datetime import UTC, date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
@@ -392,12 +393,27 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
         nb_boucles=len(solution.boucles),
         nb_objets=solution.nb_objets_echanges,
         nb_participants=len(solution.participants),
+        calcul=trace_du_calcul(solution),
     )
     session.add(grand_troc)
     session.flush()
     echanges = [proposer(session, b, grand_troc=grand_troc) for b in solution.boucles]
     _sms_du_grand_troc(session, echanges)
     return grand_troc, echanges, True, f"{len(echanges)} boucle(s) proposée(s), {solution.nb_objets_echanges} objets."
+
+
+def trace_du_calcul(solution) -> dict:
+    """Ce que le moteur a fait, à garder avec le Grand Troc : moteur (exact ou heuristique), optimum prouvé,
+    longueur de boucle retenue, statuts des étapes de CP-SAT, nombre de copies ou de boucles candidates…
+    Sans cette trace, impossible de savoir après coup si la production a basculé en mode dégradé."""
+    trace = {
+        "moteur": solution.moteur,
+        "optimal": solution.optimal,
+        "duree_s": round(solution.duree_s, 3),
+        "candidats": solution.candidats,
+        **solution.stats,
+    }
+    return json.loads(json.dumps(trace, default=str))  # JSON pur : nombres, textes, listes
 
 
 def _sms_du_grand_troc(session: Session, echanges: list[m.Echange]) -> None:
@@ -644,4 +660,5 @@ def repechage(session: Session) -> int | None:
     echanges = [proposer(session, b, grand_troc=grand_troc) for b in solution.boucles]
     _sms_du_grand_troc(session, echanges)
     grand_troc.nb_objets_repeches = solution.nb_objets_echanges
+    grand_troc.calcul_repechage = trace_du_calcul(solution)
     return solution.nb_objets_echanges
