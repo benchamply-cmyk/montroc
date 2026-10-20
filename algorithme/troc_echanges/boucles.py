@@ -7,17 +7,19 @@ from .graphe import GrapheEchanges
 from .modele import Boucle, Contraintes, Marche
 
 
-def options_du_cycle(graphe: GrapheEchanges, cycle_users) -> list[list]:
-    """Pour chaque étape k du cycle, les transferts possibles de ``cycle_users[k]`` vers le suivant."""
+def options_du_cycle(graphe: GrapheEchanges, cycle_users, variantes: bool = False) -> list[list]:
+    """Pour chaque étape k du cycle, les transferts possibles de ``cycle_users[k]`` vers le suivant
+    (avec ``variantes``, un objet au titre de chacun des souhaits qu'il remplit, voir ``GrapheEchanges``)."""
     n = len(cycle_users)
-    return [graphe.transferts[(cycle_users[k], cycle_users[(k + 1) % n])] for k in range(n)]
+    source = graphe.variantes if variantes else graphe.transferts
+    return [source[(cycle_users[k], cycle_users[(k + 1) % n])] for k in range(n)]
 
 
-def _combinaisons(graphe: GrapheEchanges, cycle_users, options: int):
+def _combinaisons(graphe: GrapheEchanges, cycle_users, options: int, variantes: bool = False):
     """Toutes les façons de réaliser un cycle d'utilisateurs avec des objets
     concrets, en gardant les ``options`` meilleurs objets par transfert.
     Les combinaisons qui violent une liste stricte « contre » sont écartées."""
-    listes = [o[:options] for o in options_du_cycle(graphe, cycle_users)]
+    listes = [o[:options] for o in options_du_cycle(graphe, cycle_users, variantes)]
     for choix in product(*listes):
         if graphe.marche.boucle_admise(choix):
             yield graphe.marche.creer_boucle(choix)
@@ -84,14 +86,15 @@ def longueur_calculable(graphe: GrapheEchanges, voulue: int, budget: int) -> int
 
 
 def enumerer_boucles(graphe: GrapheEchanges, longueur_max: int = 3, options_par_transfert: int = 2,
-                     autour: str | None = None):
+                     autour: str | None = None, variantes: bool = False):
     """Énumère les boucles de longueur 2 à ``longueur_max``.
 
     Avec ``autour``, seulement celles qui contiennent cet utilisateur ; sinon
-    toutes, chacune une seule fois.
+    toutes, chacune une seule fois. Avec ``variantes``, un objet y figure au
+    titre de chacun des souhaits du receveur qu'il remplit.
     """
     for cycle in cycles_utilisateurs(graphe, longueur_max, autour):
-        yield from _combinaisons(graphe, cycle, options_par_transfert)
+        yield from _combinaisons(graphe, cycle, options_par_transfert, variantes)
 
 
 def cle_classement(b: Boucle):

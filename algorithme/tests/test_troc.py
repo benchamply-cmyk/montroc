@@ -69,7 +69,7 @@ def verifier_solution(test, m, sol, longueur_max):
 def optimum_force_brute_borne(m, longueur_max):
     """Parcourt tous les ensembles de boucles compatibles (sans élagage par borne)."""
     g = GrapheEchanges(m)
-    cands = list(enumerer_boucles(g, longueur_max, options_par_transfert=99))
+    cands = list(enumerer_boucles(g, longueur_max, options_par_transfert=99, variantes=True))
     objets, souhaits = Counter(), Counter()
 
     def rec(k):
@@ -96,7 +96,7 @@ def optimum_force_brute_borne(m, longueur_max):
 def optimum_force_brute_libre(m):
     """Plus grand ensemble de transferts où chacun reçoit autant qu'il donne."""
     g = GrapheEchanges(m)
-    ts = list(g.tous_les_transferts())
+    ts = list(g.tous_les_transferts(variantes=True))
     best = 0
     for mask in range(1 << len(ts)):
         choisis = [ts[i] for i in range(len(ts)) if mask >> i & 1]
@@ -289,6 +289,20 @@ def marche_contre(seed, n_users=5, n_cat=4):
     return m
 
 
+def marche_souhaits_recouvrants(seed, n_users=5, n_cat=3):
+    """Marché aléatoire où un même objet peut remplir deux souhaits de son receveur : le premier accepte une
+    alternative, qui est la catégorie du second."""
+    rnd = random.Random(seed)
+    m = Marche(meme_zone=False)
+    for u in range(n_users):
+        a, b = rnd.sample(range(n_cat), 2)
+        m.ajouter_utilisateur(f"u{u}", [Souhait(categorie=f"c{a}", alternatives=((f"c{b}", None),)),
+                                        Souhait(categorie=f"c{b}", rang=2)])
+    for k in range(2 * n_users):
+        m.ajouter_objet(f"o{k}", f"u{k % n_users}", f"c{rnd.randrange(n_cat)}")
+    return m
+
+
 class TestMoteurExact(unittest.TestCase):
     @staticmethod
     def marche_trois_paires():
@@ -309,6 +323,45 @@ class TestMoteurExact(unittest.TestCase):
         verifier_solution(self, m, sol, 3)
         self.assertEqual((sol.nb_objets_echanges, sol.optimal, sol.moteur), (6, True, "exact"))
         self.assertEqual(math_trade(m, longueur_max=3, moteur="heuristique").nb_objets_echanges, 4)
+
+    @AVEC_ORTOOLS
+    def test_un_objet_pour_un_autre_souhait(self):
+        # Les deux sièges de B remplissent les deux souhaits de A (le premier par son alternative) :
+        # chacun en comble un. Avant, un objet ne comptait que pour le meilleur souhait : 2 objets au lieu de 4.
+        m = Marche()
+        m.ajouter_utilisateur("A", [Souhait(categorie="poussette", alternatives=(("siege", None),)),
+                                    Souhait(categorie="siege", rang=2)])
+        m.ajouter_utilisateur("B", [Souhait(categorie="livre", quantite=2)])
+        for i in range(2):
+            m.ajouter_objet(f"s{i}", "B", "siege")
+            m.ajouter_objet(f"l{i}", "A", "livre")
+        for lm in (2, 3, None):
+            sol = math_trade(m, longueur_max=lm, moteur="exact") if lm else math_trade(m, longueur_max=None)
+            verifier_solution(self, m, sol, lm)
+            self.assertEqual((sol.nb_objets_echanges, sol.optimal), (4, True), lm)
+        self.assertEqual({t.souhait_idx for b in sol.boucles for t in b.transferts if t.receveur == "A"}, {0, 1})
+
+    @AVEC_ORTOOLS
+    def test_souhaits_qui_se_recouvrent_contre_force_brute(self):
+        for seed in range(30):
+            m = marche_souhaits_recouvrants(seed)
+            for lm in (2, 3):
+                sol = math_trade(m, longueur_max=lm, moteur="exact")
+                verifier_solution(self, m, sol, lm)
+                self.assertTrue(sol.optimal)
+                self.assertEqual(sol.nb_objets_echanges, optimum_force_brute_borne(m, lm), f"seed {seed}")
+
+    def test_souhaits_qui_se_recouvrent_libre_contre_force_brute(self):
+        testes = 0
+        for seed in range(100):
+            m = marche_souhaits_recouvrants(seed, n_users=3)
+            if len(list(GrapheEchanges(m).tous_les_transferts(variantes=True))) > 14:
+                continue
+            testes += 1
+            sol = math_trade(m, longueur_max=None)
+            verifier_solution(self, m, sol, None)
+            self.assertEqual(sol.nb_objets_echanges, optimum_force_brute_libre(m), f"seed {seed}")
+        self.assertGreater(testes, 20)
 
     @AVEC_ORTOOLS
     def test_contre_force_brute_avec_listes_contre(self):

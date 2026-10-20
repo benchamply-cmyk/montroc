@@ -34,8 +34,13 @@ class GrapheEchanges:
             disponibles[o.id] = o
             par_categorie[o.categorie].append(o)
 
-        # transferts[(donneur, receveur)] : options triées, la meilleure d'abord
+        # transferts[(donneur, receveur)] : options triées, la meilleure d'abord, un objet une seule fois (au
+        # titre du meilleur souhait du receveur) : pour énumérer des boucles d'objets sans doublons.
         self.transferts: dict[tuple[str, str], list[Transfert]] = defaultdict(list)
+        # variantes[(donneur, receveur)] : en plus, l'objet au titre de chaque autre souhait du receveur qu'il
+        # remplit. Si le meilleur souhait est déjà servi, l'objet peut encore en combler un autre : les moteurs
+        # exacts (CP-SAT, flot) choisissent parmi les variantes pour ne rater aucun échange.
+        self.variantes: dict[tuple[str, str], list[Transfert]] = defaultdict(list)
         for u in marche.utilisateurs.values():
             if u.id in c.utilisateurs_exclus:
                 continue
@@ -61,6 +66,7 @@ class GrapheEchanges:
                         proba_acceptation=marche.p_auto if s.acceptation_auto else marche.p_acceptation,
                         qualite=s.qualite(o),
                     )
+                    self.variantes[(t.donneur, t.receveur)].append(t)
                     precedent = vus.get(o.id)
                     if precedent is None or self._ordre(t) < self._ordre(precedent):
                         vus[o.id] = t
@@ -71,6 +77,8 @@ class GrapheEchanges:
         for (v, u), options in self.transferts.items():
             options.sort(key=self._ordre)
             self.succ[v].add(u)
+        for options in self.variantes.values():
+            options.sort(key=self._ordre)
 
     def _zone_acceptee(self, objet, souhait, receveur: str) -> bool:
         """Le lieu de l'objet (le sien, sinon la zone de son propriétaire) est-il dans une zone acceptée ?
@@ -88,6 +96,7 @@ class GrapheEchanges:
     def _ordre(t: Transfert):
         return (not t.auto, t.rang, -t.qualite, t.objet.id)
 
-    def tous_les_transferts(self):
-        for options in self.transferts.values():
+    def tous_les_transferts(self, variantes: bool = False):
+        """Tous les transferts ; avec ``variantes``, un objet au titre de chacun des souhaits qu'il remplit."""
+        for options in (self.variantes if variantes else self.transferts).values():
             yield from options

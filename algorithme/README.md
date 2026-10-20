@@ -98,6 +98,7 @@ Seul le transfert que Bruno a refusé est interdit ; Bruno reste disponible pour
 
 - **Optimalité contrôlée par force brute** : sur 40 petits marchés aléatoires, le math trade borné (2 et 3) trouve exactement l'optimum ; sur 30 autres, avec 3 objets par personne et des listes « contre » strictes ou de préférence, le moteur exact aussi ; sur plus de 50 marchés, le mode illimité aussi.
 - Cas où l'heuristique se trompe en se disant optimale (deux personnes qui ont chacune 3 objets voulus par l'autre) : elle trouve 4 objets, le moteur exact 6.
+- Un objet qui remplit plusieurs souhaits de son receveur (par exemple un siège auto, alternative d'un souhait « poussette » et souhait à part entière) figure une fois par souhait dans `GrapheEchanges.variantes` : le moteur exact et le mode illimité choisissent le souhait à combler. Contrôlé par force brute sur 30 marchés aléatoires à souhaits qui se recouvrent (et plus de 50 en mode illimité).
 - Chaque solution est vérifiée : chaque objet part une fois, il correspond bien à un souhait du receveur, les quantités et la limite de longueur sont respectées, chaque boucle se referme.
 
 **Banc d'essai sur le scénario prudent de l'étude** (`benchmark.py`, une seule exécution, graine fixe) :

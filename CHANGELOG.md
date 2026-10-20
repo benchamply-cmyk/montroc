@@ -13,6 +13,8 @@ La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branche
 
 Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis passe sous un numéro quand on étiquette.
 
+- Math trade : un objet qui remplit plusieurs souhaits du receveur peut combler le second quand le premier est déjà servi ; le moteur exact et le mode illimité ne ratent plus ces échanges.
+
 ## [0.4.1] – 2026-10-17
 
 - Traçabilité : ce journal des versions, le numéro de version dans le pied de page du site, et la règle de nommage des branches et des versions.
