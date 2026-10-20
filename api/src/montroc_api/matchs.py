@@ -152,6 +152,18 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
     return cartes[:limite]
 
 
+def souhait_servi(receveur: m.Utilisateur, objet: m.Objet) -> m.Souhait | None:
+    """Le souhait du receveur auquel l'objet répond, le préféré d'abord (rang 1), comme sur une carte du carrousel."""
+    return next(
+        (
+            s
+            for s in sorted(receveur.souhaits, key=lambda s: (s.rang, s.id))
+            if souhait_correspond(s, objet) and zone_acceptee(s, receveur, objet.proprietaire)
+        ),
+        None,
+    )
+
+
 # --- Coups de cœur et matchs ---
 
 
@@ -269,6 +281,8 @@ def conclure(session: Session, moi: m.Utilisateur, mon_objet_id: int, son_objet_
         avis.aime = True
 
     def transfert(objet: m.Objet, receveur: m.Utilisateur) -> TransfertMoteur:
+        # Le souhait que cet objet comble chez le receveur, s'il y en a un : l'accord compte dans sa quantité.
+        souhait = souhait_servi(receveur, objet)
         return TransfertMoteur(
             donneur=str(objet.proprietaire_id),
             receveur=str(receveur.id),
@@ -277,6 +291,7 @@ def conclure(session: Session, moi: m.Utilisateur, mon_objet_id: int, son_objet_
             rang=1,
             auto=False,
             proba_acceptation=1.0,
+            souhait_ref=None if souhait is None else str(souhait.id),
         )
 
     boucle = Boucle(

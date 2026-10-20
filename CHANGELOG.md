@@ -13,6 +13,8 @@ La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branche
 
 Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis passe sous un numéro quand on étiquette.
 
+- Math trade : un souhait comblé ne reçoit plus d'autre objet au repêchage, au Grand Troc suivant ni pendant un accord du Match (chaque transfert garde le souhait qu'il sert).
+
 ## [0.4.1] – 2026-10-17
 
 - Traçabilité : ce journal des versions, le numéro de version dans le pied de page du site, et la règle de nommage des branches et des versions.
