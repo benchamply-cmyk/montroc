@@ -17,6 +17,7 @@ Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis pas
 - Grand Troc : la base enregistre les boucles de 4 personnes (jusqu'à 6) ; avant, la première boucle de 4 trouvée faisait échouer tout le Grand Troc.
 - Math trade : un objet qui remplit plusieurs souhaits du receveur peut combler le second quand le premier est déjà servi ; le moteur exact et le mode illimité ne ratent plus ces échanges.
 - Math trade : l'heuristique de secours n'annonce plus un « optimal prouvé » quand elle a écarté des boucles possibles (plus de 2 objets entre deux personnes, ou un objet qui remplit plusieurs souhaits).
+- Grand Troc : deux créneaux de lancement de plus le dimanche (18 h et 19 h UTC) ; en heure d'hiver, un seul tombait après 18 h à Paris.
 
 ## [0.4.1] – 2026-10-17
 
