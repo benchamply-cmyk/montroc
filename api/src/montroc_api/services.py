@@ -6,6 +6,7 @@ retenues sous forme d'``Echange``. Les e-mails des moments clés partent d'ici,
 une fois la transaction validée.
 """
 
+import logging
 import secrets
 from datetime import UTC, date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
@@ -20,6 +21,8 @@ from troc_echanges import Souhait as SouhaitMoteur
 from . import courriels, sms
 from . import models as m
 from .config import get_settings
+
+journal = logging.getLogger("montroc.services")
 
 DELAI_REPONSE = timedelta(hours=48)
 RAPPEL_AVANT = timedelta(hours=12)
@@ -386,18 +389,30 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
         duree_max_s=DUREE_MAX_GRAND_TROC_S,
     )
     grand_troc = m.GrandTroc(
-        jour=jour,
-        optimal=solution.optimal,
-        duree_s=solution.duree_s,
-        nb_boucles=len(solution.boucles),
-        nb_objets=solution.nb_objets_echanges,
-        nb_participants=len(solution.participants),
+        jour=jour, optimal=solution.optimal, duree_s=solution.duree_s, nb_boucles=0, nb_objets=0, nb_participants=0
     )
     session.add(grand_troc)
     session.flush()
-    echanges = [proposer(session, b, grand_troc=grand_troc) for b in solution.boucles]
+    echanges = _proposer_les_boucles(session, solution.boucles, grand_troc)
+    # Les chiffres de ce qui a vraiment été proposé (une boucle devenue impossible pendant le calcul est sautée).
+    grand_troc.nb_boucles = len(echanges)
+    grand_troc.nb_objets = sum(len(e.transferts) for e in echanges)
+    grand_troc.nb_participants = len({t.donneur_id for e in echanges for t in e.transferts})
     _sms_du_grand_troc(session, echanges)
-    return grand_troc, echanges, True, f"{len(echanges)} boucle(s) proposée(s), {solution.nb_objets_echanges} objets."
+    return grand_troc, echanges, True, f"{len(echanges)} boucle(s) proposée(s), {grand_troc.nb_objets} objets."
+
+
+def _proposer_les_boucles(session: Session, boucles: list[Boucle], grand_troc: m.GrandTroc) -> list[m.Echange]:
+    """Propose chaque boucle du Grand Troc ou du repêchage. Une boucle dont un objet n'est plus disponible
+    (réservé par un accord du Match pendant le calcul, retiré par son propriétaire) est sautée : les autres
+    partent quand même, au lieu d'annuler tout le Grand Troc. ``proposer`` vérifie avant de rien modifier."""
+    echanges = []
+    for b in boucles:
+        try:
+            echanges.append(proposer(session, b, grand_troc=grand_troc))
+        except ErreurMetier as e:
+            journal.warning("Grand Troc %s : boucle %s sautée (%s)", grand_troc.jour, b.objets, e)
+    return echanges
 
 
 def _sms_du_grand_troc(session: Session, echanges: list[m.Echange]) -> None:
@@ -641,7 +656,7 @@ def repechage(session: Session) -> int | None:
     solution = math_trade(
         marche, longueur_max=LONGUEUR_GRAND_TROC, contraintes=contraintes, duree_max_s=DUREE_MAX_GRAND_TROC_S
     )
-    echanges = [proposer(session, b, grand_troc=grand_troc) for b in solution.boucles]
+    echanges = _proposer_les_boucles(session, solution.boucles, grand_troc)
     _sms_du_grand_troc(session, echanges)
-    grand_troc.nb_objets_repeches = solution.nb_objets_echanges
-    return solution.nb_objets_echanges
+    grand_troc.nb_objets_repeches = sum(len(e.transferts) for e in echanges)
+    return grand_troc.nb_objets_repeches
