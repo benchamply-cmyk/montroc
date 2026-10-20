@@ -321,6 +321,9 @@ class Transfert(Base):
     donneur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
     receveur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
     objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), index=True)
+    # Le souhait du receveur que ce transfert sert : tant que l'échange n'est pas annulé, il compte dans la
+    # quantité du souhait (une poussette reçue n'en appelle pas une deuxième). Vide pour un « J'aime » du Match.
+    souhait_id: Mapped[int | None] = mapped_column(ForeignKey("souhaits.id", ondelete="SET NULL"), index=True)
     reponse: Mapped[Reponse] = mapped_column(
         _enum(Reponse, "reponse"), default=Reponse.en_attente, server_default=Reponse.en_attente.value
     )
@@ -339,7 +342,8 @@ class Transfert(Base):
         UniqueConstraint("echange_id", "position", name="uq_transferts_echange_position"),
         UniqueConstraint("echange_id", "objet_id", name="uq_transferts_echange_objet"),
         CheckConstraint("donneur_id <> receveur_id", name="donneur_different_receveur"),
-        CheckConstraint("position >= 0 AND position < 3", name="boucle_max_3"),
+        # Jusqu'à 6 personnes, la limite du moteur (troc_echanges.boucles.LONGUEUR_MAX_ABSOLUE).
+        CheckConstraint("position >= 0 AND position < 6", name="boucle_max_6"),
     )
 
 

@@ -90,7 +90,9 @@ class Souhait:
     - ``mode`` : ``"precise"``, ``"flexible"`` ou ``"ouverte"`` (``MODES_RECHERCHE``) ;
     - ``modes`` : modes d'échange acceptés (main propre, point relais…), vide : tous ;
     - ``zones`` : zones géographiques acceptées ; vide : la règle du marché
-      (même zone que soi si ``Marche.meme_zone``).
+      (même zone que soi si ``Marche.meme_zone``) ;
+    - ``ref`` : identifiant libre de l'application (son numéro en base), repris
+      par chaque transfert qui sert ce souhait (``Transfert.souhait_ref``).
 
     Les critères (obligatoires et préférentiels) portent sur la catégorie du
     souhait ; une alternative d'une autre catégorie n'est jugée que sur sa
@@ -109,6 +111,7 @@ class Souhait:
     mode: str = "flexible"
     modes: frozenset[str] = frozenset()
     zones: frozenset[str] = frozenset()
+    ref: str | None = None
 
     def __post_init__(self):
         if (self.categorie is None) == (self.objet_id is None):
@@ -196,6 +199,7 @@ class Transfert:
     auto: bool
     proba_acceptation: float  # probabilité que le receveur dise oui
     qualite: int = 0  # voir Souhait.qualite
+    souhait_ref: str | None = None  # Souhait.ref du souhait servi
 
     @property
     def cle(self) -> tuple[str, str, str]:
