@@ -499,3 +499,30 @@ def test_grand_troc_boucle_a_quatre(client, creer, monkeypatch):
     assert r.status_code == 200, r.text
     (echange,) = r.json()["echanges"]
     assert sorted(t["position"] for t in echange["transferts"]) == [0, 1, 2, 3]
+
+
+def test_grand_troc_saute_une_boucle_devenue_impossible(client, creer, monkeypatch):
+    """Un objet réservé pendant le calcul (accord du Match, par exemple) : sa boucle est sautée, pas le Grand Troc."""
+    for k, (x, y) in enumerate((("enfant", "maison"), ("sport", "culture"))):  # deux échanges à deux, séparés
+        a, b = creer.utilisateur(f"a{k}"), creer.utilisateur(f"b{k}")
+        creer.objet(a, x)
+        creer.souhait(a, y)
+        creer.objet(b, y)
+        creer.souhait(b, x)
+    calcul = services.math_trade
+
+    def puis_un_objet_reserve(*args, **kwargs):
+        solution = calcul(*args, **kwargs)
+        with engine.begin() as conn:
+            conn.execute(
+                text("UPDATE objets SET statut = 'reserve' WHERE id = :o"),
+                {"o": int(solution.boucles[0].objets[0])},
+            )
+        return solution
+
+    monkeypatch.setattr(services, "math_trade", puis_un_objet_reserve)
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 5))
+    r = client.post("/taches/grand-troc", headers=TACHES)
+    assert r.status_code == 200, r.text
+    assert len(r.json()["echanges"]) == 1
+    assert (r.json()["grand_troc"]["nb_boucles"], r.json()["grand_troc"]["nb_objets"]) == (1, 2)
