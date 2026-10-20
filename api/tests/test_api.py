@@ -485,3 +485,17 @@ def test_repechage_du_mardi(client, creer, monkeypatch):
     assert {t["receveur_id"] for t in repeche["transferts"]} == {a.id, autre.id}
     assert repeche["grand_troc_jour"] == "2026-10-18"
     assert client.get("/grand-troc").json()["dernier"]["nb_objets_repeches"] == 2
+
+
+def test_grand_troc_boucle_a_quatre(client, creer, monkeypatch):
+    """Le Grand Troc cherche des boucles de 4 : la base doit pouvoir les enregistrer."""
+    categories = ("enfant", "maison", "sport", "culture")
+    gens = [creer.utilisateur(p) for p in ("alice", "bruno", "chloe", "david")]
+    for k, p in enumerate(gens):
+        creer.objet(p, categories[k])
+        creer.souhait(p, categories[(k + 1) % 4])
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 5))
+    r = client.post("/taches/grand-troc", headers=TACHES)
+    assert r.status_code == 200, r.text
+    (echange,) = r.json()["echanges"]
+    assert sorted(t["position"] for t in echange["transferts"]) == [0, 1, 2, 3]
