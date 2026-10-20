@@ -383,6 +383,45 @@ class TestMoteurExact(unittest.TestCase):
         self.assertGreater(testes, 20)
 
     @AVEC_ORTOOLS
+    def test_un_objet_pour_un_autre_souhait(self):
+        # Les deux sièges de B remplissent les deux souhaits de A (le premier par son alternative) :
+        # chacun en comble un. Avant, un objet ne comptait que pour le meilleur souhait : 2 objets au lieu de 4.
+        m = Marche()
+        m.ajouter_utilisateur("A", [Souhait(categorie="poussette", alternatives=(("siege", None),)),
+                                    Souhait(categorie="siege", rang=2)])
+        m.ajouter_utilisateur("B", [Souhait(categorie="livre", quantite=2)])
+        for i in range(2):
+            m.ajouter_objet(f"s{i}", "B", "siege")
+            m.ajouter_objet(f"l{i}", "A", "livre")
+        for lm in (2, 3, None):
+            sol = math_trade(m, longueur_max=lm, moteur="exact") if lm else math_trade(m, longueur_max=None)
+            verifier_solution(self, m, sol, lm)
+            self.assertEqual((sol.nb_objets_echanges, sol.optimal), (4, True), lm)
+        self.assertEqual({t.souhait_idx for b in sol.boucles for t in b.transferts if t.receveur == "A"}, {0, 1})
+
+    @AVEC_ORTOOLS
+    def test_souhaits_qui_se_recouvrent_contre_force_brute(self):
+        for seed in range(30):
+            m = marche_souhaits_recouvrants(seed)
+            for lm in (2, 3):
+                sol = math_trade(m, longueur_max=lm, moteur="exact")
+                verifier_solution(self, m, sol, lm)
+                self.assertTrue(sol.optimal)
+                self.assertEqual(sol.nb_objets_echanges, optimum_force_brute_borne(m, lm), f"seed {seed}")
+
+    def test_souhaits_qui_se_recouvrent_libre_contre_force_brute(self):
+        testes = 0
+        for seed in range(100):
+            m = marche_souhaits_recouvrants(seed, n_users=3)
+            if len(list(GrapheEchanges(m).tous_les_transferts(variantes=True))) > 14:
+                continue
+            testes += 1
+            sol = math_trade(m, longueur_max=None)
+            verifier_solution(self, m, sol, None)
+            self.assertEqual(sol.nb_objets_echanges, optimum_force_brute_libre(m), f"seed {seed}")
+        self.assertGreater(testes, 20)
+
+    @AVEC_ORTOOLS
     def test_contre_force_brute_avec_listes_contre(self):
         for seed in range(30):
             m = marche_contre(seed)

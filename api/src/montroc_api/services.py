@@ -78,6 +78,7 @@ def souhait_moteur(s: m.Souhait) -> SouhaitMoteur:
         mode=s.mode_recherche.value,
         modes=frozenset(s.modes_echange),
         zones=frozenset(zone(z) for z in s.zones),
+        ref=None if s.id is None else str(s.id),
     )
 
 
@@ -192,10 +193,43 @@ def contraintes_du_match(session: Session) -> Contraintes:
     return contraintes
 
 
-def suggestions(session: Session, utilisateur_id: int, limite: int = 10) -> list[Boucle]:
-    return boucles_autour(
-        construire_marche(session), str(utilisateur_id), limite=limite, contraintes=contraintes_du_match(session)
+# Échanges dont les transferts comptent dans la quantité des souhaits : tous, sauf les annulés.
+ECHANGES_QUI_COMBLENT = (m.StatutEchange.propose, m.StatutEchange.accepte, m.StatutEchange.termine)
+
+
+def souhaits_consommes(session: Session, marche: Marche) -> dict[tuple[str, int], int]:
+    """Ce que chaque souhait du marché a déjà reçu (ou va recevoir) : {(membre, indice du souhait) : objets}.
+
+    Un échange proposé, accepté ou terminé compte ; un échange annulé libère le souhait.
+    """
+    recus = dict(
+        session.execute(
+            select(m.Transfert.souhait_id, func.count())
+            .join(m.Transfert.echange)
+            .where(m.Transfert.souhait_id.is_not(None), m.Echange.statut.in_(ECHANGES_QUI_COMBLENT))
+            .group_by(m.Transfert.souhait_id)
+        ).all()
     )
+    consommes = {}
+    for u in marche.utilisateurs.values():
+        for i, s in enumerate(u.souhaits):
+            n = recus.get(int(s.ref), 0) if s.ref is not None else 0
+            if n:
+                consommes[(u.id, i)] = n
+    return consommes
+
+
+def contraintes_du_marche(session: Session, marche: Marche) -> Contraintes:
+    """Les contraintes de toute recherche sur ce marché : les « Non merci » du Match et les souhaits déjà comblés."""
+    contraintes = contraintes_du_match(session)
+    contraintes.souhaits_consommes.update(souhaits_consommes(session, marche))
+    return contraintes
+
+
+def suggestions(session: Session, utilisateur_id: int, limite: int = 10) -> list[Boucle]:
+    marche = construire_marche(session)
+    contraintes = contraintes_du_marche(session, marche)
+    return boucles_autour(marche, str(utilisateur_id), limite=limite, contraintes=contraintes)
 
 
 def _code_retrait() -> str:
@@ -242,6 +276,7 @@ def proposer(
                 reponse=m.Reponse.acceptee if d_office else m.Reponse.en_attente,
                 repondu_le=maintenant if d_office else None,
                 code_retrait=_code_retrait(),
+                souhait_id=None if t.souhait_ref is None else int(t.souhait_ref),
             )
         )
     session.add(echange)
@@ -288,7 +323,8 @@ def proposer_par_objets(session: Session, objet_ids: list[int], auteur_id: int) 
             "si elle est toujours possible."
         )
     cible = tuple(str(i) for i in objet_ids)
-    marche, contraintes = construire_marche(session), contraintes_du_match(session)
+    marche = construire_marche(session)
+    contraintes = contraintes_du_marche(session, marche)
     for b in boucles_autour(marche, str(auteur_id), limite=None, options_par_transfert=10, contraintes=contraintes):
         if b.objets == cible:
             return proposer(session, b, auteur_id)
@@ -342,10 +378,11 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
     if deja is not None:
         return deja, [], False, "Le Grand Troc de ce jour a déjà eu lieu."
 
+    marche = construire_marche(session)
     solution = math_trade(
-        construire_marche(session),
+        marche,
         longueur_max=LONGUEUR_GRAND_TROC,
-        contraintes=contraintes_du_match(session),
+        contraintes=contraintes_du_marche(session, marche),
         duree_max_s=DUREE_MAX_GRAND_TROC_S,
     )
     grand_troc = m.GrandTroc(
@@ -588,7 +625,9 @@ def repechage(session: Session) -> int | None:
     if maintenant + MARGE_REPECHAGE > fin_des_depots(grand_troc.jour):
         return 0  # trop tard pour répondre et déposer avant dimanche : tout repart au prochain Grand Troc
 
-    contraintes = contraintes_du_match(session)
+    # Les boucles acceptées dimanche comptent dans les souhaits : pas de deuxième poussette au repêchage.
+    marche = construire_marche(session, stock_avant=grand_troc.cree_le)
+    contraintes = contraintes_du_marche(session, marche)
     for e in grand_troc.echanges:
         if e.statut != m.StatutEchange.annule:
             continue
@@ -599,7 +638,6 @@ def repechage(session: Session) -> int | None:
             contraintes.utilisateurs_exclus.update(
                 str(t.receveur_id) for t in e.transferts if t.reponse == m.Reponse.en_attente
             )
-    marche = construire_marche(session, stock_avant=grand_troc.cree_le)
     solution = math_trade(
         marche, longueur_max=LONGUEUR_GRAND_TROC, contraintes=contraintes, duree_max_s=DUREE_MAX_GRAND_TROC_S
     )

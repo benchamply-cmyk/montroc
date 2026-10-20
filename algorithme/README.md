@@ -36,6 +36,7 @@ Un `Souhait` porte :
 - un **rang** (1 = préféré), qui départage comme les listes ordonnées de TradeMaximizer ;
 - une **quantité** (par défaut 1 : on ne reçoit pas trois poussettes pour un seul souhait) ;
 - la case **acceptation automatique** (« j'accepte d'office un échange contre cet objet »), qui fait monter la chance de réussite de 70 % à 95 % par défaut.
+- une **référence** libre (`ref`, le numéro du souhait en base pour l'API), reprise par chaque transfert qui le sert (`Transfert.souhait_ref`) : l'API compte ainsi ce qu'un souhait a déjà reçu et le passe au moteur dans `Contraintes.souhaits_consommes`.
 
 Un objet peut porter une liste **« je le donne contre… »** (`contre`, des indices de souhaits de son propriétaire), comme les listes par objet de BoardGameGeek (« ce jeu contre A ou B ») :
 - `contre_strict=True` : l'objet ne part que si son propriétaire reçoit, dans la même boucle, un de ces souhaits ;
