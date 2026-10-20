@@ -59,7 +59,7 @@ class GrapheEchanges:
                         donneur=o.proprietaire, receveur=u.id, objet=o, souhait_idx=i,
                         rang=s.rang, auto=s.acceptation_auto,
                         proba_acceptation=marche.p_auto if s.acceptation_auto else marche.p_acceptation,
-                        qualite=s.qualite(o),
+                        qualite=s.qualite(o), souhait_ref=s.ref,
                     )
                     precedent = vus.get(o.id)
                     if precedent is None or self._ordre(t) < self._ordre(precedent):
