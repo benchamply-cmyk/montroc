@@ -152,8 +152,21 @@ def math_trade(marche: Marche, longueur_max: int | None = 3, objectif: str = "ec
 
     choix, optimal = empaquetage.resoudre(poids, ressources, capacite, taille_exacte,
                                            limite_noeuds, duree_max_s)
+    # L'empaquetage ne prouve l'optimum que parmi les boucles énumérées : si l'énumération en a écarté,
+    # le résultat n'est pas prouvé (``Solution.optimal`` faux, enregistré tel quel par l'API).
+    complet = _enumeration_complete(graphe, options_par_transfert)
+    stats["enumeration_complete"] = complet
     boucles = sorted((candidats[i] for i in choix), key=cle_classement)
-    return Solution(boucles, optimal, time.perf_counter() - debut, candidats=len(candidats), stats=stats)
+    return Solution(boucles, optimal and complet, time.perf_counter() - debut, candidats=len(candidats),
+                    stats=stats)
+
+
+def _enumeration_complete(graphe: GrapheEchanges, options_par_transfert: int) -> bool:
+    """L'énumération des boucles d'objets n'a-t-elle rien écarté ? Elle garde au plus ``options_par_transfert``
+    objets par couple de personnes, et chaque objet au titre du seul meilleur souhait de son receveur
+    (``GrapheEchanges.variantes``). Vérification prudente : sur tous les couples, même hors de toute boucle."""
+    return all(len(options) <= options_par_transfert and len(options) == len(graphe.variantes[cle])
+               for cle, options in graphe.transferts.items())
 
 
 def _trade_maximizer(graphe: GrapheEchanges) -> list[Boucle]:

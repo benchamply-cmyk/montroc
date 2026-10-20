@@ -324,6 +324,25 @@ class TestMoteurExact(unittest.TestCase):
         self.assertEqual((sol.nb_objets_echanges, sol.optimal, sol.moteur), (6, True, "exact"))
         self.assertEqual(math_trade(m, longueur_max=3, moteur="heuristique").nb_objets_echanges, 4)
 
+    def test_heuristique_ne_se_dit_pas_optimale_quand_elle_ecarte_des_boucles(self):
+        # 3 objets par couple, l'énumération n'en garde que 2 : 4 objets échangés, sans preuve.
+        sol = math_trade(self.marche_trois_paires(), longueur_max=3, moteur="heuristique")
+        self.assertEqual((sol.nb_objets_echanges, sol.optimal), (4, False))
+        self.assertFalse(sol.stats["enumeration_complete"])
+        # Avec assez d'options par couple, rien n'est écarté : l'optimum (6) est prouvé.
+        sol = math_trade(self.marche_trois_paires(), longueur_max=3, moteur="heuristique", options_par_transfert=3)
+        self.assertEqual((sol.nb_objets_echanges, sol.optimal), (6, True))
+        # Un objet qui remplit deux souhaits du receveur : l'heuristique n'en voit qu'un, pas de preuve non plus.
+        m = Marche()
+        m.ajouter_utilisateur("A", [Souhait(categorie="poussette", alternatives=(("siege", None),)),
+                                    Souhait(categorie="siege", rang=2)])
+        m.ajouter_utilisateur("B", [Souhait(categorie="livre", quantite=2)])
+        for i in range(2):
+            m.ajouter_objet(f"s{i}", "B", "siege")
+            m.ajouter_objet(f"l{i}", "A", "livre")
+        sol = math_trade(m, longueur_max=3, moteur="heuristique")
+        self.assertEqual((sol.nb_objets_echanges, sol.optimal), (2, False))
+
     @AVEC_ORTOOLS
     def test_un_objet_pour_un_autre_souhait(self):
         # Les deux sièges de B remplissent les deux souhaits de A (le premier par son alternative) :
