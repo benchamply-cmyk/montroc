@@ -402,6 +402,8 @@ details.plus summary::-webkit-details-marker{display:none}
 .fiche-membre{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
 .fiche-membre .avatar{width:42px;height:42px;font-size:18px}
 .fiche-membre div{display:flex;flex-direction:column;font-size:14px}
+.rep{display:inline-block;padding:1px 8px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--muted)}
+.rep.fiable{border-color:var(--mark);color:var(--mark)}
 .fiche-actions{display:flex;flex-direction:column;gap:10px}
 .fiche-actions .acc-btn{width:100%}
 .fiche-actions .note{font-size:14px}
@@ -949,7 +951,7 @@ function afficherSession(){
   $$('[data-anon]').forEach(x=>x.hidden=!!moi); $$('[data-auth]').forEach(x=>x.hidden=!moi);
   document.body.classList.toggle('membre',!!moi);
   TT.compte(!!moi); $('#compte').title=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
-  if(moi){$('#esp-avatar').textContent=(moi.pseudo||'?')[0].toUpperCase(); $('#esp-nom').textContent=moi.pseudo; $('#esp-zone').textContent=moi.zone||'';
+  if(moi){$('#esp-avatar').textContent=(moi.pseudo||'?')[0].toUpperCase(); $('#esp-nom').textContent=moi.pseudo; $('#esp-zone').innerHTML=[esc(moi.zone||''),reputation(moi)].filter(Boolean).join(' · ');
     $('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`; $('#f-phone').telephone.value=moi.telephone||'';
     store.set('troc.email',moi.email); $$('#f-mdp [name=email],#f-mdp-rappel [name=email]').forEach(x=>x.value=moi.email);
     $('#mdp-titre').textContent=moi.a_un_mot_de_passe?'Changer de mot de passe':'Choisir un mot de passe';
@@ -1329,6 +1331,14 @@ document.addEventListener('click',e=>{
   ['ai','cherche'].includes(o)?montrerPanneau(o):go(o);
 });
 
+/* Réputation d'un membre (voir Utilisateur.reputation dans l'API) : pastille et échanges menés au bout. */
+const REPUTATIONS={nouveau:'Nouveau membre',fiable:'Membre fiable',a_confirmer:'Fiabilité à confirmer'};
+function reputation(u){
+  if(!u||!u.reputation)return '';
+  const n=u.echanges_menes||0, pastille=REPUTATIONS[u.reputation]?`<span class="rep ${u.reputation}">${REPUTATIONS[u.reputation]}</span>`:'';
+  return [pastille,n?`${n} échange${n>1?'s':''} mené${n>1?'s':''} au bout`:''].filter(Boolean).join(' · ');
+}
+
 /* Fiche d'un objet : grande photo, ce qu'il faut savoir, qui le propose, et l'action (J'aime ou créer un compte). */
 let avantFiche={vue:'home',hash:''}, ficheObjet=null;
 const grande=url=>url.replace('/image/upload/','/image/upload/c_limit,w_1000,h_1000,q_auto,f_auto/');
@@ -1360,7 +1370,7 @@ async function ouvrirObjet(id){
           ${o.modes_echange.length?`<dt>Remise</dt><dd>${o.modes_echange.map(m=>MODES[m]||m).join(', ')}</dd>`:''}
         </dl>
         ${o.description?`<p class="fiche-desc">${esc(o.description)}</p>`:''}
-        <div class="fiche-membre"><span class="avatar" aria-hidden="true">${esc(pseudo[0].toUpperCase())}</span><div><b>${esc(pseudo)}</b>${qui?`<span class="muted">Membre depuis ${new Date(qui.cree_le).toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</span>`:''}</div></div>
+        <div class="fiche-membre"><span class="avatar" aria-hidden="true">${esc(pseudo[0].toUpperCase())}</span><div><b>${esc(pseudo)}</b>${qui?`<span class="muted">Membre depuis ${new Date(qui.cree_le).toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</span><span class="muted">${reputation(qui)}</span>`:''}</div></div>
         <div class="fiche-actions">${actions}</div>
         ${moi&&!mien?`<button class="linkbtn signaler" type="button" data-signaler="${o.id}" data-titre="${esc(o.titre)}">Signaler cet objet</button>`:''}
       </div>`;

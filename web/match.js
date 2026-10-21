@@ -22,7 +22,7 @@
     return `<article class="carte${c.il_aime.length ? ' chaude' : ''}" data-i="${i}" aria-label="${esc(o.titre)}">
       <div class="ph">${o.photo_url ? `<img src="${esc(vignette(o.photo_url, 640))}" alt="" loading="lazy">` : ''}${tag}</div>
       <div class="corps"><b>${esc(o.titre)}</b>
-        <span class="muted" style="font-size:14px">${esc(ETATS[o.etat] || '')}${o.etat ? ' · ' : ''}${Detail.nom(o.categorie_slug, o.sous_categorie_slug)}${Detail.caracs(o.categorie_slug, o.caracteristiques) ? ' · ' + Detail.caracs(o.categorie_slug, o.caracteristiques) : ''} · ${esc(p.pseudo)}${p.zone ? ', ' + esc(p.zone) : ''}</span>
+        <span class="muted" style="font-size:14px">${esc(ETATS[o.etat] || '')}${o.etat ? ' · ' : ''}${Detail.nom(o.categorie_slug, o.sous_categorie_slug)}${Detail.caracs(o.categorie_slug, o.caracteristiques) ? ' · ' + Detail.caracs(o.categorie_slug, o.caracteristiques) : ''} · ${esc(p.pseudo)}${p.zone ? ', ' + esc(p.zone) : ''}${p.reputation !== 'nouveau' && reputation(p) ? ' · ' + reputation(p) : ''}</span>
         ${o.description ? `<span style="font-size:14px">${esc(o.description.slice(0, 140))}${o.description.length > 140 ? '…' : ''}</span>` : ''}
         <span class="pourquoi">${pourquoi(c)}</span>
         <a class="voir" href="#objet-${o.id}" data-fiche="${o.id}">Voir la fiche</a>
