@@ -13,6 +13,8 @@ La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branche
 
 Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis passe sous un numéro quand on étiquette.
 
+- Grand Troc : après un refus, les partenaires lâchés reçoivent une autre boucle dans l'heure avec les objets libérés, au lieu d'attendre le repêchage du mardi 18 h (migration 0018).
+
 ## [0.5.0] – 2026-10-21 · Le math trade fiabilisé
 
 - Math trade : un souhait comblé ne reçoit plus d'autre objet au repêchage, au Grand Troc suivant ni pendant un accord du Match (chaque transfert garde le souhait qu'il sert) (#33).
