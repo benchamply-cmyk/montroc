@@ -18,6 +18,10 @@ plus que sa quantité, et un objet à liste « contre » stricte ne part que si 
 propriétaire reçoit, dans la même boucle, un des souhaits de la liste.
 
 Objectifs, dans l'ordre (chaque étape garde le résultat de la précédente) :
+0. avec ``objectif="esperance"`` seulement : le plus d'objets échangés *attendus*,
+   chaque boucle comptant pour sa longueur × la chance que tous acceptent. Une
+   boucle de 4 à 70 % d'acceptation (0,96 objet attendu) cède alors la place à
+   une boucle de 3 qui lui dispute un objet (1,03) ; sans conflit, toutes restent ;
 1. le plus d'objets échangés ;
 2. équité : le plus de personnes différentes servies (comme la métrique
    USERS-TRADING de TradeMaximizer), chacune comptée avec son poids
@@ -28,6 +32,7 @@ Objectifs, dans l'ordre (chaque étape garde le résultat de la précédente) :
 """
 from __future__ import annotations
 
+import itertools
 import math
 import time
 
@@ -40,8 +45,11 @@ try:
 except ImportError:  # pragma: no cover - dépend de l'installation
     cp_model = None
 
-# Part du budget de temps de chaque étape (la première, le nombre d'objets, compte le plus).
-PARTS_DU_BUDGET = (0.7, 0.1, 0.1, 0.1)
+# Part du budget de temps de chaque étape (la première, le nombre d'objets ou d'objets attendus, compte le plus).
+PARTS_DU_BUDGET = {"echanges": (0.7, 0.1, 0.1, 0.1), "esperance": (0.6, 0.1, 0.1, 0.1, 0.1)}
+# Objets attendus d'une boucle (longueur × chance que tous acceptent), comptés en millièmes d'objet.
+MILLIEMES = 1000
+MAX_COMBINAISONS = 64
 # Au-delà, le mode « auto » de math_trade garde l'heuristique. Banc d'essai : à 2 000 personnes (~3 600 copies),
 # CP-SAT fait mieux qu'elle avec ~220 Mo de mémoire ; à 3 000 (~12 500 copies) il monte à ~380 Mo, trop près des
 # 512 Mo de Render gratuit ; à 5 000 (~50 000 copies) il trouve moins bien qu'elle en 30 s et dépasse 1 Go.
@@ -59,10 +67,14 @@ def disponible() -> bool:
 
 
 def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
-             fils: int = FILS, max_copies: int | None = None) -> tuple[list[Boucle], bool, dict] | None:
-    """Renvoie (boucles, nombre d'objets prouvé maximal ?, statistiques), ou None si
+             fils: int = FILS, max_copies: int | None = None,
+             objectif: str = "echanges") -> tuple[list[Boucle], bool, dict] | None:
+    """Renvoie (boucles, premier objectif prouvé maximal ?, statistiques), ou None si
     OR-Tools manque ou si aucune solution n'a été trouvée dans le temps imparti.
+    ``objectif`` : ``"echanges"`` (le plus d'objets) ou ``"esperance"`` (le plus d'objets attendus, voir plus haut).
     Lève ``TropGrand`` si le problème dépasse ``max_copies``."""
+    if objectif not in PARTS_DU_BUDGET:
+        raise ValueError(f"objectif doit être parmi {tuple(PARTS_DU_BUDGET)}")
     if cp_model is None:
         return None
     debut = time.perf_counter()
@@ -81,6 +93,7 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
     par_souhait: dict[tuple[str, int], list] = {}
     par_personne: dict[str, list] = {}
     qualites, couts = [], []
+    attendus = []        # (variable, millièmes d'objet attendus) : objectif « esperance »
     variables = []       # copies et transferts : la solution d'une étape sert d'indice à la suivante
 
     for cycle, options, nb_copies in cycles:
@@ -119,6 +132,8 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
                         qualites.append((bonus, QUALITE_CONTRE))
             for u in cycle:
                 par_personne.setdefault(u, []).append(active)
+            if objectif == "esperance":
+                attendus.extend(_attendus(modele, marche, active, etapes))
             copies.append((cycle, active, etapes))
 
     if not copies:
@@ -136,7 +151,8 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
         servis.append((s, marche.utilisateurs[u].priorite))
 
     objets = sum(len(cycle) * active for cycle, active, _ in copies)
-    etapes_objectif = [
+    etapes_objectif = [] if objectif == "echanges" else [(sum(v * k for v, k in attendus), True)]
+    etapes_objectif += [
         (objets, True),
         (sum(p * s for s, p in servis), True),
         (sum(q * x for x, q in qualites), True),
@@ -149,7 +165,8 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
     valeurs = None   # meilleure affectation connue
     optimal = False
     statuts = []
-    for i, ((expression, maximiser), part) in enumerate(zip(etapes_objectif, PARTS_DU_BUDGET, strict=True)):
+    parts = PARTS_DU_BUDGET[objectif]
+    for i, ((expression, maximiser), part) in enumerate(zip(etapes_objectif, parts, strict=True)):
         reste = duree_max_s - (time.perf_counter() - debut)
         if reste <= 0.05:
             break
@@ -185,6 +202,31 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
     stats = {"copies": len(copies), "etapes": statuts, "duree_s": time.perf_counter() - debut}
     return boucles, optimal, stats
 
+
+def _attendus(modele, marche, active, etapes) -> list[tuple]:
+    """Objets attendus d'une copie de boucle, en millièmes : liste de (variable, valeur) à additionner.
+
+    La chance d'une étape ne dépend que de son receveur et de la case « j'accepte d'office » du souhait servi :
+    une ou deux valeurs par étape. On crée une variable par combinaison (au plus 2⁶), chacune avec sa valeur
+    exacte, et chaque étape choisit un transfert de la chance de sa combinaison : tout reste linéaire."""
+    n = len(etapes)
+    chances = [[(x, round(marche.proba_participant(t), 6)) for x, t in xs] for xs in etapes]
+    valeurs = [sorted({p for _, p in xs}) for xs in chances]
+
+    def valeur(combinaison):
+        return round(MILLIEMES * n * math.prod(combinaison))
+
+    if all(len(v) == 1 for v in valeurs):
+        return [(active, valeur(v[0] for v in valeurs))]
+    if math.prod(len(v) for v in valeurs) > MAX_COMBINAISONS:
+        # Ne se produit pas avec le modèle actuel ; par prudence, la meilleure chance de chaque étape.
+        return [(active, valeur(v[-1] for v in valeurs))]
+    combinaisons = [(modele.new_bool_var(""), c) for c in itertools.product(*valeurs)]
+    modele.add(sum(z for z, _ in combinaisons) == active)
+    for k, xs in enumerate(chances):
+        for p in valeurs[k]:
+            modele.add(sum(x for x, q in xs if q == p) == sum(z for z, c in combinaisons if c[k] == p))
+    return [(z, valeur(c)) for z, c in combinaisons]
 
 def _cout(marche, t) -> int:
     """Coût entier d'un transfert : surtout le risque de refus, puis le rang du souhait."""

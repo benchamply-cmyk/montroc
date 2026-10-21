@@ -510,6 +510,7 @@ def test_grand_troc_garde_la_trace_du_calcul(client, creer, monkeypatch):
     with engine.begin() as conn:
         calcul, repechage = conn.execute(text("SELECT calcul, calcul_repechage FROM grands_trocs")).one()
     assert calcul["moteur"] in ("exact", "heuristique") and calcul["longueur_max"] == 4
+    assert calcul["objectif"] == "esperance"
     assert calcul["optimal"] is True and "duree_s" in calcul
     if calcul["moteur"] == "exact":
         assert calcul["etapes"][0] == "OPTIMAL"
