@@ -63,7 +63,7 @@ class GrapheEchanges:
                     t = Transfert(
                         donneur=o.proprietaire, receveur=u.id, objet=o, souhait_idx=i,
                         rang=s.rang, auto=s.acceptation_auto,
-                        proba_acceptation=marche.p_auto if s.acceptation_auto else marche.p_acceptation,
+                        proba_acceptation=marche.p_auto if s.acceptation_auto else marche.p_acceptation_de(u),
                         qualite=s.qualite(o), souhait_ref=s.ref,
                     )
                     self.variantes[(t.donneur, t.receveur)].append(t)

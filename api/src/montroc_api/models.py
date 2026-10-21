@@ -139,6 +139,10 @@ class Utilisateur(Horodatage, Base):
     # la fiabilité en découle (services.noter_engagement). Un refus n'est pas un manquement.
     engagements_tenus: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     engagements_manques: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    # Réponses données aux boucles du Grand Troc (hors « j'accepte d'office » et accords du Match) : le math trade
+    # en tire la chance qu'il dise oui à la prochaine (services.acceptation).
+    reponses_oui: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    reponses_non: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     # Compte suspendu par la modération : plus de connexion, objets retirés des échanges.
     suspendu_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     # Mot de passe facultatif (empreinte scrypt, voir motdepasse.py) : sans lui, on se connecte par lien magique.
@@ -159,6 +163,7 @@ class Utilisateur(Horodatage, Base):
     __table_args__ = (
         CheckConstraint("fiabilite >= 0 AND fiabilite <= 1", name="fiabilite_0_1"),
         CheckConstraint("engagements_tenus >= 0 AND engagements_manques >= 0", name="engagements_positifs"),
+        CheckConstraint("reponses_oui >= 0 AND reponses_non >= 0", name="reponses_positives"),
         # E-mail unique sans tenir compte de la casse.
         Index("uq_utilisateurs_email_lower", func.lower(email), unique=True),
     )

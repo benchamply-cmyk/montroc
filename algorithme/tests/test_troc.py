@@ -649,3 +649,19 @@ class TestReglesDuMatching(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAcceptationParMembre(unittest.TestCase):
+    def test_taux_du_membre_sauf_acceptation_d_office(self):
+        """Le taux de « oui » de chacun remplace la valeur commune, sauf pour un souhait « j'accepte d'office »."""
+        m = Marche(p_acceptation=0.7, p_auto=0.95)
+        m.ajouter_utilisateur("A", [Souhait("livres")], acceptation=0.4)
+        m.ajouter_utilisateur("B", [Souhait("jeux", acceptation_auto=True)], acceptation=0.4)
+        m.ajouter_utilisateur("C", [Souhait("jeux")])
+        m.ajouter_objet("a", "A", "jeux")
+        m.ajouter_objet("b", "B", "livres")
+        (boucle,) = math_trade(m, longueur_max=2).boucles
+        self.assertEqual({t.receveur: t.proba_acceptation for t in boucle.transferts}, {"A": 0.4, "B": 0.95})
+        self.assertEqual(m.p_acceptation_de(m.utilisateurs["C"]), 0.7)
+        with self.assertRaises(ValueError):
+            m.ajouter_utilisateur("D", acceptation=0)
