@@ -14,6 +14,7 @@ La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branche
 Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis passe sous un numéro quand on étiquette.
 
 - Site : moins de couleurs. Le jaune devient la seule couleur de marque (le violet passe en blanc cassé), catégories en pictos d'un seul trait au lieu d'émojis sur pastilles colorées, tuiles et halos de l'accueil neutres.
+- Site : « J'ai » devient « Je propose » dans « Comment ça marche » et dans les onglets de Mon espace.
 
 ## [0.4.1] – 2026-10-17
 
