@@ -20,6 +20,7 @@ Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis pas
 - Grand Troc : deux créneaux de lancement de plus le dimanche (18 h et 19 h UTC) ; en heure d'hiver, un seul tombait après 18 h à Paris.
 - Grand Troc : une boucle devenue impossible pendant le calcul (objet réservé entre-temps) est sautée au lieu de faire échouer tout le Grand Troc ; les chiffres enregistrés sont ceux des boucles vraiment proposées.
 - Grand Troc : chaque calcul garde sa trace (moteur exact ou heuristique, longueur de boucle retenue, statuts du solveur), le dimanche comme au repêchage du mardi.
+- Math trade : la chance qu'un membre dise oui à une boucle est son propre taux de « oui » (lissé vers 70 % tant qu'il a peu répondu), au lieu de 70 % pour tous ; un refus pèse sur les calculs suivants.
 
 ## [0.4.1] – 2026-10-17
 

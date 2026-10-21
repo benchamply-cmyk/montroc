@@ -185,6 +185,9 @@ class Utilisateur:
     # Équité : poids de cette personne quand on départage des solutions qui échangent autant d'objets
     # (1 = normal ; plus pour qui a peu reçu récemment, voir l'API).
     priorite: int = 1
+    # Probabilité qu'il dise oui à une boucle proposée (son taux de « oui », voir l'API) ;
+    # None : la valeur commune du marché (``Marche.p_acceptation``).
+    acceptation: float | None = None
 
 
 @dataclass(frozen=True)
@@ -281,12 +284,15 @@ class Marche:
         self.utilisateurs: dict[str, Utilisateur] = {}
         self.objets: dict[str, Objet] = {}
 
-    def ajouter_utilisateur(self, id: str, souhaits=(), zone=None, fiabilite=1.0, priorite=1) -> Utilisateur:
+    def ajouter_utilisateur(self, id: str, souhaits=(), zone=None, fiabilite=1.0, priorite=1,
+                            acceptation: float | None = None) -> Utilisateur:
         if id in self.utilisateurs:
             raise ValueError(f"Utilisateur {id!r} déjà présent.")
         if priorite < 1:
             raise ValueError("priorite doit être >= 1.")
-        u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite)
+        if acceptation is not None and not 0 < acceptation <= 1:
+            raise ValueError("acceptation doit être dans ]0, 1].")
+        u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite, acceptation)
         self.utilisateurs[id] = u
         return u
 
@@ -312,6 +318,10 @@ class Marche:
 
     def retirer_objet(self, id: str) -> None:
         self.objets.pop(id, None)
+
+    def p_acceptation_de(self, utilisateur: Utilisateur) -> float:
+        """Chance qu'il dise oui à une boucle (hors souhait « j'accepte d'office ») : son taux s'il est connu."""
+        return self.p_acceptation if utilisateur.acceptation is None else utilisateur.acceptation
 
     def proba_participant(self, transfert: Transfert) -> float:
         """Probabilité que le receveur accepte la boucle et aille au bout."""
