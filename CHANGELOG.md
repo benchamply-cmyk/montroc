@@ -13,6 +13,8 @@ La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branche
 
 Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis passe sous un numéro quand on étiquette.
 
+- Grand Troc : les « J'aime » d'un membre comptent ensemble comme un seul souhait, classé après ses souhaits déclarés ; dix coups de cœur ne font plus recevoir dix objets le même dimanche (réglage `COUPS_DE_COEUR_PAR_GRAND_TROC`, 1 par défaut).
+
 ## [0.5.0] – 2026-10-21 · Le math trade fiabilisé
 
 - Math trade : un souhait comblé ne reçoit plus d'autre objet au repêchage, au Grand Troc suivant ni pendant un accord du Match (chaque transfert garde le souhait qu'il sert) (#33).
