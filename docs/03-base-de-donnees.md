@@ -65,7 +65,7 @@ Et dans l'API :
 - un refus, un délai de 48 h dépassé ou des dépôts incomplets à la fin de la semaine (dimanche midi après le Grand Troc) **annulent** l'échange et remettent les objets en `disponible` ;
 - un objet retiré par la modération passe en `modere` : son propriétaire ne peut pas le remettre en ligne ;
 - la liste « je le donne contre… » d'un objet (`objets_contre`) ne contient que des souhaits de son propriétaire ;
-- la fiabilité découle des engagements : `(tenus + 9) / (tenus + manqués + 9)`. Un dépôt compte comme tenu ; ne pas répondre dans les 48 h, ou accepter sans déposer, comme manqué ; un refus ne compte pas.
+- la fiabilité découle des engagements : `(tenus + 9) / (tenus + manqués + 9)`. Un dépôt compte comme tenu ; ne pas répondre dans les 48 h, ou accepter sans déposer, comme manqué ; un refus ne compte pas. Les autres membres en voient la **réputation** (fiche d'un objet, carte du Match) : « Nouveau membre » tant que rien n'est mené ni manqué, « Membre fiable » à partir de 3 échanges menés au bout avec une fiabilité d'au moins 90 %, « Fiabilité à confirmer » à 75 % ou moins (trois manquements sans échange mené), avec le nombre d'échanges menés au bout.
 
 Les tests (`api/tests/test_base_de_donnees.py`) vérifient chacune de ces contraintes sur une vraie base PostgreSQL.
 

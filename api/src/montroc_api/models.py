@@ -124,6 +124,12 @@ class Categorie(Base):
     __table_args__ = (CheckConstraint("slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'", name="slug_format"),)
 
 
+# Réputation affichée (``Utilisateur.reputation``) : la fiabilité vaut (tenus + 9) / (tenus + 9 + manqués).
+ECHANGES_POUR_ETRE_FIABLE = 3
+SEUIL_FIABLE = 0.9  # au plus un manquement pour 0 à 9 échanges menés
+SEUIL_A_CONFIRMER = 0.75  # trois manquements sans échange mené au bout
+
+
 class Utilisateur(Horodatage, Base):
     __tablename__ = "utilisateurs"
 
@@ -159,6 +165,24 @@ class Utilisateur(Horodatage, Base):
     @property
     def a_un_mot_de_passe(self) -> bool:
         return self.mot_de_passe is not None
+
+    @property
+    def echanges_menes(self) -> int:
+        """Échanges menés au bout : chaque objet déposé à temps."""
+        return self.engagements_tenus or 0
+
+    @property
+    def reputation(self) -> str:
+        """Ce que les autres membres voient de sa fiabilité : « nouveau » tant qu'il n'a rien mené ni manqué,
+        « fiable » après quelques échanges menés au bout sans (presque) rien manquer, « a_confirmer » après
+        plusieurs absences de réponse ou dépôts manqués, « membre » entre les deux."""
+        if not self.engagements_tenus and not self.engagements_manques:
+            return "nouveau"
+        if self.fiabilite <= SEUIL_A_CONFIRMER:
+            return "a_confirmer"
+        if self.engagements_tenus >= ECHANGES_POUR_ETRE_FIABLE and self.fiabilite >= SEUIL_FIABLE:
+            return "fiable"
+        return "membre"
 
     __table_args__ = (
         CheckConstraint("fiabilite >= 0 AND fiabilite <= 1", name="fiabilite_0_1"),
