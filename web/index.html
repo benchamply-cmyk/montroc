@@ -35,7 +35,8 @@ section.view[hidden]{display:none}
 .loop{position:relative;width:100%;max-width:340px;aspect-ratio:1;margin:4px auto 0}
 .loop svg{width:100%;height:100%;overflow:visible}
 .loop .ring{fill:none;stroke:var(--line);stroke-width:1.5}
-.lobj{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:var(--mark);display:grid;place-items:center;z-index:3;box-shadow:0 0 0 4px var(--bg);font-size:20px}
+.lobj{position:absolute;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;background:var(--mark);display:grid;place-items:center;z-index:3;box-shadow:0 0 0 4px var(--bg);color:#111318}
+.lobj .ico{width:22px;height:22px}
 .node{position:absolute;z-index:4;transform:translate(-50%,-50%);background:var(--surface);border:1.5px solid var(--ink);border-radius:14px;padding:7px 12px;font-size:13px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.25}
 .node b{display:block;font-size:14px}
 .node small{display:block;font-weight:500;font-size:11.5px;line-height:1.35}
@@ -162,8 +163,8 @@ nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--
 .rot>span.out{transform:translateY(-105%);opacity:0}
 /* Ambiance de l'accueil : deux halos qui dérivent lentement et un grain de papier. */
 .ambient{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-.ambient i{position:absolute;border-radius:50%;filter:blur(70px);background:var(--accent);opacity:.22;width:420px;height:420px;left:calc(50% - 210px);top:-60px;animation:drift 14s ease-in-out infinite alternate}
-.ambient i+i{background:var(--mark);opacity:.10;width:300px;height:300px;top:260px;animation-duration:18s;animation-direction:alternate-reverse}
+.ambient i{position:absolute;border-radius:50%;filter:blur(70px);background:var(--mark);opacity:.07;width:420px;height:420px;left:calc(50% - 210px);top:-60px;animation:drift 14s ease-in-out infinite alternate}
+.ambient i+i{display:none}
 @keyframes drift{from{transform:translate(-140px,-20px)}to{transform:translate(140px,50px)}}
 .ambient::after{content:"";position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 @media (prefers-reduced-motion:reduce){
@@ -278,7 +279,9 @@ body.large .wrap{max-width:1120px}
 .acc-cats{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;scroll-snap-type:x proximity}
 .acc-cats::-webkit-scrollbar{display:none}
 .acc-cat{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;width:84px;background:none;border:0;padding:0;font:inherit;font-size:13px;color:var(--muted);line-height:1.2;text-align:center;scroll-snap-align:start;cursor:pointer}
-.acc-cat .pastille{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-size:30px;background:linear-gradient(135deg,hsl(var(--h) 45% 32%),hsl(var(--h) 35% 18%));transition:transform .2s}
+.acc-cat .pastille{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--ink);transition:transform .2s,border-color .2s,color .2s}
+.acc-cat .ico{width:28px;height:28px}
+.acc-cat:hover .pastille{border-color:var(--mark);color:var(--mark)}
 .acc-cat:hover{color:var(--ink)}
 .acc-cat:hover .pastille{transform:scale(1.06)}
 .acc-etapes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -295,10 +298,11 @@ body.large .wrap{max-width:1120px}
 .acc-tuile .txt{display:flex;flex-direction:column;gap:10px;align-items:flex-start;min-width:0}
 .acc-tuile h2{font-size:20px}
 .pile{position:relative;width:90px;height:116px;flex:none}
-.pile span{position:absolute;inset:0;border-radius:14px;border:2px solid var(--bg);display:grid;place-items:center;font-size:38px;background:linear-gradient(135deg,#3B4160,#22263A)}
+.pile span{position:absolute;inset:0;border-radius:14px;border:2px solid var(--bg);display:grid;place-items:center;background:var(--surface);color:var(--ink)}
+.pile .ico{width:34px;height:34px}
 .pile span:nth-child(1){transform:rotate(-10deg) translateX(-12px)}
-.pile span:nth-child(2){transform:rotate(6deg) translateX(8px);background:linear-gradient(135deg,#4A3F2A,#2A2519)}
-.pile span:nth-child(3){transform:rotate(-1deg);background:linear-gradient(135deg,#2D4A3E,#1C2A24)}
+.pile span:nth-child(2){transform:rotate(6deg) translateX(8px)}
+.pile span:nth-child(3){transform:rotate(-1deg)}
 .pile i{position:absolute;right:-8px;bottom:-6px;width:42px;height:42px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.4)}
 .pile i svg{width:20px;height:20px;fill:currentColor}
 .acc-gt{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;max-width:130px}
@@ -374,7 +378,7 @@ a.result:hover b{text-decoration:underline;text-underline-offset:2px}
 .puces-cat,.puces-etat{display:flex;flex-wrap:wrap;gap:8px}
 .puces label{position:relative;cursor:pointer}
 .puces input{position:absolute;opacity:0;inset:0;margin:0;pointer-events:none}
-.puces label span{display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--line);border-radius:999px;padding:8px 13px;font-size:14px;background:var(--surface);transition:border-color .15s}
+.puces label span{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:8px 13px;font-size:14px;background:var(--surface);transition:border-color .15s}
 .puces label:hover span{border-color:var(--muted)}
 .puces input:checked+span{border-color:var(--mark);background:color-mix(in srgb,var(--mark) 16%,var(--surface));color:var(--ink);font-weight:600}
 .puces input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
@@ -425,6 +429,8 @@ details.plus summary::-webkit-details-marker{display:none}
 .ronds .oui svg{fill:currentColor;stroke:none;width:32px;height:32px}
 .aide{font-size:14px;text-align:center}
 @media (prefers-reduced-motion:reduce){.pile-match .carte{transition:none}}
+.ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.puces .ico{width:16px;height:16px}
 </style>
 </head>
 <body class="large">
@@ -458,7 +464,7 @@ details.plus summary::-webkit-details-marker{display:none}
         <div class="node" style="left:50%;top:13.3%"><b>Vous</b><small class="b">Besoin : un vélo enfant</small><small class="d">Donne : une poussette</small></div>
         <div class="node" style="left:81.8%;top:68.3%"><b>Sophie</b><small class="b">Besoin : une poussette</small><small class="d">Donne : un kit de jardinage</small></div>
         <div class="node" style="left:18.2%;top:68.3%"><b>Loïc</b><small class="b">Besoin : un kit de jardinage</small><small class="d">Donne : un vélo enfant</small></div>
-        <div class="lobj" aria-hidden="true">👶</div><div class="lobj" aria-hidden="true">🌱</div><div class="lobj" aria-hidden="true">🚲</div>
+        <div class="lobj" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h4.5v6.5H4M4 11.5h14a6.5 6.5 0 0 0-6.5-6.5H11"/><path d="M5 11.5l2 4.5h8l2-4.5"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="15" cy="18.5" r="1.6"/></svg></div><div class="lobj" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14h10l-1.5 6h-7zM12 14V8"/><path d="M12 10.5C9 10.5 7 8.5 7 5.5c3 0 5 2 5 5zM12 9.5c0-3 2-5 5-5 0 3-2 5-5 5z"/></svg></div><div class="lobj" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5.5L18 16M10 9l3 7h-7M14 6h2.5"/></svg></div>
         <div class="center"><div><b>1 boucle</b><br><span class="muted" style="font-size:12px">3 personnes servies</span></div></div>
       </div>
     </div>
@@ -489,7 +495,7 @@ details.plus summary::-webkit-details-marker{display:none}
           <button class="acc-btn a" type="button" data-go="match" data-auth hidden>Voir les objets pour moi</button>
           <button class="acc-btn a" type="button" data-vers-compte data-anon>Créer mon compte</button>
         </div>
-        <div class="pile" aria-hidden="true"><span>📚</span><span>🔧</span><span>🚲</span><i><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></i></div>
+        <div class="pile" aria-hidden="true"><span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h5.5A2.5 2.5 0 0 1 12 7.5V20a2 2 0 0 0-2-2H4zM20 5h-5.5A2.5 2.5 0 0 0 12 7.5V20a2 2 0 0 1 2-2h6z"/></svg></span><span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a6 6 0 0 1-7.9 7.9l-6.4 6.4a2.1 2.1 0 0 1-3-3l6.4-6.4a6 6 0 0 1 7.9-7.9z"/></svg></span><span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5.5L18 16M10 9l3 7h-7M14 6h2.5"/></svg></span><i><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></i></div>
       </div>
       <div class="acc-tuile g" id="grand-troc">
         <div class="txt">
@@ -920,10 +926,11 @@ document.addEventListener('click',e=>{
 });
 
 /* Catégories en vignettes et fil de photos de l'accueil */
-const PICTOS={'mode':['👗',330],'high-tech':['🎧',230],'enfant':['🧸',25],'maison':['🪴',100],'sport':['⚽',150],'culture':['📚',280],'bricolage':['🔧',40],'electromenager':['☕',15],'auto-moto':['🚗',210],'divers':['🎁',350]};
+/* Pictogrammes au trait, d'une seule couleur (currentColor) : catégories de l'accueil et de « Proposer ». */
+const PICTOS={'mode':'<path d="M8.5 4 4 7l2 3.2 2-1V20h8V9.2l2 1L20 7l-4.5-3c0 1.9-1.6 3-3.5 3s-3.5-1.1-3.5-3z"/>','high-tech':'<path d="M4 16v-4a8 8 0 0 1 16 0v4"/><rect x="3.5" y="14" width="4" height="6" rx="1.5"/><rect x="16.5" y="14" width="4" height="6" rx="1.5"/>','enfant':'<circle cx="12" cy="11" r="5"/><circle cx="7.3" cy="6.3" r="2"/><circle cx="16.7" cy="6.3" r="2"/><path d="M7.5 20a4.5 4.5 0 0 1 9 0"/>','maison':'<path d="M7 14h10l-1.5 6h-7zM12 14V8"/><path d="M12 10.5C9 10.5 7 8.5 7 5.5c3 0 5 2 5 5zM12 9.5c0-3 2-5 5-5 0 3-2 5-5 5z"/>','sport':'<circle cx="12" cy="12" r="8"/><path d="m12 8.5 3.3 2.4-1.3 3.9h-4l-1.3-3.9zM12 4v4.5M15.3 10.9l4.2-1.4M14 14.8l2.6 3.6M10 14.8l-2.6 3.6M8.7 10.9 4.5 9.5"/>','culture':'<path d="M4 5h5.5A2.5 2.5 0 0 1 12 7.5V20a2 2 0 0 0-2-2H4zM20 5h-5.5A2.5 2.5 0 0 0 12 7.5V20a2 2 0 0 1 2-2h6z"/>','bricolage':'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a6 6 0 0 1-7.9 7.9l-6.4 6.4a2.1 2.1 0 0 1-3-3l6.4-6.4a6 6 0 0 1 7.9-7.9z"/>','electromenager':'<path d="M5 9h11v5.5a4.5 4.5 0 0 1-4.5 4.5h-2A4.5 4.5 0 0 1 5 14.5zM16 11h1.5a2.5 2.5 0 0 1 0 5H16M8.5 3.5v2.5M12.5 3.5v2.5"/>','auto-moto':'<path d="M3.5 16v-3l2.5-6h12l2.5 6v3zM6 16v2.5M18 16v2.5M7.5 12.5h.01M16.5 12.5h.01"/>','divers':'<path d="M4.5 11h15v9h-15zM3.5 7.5h17V11h-17zM12 7.5V20M12 7.5C10 3.5 6 4.5 7.5 7.5M12 7.5c2-4 6-3 4.5 0"/>'};
+const picto=slug=>`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${PICTOS[slug]||PICTOS.divers}</svg>`;
 function afficherCategories(cats){
-  $('#acc-cats').innerHTML=cats.map(c=>{const [e,h]=PICTOS[c.slug]||['📦',260];
-    return `<button type="button" class="acc-cat" data-cat="${esc(c.slug)}"><span class="pastille" style="--h:${h}" aria-hidden="true">${e}</span>${esc(c.libelle)}</button>`}).join('');
+  $('#acc-cats').innerHTML=cats.map(c=>`<button type="button" class="acc-cat" data-cat="${esc(c.slug)}"><span class="pastille">${picto(c.slug)}</span>${esc(c.libelle)}</button>`).join('');
   $('#f-search-home').cat.innerHTML='<option value="">Tout</option>'+cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
 }
 function carteObjet(o){
@@ -1489,7 +1496,7 @@ async function demarrer(){
   const gt=chargerGrandTroc(), session=location.hash.startsWith('#connexion=')?null:chargerSession();
   try{const cats=await api('/categories'); categories=Object.fromEntries(cats.map(c=>[c.slug,c.libelle])); afficherCategories(cats); chargerFil();
     const opts=cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
-    $('#cat-obj').innerHTML=cats.map(c=>`<label><input type="radio" name="categorie_slug" value="${esc(c.slug)}" required><span>${(PICTOS[c.slug]||['📦'])[0]} ${esc(c.libelle)}</span></label>`).join(''); $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
+    $('#cat-obj').innerHTML=cats.map(c=>`<label><input type="radio" name="categorie_slug" value="${esc(c.slug)}" required><span>${picto(c.slug)}${esc(c.libelle)}</span></label>`).join(''); $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
   }catch(err){toast(err.message)}
   let h=location.hash;
   if(h==='#mon-espace'){h='#monespace';history.replaceState(null,'',h)} // ancienne adresse de Mon espace
