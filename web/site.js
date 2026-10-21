@@ -11,7 +11,7 @@
   <a class="logo" href="/" aria-label="TrocTroc, retour à l'accueil">${LOGO}<span>Troc<span class="logo-2">Troc</span></span></a>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
-      <li><a href="/#concept">Le concept</a></li>
+      <li><a href="/#decouvrir">Le concept</a></li>
       <li><a href="/#comment-ca-marche">Comment ça marche</a></li>
       <li><a href="/#grand-troc">Le Grand Troc</a></li>
       <li><a href="/#objets">Voir les objets</a></li>

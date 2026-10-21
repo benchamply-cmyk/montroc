@@ -47,11 +47,6 @@ section.view[hidden]{display:none}
 .cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px 22px;font-weight:600;font-size:16px}
 .cta.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 .row{display:flex;gap:10px;flex-wrap:wrap}
-.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.rules div{background:var(--surface);padding:14px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
-.rules b{font-family:var(--display);font-size:15px}
-.rules span{font-size:13px;color:var(--muted);line-height:1.35}
-@media (max-width:420px){.rules{grid-template-columns:1fr}}
 .steps{display:flex;flex-direction:column;gap:14px;counter-reset:s;padding:0;margin:0;list-style:none}
 .steps li{display:grid;grid-template-columns:32px 1fr;gap:12px;align-items:start}
 .steps li::before{counter-increment:s;content:counter(s);font-family:var(--mono);font-size:13px;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center}
@@ -250,7 +245,7 @@ footer.legal{font-size:13px;color:var(--muted);padding-block:12px 0;text-align:c
 nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 /* Premier écran de l'accueil : le texte de présentation seul, sur toute la hauteur de l'écran. */
 @keyframes bob{50%{transform:translateY(6px)}}
-/* Sections de l'accueil visées par le menu (Le concept, Comment ça marche, Particuliers) */
+/* Sections de l'accueil visées par le menu (Comment ça marche, Particuliers) */
 .bloc{display:flex;flex-direction:column;gap:12px}
 .gratuit{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
 .gratuit li::before{content:"✓";color:var(--ok);margin-right:10px}
@@ -515,15 +510,6 @@ details.plus summary::-webkit-details-marker{display:none}
         <button type="button" data-objets>Tout voir</button>
       </div>
       <div class="results acc-fil" id="acc-fil"><p class="empty">Chargement des objets…</p></div>
-    </div>
-
-    <div class="bloc" id="concept">
-      <h2>Le concept</h2>
-      <div class="rules">
-        <div><b>Sans argent</b><span>Un objet contre un objet. Jamais d'euros, jamais de points.</span></div>
-        <div><b>À plusieurs</b><span>TrocTroc ferme la boucle pour vous.</span></div>
-        <div><b>En confiance</b><span>Chacun dépose, chacun récupère.</span></div>
-      </div>
     </div>
 
     <div class="acc-duo">
