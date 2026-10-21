@@ -47,8 +47,12 @@ class Settings(BaseSettings):
     # compte pour sa longueur × la chance que tous acceptent : une boucle de 4 incertaine cède la place à une boucle
     # de 3 plus sûre qui lui dispute un objet) ; « echanges », le plus d'objets proposés, comme avant.
     objectif_grand_troc: Literal["echanges", "esperance"] = "esperance"
-    # Lieu de dépôt affiché aux participants d'un échange accepté (adresse, horaires).
+    # Lieu de dépôt affiché aux participants d'un échange accepté (adresse, horaires) : celui par défaut.
     point_de_depot: str = ""
+    # Un lieu de dépôt par ville ou quartier, séparés par des « ; » : « zone = lieu ». Un échange prend celui de la
+    # zone de la plupart de ses participants (« Marseille » vaut aussi pour « Marseille 6e »), sinon POINT_DE_DEPOT.
+    # Ex. : « Marseille 6e = Ressourcerie, rue des Trois-Rois, 13006 Marseille ; Aix-en-Provence = Café, … ».
+    points_de_depot: str = ""
 
     @property
     def database_url_normalisee(self) -> str:
@@ -78,6 +82,16 @@ class Settings(BaseSettings):
     @property
     def liste_moderateurs(self) -> set[str]:
         return {e.strip().lower() for e in self.moderateurs.split(",") if e.strip()}
+
+    @property
+    def liste_points_de_depot(self) -> list[tuple[str, str]]:
+        """(zone en minuscules, lieu) pour chaque entrée de POINTS_DE_DEPOT, dans l'ordre."""
+        points = []
+        for entree in self.points_de_depot.split(";"):
+            zone, egal, lieu = entree.partition("=")
+            if egal and zone.strip() and lieu.strip():
+                points.append((" ".join(zone.split()).lower(), lieu.strip()))
+        return points
 
     @property
     def liste_cors(self) -> list[str]:

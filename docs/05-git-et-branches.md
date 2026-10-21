@@ -69,5 +69,5 @@ Les prochaines branches, dans l'ordre conseillé :
 |---|---|
 | ~~Étape 1~~ (fait) | connexion par lien magique, site branché sur l'API, photos (Cloudinary) et état obligatoires, e-mails aux moments clés, tâches planifiées, signalements et modération : voir [06-comptes-e-mails-photos.md](06-comptes-e-mails-photos.md) |
 | `feature/reputation` | la fiabilité d'un utilisateur évolue selon les échanges menés au bout (et baisse sans réponse) |
-| `feature/points-de-depot` | plusieurs lieux de dépôt choisis selon la ville, au lieu d'un seul lieu configuré |
+| ~~`feature/points-de-depot`~~ (fait) | plusieurs lieux de dépôt choisis selon la ville, au lieu d'un seul lieu configuré |
 | `feature/pages-legales` | mentions légales, CGU, règles de modération et rapport de transparence annuel (DSA) |

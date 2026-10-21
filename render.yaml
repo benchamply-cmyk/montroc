@@ -50,3 +50,6 @@ services:
       # Lieu de dépôt affiché aux participants (adresse et horaires).
       - key: POINT_DE_DEPOT
         sync: false
+      # Facultatif : un lieu par zone, « Marseille 6e = adresse ; Aix-en-Provence = adresse ».
+      - key: POINTS_DE_DEPOT
+        sync: false
