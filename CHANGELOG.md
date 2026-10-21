@@ -13,15 +13,17 @@ La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branche
 
 Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis passe sous un numéro quand on étiquette.
 
-- Math trade : un souhait comblé ne reçoit plus d'autre objet au repêchage, au Grand Troc suivant ni pendant un accord du Match (chaque transfert garde le souhait qu'il sert).
-- Grand Troc : la base enregistre les boucles de 4 personnes (jusqu'à 6) ; avant, la première boucle de 4 trouvée faisait échouer tout le Grand Troc.
-- Math trade : un objet qui remplit plusieurs souhaits du receveur peut combler le second quand le premier est déjà servi ; le moteur exact et le mode illimité ne ratent plus ces échanges.
-- Math trade : l'heuristique de secours n'annonce plus un « optimal prouvé » quand elle a écarté des boucles possibles (plus de 2 objets entre deux personnes, ou un objet qui remplit plusieurs souhaits).
-- Grand Troc : deux créneaux de lancement de plus le dimanche (18 h et 19 h UTC) ; en heure d'hiver, un seul tombait après 18 h à Paris.
-- Grand Troc : une boucle devenue impossible pendant le calcul (objet réservé entre-temps) est sautée au lieu de faire échouer tout le Grand Troc ; les chiffres enregistrés sont ceux des boucles vraiment proposées.
-- Grand Troc : chaque calcul garde sa trace (moteur exact ou heuristique, longueur de boucle retenue, statuts du solveur), le dimanche comme au repêchage du mardi.
-- Math trade : la chance qu'un membre dise oui à une boucle est son propre taux de « oui » (lissé vers 70 % tant qu'il a peu répondu), au lieu de 70 % pour tous ; un refus pèse sur les calculs suivants.
-- Grand Troc : le moteur exact maximise les objets échangés *attendus* (longueur × chance que tous acceptent) ; une boucle de 4 incertaine cède la place à une boucle de 3 plus sûre qui lui dispute un objet (réglage `OBJECTIF_GRAND_TROC`, `echanges` pour revenir à l'ancien calcul).
+## [0.5.0] – 2026-10-21 · Le math trade fiabilisé
+
+- Math trade : un souhait comblé ne reçoit plus d'autre objet au repêchage, au Grand Troc suivant ni pendant un accord du Match (chaque transfert garde le souhait qu'il sert) (#33).
+- Grand Troc : la base enregistre les boucles de 4 personnes (jusqu'à 6) ; avant, la première boucle de 4 trouvée faisait échouer tout le Grand Troc (#34).
+- Math trade : un objet qui remplit plusieurs souhaits du receveur peut combler le second quand le premier est déjà servi ; le moteur exact et le mode illimité ne ratent plus ces échanges (#35).
+- Math trade : l'heuristique de secours n'annonce plus un « optimal prouvé » quand elle a écarté des boucles possibles (plus de 2 objets entre deux personnes, ou un objet qui remplit plusieurs souhaits) (#37).
+- Grand Troc : deux créneaux de lancement de plus le dimanche (18 h et 19 h UTC) ; en heure d'hiver, un seul tombait après 18 h à Paris (#38).
+- Grand Troc : une boucle devenue impossible pendant le calcul (objet réservé entre-temps) est sautée au lieu de faire échouer tout le Grand Troc ; les chiffres enregistrés sont ceux des boucles vraiment proposées (#39).
+- Grand Troc : chaque calcul garde sa trace (moteur exact ou heuristique, longueur de boucle retenue, statuts du solveur), le dimanche comme au repêchage du mardi (#40).
+- Math trade : la chance qu'un membre dise oui à une boucle est son propre taux de « oui » (lissé vers 70 % tant qu'il a peu répondu), au lieu de 70 % pour tous ; un refus pèse sur les calculs suivants (#41).
+- Grand Troc : le moteur exact maximise les objets échangés *attendus* (longueur × chance que tous acceptent) ; une boucle de 4 incertaine cède la place à une boucle de 3 plus sûre qui lui dispute un objet (réglage `OBJECTIF_GRAND_TROC`, `echanges` pour revenir à l'ancien calcul) (#42).
 
 ## [0.4.1] – 2026-10-17
 
