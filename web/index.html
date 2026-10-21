@@ -402,6 +402,9 @@ details.plus summary::-webkit-details-marker{display:none}
 .fiche-membre{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
 .fiche-membre .avatar{width:42px;height:42px;font-size:18px}
 .fiche-membre div{display:flex;flex-direction:column;font-size:14px}
+.etapes-trois{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.etapes-trois li{display:flex;align-items:center;gap:10px}
+.etapes-trois img{width:40px;height:40px;object-fit:cover;border-radius:8px}
 .fiche-actions{display:flex;flex-direction:column;gap:10px}
 .fiche-actions .acc-btn{width:100%}
 .fiche-actions .note{font-size:14px}
@@ -737,9 +740,14 @@ details.plus summary::-webkit-details-marker{display:none}
       <button class="oui" type="button" id="m-oui" aria-label="J'aime"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
     </div>
     <p class="muted aide" id="match-aide" hidden>Glissez la carte vers la droite si elle vous plaît, vers la gauche sinon (ou flèches ← → du clavier). Un cœur de chaque côté et vous échangez à deux, sans attendre dimanche.</p>
+    <div id="bloc-trois" hidden style="display:flex;flex-direction:column;gap:16px">
+      <div class="list-head" style="margin:8px 0 -4px"><span class="label">Boucles à trois</span></div>
+      <p class="muted" style="font-size:14px;margin:0">Chacun reçoit ce qu'il a demandé ou aimé. Proposez la boucle : les deux autres ont 48 h pour dire oui.</p>
+      <div id="boucles-trois" style="display:flex;flex-direction:column;gap:16px"></div>
+    </div>
     <div class="list-head" style="margin:8px 0 -12px"><span class="label">Mes matchs</span></div>
     <div id="matchs" style="display:flex;flex-direction:column;gap:16px"></div>
-    <p class="muted" style="font-size:14px">Pas de match pour un objet ? Il reste en lice pour le Grand Troc du dimanche, qui cherche aussi les boucles à trois. Vos « J'aime » y comptent comme des souhaits, et un « Non merci » ne vous sera pas reproposé.</p>
+    <p class="muted" style="font-size:14px">Pas de match pour un objet ? Il reste en lice pour une boucle à trois ci-dessus, et pour le Grand Troc du dimanche. Vos « J'aime » y comptent comme des souhaits, et un « Non merci » ne vous sera pas reproposé.</p>
   </section>
 
   <!-- REMISE -->
