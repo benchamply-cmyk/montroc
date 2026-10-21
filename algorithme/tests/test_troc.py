@@ -151,6 +151,24 @@ class TestBouclesAutour(unittest.TestCase):
         m.utilisateurs["A"].souhaits = [Souhait(objet_id="sB")]
         self.assertEqual(len(boucles_autour(m, "A")), 1)
 
+    def test_coups_de_coeur_regroupes(self):
+        # A aime le siège de B et celui de D, qui veulent chacun un livre de A : un seul souhait de quantité 1.
+        m = Marche()
+        m.ajouter_utilisateur("A", [Souhait(objets={"sB", "sD"})])
+        m.ajouter_utilisateur("B", [Souhait(categorie="livre")])
+        m.ajouter_utilisateur("D", [Souhait(categorie="livre")])
+        m.ajouter_objet("l1", "A", "livre")
+        m.ajouter_objet("l2", "A", "livre")
+        m.ajouter_objet("sB", "B", "siege")
+        m.ajouter_objet("sD", "D", "siege")
+        for lm in (3, None):
+            self.assertEqual(math_trade(m, longueur_max=lm).nb_objets_echanges, 2)
+        m.utilisateurs["A"].souhaits = [Souhait(objets={"sB", "sD"}, quantite=2)]
+        for lm in (3, None):
+            self.assertEqual(math_trade(m, longueur_max=lm).nb_objets_echanges, 4)
+        with self.assertRaises(ValueError):
+            Souhait(objet_id="sB", objets={"sD"})
+
     def test_sous_categorie_et_criteres(self):
         """Une sous-catégorie ou une taille demandées écartent les objets qui en précisent une autre."""
         m = Marche()

@@ -50,6 +50,8 @@ class GrapheEchanges:
                     continue
                 if s.objet_id is not None:
                     candidats = [disponibles[s.objet_id]] if s.objet_id in disponibles else []
+                elif s.objets:
+                    candidats = [disponibles[x] for x in sorted(s.objets) if x in disponibles]
                 else:
                     candidats = [o for cat in sorted(s.categories_visees())
                                  for o in par_categorie.get(cat, []) if s.correspond(o)]
