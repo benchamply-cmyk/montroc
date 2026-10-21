@@ -461,6 +461,7 @@ class GrandTrocLecture(Lecture):
     duree_s: float
     repeche_le: datetime | None
     nb_objets_repeches: int
+    nb_objets_remplaces: int
 
 
 class InfosGrandTroc(BaseModel):
@@ -482,6 +483,8 @@ class ResultatGrandTroc(BaseModel):
 class ResultatTaches(BaseModel):
     rappels_envoyes: int
     echanges_expires: int
+    # Remplaçants après un refus, pendant les 48 h de réponse : None s'il n'y avait rien à chercher.
+    objets_remplaces: int | None = None
     # Repêchage du mardi 18 h : None s'il n'a pas eu lieu à cet appel.
     objets_repeches: int | None = None
 
