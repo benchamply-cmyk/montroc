@@ -24,6 +24,8 @@ Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis pas
 - Grand Troc : chaque calcul garde sa trace (moteur exact ou heuristique, longueur de boucle retenue, statuts du solveur), le dimanche comme au repêchage du mardi (#40).
 - Math trade : la chance qu'un membre dise oui à une boucle est son propre taux de « oui » (lissé vers 70 % tant qu'il a peu répondu), au lieu de 70 % pour tous ; un refus pèse sur les calculs suivants (#41).
 - Grand Troc : le moteur exact maximise les objets échangés *attendus* (longueur × chance que tous acceptent) ; une boucle de 4 incertaine cède la place à une boucle de 3 plus sûre qui lui dispute un objet (réglage `OBJECTIF_GRAND_TROC`, `echanges` pour revenir à l'ancien calcul) (#42).
+- Site : moins de couleurs, pictogrammes au trait et une seule couleur d'accent (#43).
+- Dépôt : la vieille copie du moteur dans `algorithme/build/` (du 13 octobre) n'est plus suivie par Git ; une installation locale ne peut plus la prendre à la place du code actuel (#44).
 
 ## [0.4.1] – 2026-10-17
 
