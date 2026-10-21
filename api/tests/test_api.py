@@ -542,3 +542,18 @@ def test_grand_troc_saute_une_boucle_devenue_impossible(client, creer, monkeypat
     assert r.status_code == 200, r.text
     assert len(r.json()["echanges"]) == 1
     assert (r.json()["grand_troc"]["nb_boucles"], r.json()["grand_troc"]["nb_objets"]) == (1, 2)
+
+
+def test_plafond_d_echanges_par_personne(client, creer, monkeypatch):
+    """Un gros déposant ne reçoit pas plus de PLAFOND_ECHANGES_GRAND_TROC objets au même Grand Troc."""
+    monkeypatch.setattr(services.get_settings(), "plafond_echanges_grand_troc", 2)
+    gros = creer.utilisateur("gros")
+    creer.souhait(gros, "maison", quantite=4)
+    for k in range(4):
+        p = creer.utilisateur(f"membre{k}")
+        creer.objet(gros, "enfant", f"Jouet {k}")
+        creer.objet(p, "maison", f"Lampe {k}")
+        creer.souhait(p, "enfant")
+    r = client.post("/taches/grand-troc?force=true", headers=TACHES)
+    assert r.status_code == 200, r.text
+    assert len(r.json()["echanges"]) == 2
