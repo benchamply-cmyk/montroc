@@ -188,6 +188,9 @@ class Utilisateur:
     # Probabilité qu'il dise oui à une boucle proposée (son taux de « oui », voir l'API) ;
     # None : la valeur commune du marché (``Marche.p_acceptation``).
     acceptation: float | None = None
+    # Nombre maximum de boucles (donc d'objets reçus) pour lui dans une même recherche ; None : pas de plafond.
+    # Le nombre d'objets échangés reste maximisé sous ce plafond : un gros déposant ne prend pas tout le dimanche.
+    plafond: int | None = None
 
 
 @dataclass(frozen=True)
@@ -285,14 +288,16 @@ class Marche:
         self.objets: dict[str, Objet] = {}
 
     def ajouter_utilisateur(self, id: str, souhaits=(), zone=None, fiabilite=1.0, priorite=1,
-                            acceptation: float | None = None) -> Utilisateur:
+                            acceptation: float | None = None, plafond: int | None = None) -> Utilisateur:
         if id in self.utilisateurs:
             raise ValueError(f"Utilisateur {id!r} déjà présent.")
         if priorite < 1:
             raise ValueError("priorite doit être >= 1.")
         if acceptation is not None and not 0 < acceptation <= 1:
             raise ValueError("acceptation doit être dans ]0, 1].")
-        u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite, acceptation)
+        if plafond is not None and plafond < 0:
+            raise ValueError("plafond doit être >= 0.")
+        u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite, acceptation, plafond)
         self.utilisateurs[id] = u
         return u
 

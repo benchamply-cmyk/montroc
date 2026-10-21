@@ -189,6 +189,27 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
     return marche
 
 
+def appliquer_plafond(session: Session, marche: Marche, grand_troc: m.GrandTroc | None = None) -> None:
+    """Plafond d'échanges par personne et par Grand Troc (réglage ``PLAFOND_ECHANGES_GRAND_TROC``, 0 : aucun).
+
+    Au repêchage, les boucles du dimanche encore en cours (proposées, acceptées ou terminées) comptent déjà."""
+    plafond = get_settings().plafond_echanges_grand_troc
+    if not plafond:
+        return
+    deja: dict[int, int] = {}
+    if grand_troc is not None:
+        deja = dict(
+            session.execute(
+                select(m.Transfert.receveur_id, func.count())
+                .join(m.Transfert.echange)
+                .where(m.Echange.grand_troc_id == grand_troc.id, m.Echange.statut.in_(ECHANGES_QUI_COMBLENT))
+                .group_by(m.Transfert.receveur_id)
+            ).all()
+        )
+    for u in marche.utilisateurs.values():
+        u.plafond = max(0, plafond - deja.get(int(u.id), 0))
+
+
 def contraintes_du_match(session: Session) -> Contraintes:
     """Les « Non merci » du Match : le Grand Troc ne propose pas un objet à qui l'a écarté."""
     contraintes = Contraintes()
@@ -387,6 +408,7 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
         return deja, [], False, "Le Grand Troc de ce jour a déjà eu lieu."
 
     marche = construire_marche(session)
+    appliquer_plafond(session, marche)
     solution = math_trade(
         marche,
         longueur_max=LONGUEUR_GRAND_TROC,
@@ -686,6 +708,7 @@ def repechage(session: Session) -> int | None:
 
     # Les boucles acceptées dimanche comptent dans les souhaits : pas de deuxième poussette au repêchage.
     marche = construire_marche(session, stock_avant=grand_troc.cree_le)
+    appliquer_plafond(session, marche, grand_troc)
     contraintes = contraintes_du_marche(session, marche)
     for e in grand_troc.echanges:
         if e.statut != m.StatutEchange.annule:

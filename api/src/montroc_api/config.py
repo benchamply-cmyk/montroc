@@ -4,6 +4,7 @@ from functools import lru_cache
 from typing import Literal
 from urllib.parse import unquote, urlsplit
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -47,6 +48,9 @@ class Settings(BaseSettings):
     # compte pour sa longueur × la chance que tous acceptent : une boucle de 4 incertaine cède la place à une boucle
     # de 3 plus sûre qui lui dispute un objet) ; « echanges », le plus d'objets proposés, comme avant.
     objectif_grand_troc: Literal["echanges", "esperance"] = "esperance"
+    # Nombre maximum de boucles (donc d'objets reçus) par personne au même Grand Troc, repêchage compris :
+    # un gros déposant ne prend pas tout le dimanche pendant que d'autres n'ont rien. 0 : pas de plafond.
+    plafond_echanges_grand_troc: int = Field(default=3, ge=0, le=20)
     # Lieu de dépôt affiché aux participants d'un échange accepté (adresse, horaires).
     point_de_depot: str = ""
 

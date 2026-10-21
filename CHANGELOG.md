@@ -13,6 +13,8 @@ La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branche
 
 Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis passe sous un numéro quand on étiquette.
 
+- Grand Troc : une même personne reçoit au plus 3 objets par Grand Troc, repêchage compris ; un gros déposant ne prend plus tout le dimanche (réglage `PLAFOND_ECHANGES_GRAND_TROC`, 0 pour aucun plafond).
+
 ## [0.5.0] – 2026-10-21 · Le math trade fiabilisé
 
 - Math trade : un souhait comblé ne reçoit plus d'autre objet au repêchage, au Grand Troc suivant ni pendant un accord du Match (chaque transfert garde le souhait qu'il sert) (#33).
