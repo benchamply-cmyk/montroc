@@ -47,6 +47,9 @@ MARGE_REPECHAGE = DELAI_REPONSE
 # Fiabilité = (tenus + LISSAGE) / (tenus + manqués + LISSAGE) : 1 au départ, 0,9 après un premier manquement,
 # et un manquement pèse de moins en moins à mesure que les engagements tenus s'accumulent.
 LISSAGE_FIABILITE = 9
+# Chance de dire oui à une boucle = (oui + 7) / (réponses + 10) : 70 % au départ (la valeur commune d'avant),
+# puis le taux de chacun prend le dessus à mesure qu'il répond. Un refus prédit le prochain refus.
+LISSAGE_ACCEPTATION = (7, 10)
 
 # Équité, règle publique : à nombre d'objets échangés égal, le Grand Troc sert d'abord ceux qui ont le moins reçu
 # ces 4 dernières semaines. Priorité = 1 + (3 - objets reçus), au moins 1 : 4 pour qui n'a rien reçu, 1 dès 3.
@@ -172,6 +175,7 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
             zone=zone(u.zone),
             fiabilite=u.fiabilite,
             priorite=priorite.get(u.id, 1 + PLAFOND_EQUITE),
+            acceptation=acceptation(u),
         )
     requete = select(m.Objet).where(m.Objet.statut == m.StatutObjet.disponible).options(selectinload(m.Objet.contre))
     if stock_avant is not None:
@@ -473,6 +477,8 @@ def repondre(session: Session, echange: m.Echange, utilisateur_id: int, accepte:
     transfert = _transfert_du_receveur(echange, utilisateur_id)
     transfert.reponse = m.Reponse.acceptee if accepte else m.Reponse.refusee
     transfert.repondu_le = datetime.now(UTC)
+    if not echange.par_match:  # un accord du Match, qu'on a demandé soi-même, ne dit rien du Grand Troc
+        noter_reponse(transfert.receveur, accepte)
     _mettre_a_jour_statut(session, echange)
     return echange
 
@@ -630,6 +636,22 @@ def noter_engagement(utilisateur: m.Utilisateur, tenu: bool) -> None:
         utilisateur.engagements_manques += 1
     tenus = utilisateur.engagements_tenus + LISSAGE_FIABILITE
     utilisateur.fiabilite = tenus / (tenus + utilisateur.engagements_manques)
+
+
+def noter_reponse(utilisateur: m.Utilisateur, oui: bool) -> None:
+    """Compte un « oui » ou un « non » à une boucle proposée (voir ``acceptation``)."""
+    if oui:
+        utilisateur.reponses_oui += 1
+    else:
+        utilisateur.reponses_non += 1
+
+
+def acceptation(utilisateur: m.Utilisateur) -> float:
+    """Chance qu'il dise oui à la prochaine boucle : son taux de « oui », lissé vers 70 % (``LISSAGE_ACCEPTATION``).
+    Une absence de réponse n'y entre pas : c'est un manquement, compté dans la fiabilité."""
+    a_priori, poids = LISSAGE_ACCEPTATION
+    reponses = (utilisateur.reponses_oui or 0) + (utilisateur.reponses_non or 0)
+    return ((utilisateur.reponses_oui or 0) + a_priori) / (reponses + poids)
 
 
 def _noter_manquements(echange: m.Echange) -> None:
