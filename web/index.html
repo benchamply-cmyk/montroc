@@ -317,7 +317,6 @@ body.large .wrap{max-width:1120px}
   .acc-etapes{grid-template-columns:repeat(4,1fr)}
   .acc-tuiles,.acc-duo{grid-template-columns:1fr 1fr}
   .acc-tuile{padding:22px;min-height:190px}
-  .acc-login{max-width:520px;width:100%;margin-inline:auto}
 }
 /* Barre d'onglets en bas pour tout le monde sur téléphone (Accueil, Rechercher, Proposer, Match, Mon espace) ;
    sur grand écran, seulement une fois connecté. */
@@ -528,17 +527,10 @@ details.plus summary::-webkit-details-marker{display:none}
         <h2>Troquez-<em>la.</em></h2>
         <p class="muted" style="font-size:15px">Collez le lien <a href="https://www.vinted.fr" target="_blank" rel="noopener noreferrer">Vinted</a> ou <a href="https://www.leboncoin.fr" target="_blank" rel="noopener noreferrer">Leboncoin</a> : on la recopie ici, sans prix.</p>
         <div class="search"><input type="url" name="lien" required inputmode="url" placeholder="Lien de votre annonce" aria-label="Lien de votre annonce Vinted ou Leboncoin"><button type="submit">Troquer</button></div>
-        <p class="status" id="import-home-ok" hidden>Votre lien est gardé. Connectez-vous juste en dessous : on reprend là où vous en étiez.</p>
+        <p class="status" id="import-home-ok" hidden>Votre lien est gardé. Connectez-vous ou créez votre compte avec le bouton en haut de la page : on reprend là où vous en étiez.</p>
       </form>
     </div>
 
-    <form class="card stack acc-login" id="f-login" data-anon>
-      <span class="label">Se connecter ou créer un compte</span>
-      <label class="field"><span>Votre e-mail</span><input class="input" type="email" name="email" required autocomplete="email" placeholder="vous@exemple.fr"></label>
-      <button class="cta" type="submit">Commencer à troquer</button>
-      <p class="muted" style="font-size:14px">Un lien valable 20 minutes arrive par e-mail. Vous avez déjà un mot de passe ? <a href="/#monespace" id="login-mdp">Connectez-vous sans e-mail</a>.</p>
-      <p class="status" id="login-ok" hidden></p>
-    </form>
   </section>
 
   <!-- RECHERCHE (sans compte) -->
@@ -860,7 +852,7 @@ async function naviguer(h){
     if(jeton)return toast("Le serveur ne répond pas pour l'instant. Réessayez dans un instant.");
     go('home'); return TT.ouvrirConnexion();
   }
-  if(h==='#se-connecter'){go('home',{remplacer:true});const f=$('#f-login');f.scrollIntoView({behavior:calmeDefil,block:'center'});f.email.focus({preventScroll:true});return}
+  if(h==='#se-connecter'){go('home',{remplacer:true});return versCompte()}
   go('home',{adresse:h||''});
   const cible=h&&document.getElementById(h.slice(1)); if(cible)cible.scrollIntoView({behavior:calmeDefil});
 }
@@ -898,7 +890,8 @@ const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* Boutons de l'accueil : « Proposer un objet » (et « Je participe ») mène au formulaire d'objet une fois connecté,
    sinon à la création de compte ; « Objets disponibles » et « Tout voir » ouvrent tout ce qui est proposé. */
-function versCompte(){go('home');const f=$('#f-login');f.scrollIntoView({behavior:calme?'auto':'smooth',block:'center'});f.email.focus({preventScroll:true})}
+// Se connecter ou créer un compte : uniquement par la fenêtre du bouton en haut de page (site.js).
+function versCompte(){scrollTo({top:0,behavior:calmeDefil});TT.ouvrirConnexion(true,undefined,!store.get('troc.email'))}
 function versProposer(){
   if(!moi)return versCompte();
   go('proposer');
@@ -960,7 +953,6 @@ async function ouvrirSession(r,vue){
 }
 // Connexion par mot de passe depuis la pop-up « Mon espace » (site.js).
 TT.surConnexion=async r=>{await ouvrirSession(r,'lists');toast('Bon retour '+moi.pseudo+' !')};
-$('#login-mdp').onclick=e=>{e.preventDefault();e.stopPropagation();scrollTo({top:0,behavior:calmeDefil});TT.ouvrirConnexion(true,$('#f-login').email.value.trim())};
 
 /* Mot de passe : à choisir après une connexion par e-mail, ou à changer dans « Mon compte ». */
 async function enregistrerMdp(e){
@@ -973,14 +965,7 @@ async function enregistrerMdp(e){
 $('#f-mdp').onsubmit=enregistrerMdp; $('#f-mdp-rappel').onsubmit=enregistrerMdp;
 $('#mdp-plus-tard').onclick=()=>{$('#f-mdp-rappel').hidden=true;store.set('troc.mdp-plus-tard',moi&&moi.email)};
 
-/* Connexion par lien magique */
-$('#f-login').onsubmit=async e=>{
-  e.preventDefault(); const email=e.target.email.value.trim(), b=e.target.querySelector('button');
-  b.disabled=true;
-  try{await api('/auth/lien',{method:'POST',body:{email}});
-    $('#login-ok').textContent=`C'est parti : ouvrez l'e-mail envoyé à ${email} et cliquez sur le lien.`;$('#login-ok').hidden=false}
-  catch(err){toast(err.message)} finally{b.disabled=false}
-};
+/* Connexion par lien magique (envoyé depuis la fenêtre du haut de page) */
 let jetonLien=null;
 async function verifierLien(extra={}){
   const r=await api('/auth/verifier',{method:'POST',body:{jeton:jetonLien,...extra}});
@@ -1068,7 +1053,7 @@ $('#f-import-home').onsubmit=e=>{
   if(!a){toast("Collez le lien d'une annonce Vinted ou Leboncoin.");return}
   store.set('troc.annonce',a.lien); e.target.reset();
   if(moi){reprendreAnnonce();return}
-  $('#import-home-ok').hidden=false; const l=$('#f-login'); l.scrollIntoView({behavior:calme?'auto':'smooth',block:'center'}); l.email.focus({preventScroll:true});
+  $('#import-home-ok').hidden=false; versCompte();
 };
 
 /* Mes listes : « Je propose » (mes objets) et « Je demande » (mes souhaits), chacun avec sa catégorie,

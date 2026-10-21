@@ -15,6 +15,7 @@ Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis pas
 
 - Site : une seule couleur vive (le jaune) et des pictogrammes au trait ; étapes de l'accueil « Je propose » / « Je demande », textes du Match et du Grand Troc reformulés (#43).
 - Accueil : la section « Le concept » est retirée ; le lien du menu mène au haut de l'accueil (#46).
+- Connexion : le formulaire « Se connecter ou créer un compte » quitte l'accueil ; tout passe par le bouton « Se connecter » en haut de page, qui gagne un mode « Créer un compte » (e-mail seul, lien magique) (#46).
 
 ## [0.5.0] – 2026-10-21 · Le math trade fiabilisé
 
