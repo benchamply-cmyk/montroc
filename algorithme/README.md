@@ -78,7 +78,7 @@ Comme TradeMaximizer sur BoardGameGeek, on cherche le **maximum d'échanges simu
 
 Deux objectifs pour le mode borné :
 - `objectif="echanges"` (défaut) : maximum d'objets échangés, puis les départages ci-dessus ;
-- `objectif="esperance"` : maximum d'objets échangés **attendus** une fois les refus pris en compte (longueur × chance de réussite). Favorise les échanges directs et les acceptations automatiques. Moteur heuristique seulement.
+- `objectif="esperance"` : maximum d'objets échangés **attendus** une fois les refus pris en compte (longueur × chance de réussite). Favorise les échanges directs et les acceptations automatiques. Les deux moteurs le gèrent ; le moteur exact le prouve optimal (une variable par combinaison de chances d'une boucle, tout reste linéaire). C'est l'objectif du Grand Troc (`OBJECTIF_GRAND_TROC` côté API, `echanges` pour revenir à l'ancien).
 
 Autres réglages : `proba_min` (écarter les boucles trop risquées), `options_par_transfert` (combien d'objets différents essayer entre deux mêmes personnes, 2 par défaut).
 

@@ -390,6 +390,7 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
     solution = math_trade(
         marche,
         longueur_max=LONGUEUR_GRAND_TROC,
+        objectif=get_settings().objectif_grand_troc,
         contraintes=contraintes_du_marche(session, marche),
         duree_max_s=DUREE_MAX_GRAND_TROC_S,
     )
@@ -697,7 +698,11 @@ def repechage(session: Session) -> int | None:
                 str(t.receveur_id) for t in e.transferts if t.reponse == m.Reponse.en_attente
             )
     solution = math_trade(
-        marche, longueur_max=LONGUEUR_GRAND_TROC, contraintes=contraintes, duree_max_s=DUREE_MAX_GRAND_TROC_S
+        marche,
+        longueur_max=LONGUEUR_GRAND_TROC,
+        objectif=get_settings().objectif_grand_troc,
+        contraintes=contraintes,
+        duree_max_s=DUREE_MAX_GRAND_TROC_S,
     )
     echanges = _proposer_les_boucles(session, solution.boucles, grand_troc)
     _sms_du_grand_troc(session, echanges)

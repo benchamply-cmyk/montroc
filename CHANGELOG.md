@@ -21,6 +21,7 @@ Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis pas
 - Grand Troc : une boucle devenue impossible pendant le calcul (objet réservé entre-temps) est sautée au lieu de faire échouer tout le Grand Troc ; les chiffres enregistrés sont ceux des boucles vraiment proposées.
 - Grand Troc : chaque calcul garde sa trace (moteur exact ou heuristique, longueur de boucle retenue, statuts du solveur), le dimanche comme au repêchage du mardi.
 - Math trade : la chance qu'un membre dise oui à une boucle est son propre taux de « oui » (lissé vers 70 % tant qu'il a peu répondu), au lieu de 70 % pour tous ; un refus pèse sur les calculs suivants.
+- Grand Troc : le moteur exact maximise les objets échangés *attendus* (longueur × chance que tous acceptent) ; une boucle de 4 incertaine cède la place à une boucle de 3 plus sûre qui lui dispute un objet (réglage `OBJECTIF_GRAND_TROC`, `echanges` pour revenir à l'ancien calcul).
 
 ## [0.4.1] – 2026-10-17
 

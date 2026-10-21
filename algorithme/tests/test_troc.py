@@ -66,8 +66,9 @@ def verifier_solution(test, m, sol, longueur_max):
         test.assertLessEqual(v, m.utilisateurs[u].souhaits[i].quantite)
 
 
-def optimum_force_brute_borne(m, longueur_max):
-    """Parcourt tous les ensembles de boucles compatibles (sans élagage par borne)."""
+def optimum_force_brute_borne(m, longueur_max, valeur=lambda b: b.longueur):
+    """Parcourt tous les ensembles de boucles compatibles (sans élagage par borne) ; ``valeur`` d'une boucle :
+    sa longueur (objets échangés) ou, pour l'objectif « esperance », longueur × chance de réussite."""
     g = GrapheEchanges(m)
     cands = list(enumerer_boucles(g, longueur_max, options_par_transfert=99, variantes=True))
     objets, souhaits = Counter(), Counter()
@@ -83,7 +84,7 @@ def optimum_force_brute_borne(m, longueur_max):
                 objets[o] += 1
             for t in b.transferts:
                 souhaits[t.cle_souhait] += 1
-            best = max(best, b.longueur + rec(k + 1))
+            best = max(best, valeur(b) + rec(k + 1))
             for o in b.objets:
                 objets[o] -= 1
             for t in b.transferts:
@@ -665,3 +666,40 @@ class TestAcceptationParMembre(unittest.TestCase):
         self.assertEqual(m.p_acceptation_de(m.utilisateurs["C"]), 0.7)
         with self.assertRaises(ValueError):
             m.ajouter_utilisateur("D", acceptation=0)
+
+class TestObjetsAttendus(unittest.TestCase):
+    @staticmethod
+    def marche_quatre_contre_trois(p_acceptation):
+        """L'objet d'Alice ferme soit une boucle de 4 (A, B, C, D), soit une boucle de 3 (A, E, F)."""
+        m = Marche(p_acceptation=p_acceptation, meme_zone=False)
+        m.ajouter_utilisateur("A", [Souhait("w"), Souhait("u")])
+        for u, cat in (("B", "x"), ("C", "y"), ("D", "z"), ("E", "x"), ("F", "v")):
+            m.ajouter_utilisateur(u, [Souhait(cat)])
+        for o, u, cat in (("a", "A", "x"), ("b", "B", "y"), ("c", "C", "z"), ("d", "D", "w"),
+                          ("e", "E", "v"), ("f", "F", "u")):
+            m.ajouter_objet(o, u, cat)
+        return m
+
+    @AVEC_ORTOOLS
+    def test_une_boucle_de_3_plus_sure_l_emporte(self):
+        # 70 % : la boucle de 4 réussit à 24 % (0,96 objet attendu), celle de 3 à 34 % (1,03).
+        m = self.marche_quatre_contre_trois(0.7)
+        self.assertEqual(math_trade(m, longueur_max=4, moteur="exact").nb_objets_echanges, 4)
+        sol = math_trade(m, longueur_max=4, moteur="exact", objectif="esperance")
+        self.assertEqual((sol.nb_objets_echanges, sol.optimal, sol.stats["objectif"]), (3, True, "esperance"))
+        # Membres qui disent souvent oui : la boucle de 4 rapporte plus (2,62 contre 2,19), elle reste.
+        m = self.marche_quatre_contre_trois(0.9)
+        self.assertEqual(math_trade(m, longueur_max=4, moteur="exact", objectif="esperance").nb_objets_echanges, 4)
+
+    @AVEC_ORTOOLS
+    def test_contre_force_brute(self):
+        # Souhaits « j'accepte d'office » au hasard : une étape peut offrir deux chances différentes (table).
+        for seed in range(25):
+            m = marche_aleatoire(seed, n_users=6)
+            for u in m.utilisateurs.values():  # taux de « oui » propres à certains membres
+                u.acceptation = random.Random(seed * 7 + int(u.id[1:])).choice([None, 0.4, 0.9])
+            for lm in (2, 3):
+                sol = math_trade(m, longueur_max=lm, moteur="exact", objectif="esperance")
+                verifier_solution(self, m, sol, lm)
+                attendu = optimum_force_brute_borne(m, lm, lambda b: b.longueur * b.proba_reussite)
+                self.assertAlmostEqual(sol.esperance_objets, attendu, delta=0.005 * attendu + 1e-9, msg=f"seed {seed}")

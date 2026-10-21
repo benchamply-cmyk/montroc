@@ -77,9 +77,10 @@ def math_trade(marche: Marche, longueur_max: int | None = 3, objectif: str = "ec
       qualité (``Boucle.qualite``), puis les boucles les plus sûres ;
     - ``objectif="esperance"`` : maximise le nombre d'objets échangés
       *attendu* (longueur × chance que tous acceptent), ce qui favorise les
-      échanges directs et les acceptations automatiques. Mode bornée seulement.
+      échanges directs et les acceptations automatiques, puis les mêmes
+      départages. Mode borné seulement.
 
-    ``moteur`` (mode borné, objectif « echanges », sans ``proba_min``) :
+    ``moteur`` (mode borné, sans ``proba_min``) :
     ``"exact"`` utilise le solveur CP-SAT d'OR-Tools (``solveur_exact``),
     ``"heuristique"`` l'empaquetage de boucles énumérées, ``"auto"`` le solveur
     exact s'il est installé et si le marché n'est pas trop grand
@@ -98,13 +99,13 @@ def math_trade(marche: Marche, longueur_max: int | None = 3, objectif: str = "ec
         boucles = _trade_maximizer(graphe)
         return Solution(sorted(boucles, key=cle_classement), True, time.perf_counter() - debut)
 
-    stats = {}
+    stats = {"objectif": objectif}
     if longueur_max > 3:
         longueur_max = longueur_calculable(graphe, longueur_max, budget_cycles)
         stats["longueur_max"] = longueur_max
-    exact_possible = objectif == "echanges" and proba_min == 0
+    exact_possible = proba_min == 0
     if moteur == "exact" and not (exact_possible and solveur_exact.disponible()):
-        raise ValueError("Le moteur exact demande OR-Tools, l'objectif 'echanges' et proba_min=0.")
+        raise ValueError("Le moteur exact demande OR-Tools et proba_min=0.")
     if moteur != "heuristique" and exact_possible:
         limite = solveur_exact.MAX_COPIES_AUTO if moteur == "auto" else None
         # Trop grand pour la mémoire avec des boucles longues : on raccourcit (jusqu'à 3) avant de passer à
@@ -112,7 +113,7 @@ def math_trade(marche: Marche, longueur_max: int | None = 3, objectif: str = "ec
         for longueur in range(longueur_max, min(longueur_max, 3) - 1, -1):
             try:
                 resultat = solveur_exact.resoudre(graphe, longueur, duree_max_s - (time.perf_counter() - debut),
-                                                  max_copies=limite)
+                                                  max_copies=limite, objectif=objectif)
             except solveur_exact.TropGrand:
                 continue
             longueur_max = longueur

@@ -1,6 +1,7 @@
 """Réglages lus dans les variables d'environnement (ou un fichier ``.env``)."""
 
 from functools import lru_cache
+from typing import Literal
 from urllib.parse import unquote, urlsplit
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -42,6 +43,10 @@ class Settings(BaseSettings):
     # Les boucles se décident au Grand Troc du dimanche. Mettre à true pour laisser aussi chacun proposer
     # tout de suite une boucle parmi ses suggestions (POST /echanges), comme avant le Grand Troc.
     echanges_a_la_demande: bool = False
+    # Ce que le math trade du Grand Troc maximise : « esperance », les objets échangés *attendus* (chaque boucle
+    # compte pour sa longueur × la chance que tous acceptent : une boucle de 4 incertaine cède la place à une boucle
+    # de 3 plus sûre qui lui dispute un objet) ; « echanges », le plus d'objets proposés, comme avant.
+    objectif_grand_troc: Literal["echanges", "esperance"] = "esperance"
     # Lieu de dépôt affiché aux participants d'un échange accepté (adresse, horaires).
     point_de_depot: str = ""
 
