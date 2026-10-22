@@ -13,6 +13,10 @@ La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branche
 
 Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis passe sous un numéro quand on étiquette.
 
+- Site : une seule couleur vive (le jaune) et des pictogrammes au trait ; étapes de l'accueil « Je propose » / « Je demande », textes du Match et du Grand Troc reformulés (#43).
+- Accueil : la section « Le concept » est retirée ; le lien du menu mène au haut de l'accueil (#46).
+- Connexion : le formulaire « Se connecter ou créer un compte » quitte l'accueil ; tout passe par le bouton « Se connecter » en haut de page, qui gagne un mode « Créer un compte » (e-mail seul, lien magique) (#46).
+
 ## [0.5.0] – 2026-10-21 · Le math trade fiabilisé
 
 - Math trade : un souhait comblé ne reçoit plus d'autre objet au repêchage, au Grand Troc suivant ni pendant un accord du Match (chaque transfert garde le souhait qu'il sert) (#33).
