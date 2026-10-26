@@ -37,7 +37,7 @@ services:
       - key: SMTP_MOT_DE_PASSE
         sync: false
       - key: EMAIL_EXPEDITEUR
-        value: TrocTroc <bonjour@troctroc.fr>
+        value: TrocTroc <contact@troctroc.fr>   # l'expéditeur validé chez Brevo
       # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary.
       - key: CLOUDINARY_URL
         sync: false
@@ -88,7 +88,7 @@ services:
       - key: BREVO_API_KEY
         sync: false
       - key: EMAIL_EXPEDITEUR
-        value: TrocTroc preprod <bonjour@troctroc.fr>
+        value: TrocTroc preprod <contact@troctroc.fr>
       - key: CLOUDINARY_URL
         sync: false
       - key: MODERATEURS
