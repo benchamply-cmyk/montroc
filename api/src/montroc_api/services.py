@@ -593,7 +593,7 @@ def echanges_de(session: Session, utilisateur_id: int, actifs: bool = False) -> 
 
 def taches_horaires(session: Session) -> tuple[int, int]:
     """Rappel 12 h avant la fin du délai de réponse, puis annulation des échanges dont le délai est dépassé."""
-    maintenant = datetime.now(UTC)
+    maintenant = _maintenant()
     a_rappeler = session.scalars(
         select(m.Echange).where(
             m.Echange.statut == m.StatutEchange.propose,
