@@ -50,6 +50,9 @@ services:
       # Lieu de dépôt affiché aux participants (adresse et horaires).
       - key: POINT_DE_DEPOT
         sync: false
+      # Facultatif : un lieu par zone, « Marseille 6e = adresse ; Aix-en-Provence = adresse ».
+      - key: POINTS_DE_DEPOT
+        sync: false
 
   # Pré-production : même API, déployée depuis la branche preprod, sur une branche Neon « preprod » (copie de
   # la production). Les e-mails partent tous à COURRIELS_VERS, les SMS sont coupés : aucun membre n'est
