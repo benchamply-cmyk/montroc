@@ -32,7 +32,7 @@
   // Deux cartes empilées : celle du dessus se glisse, celle du dessous attend.
   function afficherCarrousel() {
     const n = cartes.length;
-    $('#carrousel-compte').textContent = n ? `${n} objet${n > 1 ? 's' : ''} pour vous` : '';
+    $('#carrousel-compte').textContent = n ? `${TT_I18N.count(n,'objet')} pour vous` : '';
     $('#carrousel').innerHTML = n ? cartes.slice(0, 2).map(carteHtml).reverse().join('')
       : '<p class="empty">Plus rien à vous montrer pour l\'instant. Ajoutez des souhaits ou des objets : la pile se remplit dès qu\'un objet correspond.</p>';
     const cs = $$('#carrousel .carte'); cs.forEach((c, j) => c.classList.toggle('devant', j === cs.length - 1));
@@ -108,7 +108,7 @@
   function afficherMatchs() {
     const libres = matchs.filter(x => !x.echange_id).length;
     $('#badge-match').textContent = libres; $('#badge-match').hidden = !libres;
-    $('#match-title').textContent = libres ? `${libres} match${libres > 1 ? 's' : ''} à conclure` : 'Ça vous plaît ?';
+    $('#match-title').textContent = libres ? `${TT_I18N.count(libres,'match')} à conclure` : 'Ça vous plaît ?';
     $('#matchs').innerHTML = matchs.map(matchHtml).join('')
       || '<p class="empty">Pas encore de match. Un « J\'aime » sur un objet marqué « Match immédiat » en crée un tout de suite.</p>';
     mesMatchs = matchs; afficherEspace();

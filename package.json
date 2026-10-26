@@ -1,0 +1,1 @@
+{"name":"troctroc-web","private":true,"scripts":{"build":"node scripts/localize.mjs","test":"node --test scripts/tests/*.test.mjs"},"devDependencies":{"acorn":"^8.15.0"}}

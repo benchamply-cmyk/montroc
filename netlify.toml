@@ -1,7 +1,7 @@
-# Configuration Netlify : le site est le dossier web/, publié tel quel (pas d'étape de build).
+# Les versions anglaise et espagnole sont générées depuis les mêmes sources françaises.
 [build]
   publish = "web"
-  command = ""
+  command = "npm run build"
 
 # En-têtes de sécurité sur toutes les pages.
 [[headers]]
