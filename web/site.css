@@ -3,7 +3,7 @@
 :root{
   /* Thème sombre unique, quel que soit le réglage de l'appareil. */
   --bg:#111318; --surface:#1A1D24; --ink:#F2F3F6; --muted:#A3A9B6; --line:#2C303A;
-  --accent:#F2F3F6; --accent-ink:#111318; /* une seule couleur vive sur le site : le jaune (--mark) */ --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
+  --accent:#F2F3F6; --accent-ink:#111318; /* une seule couleur vive sur le site : le jaune (--mark) */ --mark:#E6C23A; --mark-doux:rgba(230,194,58,.28); --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
   --display:"Unbounded", "Arial Black", system-ui, sans-serif;
   --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"DM Mono", ui-monospace, Menlo, monospace;

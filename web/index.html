@@ -309,6 +309,7 @@ body.large .wrap{max-width:1120px}
 .result .ph .etat{position:absolute;left:8px;bottom:8px;font-size:11.5px;font-weight:600;background:rgba(17,19,24,.82);color:var(--ink);border-radius:6px;padding:3px 7px}
 .acc-duo{display:grid;gap:14px}
 .acc-duo>*,.acc-tuiles>*{min-width:0}
+.acc-hero h1 mark.mot{background:var(--mark-doux);color:inherit;border-radius:.12em;padding:0 .06em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 @media (max-width:420px){.loop{max-width:300px}.node{padding:6px 9px}.node small{font-size:10.5px}}
 @media (min-width:760px){
   .acc-hero{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;padding-block:20px}
@@ -459,7 +460,7 @@ details.plus summary::-webkit-details-marker{display:none}
     <div class="acc-hero" id="decouvrir">
       <div class="acc-hero-txt">
         <span class="label">Pas de prix. Pas de monnaie.</span>
-        <h1>Le troc se réinvente. <span class="hl">Tout le monde y gagne.</span></h1>
+        <h1>Le troc se réinvente.<br>Tout le monde y gagne.</h1>
         <p class="acc-chapo">Donnez une nouvelle vie aux objets que vous n'utilisez plus. Échangez-les contre ceux dont vous avez besoin, sans dépenser d'argent.</p>
         <p class="acc-fort">Vous proposez. Vous choisissez. TopTroc s'occupe du reste.</p>
         <div class="acc-btns">
@@ -915,6 +916,11 @@ document.addEventListener('click',e=>{
 
 /* Animations de l'accueil (coupées si l'appareil demande moins de mouvement). */
 const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
+(()=>{ // titre de l'accueil : les mots clés surlignés en entier, dans la langue de la page
+  const mots={fr:['troc','réinvente','gagne'],en:['Swapping','reinvented','benefits'],es:['trueque','reinventa','gana']}[TT_I18N.lang]||[];
+  const h=$('#decouvrir h1');
+  h.innerHTML=h.innerHTML.replace(/[\p{L}-]+/gu,m=>mots.includes(m)?'<mark class="mot">'+m+'</mark>':m);
+})();
 (()=>{ // le mot surligné change une fois le titre apparu
   const rot=$('#rot'), mots=[...rot.children]; let i=0;
   const largeur=()=>{rot.style.width=(mots[i].offsetWidth/parseFloat(getComputedStyle(rot).fontSize)+.16)+'em'};
