@@ -27,6 +27,7 @@ Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les 
 - Pré-production en place : service Render, branche Neon et déploiement Netlify de `preprod`.
 - Grand Troc : après un refus, les partenaires lâchés reçoivent une autre boucle dans l'heure avec les objets libérés, au lieu d'attendre le repêchage du mardi 18 h (migration 0018).
 - Réputation : la fiche d'un objet, la carte du Match et Mon espace montrent les échanges menés au bout et une pastille « Nouveau membre », « Membre fiable » ou « Fiabilité à confirmer », tirée de la fiabilité (qui monte à chaque dépôt et baisse sans réponse ou sans dépôt).
+- Points de dépôt : un lieu par ville ou quartier (réglage `POINTS_DE_DEPOT`) ; chaque échange prend celui de la zone de la plupart de ses participants, sinon le lieu par défaut `POINT_DE_DEPOT` (#64).
 
 ## [V5.100] – 2026-10-26 · Nouvelle numérotation
 

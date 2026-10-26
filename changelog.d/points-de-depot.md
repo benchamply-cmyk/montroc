@@ -1,1 +1,0 @@
-- Points de dépôt : un lieu par ville ou quartier (réglage `POINTS_DE_DEPOT`) ; chaque échange prend celui de la zone de la plupart de ses participants, sinon le lieu par défaut `POINT_DE_DEPOT`.
