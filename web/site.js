@@ -52,7 +52,7 @@
     <li><a href="/confidentialite/">Confidentialité</a></li>
     <li><a href="/regles/">Règles et signalements</a></li>
   </ul></nav>
-  <p class="pilote" style="margin:0">Pilote : <b>Département (13) Bouches-du-Rhône</b> · <a class="version" href="https://github.com/benchamply-cmyk/montroc/blob/main/CHANGELOG.md">v${VERSION}</a></p>
+  <p class="pilote" style="margin:0">Pilote : <b>Département (13) Bouches-du-Rhône</b> · <a class="version" href="https://github.com/benchamply-cmyk/montroc/blob/prod/CHANGELOG.md">v${VERSION}</a></p>
 </div>`;
   if(!haut)return;
 

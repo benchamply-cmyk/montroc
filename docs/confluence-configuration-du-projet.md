@@ -58,10 +58,10 @@ Les secrets ne sont jamais dans Git (`.env` est ignoré ; modèle : `.env.exampl
 
 ## Déploiement
 
-- Fusionner une pull request dans `main` **met en ligne** : Netlify redéploie le site, Render redéploie l'API (seulement si `api/` ou `algorithme/` ont changé).
+- Fusionner une pull request `preprod → prod` **met en ligne** : Netlify redéploie le site, Render redéploie l'API (seulement si `api/` ou `algorithme/` ont changé).
 - Au démarrage, l'API applique les migrations de base (`alembic upgrade head`).
 - Chaque pull request reçoit un aperçu Netlify et passe la CI : tests du moteur, style, cohérence migrations/modèles, tests de l'API sur PostgreSQL.
-- `main` est protégée : pull request et CI verte obligatoires.
+- `prod` est protégée : pull request et CI verte obligatoires.
 
 ## Base de données
 
@@ -84,7 +84,7 @@ API locale : http://localhost:8001/docs — Site local : `make site` puis http:/
 
 ## Organisation Git
 
-`main` = production. Une branche par sujet : `feature/…`, `fix/…`, `docs/…`, `chore/…`, `db/…`. Fusion par pull request (*Squash and merge*), CI verte obligatoire. Étiquettes de version `vX.Y.Z` aux étapes importantes.
+`prod` = production (ex-`main`), `preprod` = pré-production. Une branche par sujet : `feature/…`, `fix/…`, `docs/…`, `chore/…`, `db/…`. Fusion par pull request vers `preprod` (*Squash and merge*), CI verte obligatoire. Étiquettes de version `vX.Y.Z` aux étapes importantes.
 
 ## État d'avancement
 

@@ -1,6 +1,6 @@
 # Journal des versions
 
-Toutes les évolutions de TrocTroc, version par version. Chaque version correspond à une étiquette Git (`v0.4.1`…) posée sur `main`.
+Toutes les évolutions de TrocTroc, version par version. Chaque version correspond à une étiquette Git (`v0.4.1`…) posée sur `prod` (la branche de production, appelée `main` jusqu'au 26/10/2026).
 
 Numérotation `vMAJEUR.MINEUR.CORRECTIF` :
 - **MINEUR** monte à chaque lot de nouvelles fonctionnalités ;
