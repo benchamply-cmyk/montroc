@@ -112,6 +112,25 @@ def souhait_correspond(souhait: m.Souhait, objet: m.Objet) -> bool:
     return souhait_moteur(souhait).correspond(objet_moteur(objet))
 
 
+def point_de_depot(echange: m.Echange) -> str:
+    """Le lieu de dépôt d'un échange, parmi ceux de POINTS_DE_DEPOT : chaque participant vote pour le lieu de sa
+    zone (« Marseille » couvre aussi « Marseille 6e », la zone la plus précise l'emporte), le lieu qui a le plus
+    de voix est retenu, le premier configuré à égalité. Sans aucune voix : le lieu par défaut (POINT_DE_DEPOT)."""
+    reglages = get_settings()
+    points = reglages.liste_points_de_depot
+    voix = [0] * len(points)
+    for t in echange.transferts:
+        z = zone(t.donneur.zone)
+        if z is None:
+            continue
+        couvrent = [i for i, (cle, _) in enumerate(points) if z == cle or z.startswith(cle + " ")]
+        if couvrent:
+            voix[max(couvrent, key=lambda i: len(points[i][0]))] += 1
+    if not any(voix):
+        return reglages.point_de_depot
+    return points[voix.index(max(voix))][1]
+
+
 def zone_acceptee(souhait: m.Souhait | None, receveur: m.Utilisateur, donneur: m.Utilisateur) -> bool:
     """Comme au Grand Troc : la zone du donneur parmi celles de la demande si elle en précise, sinon la même
     que le receveur ; une ville inconnue ne bloque pas."""
@@ -530,7 +549,7 @@ def deposer(session: Session, echange: m.Echange, utilisateur_id: int) -> m.Echa
     transfert.depose_le = datetime.now(UTC)
     noter_engagement(transfert.donneur, tenu=True)
     restants = [t for t in echange.transferts if t.depose_le is None]
-    point = get_settings().point_de_depot
+    point = point_de_depot(echange)
     if restants:
         deposant = transfert.donneur.pseudo
         for t in echange.transferts:
@@ -573,7 +592,7 @@ def _mettre_a_jour_statut(session: Session, echange: m.Echange) -> bool:
             echange.expire_le = fin_des_depots(echange.grand_troc.jour)
         else:
             echange.expire_le = datetime.now(UTC) + DELAI_DEPOT
-        point = get_settings().point_de_depot
+        point = point_de_depot(echange)
         for t in echange.transferts:
             courriels.apres_validation(
                 session,

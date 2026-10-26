@@ -594,6 +594,28 @@ def test_reputation_visible_des_autres_membres(client, creer):
     assert client.get(f"/utilisateurs/{c.id}").json()["reputation"] == "a_confirmer"
 
 
+def test_point_de_depot_selon_la_zone(client, creer, monkeypatch):
+    reglages = services.get_settings()
+    monkeypatch.setattr(reglages, "point_de_depot", "Lieu par défaut")
+    monkeypatch.setattr(reglages, "points_de_depot", "Aix-en-Provence = Café d'Aix ; Marseille = Ressourcerie du 6e")
+    assert reglages.liste_points_de_depot == [
+        ("aix-en-provence", "Café d'Aix"),
+        ("marseille", "Ressourcerie du 6e"),
+    ]
+    (a, b, c), echange = creer.echange_abc()  # tous à « Marseille »
+    lu = client.get(f"/echanges/{echange['id']}", headers=a.headers).json()
+    assert lu["point_de_depot"] == "Ressourcerie du 6e"
+
+    # « Marseille » couvre « Marseille 6e » ; une zone plus précise l'emporte ; aucune zone connue : le défaut.
+    monkeypatch.setattr(reglages, "points_de_depot", "Marseille = Grand Marseille ; Marseille 6e = Cours Julien")
+    assert client.get(f"/echanges/{echange['id']}", headers=a.headers).json()["point_de_depot"] == "Grand Marseille"
+    client.patch("/moi", json={"zone": "Marseille 6e"}, headers=a.headers)
+    client.patch("/moi", json={"zone": "Marseille 6e"}, headers=b.headers)
+    assert client.get(f"/echanges/{echange['id']}", headers=a.headers).json()["point_de_depot"] == "Cours Julien"
+    monkeypatch.setattr(reglages, "points_de_depot", "Lyon = Croix-Rousse")
+    assert client.get(f"/echanges/{echange['id']}", headers=a.headers).json()["point_de_depot"] == "Lieu par défaut"
+
+
 def test_plafond_d_echanges_par_personne(client, creer, monkeypatch):
     """Un gros déposant ne reçoit pas plus de PLAFOND_ECHANGES_GRAND_TROC objets au même Grand Troc."""
     monkeypatch.setattr(services.get_settings(), "plafond_echanges_grand_troc", 2)

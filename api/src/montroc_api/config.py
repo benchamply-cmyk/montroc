@@ -59,8 +59,12 @@ class Settings(BaseSettings):
     # Combien d'objets un membre peut recevoir au même Grand Troc grâce à ses « J'aime » du Match : ils comptent
     # ensemble comme un seul souhait, classé après ses souhaits déclarés.
     coups_de_coeur_par_grand_troc: int = Field(default=1, ge=1, le=5)
-    # Lieu de dépôt affiché aux participants d'un échange accepté (adresse, horaires).
+    # Lieu de dépôt affiché aux participants d'un échange accepté (adresse, horaires) : celui par défaut.
     point_de_depot: str = ""
+    # Un lieu de dépôt par ville ou quartier, séparés par des « ; » : « zone = lieu ». Un échange prend celui de la
+    # zone de la plupart de ses participants (« Marseille » vaut aussi pour « Marseille 6e »), sinon POINT_DE_DEPOT.
+    # Ex. : « Marseille 6e = Ressourcerie, rue des Trois-Rois, 13006 Marseille ; Aix-en-Provence = Café, … ».
+    points_de_depot: str = ""
 
     @property
     def database_url_normalisee(self) -> str:
@@ -90,6 +94,16 @@ class Settings(BaseSettings):
     @property
     def liste_moderateurs(self) -> set[str]:
         return {e.strip().lower() for e in self.moderateurs.split(",") if e.strip()}
+
+    @property
+    def liste_points_de_depot(self) -> list[tuple[str, str]]:
+        """(zone en minuscules, lieu) pour chaque entrée de POINTS_DE_DEPOT, dans l'ordre."""
+        points = []
+        for entree in self.points_de_depot.split(";"):
+            zone, egal, lieu = entree.partition("=")
+            if egal and zone.strip() and lieu.strip():
+                points.append((" ".join(zone.split()).lower(), lieu.strip()))
+        return points
 
     @property
     def liste_cors(self) -> list[str]:
