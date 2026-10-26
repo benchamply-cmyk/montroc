@@ -91,6 +91,9 @@ class Souhait:
     - ``modes`` : modes d'échange acceptés (main propre, point relais…), vide : tous ;
     - ``zones`` : zones géographiques acceptées ; vide : la règle du marché
       (même zone que soi si ``Marche.meme_zone``) ;
+    - ``objets`` : plusieurs objets précis, n'importe lequel convient (les
+      « J'aime » du Match regroupés en un seul souhait : avec ``quantite`` 1,
+      dix coups de cœur ne font pas recevoir dix objets) ;
     - ``ref`` : identifiant libre de l'application (son numéro en base), repris
       par chaque transfert qui sert ce souhait (``Transfert.souhait_ref``).
 
@@ -112,10 +115,12 @@ class Souhait:
     modes: frozenset[str] = frozenset()
     zones: frozenset[str] = frozenset()
     ref: str | None = None
+    objets: frozenset[str] = frozenset()
 
     def __post_init__(self):
-        if (self.categorie is None) == (self.objet_id is None):
-            raise ValueError("Un souhait porte soit sur une catégorie, soit sur un objet précis.")
+        object.__setattr__(self, "objets", frozenset(self.objets))
+        if [self.categorie is not None, self.objet_id is not None, bool(self.objets)].count(True) != 1:
+            raise ValueError("Un souhait porte soit sur une catégorie, soit sur un objet précis, soit sur des objets précis.")
         if self.rang < 1 or self.quantite < 1:
             raise ValueError("rang et quantite doivent être >= 1.")
         if self.categorie is None and (self.sous_categorie is not None or self.criteres or self.preferences
@@ -153,6 +158,8 @@ class Souhait:
             return False
         if self.objet_id is not None:
             return objet.id == self.objet_id
+        if self.objets:
+            return objet.id in self.objets
         if self._vise(objet) is None:
             return False
         if self.etat_min is not None and (objet.etat not in ETATS
@@ -165,7 +172,7 @@ class Souhait:
 
     def qualite(self, objet: Objet) -> int:
         """Qualité d'un objet qui correspond : visé en premier, puis critères préférentiels respectés."""
-        if self.objet_id is not None:
+        if self.objet_id is not None or self.objets:
             return QUALITE_CIBLE
         q = QUALITE_CIBLE if self._vise(objet) else 0
         if objet.categorie == self.categorie:
@@ -188,6 +195,9 @@ class Utilisateur:
     # Probabilité qu'il dise oui à une boucle proposée (son taux de « oui », voir l'API) ;
     # None : la valeur commune du marché (``Marche.p_acceptation``).
     acceptation: float | None = None
+    # Nombre maximum de boucles (donc d'objets reçus) pour lui dans une même recherche ; None : pas de plafond.
+    # Le nombre d'objets échangés reste maximisé sous ce plafond : un gros déposant ne prend pas tout le dimanche.
+    plafond: int | None = None
 
 
 @dataclass(frozen=True)
@@ -285,14 +295,16 @@ class Marche:
         self.objets: dict[str, Objet] = {}
 
     def ajouter_utilisateur(self, id: str, souhaits=(), zone=None, fiabilite=1.0, priorite=1,
-                            acceptation: float | None = None) -> Utilisateur:
+                            acceptation: float | None = None, plafond: int | None = None) -> Utilisateur:
         if id in self.utilisateurs:
             raise ValueError(f"Utilisateur {id!r} déjà présent.")
         if priorite < 1:
             raise ValueError("priorite doit être >= 1.")
         if acceptation is not None and not 0 < acceptation <= 1:
             raise ValueError("acceptation doit être dans ]0, 1].")
-        u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite, acceptation)
+        if plafond is not None and plafond < 0:
+            raise ValueError("plafond doit être >= 0.")
+        u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite, acceptation, plafond)
         self.utilisateurs[id] = u
         return u
 
