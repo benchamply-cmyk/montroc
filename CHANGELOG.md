@@ -17,8 +17,6 @@ Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les 
 - Accueil : la section « Le concept » est retirée ; le lien du menu mène au haut de l'accueil (#46).
 - Connexion : le formulaire « Se connecter ou créer un compte » quitte l'accueil ; tout passe par le bouton « Se connecter » en haut de page, qui gagne un mode « Créer un compte » (e-mail seul, lien magique) (#46).
 
-- Grand Troc : une même personne reçoit au plus 3 objets par Grand Troc, repêchage compris ; un gros déposant ne prend plus tout le dimanche (réglage `PLAFOND_ECHANGES_GRAND_TROC`, 0 pour aucun plafond).
-
 ## [0.5.0] – 2026-10-21 · Le math trade fiabilisé
 
 - Math trade : un souhait comblé ne reçoit plus d'autre objet au repêchage, au Grand Troc suivant ni pendant un accord du Match (chaque transfert garde le souhait qu'il sert) (#33).
