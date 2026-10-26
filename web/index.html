@@ -5,9 +5,9 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#111318">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TrocTroc | Le troc se réinvente</title>
+<title>TopTroc | Le troc se réinvente</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<meta name="description" content="TrocTroc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.">
+<meta name="description" content="TopTroc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/site.css">
@@ -431,11 +431,11 @@ details.plus summary::-webkit-details-marker{display:none}
 .ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .puces .ico{width:16px;height:16px}
 </style>
-<link rel="canonical" href="https://troctroc.fr/">
-<link rel="alternate" hreflang="fr" href="https://troctroc.fr/">
-<link rel="alternate" hreflang="en" href="https://troctroc.fr/english/">
-<link rel="alternate" hreflang="es" href="https://troctroc.fr/espanol/">
-<link rel="alternate" hreflang="x-default" href="https://troctroc.fr/">
+<link rel="canonical" href="https://toptroc.com/">
+<link rel="alternate" hreflang="fr" href="https://toptroc.com/">
+<link rel="alternate" hreflang="en" href="https://toptroc.com/english/">
+<link rel="alternate" hreflang="es" href="https://toptroc.com/espanol/">
+<link rel="alternate" hreflang="x-default" href="https://toptroc.com/">
 </head>
 <body class="large">
 <header class="site"></header>
@@ -451,7 +451,7 @@ details.plus summary::-webkit-details-marker{display:none}
         <span class="label">Pas de prix. Pas de monnaie.</span>
         <h1>Le troc se réinvente. <span class="hl">Tout le monde y gagne.</span></h1>
         <p class="acc-chapo">Donnez une nouvelle vie aux objets que vous n'utilisez plus. Échangez-les contre ceux dont vous avez besoin, sans dépenser d'argent.</p>
-        <p class="acc-fort">Vous proposez. Vous choisissez. TrocTroc s'occupe du reste.</p>
+        <p class="acc-fort">Vous proposez. Vous choisissez. TopTroc s'occupe du reste.</p>
         <div class="acc-btns">
           <button class="acc-btn y" type="button" data-proposer>Proposer un objet</button>
           <button class="acc-btn g" type="button" data-objets>Objets disponibles</button>
@@ -553,12 +553,12 @@ details.plus summary::-webkit-details-marker{display:none}
     <div class="results" id="results"></div>
     <div class="card stack" data-anon>
       <b>Un objet vous plaît ?</b>
-      <span class="muted">Créez un compte gratuit, ajoutez ce que vous pouvez donner : TrocTroc vous propose l'échange, même à trois.</span>
+      <span class="muted">Créez un compte gratuit, ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.</span>
       <button class="cta" type="button" id="search-signup">Créer un compte pour troquer</button>
     </div>
     <div class="card stack" data-auth hidden>
       <b>Un objet vous plaît ?</b>
-      <span class="muted">Ajoutez sa catégorie à vos souhaits : TrocTroc cherchera la boucle qui vous l'apporte.</span>
+      <span class="muted">Ajoutez sa catégorie à vos souhaits : TopTroc cherchera la boucle qui vous l'apporte.</span>
       <button class="cta" type="button" data-go="lists">Mes listes</button>
     </div>
   </section>
@@ -709,7 +709,7 @@ details.plus summary::-webkit-details-marker{display:none}
     <div class="card gt">
       <span class="tag a">Le Grand Troc du dimanche</span>
       <div class="gt-cd"><b data-gt-quand>Chaque dimanche à 18 h</b><span class="gt-reste" data-gt-reste aria-live="polite"></span></div>
-      <p class="muted">Pour tout ce qui n'a pas trouvé de match : une fois par semaine, TrocTroc cherche les boucles à trois et les échanges à deux que personne n'a vus. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
+      <p class="muted">Pour tout ce qui n'a pas trouvé de match : une fois par semaine, TopTroc cherche les boucles à trois et les échanges à deux que personne n'a vus. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.</p>
       <p class="muted" data-gt-bilan hidden></p>
     </div>
     <div class="list-head" style="margin:8px 0 -12px"><span class="label" id="possible-title">Aperçu pour dimanche</span></div>
@@ -785,11 +785,11 @@ details.plus summary::-webkit-details-marker{display:none}
 <script src="/site.js"></script>
 <script src="annonce.js"></script>
 <script>
-/* Le site parle à l'API (api.troctroc.fr, ou localhost en développement). La session est un jeton
+/* Le site parle à l'API (api.toptroc.com, ou localhost en développement). La session est un jeton
    gardé dans le navigateur et envoyé dans l'en-tête Authorization. */
 // Pré-production (branche preprod sur Netlify) : son API à elle, sur une copie de la base (même règle que site.js).
 const API = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8001'
-  : /^preprod(--|\.)/.test(location.hostname) ? 'https://montroc-api-preprod.onrender.com' : 'https://api.troctroc.fr';
+  : /^preprod(--|\.)/.test(location.hostname) ? 'https://montroc-api-preprod.onrender.com' : 'https://api.toptroc.com';
 const ETATS = {neuf:'Neuf', comme_neuf:'Comme neuf', tres_bon:'Très bon état', bon:'Bon état', correct:'État correct', usage:'Usagé, fonctionne'};
 const MODES = {main_propre:'en main propre', point_relais:'en point relais'};
 const STATUTS = {disponible:'', reserve:'réservé', retire:'retiré', modere:'retiré par la modération'};
@@ -1046,7 +1046,7 @@ $('#f-obj').onsubmit=async e=>{
   finally{b.disabled=false;b.textContent='Publier'}
 };
 
-/* « Votre annonce ne part pas ? Troquez-la. » : TrocTroc ne lit que le lien (voir annonce.js),
+/* « Votre annonce ne part pas ? Troquez-la. » : TopTroc ne lit que le lien (voir annonce.js),
    la personne recopie le reste elle-même. Le lien en attente survit à la connexion par e-mail. */
 function guiderAnnonce(){
   const f=$('#f-obj'), brut=f.annonce_origine.value.trim(), a=AnnonceAilleurs.lire(brut), g=$('#import-guide');
@@ -1060,7 +1060,7 @@ function guiderAnnonce(){
       <li><b>La photo</b> : reprenez celle de votre téléphone, c'est la vôtre.</li>
       <li><b>Le titre et la catégorie</b> : ${a.titre?'corrigez-les si besoin':'reprenez le titre de l\'annonce'}.</li>
       <li><b>L'état</b> : obligatoire ici, choisissez-le honnêtement.</li>
-      <li><b>Pas de prix</b> : sur TrocTroc, un objet s'échange contre un objet.</li>
+      <li><b>Pas de prix</b> : sur TopTroc, un objet s'échange contre un objet.</li>
     </ol>
     <a href="${esc(a.lien)}" target="_blank" rel="noopener noreferrer">Ouvrir l'annonce pour recopier la description</a>`;
 }
@@ -1265,7 +1265,7 @@ async function chargerEchanges(){
   const aRepondre=enCours.filter(e=>e.statut==='propose'&&e.transferts.some(t=>t.receveur_id===moi.id&&t.reponse==='en_attente')).length;
   $('#badge').textContent=aRepondre; $('#badge').hidden=!aRepondre;
   $('#trades-title').textContent=aRepondre?TT_I18N.pending(aRepondre):'Vos échanges';
-  $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TrocTroc a de chances d\'en trouver une.</p>';
+  $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TopTroc a de chances d\'en trouver une.</p>';
   $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Rien pour l\'instant. Élargissez vos souhaits : le prochain Grand Troc a lieu dimanche à 18 h.</p>';
   afficherDepots(); afficherEspace();
 }
@@ -1276,7 +1276,7 @@ $('#v-trades').addEventListener('click',async e=>{
     catch(err){toast(err.message)} chargerEchanges();}
   if(r){e.target.disabled=true;
     try{const x=await api(`/echanges/${r}/reponse`,{method:'POST',body:{accepte:!!e.target.dataset.oui}});
-      toast(x.statut==='accepte'?'Tout le monde a accepté : place au dépôt !':x.statut==='annule'?'Échange décliné. TrocTroc cherche autre chose.':'Réponse enregistrée')}
+      toast(x.statut==='accepte'?'Tout le monde a accepté : place au dépôt !':x.statut==='annule'?'Échange décliné. TopTroc cherche autre chose.':'Réponse enregistrée')}
     catch(err){toast(err.message)} chargerEchanges();}
 });
 
@@ -1349,7 +1349,7 @@ async function ouvrirObjet(id){
       <button class="acc-btn g" type="button" id="fiche-souhait">Ajouter « ${nomCat} » à mes souhaits</button>
       <p class="muted note">Si ${esc(pseudo)} aime un de vos objets, c'est un match : vous échangez à deux, tout de suite.</p>`;
     else actions=`<button class="acc-btn y" type="button" data-vers-compte>Créer mon compte pour l'échanger</button>
-      <p class="muted note">C'est gratuit. Ajoutez ce que vous pouvez donner : TrocTroc vous propose l'échange, même à trois.</p>`;
+      <p class="muted note">C'est gratuit. Ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.</p>`;
     $('#fiche').innerHTML=`<div class="fiche-photo">${o.photo_url?`<img src="${esc(grande(o.photo_url))}" alt="${esc(o.titre)}">`:''}</div>
       <div class="fiche-panneau">
         <h1>${esc(o.titre)}</h1>

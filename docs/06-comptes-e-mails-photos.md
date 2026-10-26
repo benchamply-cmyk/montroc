@@ -10,16 +10,16 @@ Ce que l'étape 1 a ajouté, et ce qu'il faut configurer **de tes mains** pour q
 4. **E-mails aux moments clés** : « Une boucle vous attend », « Plus que 12 h pour répondre », « C'est oui pour tout le monde : à vous de déposer », « Inès a déposé », « Tout est déposé : votre objet vous attend », « Échange annulé ».
 5. **Signalement et modération** : un bouton « Signaler » sur les objets des autres, un onglet « Modération » pour les comptes modérateurs, des décisions motivées envoyées par e-mail.
 
-## 1. E-mails : Brevo (gratuit), avec l'adresse @troctroc.fr
+## 1. E-mails : Brevo (gratuit), avec l'adresse @toptroc.com
 
-L'offre gratuite de Render **bloque les ports SMTP** (25, 465, 587) : l'API ne peut pas parler directement au serveur d'OVH. Elle envoie donc par l'**API HTTPS de Brevo** (société française, 300 e-mails par jour gratuits), avec l'adresse `bonjour@troctroc.fr` comme expéditeur.
+L'offre gratuite de Render **bloque les ports SMTP** (25, 465, 587) : l'API ne peut pas parler directement au serveur d'OVH. Elle envoie donc par l'**API HTTPS de Brevo** (société française, 300 e-mails par jour gratuits), avec l'adresse `contact@toptroc.com` comme expéditeur.
 
-1. Crée un compte sur [brevo.com](https://www.brevo.com) avec l'adresse du projet (ex. `contact@troctroc.fr`).
-2. **Senders, Domains & Dedicated IPs → Domains → Add a domain** : `troctroc.fr`, puis choisis l'authentification manuelle. Brevo affiche des enregistrements DNS (code Brevo, DKIM, DMARC) : ajoute-les tels quels dans la **zone DNS OVH** de troctroc.fr, puis clique sur *Authenticate* (la propagation peut prendre de quelques minutes à quelques heures). Ne supprime aucune ligne existante (MX, SPF).
-3. **Senders → Add a sender** : `Troc`, `bonjour@troctroc.fr` (l'adresse OVH reçoit un e-mail de confirmation).
+1. Crée un compte sur [brevo.com](https://www.brevo.com) avec l'adresse du projet (ex. `contact@toptroc.com`).
+2. **Senders, Domains & Dedicated IPs → Domains → Add a domain** : `toptroc.com`, puis choisis l'authentification manuelle. Brevo affiche des enregistrements DNS (code Brevo, DKIM, DMARC) : ajoute-les tels quels dans la **zone DNS OVH** de toptroc.com, puis clique sur *Authenticate* (la propagation peut prendre de quelques minutes à quelques heures). Ne supprime aucune ligne existante (MX, SPF).
+3. **Senders → Add a sender** : `Troc`, `contact@toptroc.com` (l'adresse OVH reçoit un e-mail de confirmation).
 4. **SMTP & API → API Keys → Generate a new API key** : copie la clé (elle commence par `xkeysib-`), c'est la valeur de `BREVO_API_KEY` dans Render.
 
-Les réponses des utilisateurs arrivent toujours dans la boîte OVH `bonjour@troctroc.fr`. Les variables `SMTP_*` ne servent que si l'API passe un jour sur une offre Render payante.
+Les réponses des utilisateurs arrivent toujours dans la boîte OVH `contact@toptroc.com`. Les variables `SMTP_*` ne servent que si l'API passe un jour sur une offre Render payante.
 
 ## 2. Photos : un compte Cloudinary gratuit
 
@@ -36,13 +36,13 @@ Render → service **montroc-api** → **Environment** → *Add Environment Vari
 | Variable | Valeur |
 |---|---|
 | `BREVO_API_KEY` | la clé Brevo (`xkeysib-…`) |
-| `EMAIL_EXPEDITEUR` | `Troc <bonjour@troctroc.fr>` (même adresse que ci-dessus) |
+| `EMAIL_EXPEDITEUR` | `Troc <contact@toptroc.com>` (même adresse que ci-dessus) |
 | `CLOUDINARY_URL` | la ligne copiée à l'étape 2 |
 | `MODERATEURS` | ton e-mail de connexion à Troc, ex. `ben.champly@gmail.com` (plusieurs : séparés par des virgules) |
 | `TACHES_SECRET` | une longue chaîne au hasard (ex. 40 caractères générés par ton gestionnaire de mots de passe) |
 | `POINT_DE_DEPOT` | le lieu de dépôt par défaut, ex. `Ressourcerie (exemple), rue des Trois-Rois, 13006 Marseille, mar.–sam. 10 h–19 h` |
 | `POINTS_DE_DEPOT` | facultatif, un lieu par ville ou quartier séparés par des `;`, ex. `Marseille 6e = Ressourcerie, rue des Trois-Rois ; Aix-en-Provence = Café …`. Chaque participant vote pour le lieu de sa zone (`Marseille` couvre aussi `Marseille 6e`, la zone la plus précise l'emporte) ; sans aucune zone connue, c'est `POINT_DE_DEPOT` |
-| `SITE_URL` | `https://troctroc.fr` (déjà la valeur par défaut) |
+| `SITE_URL` | `https://toptroc.com` (déjà la valeur par défaut) |
 
 Au redémarrage, la migration `0003` s'applique toute seule. Les objets déjà publiés sans photo passent en « retiré » : leur propriétaire peut en publier de nouveaux avec photo.
 
@@ -68,7 +68,7 @@ Pour que le dimanche profite à tout le monde, une même personne reçoit au plu
 
 - GitHub Actions appelle `/taches/grand-troc` le dimanche à 16 h 07 et 17 h 07 UTC (heure d'été / d'hiver) ; l'API ne lance rien avant 18 h à Paris, ni deux fois le même dimanche.
 - Pour le lancer à la main (par exemple pour un premier essai) : **Actions → Tâches planifiées → Run workflow → grand-troc**. Il a lieu tout de suite, une seule fois par jour.
-- **SMS** : les membres qui ont donné leur portable (facultatif, à l'inscription ou dans « Mon compte ») reçoivent en plus un SMS, un seul par personne et par Grand Troc. Il passe par la même clé Brevo que les e-mails, mais il faut **acheter des crédits SMS** dans Brevo (*Mon plan → SMS*). Sans crédits, l'e-mail part quand même et le refus est écrit dans le journal Render. L'expéditeur affiché est « TrocTroc » (variable `SMS_EXPEDITEUR`, 11 caractères au plus).
+- **SMS** : les membres qui ont donné leur portable (facultatif, à l'inscription ou dans « Mon compte ») reçoivent en plus un SMS, un seul par personne et par Grand Troc. Il passe par la même clé Brevo que les e-mails, mais il faut **acheter des crédits SMS** dans Brevo (*Mon plan → SMS*). Sans crédits, l'e-mail part quand même et le refus est écrit dans le journal Render. L'expéditeur affiché est « TopTroc » (variable `SMS_EXPEDITEUR`, 11 caractères au plus).
 - Les « boucles possibles » restent visibles dans « Échanges » comme un aperçu de dimanche. Pour permettre aussi de proposer une boucle tout de suite, comme avant, ajouter dans Render `ECHANGES_A_LA_DEMANDE=true`.
 
 1. GitHub → dépôt **montroc** → **Settings → Secrets and variables → Actions → New repository secret**.
@@ -77,7 +77,7 @@ Pour que le dimanche profite à tout le monde, une même personne reçoit au plu
 
 ## 5. Vérifier le premier troc
 
-1. Sur https://troctroc.fr, saisis ton e-mail : le lien arrive (en cas de doute, Brevo → *Transactional → Logs* montre chaque envoi ; regarde aussi les spams la première fois et marque-le « pas un spam »).
+1. Sur https://toptroc.com, saisis ton e-mail : le lien arrive (en cas de doute, Brevo → *Transactional → Logs* montre chaque envoi ; regarde aussi les spams la première fois et marque-le « pas un spam »).
 2. Choisis ton pseudo, publie un objet avec photo, ajoute un souhait.
 3. Avec un deuxième compte (une autre adresse), publie l'objet que tu souhaites et souhaite le tien : l'échange apparaît dans « Aperçu pour dimanche » ; lance le Grand Troc à la main (ci-dessus) pour le recevoir tout de suite.
    Ou, sans attendre : avec chaque compte, ouvre l'onglet **Match** et mets « J'aime » sur l'objet de l'autre ; le second « J'aime » fait le match, et « Proposer l'échange » l'envoie.
@@ -92,4 +92,4 @@ Troc héberge des contenus publiés par ses utilisateurs (photos, descriptions) 
 - **Information de l'auteur du signalement** : il reçoit la suite donnée.
 - **Historique** : les signalements et décisions restent en base, même si l'objet ou le compte est supprimé (utile pour le rapport de transparence).
 
-Reste à faire (hors étape 1, voir la [feuille de route](05-git-et-branches.md#feuille-de-route)) : mentions légales et point de contact (art. 11 et 12, ex. `contact@troctroc.fr`), conditions d'utilisation avec les règles de modération (art. 14), rapport de transparence annuel.
+Reste à faire (hors étape 1, voir la [feuille de route](05-git-et-branches.md#feuille-de-route)) : mentions légales et point de contact (art. 11 et 12, ex. `contact@toptroc.com`), conditions d'utilisation avec les règles de modération (art. 14), rapport de transparence annuel.

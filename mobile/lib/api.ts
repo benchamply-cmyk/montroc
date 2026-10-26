@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 
-export const API: string = Constants.expoConfig?.extra?.api ?? 'https://api.troctroc.fr';
+export const API: string = Constants.expoConfig?.extra?.api ?? 'https://api.toptroc.com';
 
 // Render gratuit peut mettre près d'une minute à se réveiller : on attend jusque-là avant d'abandonner.
 const DELAI_MAX_MS = 70_000;

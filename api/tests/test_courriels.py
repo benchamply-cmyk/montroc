@@ -33,7 +33,7 @@ def test_envoi_par_brevo(monkeypatch):
     assert requete.full_url == "https://api.brevo.com/v3/smtp/email"
     assert requete.get_header("Api-key") == "cle-brevo"
     corps = json.loads(requete.data)
-    assert corps["sender"] == {"name": "TrocTroc", "email": "bonjour@troctroc.fr"}
+    assert corps["sender"] == {"name": "TopTroc", "email": "contact@toptroc.com"}
     assert corps["to"] == [{"email": "ines@exemple.fr"}] and corps["subject"] == "Une boucle vous attend"
     assert corps["textContent"].startswith("Bonjour Inès")
 

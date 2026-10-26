@@ -50,7 +50,7 @@ def modifier(donnees: MoiModification, utilisateur: UtilisateurConnecte, session
 def supprimer(utilisateur: UtilisateurConnecte, session: SessionDep):
     """Supprime le compte et ses données. Les échanges en cours sont d'abord annulés pour les autres."""
     for echange in services.echanges_de(session, utilisateur.id, actifs=True):
-        services.annuler(session, echange, f"{utilisateur.pseudo} a quitté TrocTroc.")
+        services.annuler(session, echange, f"{utilisateur.pseudo} a quitté TopTroc.")
     session.flush()
     session.delete(utilisateur)
     session.commit()

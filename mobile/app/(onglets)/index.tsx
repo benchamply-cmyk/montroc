@@ -8,7 +8,7 @@ import { couleurs, ETATS, rayon } from '../../lib/theme';
 import type { Objet } from '../../lib/types';
 import { useRequete } from '../../lib/useRequete';
 
-/** Le catalogue public : consultable sans compte, comme sur troctroc.fr/#objets. */
+/** Le catalogue public : consultable sans compte, comme sur toptroc.com/#objets. */
 export default function Catalogue() {
   const [saisie, setSaisie] = useState('');
   const [q, setQ] = useState('');

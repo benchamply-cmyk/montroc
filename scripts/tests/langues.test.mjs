@@ -17,7 +17,7 @@ function scripts(html){return [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<
 function texts(html){
  return html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/g,'').replace(/<!--[\s\S]*?-->/g,'').split(/<[^>]*>/g).map(s=>s.trim()).filter(Boolean);
 }
-const neutral=new Set(['.','·','1','2','Sophie','Loïc','Match','Troc','Vinted','Leboncoin','contact@troctroc.fr','SIREN :']);
+const neutral=new Set(['.','·','1','2','Sophie','Loïc','Match','Troc','Vinted','Leboncoin','contact@toptroc.com','SIREN :']);
 const attributes=html=>[...html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/g,'').matchAll(/\b(?:placeholder|alt|aria-label|title)="([^"]+)"/g)].map(m=>m[1]);
 build();
 test('chaque entrée du catalogue existe dans les deux langues',()=>{
@@ -39,7 +39,7 @@ for(const [lang,prefix] of [['en','english'],['es','espanol']]){
    assert.match(html,new RegExp(`<html lang="${lang}">`));
    assert.equal((html.match(/rel="canonical"/g)||[]).length,1);
    assert.equal((html.match(/rel="alternate"/g)||[]).length,4);
-   assert.match(html,new RegExp(`rel="canonical" href="https://troctroc.fr/${prefix}/${page.replace('index.html','')}"`));
+   assert.match(html,new RegExp(`rel="canonical" href="https://toptroc.com/${prefix}/${page.replace('index.html','')}"`));
    assert.match(html,new RegExp(`src="/${prefix}/site.js"`));
    assert.ok(html.indexOf(`src="/${prefix}/messages.js"`)<html.indexOf('src="/langue.js"'));
    for(const [,url] of html.matchAll(/(?:src|href)="(\/[^"#]*)/g)){

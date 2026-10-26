@@ -1,4 +1,4 @@
-# Blueprint Render : l'API Python (https://api.troctroc.fr).
+# Blueprint Render : l'API Python (https://api.toptroc.com).
 # Render > New > Blueprint, choisir ce dépôt : le service est créé à partir de ce fichier.
 services:
   - type: web
@@ -23,21 +23,22 @@ services:
       - key: DATABASE_URL
         sync: false   # à coller dans Render : chaîne de connexion Neon (branche main)
       - key: CORS_ORIGINS
-        value: https://troctroc.fr,https://www.troctroc.fr
+        # troctroc.fr reste autorisé pendant la transition (redirections 301, anciens onglets ouverts).
+        value: https://toptroc.com,https://www.toptroc.com,https://troctroc.fr,https://www.troctroc.fr
       - key: ENVIRONNEMENT
         value: production
       - key: SITE_URL
-        value: https://troctroc.fr
+        value: https://toptroc.com
       # E-mails : Render gratuit bloque les ports SMTP, on envoie par l'API HTTPS de Brevo.
       - key: BREVO_API_KEY
         sync: false
       # SMTP OVH : seulement sur une offre Render payante (ignoré si BREVO_API_KEY est renseignée).
       - key: SMTP_UTILISATEUR
-        sync: false   # ex. bonjour@troctroc.fr
+        sync: false   # ex. contact@toptroc.com
       - key: SMTP_MOT_DE_PASSE
         sync: false
       - key: EMAIL_EXPEDITEUR
-        value: TrocTroc <contact@troctroc.fr>   # l'expéditeur validé chez Brevo
+        value: TopTroc <contact@toptroc.com>   # l'expéditeur validé chez Brevo
       # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary.
       - key: CLOUDINARY_URL
         sync: false
@@ -91,7 +92,7 @@ services:
       - key: BREVO_API_KEY
         sync: false
       - key: EMAIL_EXPEDITEUR
-        value: TrocTroc preprod <contact@troctroc.fr>
+        value: TopTroc preprod <contact@toptroc.com>
       - key: CLOUDINARY_URL
         sync: false
       - key: MODERATEURS

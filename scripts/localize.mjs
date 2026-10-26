@@ -55,8 +55,8 @@ export function build(){
    s=s.replace('<script src="/langue.js">',`<script src="/${prefix}/messages.js"></script>\n<script src="/langue.js">`);
    s=s.replace(/href="(\/(?:#|$|pros\/|collectivites\/|faq\/|mentions-legales\/|cgu\/|confidentialite\/|regles\/)[^"]*)"/g,`href="/${prefix}$1"`);
    const canonical='/'+p.replace(/index\.html$/,'');
-   const alternates=[['fr',''],['en','/english'],['es','/espanol'],['x-default','']].map(([code,base])=>`<link rel="alternate" hreflang="${code}" href="https://troctroc.fr${base}${canonical}">`).join('\n');
-   s=s.replace('</head>',`<link rel="canonical" href="https://troctroc.fr/${prefix}${canonical}">\n${alternates}\n</head>`);
+   const alternates=[['fr',''],['en','/english'],['es','/espanol'],['x-default','']].map(([code,base])=>`<link rel="alternate" hreflang="${code}" href="https://toptroc.com${base}${canonical}">`).join('\n');
+   s=s.replace('</head>',`<link rel="canonical" href="https://toptroc.com/${prefix}${canonical}">\n${alternates}\n</head>`);
    const target=path.join(out,p);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,s);
   }
   for(const name of ['site','match'])fs.writeFileSync(path.join(out,`${name}.js`),t.js(fs.readFileSync(path.join(root,'web',`${name}.js`),'utf8')));

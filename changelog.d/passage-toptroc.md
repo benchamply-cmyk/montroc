@@ -1,0 +1,1 @@
+- TrocTroc devient TopTroc : nouveau nom sur le site, dans les e-mails, les SMS et l'app, et nouvelle adresse toptroc.com (API api.toptroc.com, contact@toptroc.com) ; troctroc.fr redirige en 301 vers toptroc.com.

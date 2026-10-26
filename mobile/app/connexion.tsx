@@ -9,7 +9,7 @@ import type { ResultatConnexion } from '../lib/types';
 
 type Etape = 'motdepasse' | 'lien' | 'lien-envoye' | 'inscription';
 
-/** Le lien de l'e-mail est https://troctroc.fr/#connexion=<jeton> : on accepte le lien entier ou le seul jeton. */
+/** Le lien de l'e-mail est https://toptroc.com/#connexion=<jeton> : on accepte le lien entier ou le seul jeton. */
 function extraireJeton(texte: string): string {
   const t = texte.trim();
   const m = t.match(/connexion=([\w-]+)/);
@@ -90,7 +90,7 @@ export default function Connexion() {
 
         {etape === 'lien' && (
           <>
-            <Text style={s.texte}>Nouveau sur TrocTroc ou mot de passe oublié ? Recevez un lien de connexion.</Text>
+            <Text style={s.texte}>Nouveau sur TopTroc ou mot de passe oublié ? Recevez un lien de connexion.</Text>
             <Champ libelle="E-mail" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
             <Bouton
               titre="Envoyer le lien"

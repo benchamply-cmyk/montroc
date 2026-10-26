@@ -9,17 +9,25 @@ du reste : les boucles à trois et les échanges à deux que personne n'a vus.
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
-from troc_echanges import Boucle
+from troc_echanges import Boucle, boucles_autour
 from troc_echanges import Objet as ObjetMoteur
 from troc_echanges import Transfert as TransfertMoteur
 
 from . import courriels
 from . import models as m
 from .config import get_settings
-from .services import ErreurMetier, proposer, souhait_correspond, souhait_moteur, zone_acceptee
+from .services import (
+    ErreurMetier,
+    construire_marche,
+    contraintes_du_marche,
+    proposer,
+    souhait_correspond,
+    souhait_moteur,
+    zone_acceptee,
+)
 
 ACTIFS = (m.StatutEchange.propose, m.StatutEchange.accepte)
 
@@ -51,6 +59,9 @@ def _coups_de_coeur_recus(session: Session, mes_objets: list[m.Objet]) -> dict[i
 
 # --- Le carrousel ---
 
+# Nombre d'autres « J'aime » sur un objet qui divise par deux la chance de l'obtenir (classement des cartes).
+CONCURRENCE = 5
+
 
 @dataclass
 class Carte:
@@ -63,6 +74,13 @@ class Carte:
     il_cherche: list[m.Objet] = field(default_factory=list)
     # Ce qu'il a écrit pour décrire ces souhaits-là (« Je demande »).
     sa_demande: str | None = None
+    # Autres membres qui aiment déjà cet objet : plus il est convoité, moins il a de chances de m'arriver.
+    concurrents: int = 0
+
+    @property
+    def chance(self) -> float:
+        """Chance que l'échange aboutisse : la fiabilité du propriétaire, divisée par la concurrence sur l'objet."""
+        return self.objet.proprietaire.fiabilite / (1 + self.concurrents / CONCURRENCE)
 
     @property
     def score(self) -> tuple:
@@ -72,13 +90,15 @@ class Carte:
             self.souhait is not None,
             bool(self.il_cherche),
             -(self.souhait.rang if self.souhait else 99),
+            round(self.chance, 2),
             self.objet.cree_le,
         )
 
 
 def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Carte]:
     """Les objets à montrer, les plus prometteurs d'abord : ceux qui feraient un match tout de suite, puis
-    ceux qui répondent à mes souhaits et dont le propriétaire cherche ce que j'ai, puis le reste.
+    ceux qui répondent à mes souhaits et dont le propriétaire cherche ce que j'ai, puis le reste. À égalité,
+    l'objet qui a le plus de chances d'aboutir (propriétaire fiable, peu d'autres « J'aime ») passe devant.
 
     Un objet déjà aimé ou écarté ne revient pas.
     """
@@ -129,6 +149,14 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
         )
         .options(selectinload(m.Objet.proprietaire))
     )
+    candidats = list(candidats)
+    concurrents = dict(
+        session.execute(
+            select(m.Avis.objet_id, func.count())
+            .where(m.Avis.objet_id.in_([o.id for o in candidats]), m.Avis.aime, m.Avis.utilisateur_id != moi.id)
+            .group_by(m.Avis.objet_id)
+        ).all()
+    )
     cartes = []
     for o in candidats:
         souhait = next(
@@ -143,6 +171,7 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
                 il_aime=il_aime.get(o.proprietaire_id, []),
                 il_cherche=il_cherche.get(o.proprietaire_id, []),
                 sa_demande=sa_demande.get(o.proprietaire_id),
+                concurrents=concurrents.get(o.id, 0),
             )
         )
     # La requête prend toute la catégorie : on écarte ce qu'une sous-catégorie ou une taille demandées excluent,
@@ -150,6 +179,18 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
     cartes = [c for c in cartes if c.souhait is not None or c.il_aime or c.il_cherche]
     cartes.sort(key=lambda c: c.score, reverse=True)
     return cartes[:limite]
+
+
+def souhait_servi(receveur: m.Utilisateur, objet: m.Objet) -> m.Souhait | None:
+    """Le souhait du receveur auquel l'objet répond, le préféré d'abord (rang 1), comme sur une carte du carrousel."""
+    return next(
+        (
+            s
+            for s in sorted(receveur.souhaits, key=lambda s: (s.rang, s.id))
+            if souhait_correspond(s, objet) and zone_acceptee(s, receveur, objet.proprietaire)
+        ),
+        None,
+    )
 
 
 # --- Coups de cœur et matchs ---
@@ -269,6 +310,8 @@ def conclure(session: Session, moi: m.Utilisateur, mon_objet_id: int, son_objet_
         avis.aime = True
 
     def transfert(objet: m.Objet, receveur: m.Utilisateur) -> TransfertMoteur:
+        # Le souhait que cet objet comble chez le receveur, s'il y en a un : l'accord compte dans sa quantité.
+        souhait = souhait_servi(receveur, objet)
         return TransfertMoteur(
             donneur=str(objet.proprietaire_id),
             receveur=str(receveur.id),
@@ -277,6 +320,7 @@ def conclure(session: Session, moi: m.Utilisateur, mon_objet_id: int, son_objet_
             rang=1,
             auto=False,
             proba_acceptation=1.0,
+            souhait_ref=None if souhait is None else str(souhait.id),
         )
 
     boucle = Boucle(
@@ -284,3 +328,37 @@ def conclure(session: Session, moi: m.Utilisateur, mon_objet_id: int, son_objet_
         proba_reussite=min(1.0, moi.fiabilite * autre.fiabilite),
     )
     return proposer(session, boucle, auteur_id=moi.id, par_match=True)
+
+
+# --- Le Match à trois ---
+
+
+def _boucles_a_trois(session: Session, moi: m.Utilisateur, options_par_transfert: int = 3) -> list[Boucle]:
+    marche = construire_marche(session)
+    if str(moi.id) not in marche.utilisateurs:
+        return []
+    contraintes = contraintes_du_marche(session, marche)
+    boucles = boucles_autour(
+        marche,
+        str(moi.id),
+        longueur_max=3,
+        limite=None,
+        options_par_transfert=options_par_transfert,
+        contraintes=contraintes,
+    )
+    return [b for b in boucles if b.longueur == 3]
+
+
+def boucles_a_trois(session: Session, moi: m.Utilisateur, limite: int = 5) -> list[Boucle]:
+    """Les boucles à trois possibles tout de suite, sans attendre dimanche : je reçois un objet qui répond à mes
+    souhaits, et chacun des deux autres reçoit un objet qu'il a demandé ou déjà aimé. Les plus sûres d'abord."""
+    return _boucles_a_trois(session, moi)[:limite]
+
+
+def conclure_boucle(session: Session, moi: m.Utilisateur, objet_ids: list[int]) -> m.Echange:
+    """Je propose une boucle à trois du carrousel : ma part est acceptée, les deux autres ont 48 h pour dire oui."""
+    cible = tuple(str(i) for i in objet_ids)
+    for b in _boucles_a_trois(session, moi, options_par_transfert=10):
+        if b.objets == cible:
+            return proposer(session, b, moi.id)
+    raise ErreurMetier("Cette boucle n'est plus possible : un objet a trouvé preneur entre-temps.")
