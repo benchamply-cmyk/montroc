@@ -1,0 +1,48 @@
+name: Règles des branches
+
+# Le chemin d'une modification : branche type/sujet → PR vers preprod → PR preprod → main.
+# Ce contrôle échoue quand une PR s'en écarte. Pour qu'il bloque la fusion, l'ajouter aux « status checks »
+# obligatoires de main et de preprod (Settings > Branches, voir docs/05-git-et-branches.md).
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  regles:
+    name: Règles des branches
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Vérifier la PR
+        env:
+          BASE: ${{ github.base_ref }}
+          TETE: ${{ github.head_ref }}
+        run: |
+          erreur() { echo "::error::$1"; echec=1; }
+          echec=0
+          case "$BASE" in
+            main)
+              # La production ne reçoit que la pré-production, une fois la campagne de tests verte.
+              [ "$TETE" = "preprod" ] || erreur "main n'accepte que les PR venant de preprod (cette PR vient de « $TETE »). Changez sa base pour preprod."
+              ;;
+            preprod)
+              if ! echo "$TETE" | grep -Eq '^((feature|fix|docs|chore|db|mobile)/[a-z0-9][a-z0-9.-]*|revert-.+)$'; then
+                erreur "Nom de branche « $TETE » : attendu type/sujet (feature/, fix/, docs/, chore/, db/, mobile/), en minuscules, sans accents."
+              fi
+              git diff --name-only "origin/$BASE...HEAD" > modifies.txt
+              if [[ "$TETE" != chore/version-* && "$TETE" != revert-* ]]; then
+                # Les lignes du journal passent par changelog.d/ : plus de conflits sur CHANGELOG.md.
+                if git diff "origin/$BASE...HEAD" -- CHANGELOG.md | grep -q '^+- '; then
+                  erreur "Ne pas ajouter de ligne dans CHANGELOG.md : mettre la ligne dans un fichier changelog.d/<sujet>.md."
+                fi
+                grep -Eq '^changelog\.d/.+\.md$' modifies.txt || erreur "Ajouter un fichier changelog.d/<sujet>.md d'une ligne qui dit ce qui change."
+              fi
+              ;;
+            *)
+              echo "Base « $BASE » : pas de règle particulière."
+              ;;
+          esac
+          [ "$echec" = 0 ] && echo "Règles respectées."
+          exit "$echec"
