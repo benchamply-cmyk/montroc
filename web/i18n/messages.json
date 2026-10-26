@@ -67,9 +67,9 @@
     "en": "1 loop",
     "es": "1 cadena"
   },
-  "1. Ce qu'est TrocTroc": {
-    "en": "1. What TrocTroc is",
-    "es": "1. Qué es TrocTroc"
+  "1. Ce qu'est TopTroc": {
+    "en": "1. What TopTroc is",
+    "es": "1. Qué es TopTroc"
   },
   "10. Droit applicable": {
     "en": "10. Applicable law",
@@ -187,9 +187,9 @@
     "en": ": recalled car seats or childcare products (check rappel.conso.gouv.fr), damaged electrical appliances, chemicals.",
     "es": ": sillas de coche o artículos de puericultura retirados del mercado (consulta rappel.conso.gouv.fr), aparatos eléctricos dañados y productos químicos."
   },
-  ": sur TrocTroc, un objet s'échange contre un objet.": {
-    "en": ": on TrocTroc, an item is swapped for an item.",
-    "es": ": en TrocTroc, un objeto se intercambia por otro."
+  ": sur TopTroc, un objet s'échange contre un objet.": {
+    "en": ": on TopTroc, an item is swapped for an item.",
+    "es": ": en TopTroc, un objeto se intercambia por otro."
   },
   ": un cœur et c'est un match.": {
     "en": ": a heart and it is a match.",
@@ -239,9 +239,9 @@
     "en": "First add what would be useful to you under “I want”.",
     "es": "Primero añade lo que necesitas en «Busco»."
   },
-  "Ajoutez sa catégorie à vos souhaits : TrocTroc cherchera la boucle qui vous l'apporte.": {
-    "en": "Add its category to your wishes: TrocTroc will look for a loop that brings it to you.",
-    "es": "Añade su categoría a tus deseos: TrocTroc buscará la cadena que te lo consiga."
+  "Ajoutez sa catégorie à vos souhaits : TopTroc cherchera la boucle qui vous l'apporte.": {
+    "en": "Add its category to your wishes: TopTroc will look for a loop that brings it to you.",
+    "es": "Añade su categoría a tus deseos: TopTroc buscará la cadena que te lo consiga."
   },
   "Ajouté à vos souhaits": {
     "en": "Added to your wishes",
@@ -351,9 +351,9 @@
     "en": "Brevo, in France (sending emails and text messages).",
     "es": "Brevo, en Francia (envío de correos y SMS)."
   },
-  "C'est gratuit. Ajoutez ce que vous pouvez donner : TrocTroc vous propose l'échange, même à trois.": {
-    "en": "It is free. Add what you can give: TrocTroc suggests a swap, even a three-way one.",
-    "es": "Es gratis. Añade lo que puedes dar: TrocTroc te propone un intercambio, incluso entre tres."
+  "C'est gratuit. Ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.": {
+    "en": "It is free. Add what you can give: TopTroc suggests a swap, even a three-way one.",
+    "es": "Es gratis. Añade lo que puedes dar: TopTroc te propone un intercambio, incluso entre tres."
   },
   "C'est noté. On attend": {
     "en": "Noted. Waiting for",
@@ -467,17 +467,17 @@
     "en": "Every Sunday at 6 pm (Paris time)",
     "es": "Cada domingo a las 18:00 (hora de París)"
   },
-  "Chaque dimanche à 18 h, TrocTroc cherche toutes les boucles possibles d'un coup, sur tous les objets. Vous recevez un e-mail (et un SMS si vous avez donné votre portable) si un échange vous attend. Vous avez 48 h pour dire oui, puis jusqu'au dimanche suivant midi pour déposer votre objet.": {
-    "en": "Every Sunday at 6 pm (Paris time), TrocTroc searches for all possible loops at once, across all items. You receive an email (and a text message if you provided your mobile number) if a swap is waiting for you. You have 48 hours to accept, then until noon the following Sunday to drop off your item.",
-    "es": "Cada domingo a las 18:00 (hora de París), TrocTroc busca todas las cadenas posibles a la vez, entre todos los objetos. Recibirás un correo (y un SMS si has facilitado tu móvil) si te espera un intercambio. Tienes 48 horas para aceptar y hasta el domingo siguiente al mediodía para entregar tu objeto."
+  "Chaque dimanche à 18 h, TopTroc cherche toutes les boucles possibles d'un coup, sur tous les objets. Vous recevez un e-mail (et un SMS si vous avez donné votre portable) si un échange vous attend. Vous avez 48 h pour dire oui, puis jusqu'au dimanche suivant midi pour déposer votre objet.": {
+    "en": "Every Sunday at 6 pm (Paris time), TopTroc searches for all possible loops at once, across all items. You receive an email (and a text message if you provided your mobile number) if a swap is waiting for you. You have 48 hours to accept, then until noon the following Sunday to drop off your item.",
+    "es": "Cada domingo a las 18:00 (hora de París), TopTroc busca todas las cadenas posibles a la vez, entre todos los objetos. Recibirás un correo (y un SMS si has facilitado tu móvil) si te espera un intercambio. Tienes 48 horas para aceptar y hasta el domingo siguiente al mediodía para entregar tu objeto."
   },
-  "Chaque dimanche à 18 h, TrocTroc propose des échanges. Vous avez 48 h pour accepter ou refuser. Quand tous les participants ont accepté, l'échange est confirmé : chacun s'engage à déposer son objet au point de dépôt indiqué (ou à le remettre en main propre) avant le dimanche suivant à midi. Une fois l'objet récupéré, il appartient à la personne qui l'a reçu.": {
-    "en": "Every Sunday at 6 pm (Paris time), TrocTroc proposes swaps. You have 48 hours to accept or decline. Once everyone has accepted, the swap is confirmed: each participant commits to dropping off their item at the indicated point (or handing it over in person) before noon the following Sunday. Once collected, the item belongs to its recipient.",
-    "es": "Cada domingo a las 18:00 (hora de París), TrocTroc propone intercambios. Tienes 48 horas para aceptar o rechazar. Cuando todos aceptan, el intercambio queda confirmado: cada persona se compromete a entregar su objeto en el punto indicado (o en mano) antes del domingo siguiente al mediodía. Una vez recogido, el objeto pertenece a quien lo ha recibido."
+  "Chaque dimanche à 18 h, TopTroc propose des échanges. Vous avez 48 h pour accepter ou refuser. Quand tous les participants ont accepté, l'échange est confirmé : chacun s'engage à déposer son objet au point de dépôt indiqué (ou à le remettre en main propre) avant le dimanche suivant à midi. Une fois l'objet récupéré, il appartient à la personne qui l'a reçu.": {
+    "en": "Every Sunday at 6 pm (Paris time), TopTroc proposes swaps. You have 48 hours to accept or decline. Once everyone has accepted, the swap is confirmed: each participant commits to dropping off their item at the indicated point (or handing it over in person) before noon the following Sunday. Once collected, the item belongs to its recipient.",
+    "es": "Cada domingo a las 18:00 (hora de París), TopTroc propone intercambios. Tienes 48 horas para aceptar o rechazar. Cuando todos aceptan, el intercambio queda confirmado: cada persona se compromete a entregar su objeto en el punto indicado (o en mano) antes del domingo siguiente al mediodía. Una vez recogido, el objeto pertenece a quien lo ha recibido."
   },
-  "Chaque dimanche, TrocTroc fait circuler les objets qui dorment chez vos habitants : un échange direct ou une boucle à trois, sans argent. Moins de déchets, plus de liens entre voisins, et des chiffres pour le prouver.": {
-    "en": "Every Sunday, TrocTroc puts residents' unused items back into circulation: a direct swap or a three-way loop, without money. Less waste, more connections between neighbours, and figures to prove it.",
-    "es": "Cada domingo, TrocTroc pone en circulación los objetos que los habitantes ya no usan: un intercambio directo o una cadena de tres, sin dinero. Menos residuos, más vínculos entre vecinos y cifras que lo demuestran."
+  "Chaque dimanche, TopTroc fait circuler les objets qui dorment chez vos habitants : un échange direct ou une boucle à trois, sans argent. Moins de déchets, plus de liens entre voisins, et des chiffres pour le prouver.": {
+    "en": "Every Sunday, TopTroc puts residents' unused items back into circulation: a direct swap or a three-way loop, without money. Less waste, more connections between neighbours, and figures to prove it.",
+    "es": "Cada domingo, TopTroc pone en circulación los objetos que los habitantes ya no usan: un intercambio directo o una cadena de tres, sin dinero. Menos residuos, más vínculos entre vecinos y cifras que lo demuestran."
   },
   "Chaque décision est motivée : le texte est envoyé à la personne concernée, avec la possibilité de contester.": {
     "en": "Every decision is explained: the explanation is sent to the person concerned, with the option to appeal.",
@@ -547,9 +547,9 @@
     "en": "Local authorities",
     "es": "Administraciones locales"
   },
-  "Collectivités · TrocTroc": {
-    "en": "Local authorities · TrocTroc",
-    "es": "Administraciones locales · TrocTroc"
+  "Collectivités · TopTroc": {
+    "en": "Local authorities · TopTroc",
+    "es": "Administraciones locales · TopTroc"
   },
   "Collez le lien": {
     "en": "Paste the link",
@@ -563,9 +563,9 @@
     "en": "Paste a link to a Vinted or Leboncoin listing.",
     "es": "Pega el enlace de un anuncio de Vinted o Leboncoin."
   },
-  "Collez le lien de l'annonce sur l'accueil : on vous aide à recopier votre objet sur TrocTroc, sans prix, contre quelque chose qui vous servira.": {
-    "en": "Paste the listing link on the home page: we help you copy your item onto TrocTroc, without a price, in exchange for something useful to you.",
-    "es": "Pega el enlace del anuncio en el inicio: te ayudamos a copiar tu objeto en TrocTroc, sin precio, a cambio de algo que te sirva."
+  "Collez le lien de l'annonce sur l'accueil : on vous aide à recopier votre objet sur TopTroc, sans prix, contre quelque chose qui vous servira.": {
+    "en": "Paste the listing link on the home page: we help you copy your item onto TopTroc, without a price, in exchange for something useful to you.",
+    "es": "Pega el enlace del anuncio en el inicio: te ayudamos a copiar tu objeto en TopTroc, sin precio, a cambio de algo que te sirva."
   },
   "Combien de temps": {
     "en": "How long",
@@ -607,21 +607,21 @@
     "en": "Terms of use",
     "es": "Condiciones generales de uso"
   },
-  "Conditions générales d'utilisation de TrocTroc.": {
-    "en": "TrocTroc terms of use.",
-    "es": "Condiciones generales de uso de TrocTroc."
+  "Conditions générales d'utilisation de TopTroc.": {
+    "en": "TopTroc terms of use.",
+    "es": "Condiciones generales de uso de TopTroc."
   },
-  "Conditions générales d'utilisation · TrocTroc": {
-    "en": "Terms of use · TrocTroc",
-    "es": "Condiciones de uso · TrocTroc"
+  "Conditions générales d'utilisation · TopTroc": {
+    "en": "Terms of use · TopTroc",
+    "es": "Condiciones de uso · TopTroc"
   },
   "Confidentialité": {
     "en": "Privacy",
     "es": "Privacidad"
   },
-  "Confidentialité · TrocTroc": {
-    "en": "Privacy · TrocTroc",
-    "es": "Privacidad · TrocTroc"
+  "Confidentialité · TopTroc": {
+    "en": "Privacy · TopTroc",
+    "es": "Privacidad · TopTroc"
   },
   "Connexion à Mon espace": {
     "en": "Sign in to My space",
@@ -683,9 +683,9 @@
     "en": "Create an account to swap",
     "es": "Crear una cuenta para intercambiar"
   },
-  "Créez un compte gratuit, ajoutez ce que vous pouvez donner : TrocTroc vous propose l'échange, même à trois.": {
-    "en": "Create a free account and add what you can give: TrocTroc suggests a swap, even a three-way one.",
-    "es": "Crea una cuenta gratuita y añade lo que puedes dar: TrocTroc te propone un intercambio, incluso entre tres."
+  "Créez un compte gratuit, ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.": {
+    "en": "Create a free account and add what you can give: TopTroc suggests a swap, even a three-way one.",
+    "es": "Crea una cuenta gratuita y añade lo que puedes dar: TopTroc te propone un intercambio, incluso entre tres."
   },
   "Dans": {
     "en": "In",
@@ -871,9 +871,9 @@
     "en": "FAQ and contact",
     "es": "Preguntas frecuentes y contacto"
   },
-  "FAQ et contact · TrocTroc": {
-    "en": "FAQ and contact · TrocTroc",
-    "es": "Preguntas frecuentes y contacto · TrocTroc"
+  "FAQ et contact · TopTroc": {
+    "en": "FAQ and contact · TopTroc",
+    "es": "Preguntas frecuentes y contacto · TopTroc"
   },
   "Faites un tour du Match : un cœur de chaque côté et c'est échangé.": {
     "en": "Take a look at Match: a heart on each side and you swap.",
@@ -1063,9 +1063,9 @@
     "en": "The drop-off location will be specified shortly.",
     "es": "El lugar de entrega se indicará pronto."
   },
-  "Le nom TrocTroc, le logo, les textes et le graphisme du site appartiennent à l'éditeur. Les photos et descriptions des objets appartiennent aux membres qui les publient ; en les publiant, ils autorisent TrocTroc à les afficher sur le site pour les besoins des échanges.": {
-    "en": "The TrocTroc name, logo, text and website design belong to the publisher. Item photos and descriptions belong to the members who publish them; by publishing them, members authorise TrocTroc to display them on the website for the purposes of swaps.",
-    "es": "El nombre TrocTroc, el logotipo, los textos y el diseño del sitio pertenecen al editor. Las fotos y descripciones de los objetos pertenecen a los miembros que las publican; al publicarlas, autorizan a TrocTroc a mostrarlas en el sitio para los intercambios."
+  "Le nom TopTroc, le logo, les textes et le graphisme du site appartiennent à l'éditeur. Les photos et descriptions des objets appartiennent aux membres qui les publient ; en les publiant, ils autorisent TopTroc à les afficher sur le site pour les besoins des échanges.": {
+    "en": "The TopTroc name, logo, text and website design belong to the publisher. Item photos and descriptions belong to the members who publish them; by publishing them, members authorise TopTroc to display them on the website for the purposes of swaps.",
+    "es": "El nombre TopTroc, el logotipo, los textos y el diseño del sitio pertenecen al editor. Las fotos y descripciones de los objetos pertenecen a los miembros que las publican; al publicarlas, autorizan a TopTroc a mostrarlas en el sitio para los intercambios."
   },
   "Le pilote a lieu dans les Bouches-du-Rhône (13), c'est là que les échanges se font en premier. Vous pouvez déjà créer un compte et proposer vos objets : le Grand Troc arrivera près de chez vous dès qu'il y aura assez de monde.": {
     "en": "The pilot is running in Bouches-du-Rhône (13), where swaps are taking place first. You can already create an account and offer your items: the Grand Troc will come to your area as soon as enough people join.",
@@ -1095,9 +1095,9 @@
     "en": "The server is waking up, just a few more seconds…",
     "es": "El servidor se está iniciando, unos segundos más…"
   },
-  "Le site troctroc.fr est édité par": {
-    "en": "The troctroc.fr website is published by",
-    "es": "El sitio troctroc.fr está editado por"
+  "Le site toptroc.com est édité par": {
+    "en": "The toptroc.com website is published by",
+    "es": "El sitio toptroc.com está editado por"
   },
   "Le titre et la catégorie": {
     "en": "The title and category",
@@ -1147,9 +1147,9 @@
     "en": "Reports",
     "es": "Las denuncias"
   },
-  "Les échanges se font entre membres. Chacun reste responsable de l'objet qu'il donne, de sa description et de sa sécurité. TrocTroc fait son possible pour que le service fonctionne, mais ne peut garantir qu'un échange sera trouvé pour chaque objet.": {
-    "en": "Swaps take place between members. Each person remains responsible for the item they give, its description and its safety. TrocTroc does its best to keep the service running, but cannot guarantee a swap will be found for every item.",
-    "es": "Los intercambios se realizan entre miembros. Cada persona sigue siendo responsable del objeto que entrega, de su descripción y de su seguridad. TrocTroc hace lo posible por mantener el servicio, pero no puede garantizar que se encuentre un intercambio para cada objeto."
+  "Les échanges se font entre membres. Chacun reste responsable de l'objet qu'il donne, de sa description et de sa sécurité. TopTroc fait son possible pour que le service fonctionne, mais ne peut garantir qu'un échange sera trouvé pour chaque objet.": {
+    "en": "Swaps take place between members. Each person remains responsible for the item they give, its description and its safety. TopTroc does its best to keep the service running, but cannot guarantee a swap will be found for every item.",
+    "es": "Los intercambios se realizan entre miembros. Cada persona sigue siendo responsable del objeto que entrega, de su descripción y de su seguridad. TopTroc hace lo posible por mantener el servicio, pero no puede garantizar que se encuentre un intercambio para cada objeto."
   },
   "Les équipes RSE": {
     "en": "CSR teams",
@@ -1215,13 +1215,13 @@
     "en": "Legal notice",
     "es": "Aviso legal"
   },
-  "Mentions légales du site troctroc.fr.": {
-    "en": "Legal notice for troctroc.fr.",
-    "es": "Aviso legal del sitio troctroc.fr."
+  "Mentions légales du site toptroc.com.": {
+    "en": "Legal notice for toptroc.com.",
+    "es": "Aviso legal del sitio toptroc.com."
   },
-  "Mentions légales · TrocTroc": {
-    "en": "Legal notice · TrocTroc",
-    "es": "Aviso legal · TrocTroc"
+  "Mentions légales · TopTroc": {
+    "en": "Legal notice · TopTroc",
+    "es": "Aviso legal · TopTroc"
   },
   "Menu principal": {
     "en": "Main menu",
@@ -1307,9 +1307,9 @@
     "en": "We use technical service providers who only use your data to provide this service to us:",
     "es": "Recurrimos a proveedores técnicos que solo utilizan tus datos para prestarnos este servicio:"
   },
-  "Nous gardons le moins de données possible, nous ne les vendons pas, et il n'y a ni publicité ni pistage sur TrocTroc.": {
-    "en": "We keep as little data as possible, we do not sell it, and there is no advertising or tracking on TrocTroc.",
-    "es": "Guardamos los mínimos datos posibles, no los vendemos y no hay publicidad ni seguimiento en TrocTroc."
+  "Nous gardons le moins de données possible, nous ne les vendons pas, et il n'y a ni publicité ni pistage sur TopTroc.": {
+    "en": "We keep as little data as possible, we do not sell it, and there is no advertising or tracking on TopTroc.",
+    "es": "Guardamos los mínimos datos posibles, no los vendemos y no hay publicidad ni seguimiento en TopTroc."
   },
   "Nous ouvrons votre espace et vous donnons de quoi l'annoncer en interne.": {
     "en": "We open your space and provide materials to announce it internally.",
@@ -1319,9 +1319,9 @@
     "en": "New member",
     "es": "Miembro nuevo"
   },
-  "Nouveau sur TrocTroc ? Créer un compte": {
-    "en": "New to TrocTroc? Create an account",
-    "es": "¿Nuevo en TrocTroc? Crear una cuenta"
+  "Nouveau sur TopTroc ? Créer un compte": {
+    "en": "New to TopTroc? Create an account",
+    "es": "¿Nuevo en TopTroc? Crear una cuenta"
   },
   "Numéro enregistré : vous recevrez un SMS au prochain Grand Troc": {
     "en": "Number saved: you will receive a text message at the next Grand Troc",
@@ -1383,9 +1383,9 @@
     "en": "Tabs",
     "es": "Pestañas"
   },
-  "Oui. Publier vos objets et vos souhaits, chercher, participer au Grand Troc du dimanche et échanger en main propre ne coûte rien. Sur TrocTroc, il n'y a ni prix, ni monnaie, ni points : un objet contre un objet.": {
-    "en": "Yes. Offering items and wishes, searching, joining the Sunday Grand Troc and swapping in person cost nothing. On TrocTroc there are no prices, money or points: one item for another.",
-    "es": "Sí. Publicar tus objetos y deseos, buscar, participar en el Grand Troc del domingo e intercambiar en mano es gratis. En TrocTroc no hay precios, dinero ni puntos: un objeto por otro."
+  "Oui. Publier vos objets et vos souhaits, chercher, participer au Grand Troc du dimanche et échanger en main propre ne coûte rien. Sur TopTroc, il n'y a ni prix, ni monnaie, ni points : un objet contre un objet.": {
+    "en": "Yes. Offering items and wishes, searching, joining the Sunday Grand Troc and swapping in person cost nothing. On TopTroc there are no prices, money or points: one item for another.",
+    "es": "Sí. Publicar tus objetos y deseos, buscar, participar en el Grand Troc del domingo e intercambiar en mano es gratis. En TopTroc no hay precios, dinero ni puntos: un objeto por otro."
   },
   "Ouverte : toute la catégorie et celles cochées": {
     "en": "Open: the whole category and those selected",
@@ -1451,9 +1451,9 @@
     "en": "No subcategory",
     "es": "Sin subcategoría"
   },
-  "Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TrocTroc a de chances d'en trouver une.": {
-    "en": "No loop yet. Add two or three items: the more you offer, the more likely TrocTroc is to find one.",
-    "es": "Aún no hay cadenas. Añade dos o tres objetos: cuantos más ofrezcas, más posibilidades tendrá TrocTroc de encontrar una."
+  "Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TopTroc a de chances d'en trouver une.": {
+    "en": "No loop yet. Add two or three items: the more you offer, the more likely TopTroc is to find one.",
+    "es": "Aún no hay cadenas. Añade dos o tres objetos: cuantos más ofrezcas, más posibilidades tendrá TopTroc de encontrar una."
   },
   "Pas encore de match. Un « J'aime » sur un objet marqué « Match immédiat » en crée un tout de suite.": {
     "en": "No match yet. Liking an item marked “Instant match” creates one straight away.",
@@ -1523,9 +1523,9 @@
     "en": "To report illegal or dangerous content, write to the same address, specifying the item or username concerned. We reply in French.",
     "es": "Para denunciar contenido ilícito o peligroso, escribe a la misma dirección e indica el objeto o seudónimo afectado. Respondemos en francés."
   },
-  "Pour tout ce qui n'a pas trouvé de match : une fois par semaine, TrocTroc cherche les boucles à trois et les échanges à deux que personne n'a vus. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.": {
-    "en": "For items that have not found a match: once a week, TrocTroc searches for three-way loops and two-way swaps nobody spotted. Offers arrive on Sunday at 6 pm (Paris time); you have 48 hours to accept and drop-offs take place during the week.",
-    "es": "Para los objetos que no han encontrado match: una vez a la semana, TrocTroc busca cadenas de tres e intercambios entre dos que nadie había visto. Las propuestas llegan el domingo a las 18:00 (hora de París); tienes 48 horas para aceptar y las entregas se realizan durante la semana."
+  "Pour tout ce qui n'a pas trouvé de match : une fois par semaine, TopTroc cherche les boucles à trois et les échanges à deux que personne n'a vus. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.": {
+    "en": "For items that have not found a match: once a week, TopTroc searches for three-way loops and two-way swaps nobody spotted. Offers arrive on Sunday at 6 pm (Paris time); you have 48 hours to accept and drop-offs take place during the week.",
+    "es": "Para los objetos que no han encontrado match: una vez a la semana, TopTroc busca cadenas de tres e intercambios entre dos que nadie había visto. Las propuestas llegan el domingo a las 18:00 (hora de París); tienes 48 horas para aceptar y las entregas se realizan durante la semana."
   },
   "Pourquoi le troc": {
     "en": "Why swapping",
@@ -1551,9 +1551,9 @@
     "en": "Businesses",
     "es": "Empresas"
   },
-  "Professionnels · TrocTroc": {
-    "en": "Businesses · TrocTroc",
-    "es": "Empresas · TrocTroc"
+  "Professionnels · TopTroc": {
+    "en": "Businesses · TopTroc",
+    "es": "Empresas · TopTroc"
   },
   "Proposer": {
     "en": "Offer",
@@ -1623,13 +1623,13 @@
     "en": "What can I offer?",
     "es": "¿Qué puedo ofrecer?"
   },
-  "Quelles données TrocTroc garde, pourquoi, et vos droits.": {
-    "en": "What data TrocTroc stores, why, and your rights.",
-    "es": "Qué datos guarda TrocTroc, por qué y cuáles son tus derechos."
+  "Quelles données TopTroc garde, pourquoi, et vos droits.": {
+    "en": "What data TopTroc stores, why, and your rights.",
+    "es": "Qué datos guarda TopTroc, por qué y cuáles son tus derechos."
   },
-  "Questions fréquentes sur TrocTroc et comment nous contacter.": {
-    "en": "Frequently asked questions about TrocTroc and how to contact us.",
-    "es": "Preguntas frecuentes sobre TrocTroc y cómo contactarnos."
+  "Questions fréquentes sur TopTroc et comment nous contacter.": {
+    "en": "Frequently asked questions about TopTroc and how to contact us.",
+    "es": "Preguntas frecuentes sobre TopTroc y cómo contactarnos."
   },
   "Qui voit mes informations ?": {
     "en": "Who can see my information?",
@@ -1723,9 +1723,9 @@
     "en": "Rules and reports",
     "es": "Normas y denuncias"
   },
-  "Règles et signalements · TrocTroc": {
-    "en": "Rules and reports · TrocTroc",
-    "es": "Normas y denuncias · TrocTroc"
+  "Règles et signalements · TopTroc": {
+    "en": "Rules and reports · TopTroc",
+    "es": "Normas y denuncias · TopTroc"
   },
   "Réciproque": {
     "en": "Mutual",
@@ -1887,37 +1887,37 @@
     "en": "All subcategories",
     "es": "Todas las subcategorías"
   },
-  "TrocTroc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.": {
-    "en": "TrocTroc: swap the items you no longer use, without prices or money. Find a swap, even a three-way one.",
-    "es": "TrocTroc: intercambia lo que ya no usas, sin precios ni dinero. Encuentra un intercambio, incluso entre tres."
+  "TopTroc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.": {
+    "en": "TopTroc: swap the items you no longer use, without prices or money. Find a swap, even a three-way one.",
+    "es": "TopTroc: intercambia lo que ya no usas, sin precios ni dinero. Encuentra un intercambio, incluso entre tres."
   },
-  "TrocTroc met en relation des personnes qui veulent échanger des objets, sans argent : un objet contre un objet, en direct ou en boucle de plusieurs personnes. TrocTroc ne vend rien, n'achète rien et ne devient jamais propriétaire des objets échangés.": {
-    "en": "TrocTroc connects people who want to swap items without money: one item for another, directly or through a loop of several people. TrocTroc does not sell or buy anything and never owns the items exchanged.",
-    "es": "TrocTroc conecta a personas que quieren intercambiar objetos sin dinero: un objeto por otro, directamente o en una cadena de varias personas. TrocTroc no vende ni compra nada y nunca es propietario de los objetos intercambiados."
+  "TopTroc met en relation des personnes qui veulent échanger des objets, sans argent : un objet contre un objet, en direct ou en boucle de plusieurs personnes. TopTroc ne vend rien, n'achète rien et ne devient jamais propriétaire des objets échangés.": {
+    "en": "TopTroc connects people who want to swap items without money: one item for another, directly or through a loop of several people. TopTroc does not sell or buy anything and never owns the items exchanged.",
+    "es": "TopTroc conecta a personas que quieren intercambiar objetos sin dinero: un objeto por otro, directamente o en una cadena de varias personas. TopTroc no vende ni compra nada y nunca es propietario de los objetos intercambiados."
   },
-  "TrocTroc ouvre un espace réservé aux salariés de votre site. Chacun propose ce qui dort chez lui, le Grand Troc du dimanche trouve les échanges, et les objets passent par l'accueil ou la conciergerie.": {
-    "en": "TrocTroc opens a space exclusively for employees at your site. Everyone offers what they no longer use, the Sunday Grand Troc finds swaps, and items pass through reception or the concierge desk.",
-    "es": "TrocTroc abre un espacio exclusivo para los empleados de tu centro. Cada persona ofrece lo que ya no usa, el Grand Troc del domingo encuentra los intercambios y los objetos pasan por recepción o conserjería."
+  "TopTroc ouvre un espace réservé aux salariés de votre site. Chacun propose ce qui dort chez lui, le Grand Troc du dimanche trouve les échanges, et les objets passent par l'accueil ou la conciergerie.": {
+    "en": "TopTroc opens a space exclusively for employees at your site. Everyone offers what they no longer use, the Sunday Grand Troc finds swaps, and items pass through reception or the concierge desk.",
+    "es": "TopTroc abre un espacio exclusivo para los empleados de tu centro. Cada persona ofrece lo que ya no usa, el Grand Troc del domingo encuentra los intercambios y los objetos pasan por recepción o conserjería."
   },
-  "TrocTroc pour les collectivités : le Grand Troc de votre territoire, des points de dépôt publics et un rapport d'impact.": {
-    "en": "TrocTroc for local authorities: your area's Grand Troc, public drop-off points and an impact report.",
-    "es": "TrocTroc para administraciones locales: el Grand Troc de tu territorio, puntos de entrega públicos y un informe de impacto."
+  "TopTroc pour les collectivités : le Grand Troc de votre territoire, des points de dépôt publics et un rapport d'impact.": {
+    "en": "TopTroc for local authorities: your area's Grand Troc, public drop-off points and an impact report.",
+    "es": "TopTroc para administraciones locales: el Grand Troc de tu territorio, puntos de entrega públicos y un informe de impacto."
   },
-  "TrocTroc pour les entreprises : un espace de troc réservé à vos salariés, le dépôt à l'accueil et un bilan pour votre RSE.": {
-    "en": "TrocTroc for businesses: a swap space exclusively for your employees, drop-off at reception and a CSR summary.",
-    "es": "TrocTroc para empresas: un espacio de trueque exclusivo para tus empleados, entrega en recepción y un balance de RSE."
+  "TopTroc pour les entreprises : un espace de troc réservé à vos salariés, le dépôt à l'accueil et un bilan pour votre RSE.": {
+    "en": "TopTroc for businesses: a swap space exclusively for your employees, drop-off at reception and a CSR summary.",
+    "es": "TopTroc para empresas: un espacio de trueque exclusivo para tus empleados, entrega en recepción y un balance de RSE."
   },
-  "TrocTroc repose sur la confiance : chacun dépose, chacun récupère. Ces règles la protègent.": {
-    "en": "TrocTroc relies on trust: everyone drops off, everyone collects. These rules protect it.",
-    "es": "TrocTroc se basa en la confianza: cada persona entrega y cada persona recoge. Estas normas la protegen."
+  "TopTroc repose sur la confiance : chacun dépose, chacun récupère. Ces règles la protègent.": {
+    "en": "TopTroc relies on trust: everyone drops off, everyone collects. These rules protect it.",
+    "es": "TopTroc se basa en la confianza: cada persona entrega y cada persona recoge. Estas normas la protegen."
   },
-  "TrocTroc | Le troc se réinvente": {
-    "en": "TrocTroc | Swapping, reinvented",
-    "es": "TrocTroc | El trueque se reinventa"
+  "TopTroc | Le troc se réinvente": {
+    "en": "TopTroc | Swapping, reinvented",
+    "es": "TopTroc | El trueque se reinventa"
   },
-  "TrocTroc, retour à l'accueil": {
-    "en": "TrocTroc, back to home",
-    "es": "TrocTroc, volver al inicio"
+  "TopTroc, retour à l'accueil": {
+    "en": "TopTroc, back to home",
+    "es": "TopTroc, volver al inicio"
   },
   "Troquer": {
     "en": "Swap",
@@ -2111,9 +2111,9 @@
     "en": "You give",
     "es": "Das"
   },
-  "Vous donnez une poussette à Inès, Inès donne une perceuse à Marc, Marc donne un vélo enfant… à vous. Personne n'a besoin de trouver « la » bonne personne : TrocTroc ferme la boucle. Chacun donne une fois et reçoit une fois.": {
-    "en": "You give a pushchair to Inès, Inès gives a drill to Marc, Marc gives a child's bike… to you. Nobody needs to find “the” right person: TrocTroc closes the loop. Everyone gives once and receives once.",
-    "es": "Das un cochecito a Inès, Inès da un taladro a Marc y Marc te da una bicicleta infantil… a ti. Nadie necesita encontrar a «la» persona adecuada: TrocTroc cierra la cadena. Cada persona da una vez y recibe una vez."
+  "Vous donnez une poussette à Inès, Inès donne une perceuse à Marc, Marc donne un vélo enfant… à vous. Personne n'a besoin de trouver « la » bonne personne : TopTroc ferme la boucle. Chacun donne une fois et reçoit une fois.": {
+    "en": "You give a pushchair to Inès, Inès gives a drill to Marc, Marc gives a child's bike… to you. Nobody needs to find “the” right person: TopTroc closes the loop. Everyone gives once and receives once.",
+    "es": "Das un cochecito a Inès, Inès da un taladro a Marc y Marc te da una bicicleta infantil… a ti. Nadie necesita encontrar a «la» persona adecuada: TopTroc cierra la cadena. Cada persona da una vez y recibe una vez."
   },
   "Vous et": {
     "en": "You and",
@@ -2131,9 +2131,9 @@
     "en": "You can delete your account at any time from My space. Your ongoing swaps will then be cancelled for the other participants.",
     "es": "Puedes eliminar tu cuenta en cualquier momento desde Mi espacio. Se cancelarán tus intercambios en curso para los demás participantes."
   },
-  "Vous proposez. Vous choisissez. TrocTroc s'occupe du reste.": {
-    "en": "You offer. You choose. TrocTroc takes care of the rest.",
-    "es": "Tú ofreces. Tú eliges. TrocTroc se encarga del resto."
+  "Vous proposez. Vous choisissez. TopTroc s'occupe du reste.": {
+    "en": "You offer. You choose. TopTroc takes care of the rest.",
+    "es": "Tú ofreces. Tú eliges. TopTroc se encarga del resto."
   },
   "Vous recevez": {
     "en": "You receive",
@@ -2431,9 +2431,9 @@
     "en": "Direct swap",
     "es": "Intercambio directo"
   },
-  "Échange décliné. TrocTroc cherche autre chose.": {
-    "en": "Swap declined. TrocTroc is looking for another option.",
-    "es": "Intercambio rechazado. TrocTroc busca otra opción."
+  "Échange décliné. TopTroc cherche autre chose.": {
+    "en": "Swap declined. TopTroc is looking for another option.",
+    "es": "Intercambio rechazado. TopTroc busca otra opción."
   },
   "Échange en cours avec": {
     "en": "Swap in progress with",
@@ -2451,9 +2451,9 @@
     "en": "Save.",
     "es": "Ahorrar."
   },
-  "Écrire à contact@troctroc.fr": {
-    "en": "Write to contact@troctroc.fr",
-    "es": "Escribir a contact@troctroc.fr"
+  "Écrire à contact@toptroc.com": {
+    "en": "Write to contact@toptroc.com",
+    "es": "Escribir a contact@toptroc.com"
   },
   "Écrivez-nous": {
     "en": "Write to us",
@@ -3787,9 +3787,9 @@
     "en": "Photo uploads have not been configured yet.",
     "es": "El envío de fotos aún no está configurado."
   },
-  "La photo doit être envoyée depuis le site TrocTroc.": {
-    "en": "The photo must be uploaded from the TrocTroc website.",
-    "es": "La foto debe enviarse desde el sitio TrocTroc."
+  "La photo doit être envoyée depuis le site TopTroc.": {
+    "en": "The photo must be uploaded from the TopTroc website.",
+    "es": "La foto debe enviarse desde el sitio TopTroc."
   },
   "Numéro de téléphone invalide : par exemple 06 12 34 56 78.": {
     "en": "Invalid phone number: for example 06 12 34 56 78.",
@@ -3899,13 +3899,13 @@
     "en": "This loop is no longer possible: an item has found a new owner in the meantime.",
     "es": "Esta cadena ya no es posible: un objeto ha encontrado destinatario entretanto."
   },
-  "TrocTroc pour mon entreprise": {
-    "en": "TrocTroc for my business",
-    "es": "TrocTroc para mi empresa"
+  "TopTroc pour mon entreprise": {
+    "en": "TopTroc for my business",
+    "es": "TopTroc para mi empresa"
   },
-  "TrocTroc pour notre territoire": {
-    "en": "TrocTroc for our area",
-    "es": "TrocTroc para nuestro territorio"
+  "TopTroc pour notre territoire": {
+    "en": "TopTroc for our area",
+    "es": "TopTroc para nuestro territorio"
   },
   "souhaits": {
     "en": "wishes",
@@ -4015,9 +4015,9 @@
     "en": "Up to 3 areas of interest",
     "es": "Hasta 3 zonas de interés"
   },
-  "Garantie TrocTroc sur vos colis": {
-    "en": "TrocTroc guarantee on your parcels",
-    "es": "Garantía TrocTroc en tus paquetes"
+  "Garantie TopTroc sur vos colis": {
+    "en": "TopTroc guarantee on your parcels",
+    "es": "Garantía TopTroc en tus paquetes"
   },
   "3 proches inclus": {
     "en": "3 relatives included",
@@ -4099,9 +4099,9 @@
     "en": "Areas saved",
     "es": "Zonas guardadas"
   },
-  "Ajouter un proche (e-mail de son compte TrocTroc)": {
-    "en": "Add a relative (their TrocTroc account email)",
-    "es": "Añadir un familiar (correo de su cuenta TrocTroc)"
+  "Ajouter un proche (e-mail de son compte TopTroc)": {
+    "en": "Add a relative (their TopTroc account email)",
+    "es": "Añadir un familiar (correo de su cuenta TopTroc)"
   },
   "Proche ajouté": {
     "en": "Relative added",

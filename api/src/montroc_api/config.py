@@ -14,13 +14,17 @@ class Settings(BaseSettings):
     # postgresql+psycopg://utilisateur:mot_de_passe@hote:5432/base
     database_url: str = "postgresql+psycopg://montroc:montroc@localhost:5432/montroc"
     # Origines autorisées à appeler l'API depuis un navigateur, séparées par des virgules.
-    cors_origins: str = "http://localhost:8000,https://troctroc.fr,https://www.troctroc.fr"
+    cors_origins: str = (
+        "http://localhost:8000,https://toptroc.com,https://www.toptroc.com,"
+        # Ancien domaine, gardé pendant la transition vers toptroc.com (redirigé en 301 par Netlify).
+        "https://troctroc.fr,https://www.troctroc.fr"
+    )
     # Aperçus Netlify des pull requests (deploy-preview-29--troctroc.netlify.app, *.champly.fr) : sans eux,
     # la connexion échoue sur l'aperçu, le navigateur bloquant la réponse de l'API.
     cors_regex: str = r"https://([a-z0-9-]+--)?troctroc\.netlify\.app|https://[a-z0-9-]+\.champly\.fr"
     environnement: str = "local"
     # Adresse du site, pour les liens dans les e-mails (lien magique, « une boucle vous attend »…).
-    site_url: str = "https://troctroc.fr"
+    site_url: str = "https://toptroc.com"
 
     # E-mails sortants. Render gratuit bloque les ports SMTP : en production, on passe par l'API HTTPS
     # de Brevo (BREVO_API_KEY). Le SMTP (OVH) reste possible sur une offre Render payante ou en local.
@@ -30,14 +34,14 @@ class Settings(BaseSettings):
     smtp_port: int = 465
     smtp_utilisateur: str = ""
     smtp_mot_de_passe: str = ""
-    email_expediteur: str = "TrocTroc <bonjour@troctroc.fr>"
+    email_expediteur: str = "TopTroc <contact@toptroc.com>"
     # Pré-production : tous les e-mails partent à cette adresse (le vrai destinataire en tête du sujet),
     # pour ne jamais écrire aux membres depuis une copie de la base. Vide en production.
     courriels_vers: str = ""
     # Pré-production : false coupe les SMS (ils sont seulement écrits dans le journal).
     sms_actifs: bool = True
     # Nom affiché comme expéditeur des SMS (Brevo, 11 caractères au plus, lettres et chiffres).
-    sms_expediteur: str = "TrocTroc"
+    sms_expediteur: str = "TopTroc"
 
     # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary (cloudinary://clé:secret@nom).
     cloudinary_url: str = ""

@@ -27,7 +27,7 @@ AVANT_PREMIERE = "avant_premiere"  # mes propositions du Grand Troc dès 17 h, u
 SHORTLIST = "shortlist"  # mes demandes passent en tête des ShortLists des objets convoités
 PRIORITE = "priorite"  # à nombre d'échanges égal, le Grand Troc me départage en premier
 ZONES_MULTIPLES = "zones_multiples"  # jusqu'à 3 zones d'intérêt
-GARANTIE_COLIS = "garantie_colis"  # mes envois par colis sont couverts par la Garantie TrocTroc
+GARANTIE_COLIS = "garantie_colis"  # mes envois par colis sont couverts par la Garantie TopTroc
 FAMILLE = "famille"  # 3 autres comptes profitent de ma formule
 
 _CONFORT = {SANS_PUB, VOIR_QUI_AIME, RETOUR_ARRIERE, APERCU_DU_STOCK}

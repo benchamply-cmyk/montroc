@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "TrocTroc",
+    "name": "TopTroc",
     "slug": "troctroc",
     "scheme": "troctroc",
     "version": "0.1.0",
@@ -20,8 +20,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "TrocTroc a besoin de vos photos pour montrer les objets que vous proposez.",
-          "cameraPermission": "TrocTroc a besoin de l'appareil photo pour photographier les objets que vous proposez."
+          "photosPermission": "TopTroc a besoin de vos photos pour montrer les objets que vous proposez.",
+          "cameraPermission": "TopTroc a besoin de l'appareil photo pour photographier les objets que vous proposez."
         }
       ]
     ],
@@ -29,7 +29,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "api": "https://api.troctroc.fr"
+      "api": "https://api.toptroc.com"
     }
   }
 }

@@ -119,7 +119,7 @@ def test_echange_par_colis(client, creer):
     lyon = {"libelle": "Lyon", "latitude": LYON[0], "longitude": LYON[1], "rayon_km": 10}
     client.patch("/moi", json={"zones_interet": [lyon], "toute_la_france": True}, headers=lea.headers)
     client.patch("/moi", json={"zones_interet": [COURS_JULIEN], "toute_la_france": True}, headers=bruno.headers)
-    _formule(lea.id)  # Garantie TrocTroc incluse dans Premium Plus
+    _formule(lea.id)  # Garantie TopTroc incluse dans Premium Plus
 
     ordre = [e["objet"]["id"] for e in client.get("/moi/boucles", headers=bruno.headers).json()[0]["etapes"]]
     assert set(ordre) == {a_lea, a_bruno}

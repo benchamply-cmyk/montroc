@@ -81,14 +81,14 @@ def famille(utilisateur: UtilisateurConnecte, session: SessionDep):
 
 @router.post("/premium/famille", response_model=list[UtilisateurResume], status_code=201)
 def ajouter_a_la_famille(donnees: MembreFamille, utilisateur: UtilisateurConnecte, session: SessionDep):
-    """Formule Famille : trois autres comptes TrocTroc profitent des mêmes avantages."""
+    """Formule Famille : trois autres comptes TopTroc profitent des mêmes avantages."""
     if utilisateur.formule != "famille" or premium.formule_active(utilisateur) is None:
         raise HTTPException(409, "Ajouter des proches demande la formule Famille.")
     membre = session.scalars(
         select(m.Utilisateur).where(func.lower(m.Utilisateur.email) == donnees.email.lower())
     ).first()
     if membre is None:
-        raise HTTPException(404, "Aucun compte TrocTroc avec cet e-mail : invitez d'abord cette personne.")
+        raise HTTPException(404, "Aucun compte TopTroc avec cet e-mail : invitez d'abord cette personne.")
     if membre.id == utilisateur.id or membre.payeur_famille_id not in (None, utilisateur.id):
         raise HTTPException(409, "Ce compte ne peut pas rejoindre votre famille.")
     deja = famille(utilisateur, session)

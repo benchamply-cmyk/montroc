@@ -419,7 +419,7 @@ class Transfert(Base):
     numero_suivi: Mapped[str | None] = mapped_column(String(60))
     # Adresse ou point relais où le receveur veut recevoir le colis : visible de son seul donneur.
     adresse_livraison: Mapped[str | None] = mapped_column(String(300))
-    # Envoi couvert par la Garantie TrocTroc (incluse dans Premium Plus et Famille).
+    # Envoi couvert par la Garantie TopTroc (incluse dans Premium Plus et Famille).
     garantie: Mapped[bool] = mapped_column(default=False, server_default="false")
 
     echange: Mapped[Echange] = relationship(back_populates="transferts")

@@ -9,7 +9,7 @@ const Premium = (() => {
     sans_pub: 'Sans publicité', voir_qui_aime: 'Voir qui aime vos objets', retour_arriere: 'Retour arrière dans le Match',
     apercu_du_stock: 'Aperçu du stock du dimanche', avant_premiere: 'Avant-première du Grand Troc à 17 h',
     shortlist: 'En tête des ShortLists', priorite: 'Priorité à égalité au Grand Troc', zones_multiples: "Jusqu'à 3 zones d'intérêt",
-    garantie_colis: 'Garantie TrocTroc sur vos colis', famille: '3 proches inclus',
+    garantie_colis: 'Garantie TopTroc sur vos colis', famille: '3 proches inclus',
   };
   const arrondi = x => Math.round(x * 100) / 100;
   const euros = x => x == null ? '' : x.toLocaleString(document.documentElement.lang || 'fr', {style: 'currency', currency: 'EUR'});
@@ -75,7 +75,7 @@ const Premium = (() => {
       <p class="muted" style="font-size:14px;margin:0 0 8px">Les objets de vos zones s'échangent en main propre. Hors de vos zones, seulement par colis, si vous acceptez toute la France.</p>
       ${zones.map((z, i) => `<div class="demande-ligne"><div class="t"><b>${esc(z.libelle)}</b><span>Dans un rayon de ${z.rayon_km} km</span></div>
         <button class="x" type="button" aria-label="Retirer cette zone" data-zone-retirer="${i}">×</button></div>`).join('')
-        || '<p class="muted">Aucune zone : TrocTroc se fie à votre ville.</p>'}
+        || '<p class="muted">Aucune zone : TopTroc se fie à votre ville.</p>'}
       ${zones.length < max ? `<form class="stack" id="f-zone"><div class="lieu-ligne">
           <input class="input" name="ville" list="lieux-zone" placeholder="Ville ou code postal" autocomplete="off" required>
           <button class="btn" type="button" id="autour-zone">Autour de moi</button></div><datalist id="lieux-zone"></datalist>
@@ -128,7 +128,7 @@ const Premium = (() => {
       html = `<p>Vous profitez de <b>Troc Premium ${esc(actuelle.nom)}</b>${moi.premium_jusqu_au ? ` jusqu'au ${new Date(moi.premium_jusqu_au).toLocaleDateString(document.documentElement.lang || 'fr')}` : ''}.</p>
         <ul>${moi.avantages.map(a => `<li>${esc(AVANTAGES[a] || a)}</li>`).join('')}</ul>
         ${moi.avantages.includes('apercu_du_stock') ? '<div class="btns"><button class="btn" type="button" id="apercu-btn">Aperçu du stock du dimanche</button></div><div id="apercu"></div>' : ''}
-        ${moi.formule === 'famille' && moi.premium_jusqu_au ? `<form class="stack" id="f-famille"><label class="field"><span>Ajouter un proche (e-mail de son compte TrocTroc)</span>
+        ${moi.formule === 'famille' && moi.premium_jusqu_au ? `<form class="stack" id="f-famille"><label class="field"><span>Ajouter un proche (e-mail de son compte TopTroc)</span>
           <input class="input" type="email" name="email" required></label><div class="btns"><button class="btn">Ajouter</button></div></form>` : ''}
         ${catalogue.portail ? `<div class="btns"><a class="btn" href="${esc(catalogue.portail)}" rel="noopener">Gérer ou résilier mon abonnement</a></div>` : ''}`;
     } else {

@@ -8,7 +8,7 @@
 
   const haut=document.querySelector('header.site');
   if(haut)haut.innerHTML=`<div class="site-in">
-  <a class="logo" href="/" aria-label="TrocTroc, retour à l'accueil">${LOGO}<span>Troc<span class="logo-2">Troc</span></span></a>
+  <a class="logo" href="/" aria-label="TopTroc, retour à l'accueil">${LOGO}<span>Top<span class="logo-2">Troc</span></span></a>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
       <li><a href="/#decouvrir">Le concept</a></li>
@@ -36,7 +36,7 @@
       <button class="pop-ok" type="submit">Se connecter</button>
       <p class="pop-msg" role="status" hidden></p>
       <button class="pop-lien" type="button" data-lien>Mot de passe oublié ou pas encore choisi ? Recevoir un lien par e-mail</button>
-      <button class="pop-lien" type="button" data-creer>Nouveau sur TrocTroc ? Créer un compte</button>
+      <button class="pop-lien" type="button" data-creer>Nouveau sur TopTroc ? Créer un compte</button>
       <button class="pop-lien" type="button" data-retour hidden>Déjà un compte ? Se connecter avec un mot de passe</button>
     </form>
   </div>
@@ -101,7 +101,7 @@
      dès qu'un compte a déjà servi sur cet appareil, « Se connecter » sinon. */
   // Pré-production (déploiement de la branche preprod sur Netlify) : son API à elle, sur une copie de la base.
   const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001'
-    :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.troctroc.fr';
+    :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.toptroc.com';
   const memo={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch{}}};
   const c=$('#compte'), pop=$('#pop-cnx'), msg=pop.querySelector('.pop-msg');
   let connecte=!!memo.get('troc.jeton'), ouvertLe=-1;

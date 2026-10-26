@@ -25,6 +25,9 @@ def test_cors_apercus_netlify(client):
         r = client.options("/auth/connexion", headers={"Origin": origine, "Access-Control-Request-Method": "POST"})
         return r.headers.get("access-control-allow-origin") == origine
 
+    assert autorise("https://toptroc.com")
+    assert autorise("https://www.toptroc.com")
+    # Ancien domaine : encore accepté pendant la transition vers toptroc.com.
     assert autorise("https://troctroc.fr")
     assert autorise("https://deploy-preview-29--troctroc.netlify.app")
     assert autorise("https://troctroc.netlify.app")
@@ -273,7 +276,7 @@ def test_grand_troc_du_dimanche(client, creer, monkeypatch):
     assert {x["grand_troc_jour"] for x in r["echanges"]} == {"2026-10-18"}
     assert all(t["code_retrait"] is None for x in r["echanges"] for t in x["transferts"])
     assert client.get("/objets").json() == []
-    assert sujets(e.email) == ["Votre lien de connexion à TrocTroc", "Grand Troc : une boucle vous attend"]
+    assert sujets(e.email) == ["Votre lien de connexion à TopTroc", "Grand Troc : une boucle vous attend"]
     assert "Le Grand Troc du dimanche a trouvé" in courriels.ENVOYES[-1].texte
 
     # Une seule fois par dimanche, même si la tâche est relancée.
@@ -339,7 +342,7 @@ def test_telephone_a_l_inscription_et_dans_le_compte(client, creer):
     creer.utilisateur("bruno", telephone="06 00 00 00 01")
     creer.echange_abc()
     assert [x.numero for x in sms.ENVOYES] == ["+33600000001"]
-    assert sms.ENVOYES[0].texte.startswith("TrocTroc vous propose un échange.")
+    assert sms.ENVOYES[0].texte.startswith("TopTroc vous propose un échange.")
 
 
 def test_echanges_a_la_demande_desactives_par_defaut(client, creer, monkeypatch):
