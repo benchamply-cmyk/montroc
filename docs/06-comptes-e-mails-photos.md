@@ -61,6 +61,10 @@ Le Grand Troc du dimanche ne s'occupe plus que de ce que le Match n'a pas conclu
 
 Les boucles ne sont plus proposées au fil de l'eau : chaque **dimanche à 18 h (heure de Paris)**, le math trade tourne une fois sur tout le stock, comme les math trades de BoardGameGeek. Toutes les propositions arrivent en même temps (e-mail « Grand Troc : une boucle vous attend »), chacun a **48 h** pour répondre (jusqu'au mardi 18 h, rappel 12 h avant), puis les dépôts se font **dans la semaine, jusqu'au dimanche suivant midi** : les objets d'un échange incomplet repartent dans le Grand Troc du soir même.
 
+Un refus ne fait plus attendre ses partenaires jusqu'au mardi : chaque heure, la tâche planifiée relance le math trade sur le stock du dimanche resté libre et propose aux personnes lâchées une boucle qui utilise les objets libérés (mêmes délais que le Grand Troc). Le repêchage du mardi 18 h reprend ensuite ce qui reste, notamment les boucles restées sans réponse.
+
+Pour que le dimanche profite à tout le monde, une même personne reçoit au plus **3 objets** par Grand Troc, remplaçants et repêchage compris (variable Render `PLAFOND_ECHANGES_GRAND_TROC`, 0 pour aucun plafond). Le math trade maximise toujours les objets échangés, sous ce plafond.
+
 - GitHub Actions appelle `/taches/grand-troc` le dimanche à 16 h 07 et 17 h 07 UTC (heure d'été / d'hiver) ; l'API ne lance rien avant 18 h à Paris, ni deux fois le même dimanche.
 - Pour le lancer à la main (par exemple pour un premier essai) : **Actions → Tâches planifiées → Run workflow → grand-troc**. Il a lieu tout de suite, une seule fois par jour.
 - **SMS** : les membres qui ont donné leur portable (facultatif, à l'inscription ou dans « Mon compte ») reçoivent en plus un SMS, un seul par personne et par Grand Troc. Il passe par la même clé Brevo que les e-mails, mais il faut **acheter des crédits SMS** dans Brevo (*Mon plan → SMS*). Sans crédits, l'e-mail part quand même et le refus est écrit dans le journal Render. L'expéditeur affiché est « TrocTroc » (variable `SMS_EXPEDITEUR`, 11 caractères au plus).
