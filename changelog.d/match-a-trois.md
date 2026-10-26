@@ -1,1 +1,0 @@
-- Match à trois : l'onglet Match propose aussi des boucles à trois possibles tout de suite, où chacun reçoit ce qu'il a demandé ou aimé ; dans la pile, à égalité, les objets d'un propriétaire fiable et peu convoités passent devant.

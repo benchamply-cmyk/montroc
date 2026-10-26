@@ -1,1 +1,0 @@
-- Dépôt : branche `preprod` entre les branches de travail et `prod`, lignes du journal dans `changelog.d/`, contrôle automatique des règles de branches, réglages de pré-production (e-mails redirigés, SMS coupés).

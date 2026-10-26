@@ -1,1 +1,0 @@
-- Pré-production : les e-mails partent de contact@troctroc.fr, l'expéditeur validé chez Brevo (bonjour@ n'y est pas validé, les mails n'arrivaient pas).

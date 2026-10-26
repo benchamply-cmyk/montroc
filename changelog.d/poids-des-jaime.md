@@ -1,1 +1,0 @@
-- Grand Troc : les « J'aime » d'un membre comptent ensemble comme un seul souhait, classé après ses souhaits déclarés ; dix coups de cœur ne font plus recevoir dix objets le même dimanche (réglage `COUPS_DE_COEUR_PAR_GRAND_TROC`, 1 par défaut).

@@ -1,1 +1,0 @@
-- Grand Troc : après un refus, les partenaires lâchés reçoivent une autre boucle dans l'heure avec les objets libérés, au lieu d'attendre le repêchage du mardi 18 h (migration 0018).

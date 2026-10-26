@@ -2,7 +2,7 @@
    Sur l'accueil, index.html intercepte les liens « /#… » pour changer de vue sans recharger,
    et appelle TT.compte() quand la session change. */
 (()=>{
-  const VERSION='5.100'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
+  const VERSION='5.200'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
   const LOGO='<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B97FF"/><stop offset=".5" stop-color="#E6C23A"/><stop offset="1" stop-color="#5FD39A"/></linearGradient></defs><circle cx="12" cy="12" r="9" fill="none" stroke="url(#logo-g)" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="#8B97FF"/><circle cx="19.8" cy="16.5" r="2.6" fill="#5FD39A"/><circle cx="4.2" cy="16.5" r="2.6" fill="#E6C23A"/></svg>';
   const PERSO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
 
