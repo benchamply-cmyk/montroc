@@ -158,8 +158,8 @@ def priorites(session: Session) -> dict[int, int]:
 def construire_marche(session: Session, stock_avant: datetime | None = None) -> Marche:
     """Le marché du moteur : comptes actifs, leurs souhaits et les objets disponibles.
 
-    Un « J'aime » du Match sur un objet encore disponible compte comme un souhait de cet objet précis
-    (s'il ne répond pas déjà à un de ses souhaits) : un match qui n'a pas été conclu en 1 à 1
+    Les « J'aime » du Match sur des objets encore disponibles (qui ne répondent pas déjà à un de ses souhaits)
+    forment un souhait de ces objets précis, de quantité 1 par défaut : un match qui n'a pas été conclu en 1 à 1
     peut ainsi aboutir au Grand Troc, à deux ou dans une boucle à trois.
     ``stock_avant`` : seulement les objets publiés avant cette date (repêchage sur le stock du dimanche).
     Chacun reçoit sa priorité d'équité (``priorites``).
@@ -179,15 +179,24 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
     # Indice de chaque souhait dans la liste de son auteur : c'est ainsi que le moteur désigne les listes « contre ».
     indice_souhait: dict[int, int] = {}
     priorite = priorites(session)
+    reglages = get_settings()
     for u in utilisateurs:
         indice_souhait.update({s.id: i for i, s in enumerate(u.souhaits)})
         souhaits = [souhait_moteur(s) for s in u.souhaits]
-        # Après les souhaits : les indices des listes « contre » restent ceux des souhaits.
-        souhaits += [
-            SouhaitMoteur(objet_id=str(o.id))
-            for o in coups_de_coeur.get(u.id, [])
-            if not any(souhait_correspond(s, o) for s in u.souhaits)
-        ]
+        # Après les souhaits : les indices des listes « contre » restent ceux des souhaits. Tous ses « J'aime »
+        # forment un seul souhait, classé après ses souhaits déclarés : dix coups de cœur ne lui font pas
+        # recevoir dix objets le même dimanche (réglage COUPS_DE_COEUR_PAR_GRAND_TROC).
+        aimes = {
+            str(o.id) for o in coups_de_coeur.get(u.id, []) if not any(souhait_correspond(s, o) for s in u.souhaits)
+        }
+        if aimes:
+            souhaits.append(
+                SouhaitMoteur(
+                    objets=frozenset(aimes),
+                    rang=max((s.rang for s in u.souhaits), default=0) + 1,
+                    quantite=reglages.coups_de_coeur_par_grand_troc,
+                )
+            )
         marche.ajouter_utilisateur(
             str(u.id),
             souhaits,
