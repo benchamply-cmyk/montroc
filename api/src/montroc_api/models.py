@@ -282,6 +282,8 @@ class GrandTroc(Horodatage, Base):
     # Repêchage du mardi 18 h : seconde passe sur ce qui s'est libéré (refus, absences de réponse).
     repeche_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     nb_objets_repeches: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    # Remplaçants trouvés pendant les 48 h de réponse, dès qu'un refus libère des objets (chaque heure).
+    nb_objets_remplaces: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     # Trace de chaque calcul (``services.trace_du_calcul``) : moteur utilisé (exact ou heuristique), longueur
     # de boucle retenue, statuts de CP-SAT, durée… Pour savoir si la production a basculé en mode dégradé.
     calcul: Mapped[dict] = mapped_column(JSONB, default=dict, server_default="{}")
@@ -311,6 +313,10 @@ class Echange(Horodatage, Base):
     # Le Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande ou un accord de match).
     grand_troc_id: Mapped[int | None] = mapped_column(ForeignKey("grands_trocs.id", ondelete="SET NULL"), index=True)
     grand_troc: Mapped[GrandTroc | None] = relationship(back_populates="echanges")
+    # Boucle de remplacement, proposée pendant les 48 h de réponse après un refus (``services.remplacements``).
+    remplacement: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Boucle du Grand Troc annulée dont les objets libérés ont déjà servi à chercher des remplaçants.
+    remplacants_cherches_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     transferts: Mapped[list[Transfert]] = relationship(
         back_populates="echange", cascade="all, delete-orphan", order_by="Transfert.position"

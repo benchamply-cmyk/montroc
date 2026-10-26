@@ -365,7 +365,7 @@ def test_rappel_puis_expiration(client, creer):
     (a, b, c), echange = creer.echange_abc()
     client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": True}, headers=b.headers)
 
-    rien = {"rappels_envoyes": 0, "echanges_expires": 0, "objets_repeches": None}
+    rien = {"rappels_envoyes": 0, "echanges_expires": 0, "objets_remplaces": None, "objets_repeches": None}
     assert client.post("/taches/horaires", headers=TACHES).json() == rien
     _decaler(echange["id"], 11)
     assert client.post("/taches/horaires", headers=TACHES).json() == {**rien, "rappels_envoyes": 1}
@@ -447,8 +447,10 @@ def test_je_le_donne_contre(client, creer):
     assert lego["contre_souhait_ids"] == [livres]
 
 
-def test_repechage_du_mardi(client, creer, monkeypatch):
-    # Alice a une poussette et veut un siège ; Bruno et Chloé ont chacun un siège et veulent la poussette.
+def _grand_troc_poussette_et_deux_sieges(client, creer, monkeypatch):
+    """Alice a une poussette et veut un siège ; Bruno et Chloé ont chacun un siège et veulent la poussette.
+    Le Grand Troc du dimanche 18/10 en propose une à deux ; David publie un siège lundi (après le Grand Troc).
+    Renvoie (alice, son partenaire, l'autre, l'échange proposé)."""
     a, b, c = creer.utilisateur("alice"), creer.utilisateur("bruno"), creer.utilisateur("chloe")
     creer.objet(a, "enfant")
     creer.souhait(a, "maison")
@@ -469,15 +471,42 @@ def test_repechage_du_mardi(client, creer, monkeypatch):
             text("UPDATE objets SET cree_le = :t WHERE proprietaire_id = :d"),
             {"t": _dimanche(9, jour=19), "d": david.id},
         )
-
-    # Le partenaire d'Alice refuse la poussette.
     partenaire = b if any(t["receveur_id"] == b.id for t in echange["transferts"]) else c
-    autre = c if partenaire is b else b
-    client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": False}, headers=partenaire.headers)
+    return a, partenaire, (c if partenaire is b else b), echange
 
-    # Lundi : trop tôt. Mardi 18 h 17 : le repêchage propose la poussette à l'autre, une seule fois.
+
+def test_remplacants_des_l_heure_suivant_un_refus(client, creer, monkeypatch):
+    a, partenaire, autre, echange = _grand_troc_poussette_et_deux_sieges(client, creer, monkeypatch)
+    # Rien n'a été refusé : rien à remplacer.
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(20, jour=18))
+    assert client.post("/taches/horaires", headers=TACHES).json()["objets_remplaces"] is None
+
+    # Lundi matin, le partenaire d'Alice refuse : à l'heure suivante, la poussette part chez l'autre.
+    client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": False}, headers=partenaire.headers)
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(9, jour=19))
+    assert client.post("/taches/horaires", headers=TACHES).json()["objets_remplaces"] == 2
+    assert client.post("/taches/horaires", headers=TACHES).json()["objets_remplaces"] is None  # une seule fois
+    (nouveau,) = [e for e in client.get("/moi/echanges", headers=a.headers).json() if e["statut"] == "propose"]
+    assert {t["receveur_id"] for t in nouveau["transferts"]} == {a.id, autre.id}
+    assert nouveau["grand_troc_jour"] == "2026-10-18"
+    assert client.get("/grand-troc").json()["dernier"]["nb_objets_remplaces"] == 2
+
+    # Le remplacement en attente de réponse ne bloque pas le repêchage du mardi, qui n'a plus rien à faire.
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 17, jour=20))
+    r = client.post("/taches/horaires", headers=TACHES).json()
+    assert r["objets_remplaces"] is None and r["objets_repeches"] == 0
+
+
+def test_repechage_du_mardi(client, creer, monkeypatch):
+    a, partenaire, autre, echange = _grand_troc_poussette_et_deux_sieges(client, creer, monkeypatch)
+    # Alice accepte, son partenaire ne répond pas : rien ne se libère avant la fin des 48 h.
+    client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": True}, headers=a.headers)
     monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(12, jour=19))
-    assert client.post("/taches/horaires", headers=TACHES).json()["objets_repeches"] is None
+    r = client.post("/taches/horaires", headers=TACHES).json()
+    assert r["objets_remplaces"] is None and r["objets_repeches"] is None
+    # Mardi 18 h 17 : l'échange expire, le repêchage propose la poussette à l'autre, une seule fois.
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE echanges SET expire_le = :t"), {"t": _dimanche(18, 5, jour=20)})
     monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 17, jour=20))
     assert client.post("/taches/horaires", headers=TACHES).json()["objets_repeches"] == 2
     assert client.post("/taches/horaires", headers=TACHES).json()["objets_repeches"] is None
@@ -564,3 +593,18 @@ def test_point_de_depot_selon_la_zone(client, creer, monkeypatch):
     assert client.get(f"/echanges/{echange['id']}", headers=a.headers).json()["point_de_depot"] == "Cours Julien"
     monkeypatch.setattr(reglages, "points_de_depot", "Lyon = Croix-Rousse")
     assert client.get(f"/echanges/{echange['id']}", headers=a.headers).json()["point_de_depot"] == "Lieu par défaut"
+
+
+def test_plafond_d_echanges_par_personne(client, creer, monkeypatch):
+    """Un gros déposant ne reçoit pas plus de PLAFOND_ECHANGES_GRAND_TROC objets au même Grand Troc."""
+    monkeypatch.setattr(services.get_settings(), "plafond_echanges_grand_troc", 2)
+    gros = creer.utilisateur("gros")
+    creer.souhait(gros, "maison", quantite=4)
+    for k in range(4):
+        p = creer.utilisateur(f"membre{k}")
+        creer.objet(gros, "enfant", f"Jouet {k}")
+        creer.objet(p, "maison", f"Lampe {k}")
+        creer.souhait(p, "enfant")
+    r = client.post("/taches/grand-troc?force=true", headers=TACHES)
+    assert r.status_code == 200, r.text
+    assert len(r.json()["echanges"]) == 2

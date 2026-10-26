@@ -144,6 +144,10 @@ def resoudre(graphe: GrapheEchanges, longueur_max: int, duree_max_s: float,
     for cle, xs in par_souhait.items():
         if len(xs) > graphe.capacite_souhait[cle]:
             modele.add(sum(xs) <= graphe.capacite_souhait[cle])
+    for u, actives in par_personne.items():
+        plafond = marche.utilisateurs[u].plafond
+        if plafond is not None and len(actives) > plafond:
+            modele.add(sum(actives) <= plafond)
     servis = []
     for u, actives in par_personne.items():
         s = modele.new_bool_var("")
