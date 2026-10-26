@@ -106,6 +106,8 @@ test('ouverture au survol, clic tactile, fermeture extérieure et clavier',()=>{
  handlers.pointerover({pointerType:'touch',relatedTarget:null});assert.equal(list.hidden,true);buttonHandlers.click();assert.equal(list.hidden,false);
  handlers.keydown({key:'Escape',preventDefault(){},stopPropagation(){}});assert.equal(list.hidden,true);assert.equal(context.document.activeElement,button);
  handlers.keydown({key:'ArrowDown',target:button,preventDefault(){}});assert.equal(list.hidden,false);assert.equal(context.document.activeElement,anchor);
+ handlers.focusout({relatedTarget:anchor});assert.equal(list.hidden,false);
+ handlers.focusout({relatedTarget:{}});assert.equal(list.hidden,true);
  context.location.hash='#objet-2';handlers.pointerover({pointerType:'mouse',relatedTarget:null});assert.equal(anchor.href,'/english/#objet-2');
 });
 test('pluriels et messages complets dans la langue choisie',()=>{

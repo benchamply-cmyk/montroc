@@ -65,7 +65,7 @@
       if(e.key==='Escape'){e.preventDefault();e.stopPropagation();open(false);button.focus()}
       else if(e.key==='ArrowDown'&&e.target===button){e.preventDefault();open(true);list.querySelector('a')?.focus()}
     });
-    root.addEventListener('focusout',()=>queueMicrotask(()=>{if(!root.contains(document.activeElement))open(false)}));
+    root.addEventListener('focusout',e=>{if(!root.contains(e.relatedTarget))open(false)});
     document.addEventListener('click',e=>{if(!root.contains(e.target))open(false)});
   }
   window.TT_I18N={lang,prefix,t,count,pending,completed,available,summary,error,localPath,switchUrl,links,menu,bindMenu};
