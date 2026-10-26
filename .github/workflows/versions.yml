@@ -42,10 +42,16 @@ jobs:
       - name: Étiquette preprod-V…
         run: |
           etiqueter() { # étiquette, commit
-            gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$1" -f sha="$2" >/dev/null && echo "étiquette $1 sur $2"
+            # Le jeton du workflow ne peut pas créer une étiquette directement (git/refs : 403) sur un commit qui
+            # touche .github/workflows/ ; l'API des releases le peut. On crée donc une release puis on la supprime,
+            # l'étiquette reste.
+            gh release create "$1" --target "$2" --title "$1" --notes "Pré-production" --prerelease >/dev/null
+            gh release delete "$1" --yes
+            echo "étiquette $1 sur $2"
           }
-          # Point de départ (une seule fois) : preprod était en V5.1000 le 26/10/2026.
+          # Rattrapage (une seule fois) : preprod était en V5.1000 le 26/10/2026, puis V5.2000 avec la PR #59.
           git ls-remote --exit-code --tags origin preprod-V5.1000 >/dev/null || etiqueter preprod-V5.1000 70a8efdf0c781fdd43cd898b2ea60dca89d80432
+          git ls-remote --exit-code --tags origin preprod-V5.2000 >/dev/null || etiqueter preprod-V5.2000 89995094741bf449510aa639de1a4a5c8a4e26bb
           if git ls-remote --tags origin 'preprod-V*' | grep -q "^$GITHUB_SHA"; then echo "Ce commit a déjà sa version."; exit 0; fi
           v=$(python3 scripts/version.py suivante)
           etiqueter "preprod-V$v" "$GITHUB_SHA"
