@@ -1,1 +1,0 @@
-- Site : le bouton de langue affiche le drapeau et le code FR, EN ou ES ; les deux autres versions apparaissent au survol ou au clic, avec navigation au clavier.

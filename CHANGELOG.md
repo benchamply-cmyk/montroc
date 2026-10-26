@@ -13,6 +13,13 @@ Avant le 26/10/2026, les versions étaient numérotées `v0.x.y` (sections plus 
 
 Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici à la préparation de la livraison (`python3 scripts/version.py livraison`).
 
+## [V6.100] – 2026-10-26 · TopTroc et business model V2
+
+- Site : le bouton de langue affiche le drapeau et le code FR, EN ou ES ; les deux autres versions apparaissent au survol ou au clic, avec navigation au clavier.
+- Site : sélecteur Français / English / Español et versions anglaise et espagnole de toutes les pages, avec la même arborescence et les mêmes fonctionnalités.
+- TrocTroc devient TopTroc : nouveau nom sur le site, dans les e-mails, les SMS et l'app, et nouvelle adresse toptroc.com (API api.toptroc.com, contact@toptroc.com) ; troctroc.fr redirige en 301 vers toptroc.com.
+- Business model V2 : remise en main propre par défaut, envoi par colis aux frais de l'expéditeur (format jusqu'à 30 kg, numéro de suivi, Garantie TopTroc), localisation de chaque objet et zones d'intérêt réglées par chacun (« Autour de moi », rayon, toute la France), et Troc Premium (Essentiel, Plus, Famille, Pro, Pass Dimanche : essai gratuit, paiement Stripe, avant-première du Grand Troc à 17 h, ShortLists des objets convoités, Super J'aime, retour arrière, priorité seulement pour départager).
+
 ## [V5.200] – 2026-10-26
 
 - Dépôt : branche `preprod` entre les branches de travail et `prod`, lignes du journal dans `changelog.d/`, contrôle automatique des règles de branches, réglages de pré-production (e-mails redirigés, SMS coupés).
@@ -87,7 +94,8 @@ Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V5.200...preprod
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.100...preprod
+[V6.100]: https://github.com/benchamply-cmyk/montroc/compare/V5.200...V6.100
 [V5.200]: https://github.com/benchamply-cmyk/montroc/compare/V5.100...V5.200
 [V5.100]: https://github.com/benchamply-cmyk/montroc/compare/v0.5.0...V5.100
 [0.5.0]: https://github.com/benchamply-cmyk/montroc/compare/v0.4.1...v0.5.0
