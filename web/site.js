@@ -66,7 +66,7 @@
       if(v)lienVersion.textContent=`V${v.join('.')} · preprod`;
     }).catch(()=>{});
   }
-  if(haut)TT_I18N.links(haut);
+  if(haut){TT_I18N.links(haut);TT_I18N.bindMenu(haut.querySelector('#langue-site'))}
   if(pied)TT_I18N.links(pied);
   if(!haut)return;
 

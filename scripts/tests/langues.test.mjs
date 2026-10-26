@@ -80,12 +80,35 @@ test('changer de langue conserve page, recherche et ancre',()=>{
  }
  for(const pathname of ['/','/english','/espanol/'])assert.equal(runtime('fr',pathname).i.switchUrl('en'),'/english/');
 });
-test('sélecteur accessible avec les noms natifs des trois langues',()=>{
+test('drapeau et code actifs, seulement les deux autres langues dans le menu',()=>{
  for(const lang of ['fr','en','es']){
-  const {i,events}=runtime(lang,'/english/pros/');const html=i.menu();
-  for(const name of ['Français','English','Español'])assert.ok(html.includes(name));assert.match(html,/<select aria-label=/);assert.match(html,new RegExp(`value="${lang}" selected`));
-  events.change({target:{id:'langue-site',value:'es'}});assert.equal(events.destination,'/espanol/pros/');
+  const {i}=runtime(lang,'/english/pros/');const html=i.menu();
+  for(const name of ['Français','English','Español'])assert.ok(html.includes(name));
+  assert.match(html,/<button[^>]+aria-expanded="false"/);
+  assert.match(html,new RegExp(`</svg><span>${lang.toUpperCase()}</span>`));
+  assert.equal((html.match(/data-language=/g)||[]).length,2);
+  assert.ok(!html.includes(`data-language="${lang}"`));
+  assert.equal((html.match(/class="langue-drapeau"/g)||[]).length,3);
  }
+});
+test('ouverture au survol, clic tactile, fermeture extérieure et clavier',()=>{
+ const {i,context,events}=runtime('fr');
+ const handlers={},buttonHandlers={},attributes={'aria-expanded':'false'};
+ const button={setAttribute:(k,v)=>attributes[k]=v,addEventListener:(k,f)=>buttonHandlers[k]=f,focus:()=>context.document.activeElement=button};
+ const anchor={dataset:{language:'en'},setAttribute:(k,v)=>anchor[k]=v,focus:()=>context.document.activeElement=anchor};
+ const list={hidden:true,querySelector:()=>anchor};
+ const root={querySelector:s=>s==='ul'?list:button,querySelectorAll:()=>[anchor],contains:x=>[root,button,list,anchor].includes(x),addEventListener:(k,f)=>handlers[k]=f};
+ i.bindMenu(root);
+ handlers.pointerover({pointerType:'mouse',relatedTarget:null});assert.equal(list.hidden,false);assert.equal(attributes['aria-expanded'],'true');
+ handlers.pointerout({pointerType:'mouse',relatedTarget:null});assert.equal(list.hidden,true);
+ buttonHandlers.click();assert.equal(list.hidden,false);handlers.pointerout({pointerType:'mouse',relatedTarget:null});assert.equal(list.hidden,false);
+ events.click({target:{}});assert.equal(list.hidden,true);
+ handlers.pointerover({pointerType:'touch',relatedTarget:null});assert.equal(list.hidden,true);buttonHandlers.click();assert.equal(list.hidden,false);
+ handlers.keydown({key:'Escape',preventDefault(){},stopPropagation(){}});assert.equal(list.hidden,true);assert.equal(context.document.activeElement,button);
+ handlers.keydown({key:'ArrowDown',target:button,preventDefault(){}});assert.equal(list.hidden,false);assert.equal(context.document.activeElement,anchor);
+ handlers.focusout({relatedTarget:anchor});assert.equal(list.hidden,false);
+ handlers.focusout({relatedTarget:{}});assert.equal(list.hidden,true);
+ context.location.hash='#objet-2';handlers.pointerover({pointerType:'mouse',relatedTarget:null});assert.equal(anchor.href,'/english/#objet-2');
 });
 test('pluriels et messages complets dans la langue choisie',()=>{
  const en=runtime('en').i,es=runtime('es').i,fr=runtime('fr').i;
