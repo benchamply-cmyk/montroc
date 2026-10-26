@@ -13,6 +13,21 @@ Avant le 26/10/2026, les versions étaient numérotées `v0.x.y` (sections plus 
 
 Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici à la préparation de la livraison (`python3 scripts/version.py livraison`).
 
+## [V5.200] – 2026-10-26
+
+- Dépôt : branche `preprod` entre les branches de travail et `prod`, lignes du journal dans `changelog.d/`, contrôle automatique des règles de branches, réglages de pré-production (e-mails redirigés, SMS coupés).
+- Dépôt : la branche de production `main` devient `prod` (workflows CI, règles des branches, versions, render.yaml, documentation, lien du journal en pied de page).
+- Pré-production : les e-mails partent de contact@troctroc.fr, l'expéditeur validé chez Brevo (bonjour@ n'y est pas validé, les mails n'arrivaient pas).
+- Tâches horaires : l'expiration des échanges suit la même horloge que le Grand Troc ; les tests ne dépendent plus de la date du jour.
+- Versions : les étiquettes preprod-V… (rattrapage de V5.1000 et V5.2000 compris) et la préparation des livraisons passent par le jeton VERSIONS_TOKEN ; le jeton par défaut de GitHub Actions est refusé quand les workflows de preprod diffèrent de prod.
+- Match à trois : l'onglet Match propose aussi des boucles à trois possibles tout de suite, où chacun reçoit ce qu'il a demandé ou aimé ; dans la pile, à égalité, les objets d'un propriétaire fiable et peu convoités passent devant.
+- Versions : nouvelle numérotation, prod en V5.100 (+100 à chaque livraison) et preprod en V5.1000 (+1000 à chaque PR fusionnée), étiquettes posées automatiquement ; les branches se nomment type/sujet-vX.Y ; le pied de page affiche V5.100 (ou la version preprod sur le site de pré-production).
+- Grand Troc : une même personne reçoit au plus 3 objets par Grand Troc, repêchage compris ; un gros déposant ne prend plus tout le dimanche (réglage `PLAFOND_ECHANGES_GRAND_TROC`, 0 pour aucun plafond).
+- Grand Troc : les « J'aime » d'un membre comptent ensemble comme un seul souhait, classé après ses souhaits déclarés ; dix coups de cœur ne font plus recevoir dix objets le même dimanche (réglage `COUPS_DE_COEUR_PAR_GRAND_TROC`, 1 par défaut).
+- Pré-production en place : service Render, branche Neon et déploiement Netlify de `preprod`.
+- Grand Troc : après un refus, les partenaires lâchés reçoivent une autre boucle dans l'heure avec les objets libérés, au lieu d'attendre le repêchage du mardi 18 h (migration 0018).
+- Réputation : la fiche d'un objet, la carte du Match et Mon espace montrent les échanges menés au bout et une pastille « Nouveau membre », « Membre fiable » ou « Fiabilité à confirmer », tirée de la fiabilité (qui monte à chaque dépôt et baisse sans réponse ou sans dépôt).
+
 ## [V5.100] – 2026-10-26 · Nouvelle numérotation
 
 Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous), point de départ de la numérotation `V5.x`.
@@ -71,7 +86,8 @@ Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V5.100...preprod
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V5.200...preprod
+[V5.200]: https://github.com/benchamply-cmyk/montroc/compare/V5.100...V5.200
 [V5.100]: https://github.com/benchamply-cmyk/montroc/compare/v0.5.0...V5.100
 [0.5.0]: https://github.com/benchamply-cmyk/montroc/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/benchamply-cmyk/montroc/compare/v0.4.0...v0.4.1

@@ -1,1 +1,0 @@
-- Versions : les étiquettes preprod-V… (rattrapage de V5.1000 et V5.2000 compris) et la préparation des livraisons passent par le jeton VERSIONS_TOKEN ; le jeton par défaut de GitHub Actions est refusé quand les workflows de preprod diffèrent de prod.

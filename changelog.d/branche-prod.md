@@ -1,1 +1,0 @@
-- Dépôt : la branche de production `main` devient `prod` (workflows CI, règles des branches, versions, render.yaml, documentation, lien du journal en pied de page).
