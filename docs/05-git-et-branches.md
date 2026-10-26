@@ -89,6 +89,8 @@ Le site choisit son API d'après son adresse : une adresse qui commence par `pre
 
 ### Mise en place (une fois, par Ben)
 
+Faite le 26/10/2026. Le service Render `montroc-api-preprod` a été créé directement (sans passer par le Blueprint). Netlify exige la connexion à l'équipe pour tout ce qui n'est pas la production : `preprod--troctroc.netlify.app` n'est visible que connecté à Netlify. Le premier déploiement du site preprod part au premier commit arrivé sur `preprod` après l'activation.
+
 1. **Neon** : *Branches → Create branch* `preprod` depuis la branche principale ; copier sa chaîne de connexion.
 2. **Render** : *Blueprints* → synchroniser ce dépôt (le service `montroc-api-preprod` apparaît), puis renseigner `DATABASE_URL` (branche Neon `preprod`), `COURRIELS_VERS`, `BREVO_API_KEY`, `CLOUDINARY_URL`, `MODERATEURS`, `TACHES_SECRET`.
 3. **GitHub** : secret `TACHES_SECRET_PREPROD` (*Settings → Secrets and variables → Actions*), même valeur que `TACHES_SECRET` du service preprod.
