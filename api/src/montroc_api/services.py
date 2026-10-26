@@ -15,13 +15,15 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
-from troc_echanges import Boucle, Contraintes, Marche, boucles_autour, math_trade
+from troc_echanges import Boucle, Contraintes, Marche, ZoneInteret, boucles_autour, math_trade
 from troc_echanges import Objet as ObjetMoteur
 from troc_echanges import Souhait as SouhaitMoteur
+from troc_echanges import Utilisateur as UtilisateurMoteur
 
-from . import courriels, sms
+from . import courriels, premium, sms
 from . import models as m
 from .config import get_settings
+from .nomenclature import MODES_PAR_DEFAUT
 
 journal = logging.getLogger("montroc.services")
 
@@ -36,6 +38,8 @@ DELAI_DEPOT = timedelta(days=7)
 PARIS = ZoneInfo("Europe/Paris")
 DIMANCHE = 6
 HEURE_GRAND_TROC = time(18)
+# Avant-première Premium : le calcul tourne une heure plus tôt, et les Premium voient leurs propositions aussitôt.
+HEURE_CALCUL = time(17)
 FIN_DES_DEPOTS = (timedelta(days=7), time(12))
 DUREE_MAX_GRAND_TROC_S = 30.0
 # Boucles de 2 à 4 personnes ; le moteur raccourcit à 3 si le marché est trop grand pour les calculer.
@@ -100,9 +104,30 @@ def objet_moteur(o: m.Objet, contre=frozenset()) -> ObjetMoteur:
         sous_categorie=o.sous_categorie_slug,
         caracteristiques=tuple(sorted(o.caracteristiques.items())),
         etat=o.etat and o.etat.value,
-        modes=frozenset(o.modes_echange),
+        modes=frozenset(o.modes_echange or MODES_PAR_DEFAUT),
         disponible=o.statut == m.StatutObjet.disponible,
+        position=position(o),
     )
+
+
+def position(o: m.Objet) -> tuple[float, float] | None:
+    return None if o.latitude is None else (o.latitude, o.longitude)
+
+
+def zones_interet(u: m.Utilisateur) -> tuple[ZoneInteret, ...]:
+    return tuple(ZoneInteret(z["latitude"], z["longitude"], z["rayon_km"]) for z in u.zones_interet or ())
+
+
+def utilisateur_moteur(u: m.Utilisateur) -> UtilisateurMoteur:
+    """Le membre vu par le moteur, pour ses seules zones d'intérêt (``acces``)."""
+    return UtilisateurMoteur(str(u.id), [], zones_interet=zones_interet(u), toute_la_france=u.toute_la_france)
+
+
+def acces(receveur: m.Utilisateur, objet: m.Objet) -> str | None:
+    """« proche » (main propre possible), « loin » (par colis seulement) ou None, d'après les zones d'intérêt du
+    receveur ; « proche » pour qui n'a pas encore de zone d'intérêt (l'ancienne règle par ville s'applique)."""
+    u = utilisateur_moteur(receveur)
+    return u.acces(objet_moteur(objet)) if u.zones_geographiques else "proche"
 
 
 def souhait_correspond(souhait: m.Souhait, objet: m.Objet) -> bool:
@@ -117,7 +142,20 @@ def point_de_depot(echange: m.Echange) -> str:
     zone (« Marseille » couvre aussi « Marseille 6e », la zone la plus précise l'emporte), le lieu qui a le plus
     de voix est retenu, le premier configuré à égalité. Sans aucune voix : le lieu par défaut (POINT_DE_DEPOT)."""
     reglages = get_settings()
-    points = reglages.liste_points_de_depot
+    return _lieu_par_zone(echange, reglages.liste_points_de_depot, reglages.point_de_depot)
+
+
+def lieu_de_rencontre(echange: m.Echange) -> str:
+    """Le lieu public conseillé pour une remise en main propre (LIEUX_DE_RENCONTRE), choisi comme le point de dépôt."""
+    return _lieu_par_zone(echange, get_settings().liste_lieux_de_rencontre, "")
+
+
+def avec_point_de_depot() -> bool:
+    reglages = get_settings()
+    return bool(reglages.point_de_depot or reglages.liste_points_de_depot)
+
+
+def _lieu_par_zone(echange: m.Echange, points: list[tuple[str, str]], defaut: str) -> str:
     voix = [0] * len(points)
     for t in echange.transferts:
         z = zone(t.donneur.zone)
@@ -127,14 +165,53 @@ def point_de_depot(echange: m.Echange) -> str:
         if couvrent:
             voix[max(couvrent, key=lambda i: len(points[i][0]))] += 1
     if not any(voix):
-        return reglages.point_de_depot
+        return defaut
     return points[voix.index(max(voix))][1]
 
 
-def zone_acceptee(souhait: m.Souhait | None, receveur: m.Utilisateur, donneur: m.Utilisateur) -> bool:
-    """Comme au Grand Troc : la zone du donneur parmi celles de la demande si elle en précise, sinon la même
-    que le receveur ; une ville inconnue ne bloque pas."""
-    zd = zone(donneur.zone)
+def lieu_du_transfert(echange: m.Echange, t: m.Transfert) -> str:
+    """Le lieu à indiquer pour ce transfert : point de dépôt, lieu de rencontre conseillé, rien pour un colis."""
+    if t.mode == "point_relais":
+        return point_de_depot(echange)
+    if t.mode == "main_propre":
+        return lieu_de_rencontre(echange)
+    return ""
+
+
+def mode_de_remise(objet: m.Objet, receveur: m.Utilisateur) -> str:
+    """Comment l'objet arrive au receveur : par colis s'il est hors de ses zones proches ; sinon en main propre,
+    le mode par défaut, ou au point de dépôt (s'il y en a un) pour un objet qui ne se remet pas en main propre."""
+    if acces(receveur, objet) == "loin":
+        return "colis"
+    modes = set(objet.modes_echange or MODES_PAR_DEFAUT)
+    if "main_propre" in modes:
+        return "main_propre"
+    if "point_relais" in modes and avec_point_de_depot():
+        return "point_relais"
+    return "colis" if "colis" in modes else "main_propre"
+
+
+def en_avant_premiere(echange: m.Echange) -> bool:
+    """Boucle d'un Grand Troc calculé mais pas encore annoncé : seuls les Premium la voient."""
+    return echange.grand_troc is not None and echange.grand_troc.annonce_le is None
+
+
+def visible_par(echange: m.Echange, utilisateur: m.Utilisateur) -> bool:
+    return not en_avant_premiere(echange) or premium.a(utilisateur, premium.AVANT_PREMIERE)
+
+
+def zone_acceptee(souhait: m.Souhait | None, receveur: m.Utilisateur, objet: m.Objet) -> bool:
+    """Comme au Grand Troc (``GrapheEchanges._zone_acceptee``) : un objet dans une zone d'intérêt du receveur,
+    ou ailleurs en France par colis s'il l'accepte. Sans zone d'intérêt, l'ancienne règle par ville : la zone du
+    donneur parmi celles de la demande si elle en précise, sinon la même que le receveur ; une ville inconnue ne
+    bloque pas."""
+    if (receveur.zones_interet or receveur.toute_la_france) and not (souhait is not None and souhait.zones):
+        a = acces(receveur, objet)
+        if a == "loin":
+            demande_ok = souhait is None or souhait_moteur(souhait).accepte_le_colis()
+            return demande_ok and objet_moteur(objet).accepte_le_colis()
+        return a is not None
+    zd = zone(objet.proprietaire.zone)
     if zd is None:
         return True
     if souhait is not None and souhait.zones:
@@ -153,6 +230,12 @@ def priorites(session: Session) -> dict[int, int]:
         .group_by(m.Transfert.receveur_id)
     )
     return {u: 1 + max(0, PLAFOND_EQUITE - n) for u, n in recus}
+
+
+def priorite_premium(u: m.Utilisateur, equite: int) -> int:
+    """Priorité au Grand Troc : l'équité, plus un bonus pour les formules avec « priorité ». Le moteur ne s'en
+    sert que pour départager des solutions qui échangent autant d'objets : aucun échange n'est perdu pour elle."""
+    return equite + (premium.BONUS_PRIORITE if premium.a(u, premium.PRIORITE) else 0)
 
 
 def construire_marche(session: Session, stock_avant: datetime | None = None) -> Marche:
@@ -202,8 +285,10 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
             souhaits,
             zone=zone(u.zone),
             fiabilite=u.fiabilite,
-            priorite=priorite.get(u.id, 1 + PLAFOND_EQUITE),
+            priorite=priorite_premium(u, priorite.get(u.id, 1 + PLAFOND_EQUITE)),
             acceptation=acceptation(u),
+            zones_interet=zones_interet(u),
+            toute_la_france=u.toute_la_france,
         )
     requete = select(m.Objet).where(m.Objet.statut == m.StatutObjet.disponible).options(selectinload(m.Objet.contre))
     if stock_avant is not None:
@@ -326,8 +411,13 @@ def proposer(
     for i, t in enumerate(boucle.transferts):
         # Souhait coché « j'accepte d'office », ou boucle choisie par le receveur : pas besoin de redemander.
         d_office = t.auto or int(t.receveur) == auteur_id
+        objet = par_id[int(t.objet.id)]
+        receveur = session.get(m.Utilisateur, int(t.receveur))
+        mode = mode_de_remise(objet, receveur)
         echange.transferts.append(
             m.Transfert(
+                mode=mode,
+                garantie=mode == "colis" and premium.a(objet.proprietaire, premium.GARANTIE_COLIS),
                 position=i,
                 donneur_id=int(t.donneur),
                 receveur_id=int(t.receveur),
@@ -342,7 +432,8 @@ def proposer(
     session.flush()  # identifiants, pour les liens des e-mails
     if not _mettre_a_jour_statut(session, echange):
         for t in echange.transferts:
-            if t.reponse == m.Reponse.en_attente:
+            # Avant-première : avant l'annonce de 18 h, seuls les Premium sont prévenus (``annoncer_grand_troc``).
+            if t.reponse == m.Reponse.en_attente and visible_par(echange, t.receveur):
                 donne = _transfert_du_donneur(echange, t.receveur_id).objet.titre
                 if par_match:
                     courriels.apres_validation(
@@ -420,12 +511,15 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
     que personne n'a vus, sur les objets sans match ou dont le match n'a pas été conclu.
 
     La tâche planifiée appelle cette fonction plusieurs fois le dimanche (l'heure d'été change l'heure UTC) :
-    elle ne fait rien avant 18 h, ni si le Grand Troc du jour a déjà eu lieu. ``force`` lance le Grand Troc
+    elle ne fait rien avant 17 h, ni si le Grand Troc du jour a déjà eu lieu. ``force`` lance le Grand Troc
     tout de suite, quel que soit le jour (lancement manuel) ; il reste unique par jour.
+
+    Avant-première : calculé entre 17 h et 18 h, il n'est d'abord montré qu'aux Premium ; les autres sont prévenus
+    à l'annonce de 18 h (``annoncer_grand_troc``). Calculé à 18 h ou plus tard (ou forcé), il est annoncé aussitôt.
     Renvoie (le Grand Troc du jour ou None, les échanges proposés, vrai s'il vient d'avoir lieu, une explication).
     """
     maintenant = _maintenant()
-    if not force and (maintenant.weekday() != DIMANCHE or maintenant.time() < HEURE_GRAND_TROC):
+    if not force and (maintenant.weekday() != DIMANCHE or maintenant.time() < HEURE_CALCUL):
         return (
             None,
             [],
@@ -435,6 +529,8 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
     jour = maintenant.date()
     deja = session.scalars(select(m.GrandTroc).where(m.GrandTroc.jour == jour)).first()
     if deja is not None:
+        if annoncer_grand_troc(session, deja):
+            return deja, [], False, "Le Grand Troc de ce jour vient d'être annoncé à tous."
         return deja, [], False, "Le Grand Troc de ce jour a déjà eu lieu."
 
     marche = construire_marche(session)
@@ -454,6 +550,7 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
         nb_objets=0,
         nb_participants=0,
         calcul=trace_du_calcul(solution),
+        annonce_le=maintenant if force or maintenant.time() >= HEURE_GRAND_TROC else None,
     )
     session.add(grand_troc)
     session.flush()
@@ -463,7 +560,43 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
     grand_troc.nb_objets = sum(len(e.transferts) for e in echanges)
     grand_troc.nb_participants = len({t.donneur_id for e in echanges for t in e.transferts})
     _sms_du_grand_troc(session, echanges)
-    return grand_troc, echanges, True, f"{len(echanges)} boucle(s) proposée(s), {grand_troc.nb_objets} objets."
+    message = f"{len(echanges)} boucle(s) proposée(s), {grand_troc.nb_objets} objets."
+    if grand_troc.annonce_le is None:
+        message += " Avant-première : annonce à tous à 18 h."
+    return grand_troc, echanges, True, message
+
+
+def annoncer_grand_troc(session: Session, grand_troc: m.GrandTroc | None = None) -> bool:
+    """L'annonce de 18 h : prévient ceux qui n'étaient pas en avant-première. Vrai si elle vient d'avoir lieu."""
+    grand_troc = grand_troc or dernier_grand_troc(session)
+    maintenant = _maintenant()
+    if grand_troc is None or grand_troc.annonce_le is not None:
+        return False
+    if datetime.combine(grand_troc.jour, HEURE_GRAND_TROC, tzinfo=PARIS) > maintenant:
+        return False
+    deja_prevenus = {
+        t.receveur_id
+        for e in grand_troc.echanges
+        for t in e.transferts
+        if premium.a(t.receveur, premium.AVANT_PREMIERE)
+    }
+    grand_troc.annonce_le = maintenant
+    a_prevenir = [e for e in grand_troc.echanges if e.statut == m.StatutEchange.propose]
+    for echange in a_prevenir:
+        for t in echange.transferts:
+            if t.reponse == m.Reponse.en_attente and t.receveur_id not in deja_prevenus:
+                courriels.apres_validation(
+                    session,
+                    courriels.boucle_vous_attend,
+                    t.receveur.email,
+                    t.receveur.pseudo,
+                    _transfert_du_donneur(echange, t.receveur_id).objet.titre,
+                    t.objet.titre,
+                    lien_echange(echange),
+                    True,
+                )
+    _sms_du_grand_troc(session, a_prevenir, sauf=deja_prevenus)
+    return True
 
 
 def _proposer_les_boucles(
@@ -495,13 +628,16 @@ def trace_du_calcul(solution) -> dict:
     return json.loads(json.dumps(trace, default=str))  # JSON pur : nombres, textes, listes
 
 
-def _sms_du_grand_troc(session: Session, echanges: list[m.Echange]) -> None:
-    """Un SMS par personne qui a au moins une réponse à donner, avec le nombre d'échanges et un lien."""
+def _sms_du_grand_troc(session: Session, echanges: list[m.Echange], sauf: set[int] = frozenset()) -> None:
+    """Un SMS par personne qui a au moins une réponse à donner, avec le nombre d'échanges et un lien.
+    Avant l'annonce de 18 h, seulement aux Premium en avant-première."""
     a_prevenir: dict[int, tuple[m.Utilisateur, list[m.Echange]]] = {}
     for echange in echanges:
         if echange.statut != m.StatutEchange.propose:
             continue
         for t in echange.transferts:
+            if t.receveur_id in sauf or not visible_par(echange, t.receveur):
+                continue
             if t.reponse == m.Reponse.en_attente and t.receveur.telephone:
                 a_prevenir.setdefault(t.receveur_id, (t.receveur, []))[1].append(echange)
     for utilisateur, siens in a_prevenir.values():
@@ -537,19 +673,29 @@ def repondre(session: Session, echange: m.Echange, utilisateur_id: int, accepte:
     return echange
 
 
-def deposer(session: Session, echange: m.Echange, utilisateur_id: int) -> m.Echange:
-    """Le donneur indique qu'il a déposé son objet ; quand tout est déposé, chacun peut récupérer le sien."""
+def deposer(
+    session: Session,
+    echange: m.Echange,
+    utilisateur_id: int,
+    transporteur: str | None = None,
+    numero_suivi: str | None = None,
+) -> m.Echange:
+    """Le donneur indique qu'il a remis (main propre), envoyé (colis, avec le numéro de suivi) ou déposé son objet ;
+    quand tout le monde l'a fait, l'échange est terminé."""
     if echange.statut != m.StatutEchange.accepte:
-        raise ErreurMetier("On ne dépose qu'une fois l'échange accepté par tous.")
+        raise ErreurMetier("On ne remet son objet qu'une fois l'échange accepté par tous.")
     transfert = next((t for t in echange.transferts if t.donneur_id == utilisateur_id), None)
     if transfert is None:
         raise ErreurMetier("Vous ne participez pas à cet échange.")
     if transfert.depose_le is not None:
-        raise ErreurMetier("Votre dépôt est déjà enregistré.")
+        raise ErreurMetier("Votre remise est déjà enregistrée.")
+    if transfert.mode == "colis":
+        if not (transporteur and numero_suivi):
+            raise ErreurMetier("Indiquez le transporteur et le numéro de suivi du colis.")
+        transfert.transporteur, transfert.numero_suivi = transporteur, numero_suivi
     transfert.depose_le = datetime.now(UTC)
     noter_engagement(transfert.donneur, tenu=True)
     restants = [t for t in echange.transferts if t.depose_le is None]
-    point = point_de_depot(echange)
     if restants:
         deposant = transfert.donneur.pseudo
         for t in echange.transferts:
@@ -575,8 +721,21 @@ def deposer(session: Session, echange: m.Echange, utilisateur_id: int) -> m.Echa
             t.receveur.pseudo,
             t.objet.titre,
             t.code_retrait,
-            point,
+            t.mode,
+            lieu_du_transfert(echange, t),
+            t.numero_suivi and f"{t.transporteur} {t.numero_suivi}",
         )
+    return echange
+
+
+def indiquer_adresse(session: Session, echange: m.Echange, utilisateur_id: int, adresse: str) -> m.Echange:
+    """Le receveur d'un colis indique où le recevoir (adresse ou point relais) : seul son donneur la voit."""
+    transfert = _transfert_du_receveur(echange, utilisateur_id)
+    if transfert.mode != "colis":
+        raise ErreurMetier("Cet objet vous est remis en main propre : pas d'adresse à donner.")
+    if echange.statut not in (m.StatutEchange.propose, m.StatutEchange.accepte) or transfert.depose_le is not None:
+        raise ErreurMetier("Ce colis est déjà parti.")
+    transfert.adresse_livraison = adresse
     return echange
 
 
@@ -592,7 +751,6 @@ def _mettre_a_jour_statut(session: Session, echange: m.Echange) -> bool:
             echange.expire_le = fin_des_depots(echange.grand_troc.jour)
         else:
             echange.expire_le = datetime.now(UTC) + DELAI_DEPOT
-        point = point_de_depot(echange)
         for t in echange.transferts:
             courriels.apres_validation(
                 session,
@@ -601,7 +759,9 @@ def _mettre_a_jour_statut(session: Session, echange: m.Echange) -> bool:
                 t.donneur.pseudo,
                 t.objet.titre,
                 t.code_retrait,
-                point,
+                t.mode,
+                lieu_du_transfert(echange, t),
+                t.receveur.pseudo,
                 lien_echange(echange),
                 echange.expire_le,
             )
@@ -633,7 +793,11 @@ def echanges_de(session: Session, utilisateur_id: int, actifs: bool = False) -> 
         requete = requete.where(m.Echange.statut.in_([m.StatutEchange.propose, m.StatutEchange.accepte]))
     else:
         requete = requete.limit(50)
-    return list(session.scalars(requete))
+    echanges = list(session.scalars(requete))
+    if actifs:
+        return echanges  # tous, même en avant-première (suppression du compte)
+    utilisateur = session.get(m.Utilisateur, utilisateur_id)
+    return [e for e in echanges if visible_par(e, utilisateur)]
 
 
 def taches_horaires(session: Session) -> tuple[int, int]:
@@ -819,3 +983,30 @@ def remplacements(session: Session) -> int | None:
     remplaces = sum(len(e.transferts) for e in echanges)
     grand_troc.nb_objets_remplaces += remplaces
     return remplaces
+
+
+def apercu_du_stock(session: Session, utilisateur: m.Utilisateur, limite: int = 50) -> list[m.Objet]:
+    """Aperçu du stock (Troc Premium) : les objets disponibles qui répondent à mes souhaits et à mes zones, ceux
+    qui iront au prochain Grand Troc s'ils ne partent pas avant par le Match. Les plus récents d'abord."""
+    if not utilisateur.souhaits:
+        return []
+    categories = set().union(*(souhait_moteur(s).categories_visees() for s in utilisateur.souhaits))
+    precis = {s.objet_id for s in utilisateur.souhaits if s.objet_id}
+    objets = session.scalars(
+        select(m.Objet)
+        .join(m.Objet.proprietaire)
+        .where(
+            m.Objet.statut == m.StatutObjet.disponible,
+            m.Objet.proprietaire_id != utilisateur.id,
+            m.Utilisateur.suspendu_le.is_(None),
+            or_(m.Objet.categorie_slug.in_(categories), m.Objet.id.in_(precis)),
+        )
+        .order_by(m.Objet.cree_le.desc())
+        .options(selectinload(m.Objet.proprietaire))
+    )
+    retenus = [
+        o
+        for o in objets
+        if any(souhait_correspond(s, o) and zone_acceptee(s, utilisateur, o) for s in utilisateur.souhaits)
+    ]
+    return retenus[:limite]

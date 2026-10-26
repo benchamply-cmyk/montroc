@@ -1,6 +1,6 @@
-# TrocTroc — application mobile
+# TopTroc — application mobile
 
-App iOS et Android (Expo / React Native) branchée sur la même API que le site : `https://api.troctroc.fr`.
+App iOS et Android (Expo / React Native) branchée sur la même API que le site : `https://api.toptroc.com`.
 
 | Onglet | Contenu | Routes de l'API |
 |---|---|---|
@@ -28,5 +28,5 @@ Pour viser une API locale (`make api`), remplacer `extra.api` dans `app.json` pa
 
 - Proposer un objet depuis l'app (photo avec l'appareil, envoi signé Cloudinary via `GET /moi/photos/signature`).
 - Souhaits (« Je demande ») et accord 1 à 1 depuis un match (`POST /match/accord`).
-- Liens universels : ouvrir le lien magique `https://troctroc.fr/#connexion=…` directement dans l'app.
+- Liens universels : ouvrir le lien magique `https://toptroc.com/#connexion=…` directement dans l'app.
 - Notifications push pour le Grand Troc du dimanche.

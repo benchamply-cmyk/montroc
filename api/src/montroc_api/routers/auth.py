@@ -5,8 +5,9 @@ from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import func, select
+from sqlalchemy.orm import object_session
 
-from .. import courriels, motdepasse
+from .. import courriels, motdepasse, premium
 from .. import models as m
 from ..config import get_settings
 from ..deps import SessionDep, UtilisateurConnecte, empreinte, est_moderateur
@@ -22,7 +23,23 @@ DUREE_BLOCAGE = timedelta(minutes=15)
 
 
 def moi(utilisateur: m.Utilisateur) -> Moi:
-    return Moi.model_validate(utilisateur).model_copy(update={"est_moderateur": est_moderateur(utilisateur)})
+    formule = premium.formule_active(utilisateur)
+    session = object_session(utilisateur)
+    return Moi.model_validate(utilisateur).model_copy(
+        update={
+            "est_moderateur": est_moderateur(utilisateur),
+            "formule": formule.cle if formule else None,
+            "premium_jusqu_au": utilisateur.premium_jusqu_au
+            if formule and utilisateur.formule == formule.cle
+            else None,
+            "avantages": sorted(formule.avantages) if formule else [],
+            "essai_disponible": bool(get_settings().jours_essai_premium)
+            and utilisateur.essai_premium_le is None
+            and formule is None,
+            "super_jaime_restants": premium.super_jaime_restants(session, utilisateur) if session else 0,
+            "zones_max": premium.zones_max(utilisateur),
+        }
+    )
 
 
 def ouvrir_session(session, utilisateur: m.Utilisateur) -> ResultatConnexion:
@@ -55,7 +72,9 @@ def demander_lien(donnees: DemandeLien, session: SessionDep):
 
     jeton = secrets.token_urlsafe(32)
     session.add(m.JetonConnexion(email=email, empreinte=empreinte(jeton), expire_le=datetime.now(UTC) + DUREE_LIEN))
-    courriels.apres_validation(session, courriels.lien_magique, email, f"{get_settings().site_url}/#connexion={jeton}")
+    prefixe = {"fr": "", "en": "/english", "es": "/espanol"}[donnees.langue]
+    lien = f"{get_settings().site_url.rstrip('/')}{prefixe}/#connexion={jeton}"
+    courriels.apres_validation(session, courriels.lien_magique, email, lien)
     session.commit()
     return {"envoye": True}
 

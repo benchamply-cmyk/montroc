@@ -4,8 +4,8 @@ montroc est découpé en quatre briques indépendantes, chacune hébergée là o
 
 ```mermaid
 flowchart LR
-    U[Navigateur] -->|https://troctroc.fr| N[Netlify<br/>site statique web/]
-    U -->|https://api.troctroc.fr| R[Render<br/>API Python FastAPI]
+    U[Navigateur] -->|https://toptroc.com| N[Netlify<br/>site statique web/]
+    U -->|https://api.toptroc.com| R[Render<br/>API Python FastAPI]
     R -->|SQL chiffré TLS| P[(Neon<br/>PostgreSQL 16)]
     R -. importe .-> M[Moteur troc_echanges<br/>algorithme/]
     D[OVH<br/>nom de domaine + DNS] -. pointe vers .-> N
@@ -18,7 +18,7 @@ flowchart LR
 | API | `api/` | **Render** (gratuit au départ, Frankfurt) | Python 3.12 + FastAPI. Reçoit les requêtes du site, lit/écrit la base, appelle le moteur. Documentation interactive sur `/docs`. |
 | Moteur | `algorithme/` | (dans l'API) | Bibliothèque Python qui trouve les boucles d'échange (2 à 4 personnes au Grand Troc, 3 si le marché est trop grand) et le « math trade », selon les dix règles du matching (voir `algorithme/README.md`). Sans dépendance obligatoire, testable seule ; avec OR-Tools (installé par l'API), le math trade est résolu exactement. |
 | Base | `api/alembic/` (schéma) | **Neon** (PostgreSQL managé, Frankfurt) | Données : utilisateurs, objets, souhaits, échanges. Sauvegardes et restauration gérées par Neon. |
-| Domaine et e-mails | — | **OVH** (offre Startup) | `troctroc.fr`, la zone DNS et les adresses e-mail `@troctroc.fr`. |
+| Domaine et e-mails | — | **OVH** (offre Startup) | `toptroc.com`, la zone DNS et les adresses e-mail `@toptroc.com`. |
 
 ## Pourquoi ce découpage
 
@@ -26,7 +26,7 @@ flowchart LR
 - **L'offre OVH Startup sert pour les e-mails et le domaine**, pas pour le site : l'hébergement mutualisé ne fait pas tourner d'API Python (il est fait pour PHP), et Netlify sert le site avec déploiement automatique et aperçus de PR.
 - **PostgreSQL managé (Neon)** plutôt qu'une base qu'on administre soi-même : sauvegardes, mises à jour et chiffrement sont pris en charge ; la base respecte des contraintes fortes (voir [Base de données](03-base-de-donnees.md)).
 - **Tout est en Europe (Frankfurt)** : latence faible depuis la France, données dans l'UE (RGPD).
-- Chaque brique peut être remplacée sans toucher aux autres (ex. passer l'API sur un VPS OVH plus tard : seule l'URL `api.troctroc.fr` change de cible).
+- Chaque brique peut être remplacée sans toucher aux autres (ex. passer l'API sur un VPS OVH plus tard : seule l'URL `api.toptroc.com` change de cible).
 
 ## Organisation du code de l'API
 
@@ -73,7 +73,7 @@ Chaque passage envoie un e-mail aux participants concernés. Pendant les dépôt
 
 ## Connexion
 
-Pas de mot de passe. `POST /auth/lien` envoie un lien `https://troctroc.fr/#connexion=…` valable 20 minutes et à usage unique ; le site l'échange contre un jeton de session de 30 jours (`POST /auth/verifier`), gardé dans le navigateur et envoyé dans l'en-tête `Authorization: Bearer …`. À la première connexion, l'API demande un pseudo et une ville. La base ne stocke que l'empreinte (SHA-256) des jetons. Toutes les routes personnelles sont sous `/moi` : l'API ne fait jamais confiance à un identifiant d'utilisateur envoyé par le navigateur.
+Pas de mot de passe. `POST /auth/lien` envoie un lien `https://toptroc.com/#connexion=…` valable 20 minutes et à usage unique ; le site l'échange contre un jeton de session de 30 jours (`POST /auth/verifier`), gardé dans le navigateur et envoyé dans l'en-tête `Authorization: Bearer …`. À la première connexion, l'API demande un pseudo et une ville. La base ne stocke que l'empreinte (SHA-256) des jetons. Toutes les routes personnelles sont sous `/moi` : l'API ne fait jamais confiance à un identifiant d'utilisateur envoyé par le navigateur.
 
 ## Photos
 

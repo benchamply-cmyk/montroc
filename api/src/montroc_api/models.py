@@ -156,15 +156,37 @@ class Utilisateur(Horodatage, Base):
     mot_de_passe: Mapped[str | None] = mapped_column(String(200))
     essais_mot_de_passe: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     bloque_jusqu_au: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Zones d'intérêt choisies par le membre (« autour de moi », une ville…), à la Leboncoin :
+    # [{"libelle": "Marseille 6e", "latitude": 43.29, "longitude": 5.38, "rayon_km": 5}]. Un objet situé dans
+    # l'une d'elles peut se remettre en main propre ; « toute la France » ajoute les autres, par colis.
+    # Sans zone d'intérêt, l'ancienne règle par nom de ville (``zone``) s'applique.
+    zones_interet: Mapped[list[dict]] = mapped_column(JSONB, default=list, server_default="[]")
+    toute_la_france: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Troc Premium (voir premium.py) : formule souscrite et fin de la période payée (ou de l'essai gratuit).
+    formule: Mapped[str | None] = mapped_column(String(20))
+    premium_jusqu_au: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    essai_premium_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Membre d'une formule Famille : le compte qui paie (ses avantages s'étendent à ce compte).
+    payeur_famille_id: Mapped[int | None] = mapped_column(ForeignKey("utilisateurs.id", ondelete="SET NULL"))
+    # Client Stripe, pour rattacher les renouvellements d'abonnement.
+    stripe_client: Mapped[str | None] = mapped_column(String(100), index=True)
+    # Profil vérifié par la modération (pièce d'identité ou téléphone confirmé) : badge visible des autres.
+    verifie_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     objets: Mapped[list[Objet]] = relationship(back_populates="proprietaire", cascade="all, delete-orphan")
     souhaits: Mapped[list[Souhait]] = relationship(
         back_populates="utilisateur", cascade="all, delete-orphan", order_by="Souhait.rang"
     )
 
+    payeur_famille: Mapped[Utilisateur | None] = relationship(remote_side=[id])
+
     @property
     def a_un_mot_de_passe(self) -> bool:
         return self.mot_de_passe is not None
+
+    @property
+    def verifie(self) -> bool:
+        return self.verifie_le is not None
 
     @property
     def echanges_menes(self) -> int:
@@ -188,6 +210,10 @@ class Utilisateur(Horodatage, Base):
         CheckConstraint("fiabilite >= 0 AND fiabilite <= 1", name="fiabilite_0_1"),
         CheckConstraint("engagements_tenus >= 0 AND engagements_manques >= 0", name="engagements_positifs"),
         CheckConstraint("reponses_oui >= 0 AND reponses_non >= 0", name="reponses_positives"),
+        CheckConstraint(
+            "formule IS NULL OR formule IN ('essentiel', 'plus', 'famille', 'pro', 'pass')", name="formule_connue"
+        ),
+        CheckConstraint("payeur_famille_id IS NULL OR payeur_famille_id <> id", name="pas_sa_propre_famille"),
         # E-mail unique sans tenir compte de la casse.
         Index("uq_utilisateurs_email_lower", func.lower(email), unique=True),
     )
@@ -223,6 +249,13 @@ class Objet(Horodatage, Base):
     contre_strict: Mapped[bool] = mapped_column(default=False, server_default="false")
     # Modes d'échange possibles (nomenclature.MODES_ECHANGE) ; vide : tous.
     modes_echange: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    # Localisation donnée à la publication (« Ajouter une localisation » : adresse, ville ou « autour de moi »),
+    # arrondie à 0,01° (environ 1 km) : on ne garde jamais l'adresse exacte. Vide : la zone de son propriétaire.
+    lieu: Mapped[str | None] = mapped_column(String(120))
+    latitude: Mapped[float | None] = mapped_column(Float)
+    longitude: Mapped[float | None] = mapped_column(Float)
+    # Format d'envoi (nomenclature.FORMATS_COLIS) : obligatoire pour proposer l'objet par colis.
+    format_colis: Mapped[str | None] = mapped_column(String(20))
 
     proprietaire: Mapped[Utilisateur] = relationship(back_populates="objets")
     contre: Mapped[list[Souhait]] = relationship(secondary="objets_contre", order_by="Souhait.id")
@@ -236,6 +269,11 @@ class Objet(Horodatage, Base):
         # Pas d'objet proposé à l'échange sans photo ni état (les objets d'avant cette règle ont été retirés).
         CheckConstraint(
             "statut <> 'disponible' OR (photo_url IS NOT NULL AND etat IS NOT NULL)", name="photo_et_etat_si_disponible"
+        ),
+        CheckConstraint("(latitude IS NULL) = (longitude IS NULL)", name="position_complete"),
+        CheckConstraint(
+            "latitude IS NULL OR (latitude BETWEEN -90 AND 90 AND longitude BETWEEN -180 AND 180)",
+            name="position_valide",
         ),
     )
 
@@ -312,6 +350,9 @@ class GrandTroc(Horodatage, Base):
     # de boucle retenue, statuts de CP-SAT, durée… Pour savoir si la production a basculé en mode dégradé.
     calcul: Mapped[dict] = mapped_column(JSONB, default=dict, server_default="{}")
     calcul_repechage: Mapped[dict | None] = mapped_column(JSONB)
+    # Avant-première Premium : le Grand Troc est calculé à 17 h et les Premium voient leurs propositions tout de
+    # suite ; les autres membres sont prévenus à l'annonce, à 18 h (``services.annoncer_grand_troc``).
+    annonce_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     echanges: Mapped[list[Echange]] = relationship(back_populates="grand_troc")
 
@@ -371,6 +412,15 @@ class Transfert(Base):
     # présente pour le récupérer.
     depose_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     code_retrait: Mapped[str] = mapped_column(String(12))
+    # Comment l'objet arrive : main propre (par défaut), colis payé par le donneur (receveur hors de ses zones
+    # proches) ou point de dépôt. Pour un colis, le donneur saisit le transporteur et le numéro de suivi.
+    mode: Mapped[str] = mapped_column(String(20), default="main_propre", server_default="main_propre")
+    transporteur: Mapped[str | None] = mapped_column(String(40))
+    numero_suivi: Mapped[str | None] = mapped_column(String(60))
+    # Adresse ou point relais où le receveur veut recevoir le colis : visible de son seul donneur.
+    adresse_livraison: Mapped[str | None] = mapped_column(String(300))
+    # Envoi couvert par la Garantie TopTroc (incluse dans Premium Plus et Famille).
+    garantie: Mapped[bool] = mapped_column(default=False, server_default="false")
 
     echange: Mapped[Echange] = relationship(back_populates="transferts")
     objet: Mapped[Objet] = relationship()
@@ -383,6 +433,7 @@ class Transfert(Base):
         CheckConstraint("donneur_id <> receveur_id", name="donneur_different_receveur"),
         # Jusqu'à 6 personnes, la limite du moteur (troc_echanges.boucles.LONGUEUR_MAX_ABSOLUE).
         CheckConstraint("position >= 0 AND position < 6", name="boucle_max_6"),
+        CheckConstraint("mode IN ('main_propre', 'colis', 'point_relais')", name="mode_connu"),
     )
 
 
@@ -398,8 +449,13 @@ class Avis(Horodatage, Base):
     utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), primary_key=True)
     objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), primary_key=True, index=True)
     aime: Mapped[bool] = mapped_column(Boolean)
+    # « Super J'aime » (Troc Premium, quota par semaine) : le propriétaire est prévenu, et la demande passe en
+    # tête de sa ShortList.
+    super: Mapped[bool] = mapped_column(default=False, server_default="false")
 
     objet: Mapped[Objet] = relationship()
+
+    __table_args__ = (CheckConstraint("aime OR NOT super", name="super_si_aime"),)
 
 
 class JetonConnexion(Base):

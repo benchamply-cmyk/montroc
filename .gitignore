@@ -25,3 +25,8 @@ htmlcov/
 
 # Netlify CLI
 .netlify/
+
+# Versions linguistiques générées par npm run build
+node_modules/
+web/english/
+web/espanol/

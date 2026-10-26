@@ -11,6 +11,9 @@ on:
     # à quatre heures ; l'API ne lance rien avant 18 h (heure de Paris) ni deux fois le même dimanche. Les
     # créneaux de 18 h et 19 h UTC rattrapent un déclenchement retardé ou sauté par GitHub : sans eux, en
     # heure d'hiver, un seul créneau (17 h UTC) tombait après 18 h à Paris.
+    # Avant-première Troc Premium : le calcul tourne dès 17 h à Paris (15 h UTC en heure d'été), les Premium
+    # voient leurs propositions aussitôt, et l'appel suivant (ou la tâche horaire) annonce à tous à 18 h.
+    - cron: "7 15 * * 0"
     - cron: "7 16 * * 0"
     - cron: "7 17 * * 0"
     - cron: "7 18 * * 0"
@@ -51,7 +54,7 @@ jobs:
         env:
           # Les déclenchements planifiés visent toujours la production ; preprod seulement à la main.
           TACHES_SECRET: ${{ inputs.environnement == 'preprod' && secrets.TACHES_SECRET_PREPROD || secrets.TACHES_SECRET }}
-          API: ${{ inputs.environnement == 'preprod' && 'https://montroc-api-preprod.onrender.com' || 'https://api.troctroc.fr' }}
+          API: ${{ inputs.environnement == 'preprod' && 'https://montroc-api-preprod.onrender.com' || 'https://api.toptroc.com' }}
         run: |
           curl --fail-with-body --silent --show-error --retry 4 --retry-delay 20 --retry-all-errors --max-time 120 \
             -X POST -H "X-Taches-Secret: $TACHES_SECRET" \

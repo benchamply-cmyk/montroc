@@ -25,6 +25,9 @@ def test_cors_apercus_netlify(client):
         r = client.options("/auth/connexion", headers={"Origin": origine, "Access-Control-Request-Method": "POST"})
         return r.headers.get("access-control-allow-origin") == origine
 
+    assert autorise("https://toptroc.com")
+    assert autorise("https://www.toptroc.com")
+    # Ancien domaine : encore accepté pendant la transition vers toptroc.com.
     assert autorise("https://troctroc.fr")
     assert autorise("https://deploy-preview-29--troctroc.netlify.app")
     assert autorise("https://troctroc.netlify.app")
@@ -185,7 +188,9 @@ def test_boucle_a_trois_de_bout_en_bout(client, creer):
         r = client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": True}, headers=p.headers)
         assert r.status_code == 200, r.text
     assert r.json()["statut"] == "accepte"
-    assert sujets(a.email)[-1] == "C'est oui pour tout le monde : à vous de déposer"
+    # En main propre (par défaut) : chacun convient d'un rendez-vous avec celui qui reçoit son objet.
+    assert sujets(a.email)[-1] == "C'est oui pour tout le monde : rencontrez-vous"
+    assert {t["mode"] for t in r.json()["transferts"]} == {"main_propre"}
 
     # Pendant les dépôts, chacun ne voit que le code de son propre paquet.
     vu_par_a = client.get(f"/echanges/{echange['id']}", headers=a.headers).json()
@@ -194,11 +199,11 @@ def test_boucle_a_trois_de_bout_en_bout(client, creer):
 
     assert client.post(f"/echanges/{echange['id']}/depot", headers=b.headers).json()["statut"] == "accepte"
     assert client.post(f"/echanges/{echange['id']}/depot", headers=b.headers).status_code == 409
-    assert sujets(a.email)[-1] == sujets(c.email)[-1] == "bruno a déposé"
+    assert sujets(a.email)[-1] == sujets(c.email)[-1] == "bruno a remis ou envoyé son objet"
     client.post(f"/echanges/{echange['id']}/depot", headers=a.headers)
     fini = client.post(f"/echanges/{echange['id']}/depot", headers=c.headers).json()
     assert fini["statut"] == "termine"
-    assert sujets(c.email)[-1] == "Tout est déposé : votre objet vous attend"
+    assert sujets(c.email)[-1] == "Échange terminé"
 
     # Une fois tout déposé, le receveur obtient le code pour récupérer son objet.
     recu_par_a = next(t for t in fini["transferts"] if t["receveur_id"] == c.id)
@@ -258,8 +263,8 @@ def test_grand_troc_du_dimanche(client, creer, monkeypatch):
     assert client.post("/taches/grand-troc").status_code == 403
     assert client.post("/taches/grand-troc", headers={"X-Taches-Secret": "faux"}).status_code == 403
 
-    # Avant 18 h, la tâche ne fait rien (elle passe deux fois le dimanche à cause de l'heure d'été).
-    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(17, 5))
+    # Avant 17 h, la tâche ne fait rien (elle passe plusieurs fois le dimanche à cause de l'heure d'été).
+    monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(16, 5))
     r = client.post("/taches/grand-troc", headers=TACHES).json()
     assert not r["lance"] and r["echanges"] == [] and "18/10 à 18 h" in r["message"]
     assert client.get("/grand-troc").json()["dernier"] is None
@@ -271,7 +276,7 @@ def test_grand_troc_du_dimanche(client, creer, monkeypatch):
     assert {x["grand_troc_jour"] for x in r["echanges"]} == {"2026-10-18"}
     assert all(t["code_retrait"] is None for x in r["echanges"] for t in x["transferts"])
     assert client.get("/objets").json() == []
-    assert sujets(e.email) == ["Votre lien de connexion à TrocTroc", "Grand Troc : une boucle vous attend"]
+    assert sujets(e.email) == ["Votre lien de connexion à TopTroc", "Grand Troc : une boucle vous attend"]
     assert "Le Grand Troc du dimanche a trouvé" in courriels.ENVOYES[-1].texte
 
     # Une seule fois par dimanche, même si la tâche est relancée.
@@ -337,7 +342,7 @@ def test_telephone_a_l_inscription_et_dans_le_compte(client, creer):
     creer.utilisateur("bruno", telephone="06 00 00 00 01")
     creer.echange_abc()
     assert [x.numero for x in sms.ENVOYES] == ["+33600000001"]
-    assert sms.ENVOYES[0].texte.startswith("TrocTroc vous propose un échange.")
+    assert sms.ENVOYES[0].texte.startswith("TopTroc vous propose un échange.")
 
 
 def test_echanges_a_la_demande_desactives_par_defaut(client, creer, monkeypatch):
@@ -602,8 +607,13 @@ def test_point_de_depot_selon_la_zone(client, creer, monkeypatch):
         ("aix-en-provence", "Café d'Aix"),
         ("marseille", "Ressourcerie du 6e"),
     ]
-    (a, b, c), echange = creer.echange_abc()  # tous à « Marseille »
+    (a, b, c), objets = creer.boucle_abc()  # tous à « Marseille »
+    for qui, objet in zip((a, b, c), objets, strict=True):  # objets à remettre au point de dépôt seulement
+        client.patch(f"/moi/objets/{objet}", json={"modes_echange": ["point_relais"]}, headers=qui.headers)
+    ordre = [e["objet"]["id"] for e in client.get("/moi/boucles", headers=a.headers).json()[0]["etapes"]]
+    echange = client.post("/echanges", json={"objets": ordre}, headers=a.headers).json()
     lu = client.get(f"/echanges/{echange['id']}", headers=a.headers).json()
+    assert {t["mode"] for t in lu["transferts"]} == {"point_relais"} and lu["lieu_de_rencontre"] is None
     assert lu["point_de_depot"] == "Ressourcerie du 6e"
 
     # « Marseille » couvre « Marseille 6e » ; une zone plus précise l'emporte ; aucune zone connue : le défaut.

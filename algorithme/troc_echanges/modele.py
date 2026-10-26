@@ -11,7 +11,7 @@ que chacun demande.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from math import prod
+from math import asin, cos, prod, radians, sin, sqrt
 
 # États d'un objet, du moins bon au meilleur : un souhait peut exiger un état minimum.
 ETATS = ("correct", "bon", "tres_bon", "comme_neuf", "neuf")
@@ -23,6 +23,28 @@ MODES_RECHERCHE = ("precise", "flexible", "ouverte")
 QUALITE_CIBLE = 2
 QUALITE_PREFERENCE = 1
 QUALITE_CONTRE = 2
+# Mode d'échange qui permet de troquer loin de chez soi : un objet hors des zones d'intérêt du receveur ne lui
+# parvient que par colis, si l'objet et le souhait l'acceptent tous les deux (``Utilisateur.acces``).
+MODE_COLIS = "colis"
+RAYON_TERRE_KM = 6371.0
+
+
+def distance_km(a: tuple[float, float], b: tuple[float, float]) -> float:
+    """Distance à vol d'oiseau entre deux points (latitude, longitude), en kilomètres (formule de haversine)."""
+    (la1, lo1), (la2, lo2) = ((radians(x), radians(y)) for x, y in (a, b))
+    h = sin((la2 - la1) / 2) ** 2 + cos(la1) * cos(la2) * sin((lo2 - lo1) / 2) ** 2
+    return 2 * RAYON_TERRE_KM * asin(min(1.0, sqrt(h)))
+
+
+@dataclass(frozen=True)
+class ZoneInteret:
+    """Une zone où l'on veut troquer, choisie par chacun (« autour de moi », une ville…) : un centre et un rayon."""
+    latitude: float
+    longitude: float
+    rayon_km: float
+
+    def contient(self, position: tuple[float, float]) -> bool:
+        return distance_km((self.latitude, self.longitude), position) <= self.rayon_km
 
 
 def _norme(valeur: str) -> str:
@@ -56,6 +78,11 @@ class Objet:
     modes: frozenset[str] = frozenset()
     zone: str | None = None
     disponible: bool = True
+    # Où se trouve l'objet (latitude, longitude), indiqué à la publication ; None : inconnu.
+    position: tuple[float, float] | None = None
+
+    def accepte_le_colis(self) -> bool:
+        return not self.modes or MODE_COLIS in self.modes
 
     def accepte(self, recu: Transfert) -> bool:
         """Peut-on donner cet objet en recevant ``recu`` dans la même boucle ?"""
@@ -153,6 +180,9 @@ class Souhait:
             return False
         return None
 
+    def accepte_le_colis(self) -> bool:
+        return not self.modes or MODE_COLIS in self.modes
+
     def correspond(self, objet: Objet) -> bool:
         if self.modes and objet.modes and not (self.modes & objet.modes):
             return False
@@ -198,6 +228,22 @@ class Utilisateur:
     # Nombre maximum de boucles (donc d'objets reçus) pour lui dans une même recherche ; None : pas de plafond.
     # Le nombre d'objets échangés reste maximisé sous ce plafond : un gros déposant ne prend pas tout le dimanche.
     plafond: int | None = None
+    # Zones d'intérêt choisies par la personne, et « toute la France » (par colis). Sans aucune des deux :
+    # la règle des zones par nom (``zone``, ``Souhait.zones``, ``Marche.meme_zone``).
+    zones_interet: tuple[ZoneInteret, ...] = ()
+    toute_la_france: bool = False
+
+    @property
+    def zones_geographiques(self) -> bool:
+        return bool(self.zones_interet) or self.toute_la_france
+
+    def acces(self, objet: Objet) -> str | None:
+        """Comment un objet peut lui parvenir, d'après ses zones d'intérêt : « proche » (dans une de ses zones,
+        ou lieu inconnu : remise en main propre possible), « loin » (hors de ses zones mais il accepte toute la
+        France : par colis seulement), None (hors de ses zones)."""
+        if objet.position is None or any(z.contient(objet.position) for z in self.zones_interet):
+            return "proche"
+        return "loin" if self.toute_la_france else None
 
 
 @dataclass(frozen=True)
@@ -295,7 +341,8 @@ class Marche:
         self.objets: dict[str, Objet] = {}
 
     def ajouter_utilisateur(self, id: str, souhaits=(), zone=None, fiabilite=1.0, priorite=1,
-                            acceptation: float | None = None, plafond: int | None = None) -> Utilisateur:
+                            acceptation: float | None = None, plafond: int | None = None,
+                            zones_interet=(), toute_la_france: bool = False) -> Utilisateur:
         if id in self.utilisateurs:
             raise ValueError(f"Utilisateur {id!r} déjà présent.")
         if priorite < 1:
@@ -304,14 +351,15 @@ class Marche:
             raise ValueError("acceptation doit être dans ]0, 1].")
         if plafond is not None and plafond < 0:
             raise ValueError("plafond doit être >= 0.")
-        u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite, acceptation, plafond)
+        u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite, acceptation, plafond,
+                        tuple(zones_interet), toute_la_france)
         self.utilisateurs[id] = u
         return u
 
     def ajouter_objet(self, id: str, proprietaire: str, categorie: str, titre: str = "",
                       contre=(), contre_strict: bool = False, sous_categorie: str | None = None,
                       caracteristiques=(), etat: str | None = None, modes=(), zone: str | None = None,
-                      disponible: bool = True) -> Objet:
+                      disponible: bool = True, position: tuple[float, float] | None = None) -> Objet:
         if id in self.objets:
             raise ValueError(f"Objet {id!r} déjà présent.")
         if proprietaire not in self.utilisateurs:
@@ -324,7 +372,7 @@ class Marche:
             raise ValueError(f"etat doit être parmi {ETATS}.")
         caracteristiques = tuple(sorted(dict(caracteristiques).items()))
         o = Objet(id, proprietaire, categorie, titre, contre, contre_strict, sous_categorie, caracteristiques,
-                  etat, frozenset(modes), zone, disponible)
+                  etat, frozenset(modes), zone, disponible, position)
         self.objets[id] = o
         return o
 

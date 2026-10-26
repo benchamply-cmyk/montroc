@@ -2,15 +2,15 @@
 
 L'alternative montroc : échanger des objets **sans prix ni monnaie**. Chacun dit ce qu'il a et ce qui lui serait utile, et montroc trouve l'échange, même en boucle à trois.
 
-Site prévu : [troctroc.fr](https://troctroc.fr)
+Site prévu : [toptroc.com](https://toptroc.com)
 
 ## Contenu du dépôt
 
 | Dossier | Contenu |
 |---|---|
-| [`web/`](web/) | Le site : une page HTML autonome (maquette interactive), publiée par Netlify sur troctroc.fr. |
+| [`web/`](web/) | Le site : une page HTML autonome (maquette interactive), publiée par Netlify sur toptroc.com. |
 | [`algorithme/`](algorithme/) | Le moteur d'échanges en Python pur : boucles autour d'un utilisateur, « math trade » à l'échelle d'une ville, gestion des refus. Voir son [README](algorithme/README.md). |
-| [`api/`](api/) | L'API FastAPI (Python 3.12) et le schéma PostgreSQL avec ses migrations Alembic. Déployée sur Render (api.troctroc.fr). |
+| [`api/`](api/) | L'API FastAPI (Python 3.12) et le schéma PostgreSQL avec ses migrations Alembic. Déployée sur Render (api.toptroc.com). |
 | [`docs/`](docs/) | **La documentation du projet** : architecture, mise en ligne pas à pas, base de données, VS Code, Git. |
 
 ## Démarrer

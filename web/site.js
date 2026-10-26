@@ -2,13 +2,13 @@
    Sur l'accueil, index.html intercepte les liens « /#… » pour changer de vue sans recharger,
    et appelle TT.compte() quand la session change. */
 (()=>{
-  const VERSION='5.200'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
+  const VERSION='6.100'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
   const LOGO='<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B97FF"/><stop offset=".5" stop-color="#E6C23A"/><stop offset="1" stop-color="#5FD39A"/></linearGradient></defs><circle cx="12" cy="12" r="9" fill="none" stroke="url(#logo-g)" stroke-width="2"/><circle cx="12" cy="3" r="2.6" fill="#8B97FF"/><circle cx="19.8" cy="16.5" r="2.6" fill="#5FD39A"/><circle cx="4.2" cy="16.5" r="2.6" fill="#E6C23A"/></svg>';
   const PERSO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
 
   const haut=document.querySelector('header.site');
   if(haut)haut.innerHTML=`<div class="site-in">
-  <a class="logo" href="/" aria-label="TrocTroc, retour à l'accueil">${LOGO}<span>Troc<span class="logo-2">Troc</span></span></a>
+  <a class="logo" href="/" aria-label="TopTroc, retour à l'accueil">${LOGO}<span>Top<span class="logo-2">Troc</span></span></a>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
       <li><a href="/#decouvrir">Le concept</a></li>
@@ -22,6 +22,7 @@
           <li><a href="/collectivites/">Collectivités</a></li>
         </ul>
       </li>
+      ${TT_I18N.menu()}
     </ul>
   </nav>
   <div class="compte-zone">
@@ -35,7 +36,7 @@
       <button class="pop-ok" type="submit">Se connecter</button>
       <p class="pop-msg" role="status" hidden></p>
       <button class="pop-lien" type="button" data-lien>Mot de passe oublié ou pas encore choisi ? Recevoir un lien par e-mail</button>
-      <button class="pop-lien" type="button" data-creer>Nouveau sur TrocTroc ? Créer un compte</button>
+      <button class="pop-lien" type="button" data-creer>Nouveau sur TopTroc ? Créer un compte</button>
       <button class="pop-lien" type="button" data-retour hidden>Déjà un compte ? Se connecter avec un mot de passe</button>
     </form>
   </div>
@@ -65,11 +66,13 @@
       if(v)lienVersion.textContent=`V${v.join('.')} · preprod`;
     }).catch(()=>{});
   }
+  if(haut){TT_I18N.links(haut);TT_I18N.bindMenu(haut.querySelector('#langue-site'))}
+  if(pied)TT_I18N.links(pied);
   if(!haut)return;
 
   const $=s=>haut.querySelector(s);
   const menu=$('#menu'), burger=$('.burger'), sous=$('.sous'), bSous=sous.querySelector('button'), liste=sous.querySelector('ul');
-  const mobile=matchMedia('(max-width:959px)');
+  const mobile=matchMedia('(max-width:1199px)');
 
   function ouvrirSous(oui){bSous.setAttribute('aria-expanded',oui);liste.hidden=!oui}
   function ouvrirMenu(oui){
@@ -98,14 +101,14 @@
      dès qu'un compte a déjà servi sur cet appareil, « Se connecter » sinon. */
   // Pré-production (déploiement de la branche preprod sur Netlify) : son API à elle, sur une copie de la base.
   const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001'
-    :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.troctroc.fr';
+    :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.toptroc.com';
   const memo={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch{}}};
   const c=$('#compte'), pop=$('#pop-cnx'), msg=pop.querySelector('.pop-msg');
   let connecte=!!memo.get('troc.jeton'), ouvertLe=-1;
   function compte(oui){
     connecte=oui;
     c.querySelector('span').textContent=oui||memo.get('troc.email')?'Mon espace':'Se connecter';
-    c.setAttribute('href',oui?'/#monespace':'/#se-connecter');
+    c.setAttribute('href',TT_I18N.localPath(oui?'/#monespace':'/#se-connecter'));
     if(oui)ouvrirConnexion(false);
   }
   function dire(texte,ok){msg.textContent=texte;msg.classList.toggle('ok',!!ok);msg.hidden=!texte}
@@ -136,7 +139,7 @@
       await new Promise(ok=>setTimeout(ok,10000));
     }
     const d=await r.json().catch(()=>null);
-    if(!r.ok){const x=d&&d.detail;throw new Error(typeof x==='string'?x:'Vérifiez votre e-mail et votre mot de passe.')}
+    if(!r.ok){const x=d&&d.detail;throw new Error(typeof x==='string'?TT_I18N.error(x):'Vérifiez votre e-mail et votre mot de passe.')}
     return d;
   }
   c.addEventListener('click',e=>{
@@ -153,14 +156,14 @@
     try{
       const r=await appeler('/auth/connexion',{email:pop.email.value.trim(),mot_de_passe:pop.mot_de_passe.value});
       memo.set('troc.jeton',r.jeton); memo.set('troc.email',r.utilisateur.email); pop.reset(); compte(true);
-      if(window.TT.surConnexion)window.TT.surConnexion(r); else location.href='/#monespace';
+      if(window.TT.surConnexion)window.TT.surConnexion(r); else location.href=TT_I18N.localPath('/#monespace');
     }catch(err){dire(err.message);pop.mot_de_passe.select()}
     finally{b.disabled=false;b.textContent='Se connecter'}
   };
   async function envoyerLien(){
     const email=pop.email.value.trim();
     if(!pop.email.checkValidity()||!email){dire('Indiquez votre e-mail : le lien y sera envoyé.');pop.email.focus();return}
-    try{await appeler('/auth/lien',{email});dire(`Lien envoyé à ${email} : ouvrez l'e-mail sur cet appareil et cliquez dessus. Vous pourrez ensuite choisir un mot de passe.`,true)}
+    try{await appeler('/auth/lien',{email,langue:TT_I18N.lang});dire(`Lien envoyé à ${email} : ouvrez l'e-mail sur cet appareil et cliquez dessus. Vous pourrez ensuite choisir un mot de passe.`,true)}
     catch(err){dire(err.message)}
   }
   pop.querySelector('[data-lien]').onclick=envoyerLien;

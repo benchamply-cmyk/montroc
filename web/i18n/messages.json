@@ -1,0 +1,4118 @@
+{
+  "! Concluez-le dans Match.": {
+    "en": "! Complete it in Match.",
+    "es": "¡Complétalo en Match!"
+  },
+  "(facultatif)": {
+    "en": "(optional)",
+    "es": "(opcional)"
+  },
+  "(facultatif, en plus de la vôtre)": {
+    "en": "(optional, in addition to your own)",
+    "es": "(opcional, además de la tuya)"
+  },
+  "). Contact :": {
+    "en": "). Contact:",
+    "es": "). Contacto:"
+  },
+  "+ Ajouter une demande": {
+    "en": "+ Add a request",
+    "es": "+ Añadir una solicitud"
+  },
+  "+ Déjà en vente sur Vinted ou Leboncoin ?": {
+    "en": "+ Already listed on Vinted or Leboncoin?",
+    "es": "+ ¿Ya lo vendes en Vinted o Leboncoin?"
+  },
+  "+ Précisions et remise": {
+    "en": "+ Details and handover",
+    "es": "+ Detalles y entrega"
+  },
+  ", 18 h": {
+    "en": ", 6 pm (Paris time)",
+    "es": ", 18:00 (hora de París)"
+  },
+  ", en bas de « Mes listes », bouton « Supprimer mon compte ». Vos données sont effacées et vos échanges en cours sont annulés pour les autres participants.": {
+    "en": ", at the bottom of “My lists”, using “Delete my account”. Your data is erased and your ongoing swaps are cancelled for the other participants.",
+    "es": ", al final de «Mis listas», con el botón «Eliminar mi cuenta». Se borrarán tus datos y se cancelarán tus intercambios en curso para los demás participantes."
+  },
+  ", ou écrire à": {
+    "en": ", or write to",
+    "es": ", o escribe a"
+  },
+  ", si vous le donnez : uniquement pour un SMS quand le Grand Troc vous propose un échange. Jamais montré aux autres membres.": {
+    "en": ", if you provide it: only for a text message when the Grand Troc offers you a swap. Never shown to other members.",
+    "es": ", si lo facilitas: solo para enviarte un SMS cuando el Grand Troc te proponga un intercambio. Nunca se muestra a otros miembros."
+  },
+  ", y compris celles et ceux qui n'achètent pas d'occasion. Ici, personne ne paie et personne ne vend.": {
+    "en": ", including people who do not buy second-hand. Here, nobody pays and nobody sells.",
+    "es": ", incluidas las personas que no compran de segunda mano. Aquí nadie paga y nadie vende."
+  },
+  ", États-Unis. netlify.com": {
+    "en": ", United States. netlify.com",
+    "es": ", Estados Unidos. netlify.com"
+  },
+  ", États-Unis. render.com ; base de données chez Neon, neon.tech.": {
+    "en": ", United States. render.com; database hosted by Neon, neon.tech.",
+    "es": ", Estados Unidos. render.com; base de datos alojada en Neon, neon.tech."
+  },
+  ". Vous pouvez aussi supprimer votre compte vous-même depuis Mon espace. Si vous estimez que vos droits ne sont pas respectés, vous pouvez saisir la CNIL (cnil.fr).": {
+    "en": ". You can also delete your account yourself from My space. If you believe your rights have not been respected, you can contact the CNIL (cnil.fr).",
+    "es": ". También puedes eliminar tu cuenta desde Mi espacio. Si consideras que no se respetan tus derechos, puedes acudir a la CNIL (cnil.fr)."
+  },
+  ". Vous recevez": {
+    "en": ". You receive",
+    "es": ". Recibes"
+  },
+  "1 boucle": {
+    "en": "1 loop",
+    "es": "1 cadena"
+  },
+  "1. Ce qu'est TopTroc": {
+    "en": "1. What TopTroc is",
+    "es": "1. Qué es TopTroc"
+  },
+  "10. Droit applicable": {
+    "en": "10. Applicable law",
+    "es": "10. Legislación aplicable"
+  },
+  "2. Votre compte": {
+    "en": "2. Your account",
+    "es": "2. Tu cuenta"
+  },
+  "3 personnes servies": {
+    "en": "3 people served",
+    "es": "3 personas satisfechas"
+  },
+  "3. Les objets que vous proposez": {
+    "en": "3. The items you offer",
+    "es": "3. Los objetos que ofreces"
+  },
+  "4. Le Grand Troc du dimanche": {
+    "en": "4. The Sunday Grand Troc",
+    "es": "4. El Grand Troc del domingo"
+  },
+  "5. Fiabilité": {
+    "en": "5. Reliability",
+    "es": "5. Fiabilidad"
+  },
+  "6. Modération": {
+    "en": "6. Moderation",
+    "es": "6. Moderación"
+  },
+  "7. Responsabilités": {
+    "en": "7. Responsibilities",
+    "es": "7. Responsabilidades"
+  },
+  "8 caractères minimum": {
+    "en": "At least 8 characters",
+    "es": "8 caracteres como mínimo"
+  },
+  "8 caractères minimum. La prochaine fois, connectez-vous avec « Mon espace » en haut de page, sans attendre d'e-mail.": {
+    "en": "At least 8 characters. Next time, sign in using “My space” at the top of the page, without waiting for an email.",
+    "es": "8 caracteres como mínimo. La próxima vez, accede desde «Mi espacio», arriba de la página, sin esperar un correo."
+  },
+  "8. Supprimer votre compte": {
+    "en": "8. Deleting your account",
+    "es": "8. Eliminar tu cuenta"
+  },
+  "9. Évolution des conditions": {
+    "en": "9. Changes to these terms",
+    "es": "9. Modificación de las condiciones"
+  },
+  ": Brevo, France. brevo.com.": {
+    "en": ": Brevo, France. brevo.com.",
+    "es": ": Brevo, Francia. brevo.com."
+  },
+  ": Cloudinary Ltd., cloudinary.com.": {
+    "en": ": Cloudinary Ltd., cloudinary.com.",
+    "es": ": Cloudinary Ltd., cloudinary.com."
+  },
+  ": Netlify, Inc.,": {
+    "en": ": Netlify, Inc.,",
+    "es": ": Netlify, Inc.,"
+  },
+  ": Render Services, Inc.,": {
+    "en": ": Render Services, Inc.,",
+    "es": ": Render Services, Inc.,"
+  },
+  ": armes, médicaments, tabac et alcool, animaux vivants, objets volés.": {
+    "en": ": weapons, medicines, tobacco and alcohol, live animals, stolen items.",
+    "es": ": armas, medicamentos, tabaco y alcohol, animales vivos y objetos robados."
+  },
+  ": nous chercherons une solution amiable.": {
+    "en": ": we will seek an amicable solution.",
+    "es": ": buscaremos una solución amistosa."
+  },
+  ": obligatoire ici, choisissez-le honnêtement.": {
+    "en": ": required here; choose it honestly.",
+    "es": ": es obligatorio aquí; indícalo con sinceridad."
+  },
+  ": on la recopie ici, sans prix.": {
+    "en": ": we help you copy it here, without a price.",
+    "es": ": te ayudamos a copiarlo aquí, sin precio."
+  },
+  ": ouvrez l'e-mail sur cet appareil et cliquez dessus. Vous pourrez ensuite choisir un mot de passe.": {
+    "en": ": open the email on this device and click the link. You can then choose a password.",
+    "es": ": abre el correo en este dispositivo y pulsa el enlace. Después podrás elegir una contraseña."
+  },
+  ": pas de boucle trouvée. Plus il y a d'objets et de souhaits, plus il y en aura dimanche.": {
+    "en": ": no loop found. The more items and wishes there are, the more loops there will be on Sunday.",
+    "es": ": no se ha encontrado ninguna cadena. Cuantos más objetos y deseos haya, más cadenas habrá el domingo."
+  },
+  ": photos ou textes choquants, haineux, ou sans rapport avec l'objet.": {
+    "en": ": shocking or hateful photos or text, or content unrelated to the item.",
+    "es": ": fotos o textos ofensivos, de odio o sin relación con el objeto."
+  },
+  ": pour la modération, comme la loi l'impose aux plateformes (règlement européen sur les services numériques).": {
+    "en": ": for moderation, as required by platform regulations (the EU Digital Services Act).",
+    "es": ": para la moderación, tal como exige la normativa sobre plataformas (Reglamento europeo de Servicios Digitales)."
+  },
+  ": pour organiser les dépôts et rendre les boucles plus sûres.": {
+    "en": ": to organise drop-offs and make loops safer.",
+    "es": ": para organizar las entregas y hacer más seguras las cadenas."
+  },
+  ": pour trouver les échanges. Les objets disponibles sont visibles par tous, même sans compte, sans votre e-mail ni votre téléphone.": {
+    "en": ": to find swaps. Available items are visible to everyone, even without an account, without your email or phone number.",
+    "es": ": para encontrar intercambios. Los objetos disponibles son visibles para todo el mundo, incluso sin cuenta, sin tu correo ni tu teléfono."
+  },
+  ": pour vous connecter et vous prévenir des échanges. Il n'est jamais montré aux autres membres.": {
+    "en": ": to sign you in and notify you of swaps. It is never shown to other members.",
+    "es": ": para acceder y avisarte de los intercambios. Nunca se muestra a otros miembros."
+  },
+  ": reprenez celle de votre téléphone, c'est la vôtre.": {
+    "en": ": use the one on your phone; it is yours.",
+    "es": ": usa la de tu teléfono; es tuya."
+  },
+  ": sièges auto ou articles de puériculture concernés par un rappel (vérifiez sur rappel.conso.gouv.fr), appareils électriques abîmés, produits chimiques.": {
+    "en": ": recalled car seats or childcare products (check rappel.conso.gouv.fr), damaged electrical appliances, chemicals.",
+    "es": ": sillas de coche o artículos de puericultura retirados del mercado (consulta rappel.conso.gouv.fr), aparatos eléctricos dañados y productos químicos."
+  },
+  ": sur TopTroc, un objet s'échange contre un objet.": {
+    "en": ": on TopTroc, an item is swapped for an item.",
+    "es": ": en TopTroc, un objeto se intercambia por otro."
+  },
+  ": un cœur et c'est un match.": {
+    "en": ": a heart and it is a match.",
+    "es": ": un corazón y hay match."
+  },
+  ": une action de réemploi concrète, mesurée, et visible des habitants.": {
+    "en": ": a practical reuse initiative, measured and visible to residents.",
+    "es": ": una iniciativa de reutilización concreta, medible y visible para los habitantes."
+  },
+  ": visibles des personnes avec qui vous échangez.": {
+    "en": ": visible to the people you swap with.",
+    "es": ": visibles para las personas con las que intercambias."
+  },
+  "Accueil": {
+    "en": "Home",
+    "es": "Inicio"
+  },
+  "Adresse :": {
+    "en": "Address:",
+    "es": "Dirección:"
+  },
+  "Afficher": {
+    "en": "Show",
+    "es": "Mostrar"
+  },
+  "Ajouter": {
+    "en": "Add",
+    "es": "Añadir"
+  },
+  "Ajouter une demande": {
+    "en": "Add a request",
+    "es": "Añadir una solicitud"
+  },
+  "Ajouter une photo": {
+    "en": "Add a photo",
+    "es": "Añadir una foto"
+  },
+  "Ajouter «": {
+    "en": "Add “",
+    "es": "Añadir «"
+  },
+  "Ajouter à ma demande": {
+    "en": "Add to my request",
+    "es": "Añadir a mi solicitud"
+  },
+  "Ajoutez d'abord ce qui vous serait utile, dans « Je demande ».": {
+    "en": "First add what would be useful to you under “I want”.",
+    "es": "Primero añade lo que necesitas en «Busco»."
+  },
+  "Ajoutez sa catégorie à vos souhaits : TopTroc cherchera la boucle qui vous l'apporte.": {
+    "en": "Add its category to your wishes: TopTroc will look for a loop that brings it to you.",
+    "es": "Añade su categoría a tus deseos: TopTroc buscará la cadena que te lo consiga."
+  },
+  "Ajouté à vos souhaits": {
+    "en": "Added to your wishes",
+    "es": "Añadido a tus deseos"
+  },
+  "Ajouté à votre demande": {
+    "en": "Added to your request",
+    "es": "Añadido a tu solicitud"
+  },
+  "Annonce": {
+    "en": "Listing",
+    "es": "Anuncio"
+  },
+  "Annuler": {
+    "en": "Cancel",
+    "es": "Cancelar"
+  },
+  "Aperçu pour dimanche": {
+    "en": "Preview for Sunday",
+    "es": "Avance para el domingo"
+  },
+  "Arnaque ou tromperie": {
+    "en": "Scam or deception",
+    "es": "Estafa o engaño"
+  },
+  "Au point de dépôt indiqué dans l'échange : chacun y dépose son objet, puis récupère le sien avec un code quand tout le monde a déposé. Vous pouvez aussi échanger en main propre si vous vous connaissez.": {
+    "en": "At the drop-off point shown in the swap: everyone drops off their item, then collects theirs using a code once everyone has dropped off. You can also swap in person if you know each other.",
+    "es": "En el punto de entrega indicado en el intercambio: cada persona deja su objeto y recoge el suyo con un código cuando todos hayan entregado. También podéis intercambiar en mano si os conocéis."
+  },
+  "Aucun cookie publicitaire ni de mesure d'audience. Votre navigateur garde seulement un jeton de connexion, pour que vous restiez connecté.": {
+    "en": "No advertising or analytics cookies. Your browser only stores a sign-in token to keep you signed in.",
+    "es": "No hay cookies publicitarias ni de medición de audiencia. Tu navegador solo guarda un token de acceso para mantener tu sesión abierta."
+  },
+  "Aucun objet proposé pour l'instant. Soyez le premier : créez un compte et ajoutez ce qui dort chez vous.": {
+    "en": "No items offered yet. Be the first: create an account and add what you no longer use.",
+    "es": "Todavía no hay objetos. Sé la primera persona: crea una cuenta y añade lo que ya no usas."
+  },
+  "Aucun objet proposé pour l'instant. Soyez le premier : proposez ce qui dort chez vous.": {
+    "en": "No items offered yet. Be the first: offer what you no longer use.",
+    "es": "Todavía no hay objetos. Sé la primera persona: ofrece lo que ya no usas."
+  },
+  "Aucun signalement en attente.": {
+    "en": "No reports awaiting review.",
+    "es": "No hay denuncias pendientes."
+  },
+  "Aussi à": {
+    "en": "Also in",
+    "es": "También en"
+  },
+  "Autre": {
+    "en": "Other",
+    "es": "Otro"
+  },
+  "Autres villes acceptées": {
+    "en": "Other accepted towns",
+    "es": "Otras ciudades aceptadas"
+  },
+  "Avec votre portable, vous recevez un SMS en plus de l'e-mail quand le Grand Troc vous propose un échange : rien d'autre. Votre pseudo et votre ville sont visibles des personnes avec qui vous échangez. Votre e-mail et votre téléphone ne le sont jamais.": {
+    "en": "With your mobile number, you receive a text message as well as an email when the Grand Troc offers you a swap: nothing else. Your username and town are visible to the people you swap with. Your email and phone number never are.",
+    "es": "Si facilitas tu móvil, recibirás un SMS además del correo cuando el Grand Troc te proponga un intercambio: nada más. Tu seudónimo y tu ciudad son visibles para las personas con las que intercambias. Tu correo y tu teléfono nunca lo son."
+  },
+  "Besoin : un kit de jardinage": {
+    "en": "Needs: a gardening kit",
+    "es": "Busca: un kit de jardinería"
+  },
+  "Besoin : un vélo enfant": {
+    "en": "Needs: a child's bike",
+    "es": "Busca: una bicicleta infantil"
+  },
+  "Besoin : une poussette": {
+    "en": "Needs: a pushchair",
+    "es": "Busca: un cochecito"
+  },
+  "Bienvenue": {
+    "en": "Welcome",
+    "es": "Bienvenido"
+  },
+  "Bon": {
+    "en": "Good",
+    "es": "Bueno"
+  },
+  "Bon retour": {
+    "en": "Welcome back",
+    "es": "Bienvenido de nuevo"
+  },
+  "Bon état": {
+    "en": "Good condition",
+    "es": "Buen estado"
+  },
+  "Bonne conduite": {
+    "en": "Good conduct",
+    "es": "Buena conducta"
+  },
+  "Boucle proposée : les deux autres ont 48 h pour dire oui.": {
+    "en": "Loop proposed: the other two have 48 hours to accept.",
+    "es": "Cadena propuesta: las otras dos personas tienen 48 horas para aceptar."
+  },
+  "Boucle à trois": {
+    "en": "Three-way loop",
+    "es": "Cadena de tres"
+  },
+  "Boucles à trois": {
+    "en": "Three-way loops",
+    "es": "Cadenas de tres"
+  },
+  "Brevo, en France (envoi des e-mails et des SMS).": {
+    "en": "Brevo, in France (sending emails and text messages).",
+    "es": "Brevo, en Francia (envío de correos y SMS)."
+  },
+  "C'est gratuit. Ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.": {
+    "en": "It is free. Add what you can give: TopTroc suggests a swap, even a three-way one.",
+    "es": "Es gratis. Añade lo que puedes dar: TopTroc te propone un intercambio, incluso entre tres."
+  },
+  "C'est noté. On attend": {
+    "en": "Noted. Waiting for",
+    "es": "Anotado. Esperamos a"
+  },
+  "C'est un match !": {
+    "en": "It's a match!",
+    "es": "¡Hay match!"
+  },
+  "C'est un match avec": {
+    "en": "It's a match with",
+    "es": "Tienes un match con"
+  },
+  "C'est votre objet.": {
+    "en": "This is your item.",
+    "es": "Este es tu objeto."
+  },
+  "CGU": {
+    "en": "Terms of use",
+    "es": "Condiciones de uso"
+  },
+  "Catégorie": {
+    "en": "Category",
+    "es": "Categoría"
+  },
+  "Catégories": {
+    "en": "Categories",
+    "es": "Categorías"
+  },
+  "Ce lien n'est pas une annonce Vinted ou Leboncoin.": {
+    "en": "This link is not a Vinted or Leboncoin listing.",
+    "es": "Este enlace no corresponde a un anuncio de Vinted o Leboncoin."
+  },
+  "Ce lien n'est pas une annonce Vinted ou Leboncoin. Corrigez-le ou videz le champ.": {
+    "en": "This link is not a Vinted or Leboncoin listing. Correct it or clear the field.",
+    "es": "Este enlace no corresponde a un anuncio de Vinted o Leboncoin. Corrígelo o vacía el campo."
+  },
+  "Ce qu'on nous demande le plus souvent. Vous ne trouvez pas votre réponse ?": {
+    "en": "What people ask us most often. Cannot find your answer?",
+    "es": "Lo que más nos preguntan. ¿No encuentras tu respuesta?"
+  },
+  "Ce que nous gardons, et pourquoi": {
+    "en": "What we store, and why",
+    "es": "Qué guardamos y por qué"
+  },
+  "Ce que nous mettons en place": {
+    "en": "What we set up",
+    "es": "Qué ponemos en marcha"
+  },
+  "Ce que vous proposez à vos équipes": {
+    "en": "What you offer your teams",
+    "es": "Qué ofreces a tus equipos"
+  },
+  "Ce que vous êtes prêt à donner en échange.": {
+    "en": "What you are willing to give in exchange.",
+    "es": "Lo que estás dispuesto a dar a cambio."
+  },
+  "Ce qui dort chez vous est": {
+    "en": "What you no longer use is",
+    "es": "Lo que ya no usas es"
+  },
+  "Ce qui dort chez vous est utile à quelqu'un.": {
+    "en": "What you no longer use is useful to someone.",
+    "es": "Lo que ya no usas le sirve a alguien."
+  },
+  "Ce qui est proposé": {
+    "en": "What is on offer",
+    "es": "Lo que se ofrece"
+  },
+  "Ce qui se passe ensuite": {
+    "en": "What happens next",
+    "es": "Qué ocurre después"
+  },
+  "Ce qui vous serait utile en retour.": {
+    "en": "What would be useful to you in return.",
+    "es": "Lo que necesitas a cambio."
+  },
+  "Ces conditions peuvent évoluer. En cas de changement important, vous serez prévenu par e-mail avant son entrée en vigueur.": {
+    "en": "These terms may change. You will be notified by email before any significant change takes effect.",
+    "es": "Estas condiciones pueden cambiar. Te avisaremos por correo antes de que entre en vigor cualquier cambio importante."
+  },
+  "Ces conditions sont soumises au droit français. En cas de désaccord, écrivez-nous d'abord à": {
+    "en": "These terms are governed by French law. In the event of a disagreement, first write to us at",
+    "es": "Estas condiciones se rigen por la legislación francesa. En caso de desacuerdo, escríbenos primero a"
+  },
+  "Ces traitements reposent sur l'exécution du service que vous demandez en créant un compte, et, pour la modération, sur nos obligations légales.": {
+    "en": "This processing is based on providing the service you request when creating an account and, for moderation, on our legal obligations.",
+    "es": "Estos tratamientos se basan en la prestación del servicio que solicitas al crear una cuenta y, para la moderación, en nuestras obligaciones legales."
+  },
+  "Cet objet a déjà trouvé preneur.": {
+    "en": "This item has already found a new owner.",
+    "es": "Este objeto ya ha encontrado a alguien."
+  },
+  "Chacun reçoit ce qu'il a demandé ou aimé. Proposez la boucle : les deux autres ont 48 h pour dire oui.": {
+    "en": "Everyone receives what they requested or liked. Propose the loop: the other two have 48 hours to accept.",
+    "es": "Cada persona recibe lo que ha pedido o le ha gustado. Propón la cadena: las otras dos personas tienen 48 horas para aceptar."
+  },
+  "Changer de mot de passe": {
+    "en": "Change password",
+    "es": "Cambiar de contraseña"
+  },
+  "Changer de photo": {
+    "en": "Change photo",
+    "es": "Cambiar foto"
+  },
+  "Changer le mot de passe": {
+    "en": "Change password",
+    "es": "Cambiar la contraseña"
+  },
+  "Chaque dimanche à 18 h": {
+    "en": "Every Sunday at 6 pm (Paris time)",
+    "es": "Cada domingo a las 18:00 (hora de París)"
+  },
+  "Chaque dimanche à 18 h, TopTroc cherche toutes les boucles possibles d'un coup, sur tous les objets. Vous recevez un e-mail (et un SMS si vous avez donné votre portable) si un échange vous attend. Vous avez 48 h pour dire oui, puis jusqu'au dimanche suivant midi pour déposer votre objet.": {
+    "en": "Every Sunday at 6 pm (Paris time), TopTroc searches for all possible loops at once, across all items. You receive an email (and a text message if you provided your mobile number) if a swap is waiting for you. You have 48 hours to accept, then until noon the following Sunday to drop off your item.",
+    "es": "Cada domingo a las 18:00 (hora de París), TopTroc busca todas las cadenas posibles a la vez, entre todos los objetos. Recibirás un correo (y un SMS si has facilitado tu móvil) si te espera un intercambio. Tienes 48 horas para aceptar y hasta el domingo siguiente al mediodía para entregar tu objeto."
+  },
+  "Chaque dimanche à 18 h, TopTroc propose des échanges. Vous avez 48 h pour accepter ou refuser. Quand tous les participants ont accepté, l'échange est confirmé : chacun s'engage à déposer son objet au point de dépôt indiqué (ou à le remettre en main propre) avant le dimanche suivant à midi. Une fois l'objet récupéré, il appartient à la personne qui l'a reçu.": {
+    "en": "Every Sunday at 6 pm (Paris time), TopTroc proposes swaps. You have 48 hours to accept or decline. Once everyone has accepted, the swap is confirmed: each participant commits to dropping off their item at the indicated point (or handing it over in person) before noon the following Sunday. Once collected, the item belongs to its recipient.",
+    "es": "Cada domingo a las 18:00 (hora de París), TopTroc propone intercambios. Tienes 48 horas para aceptar o rechazar. Cuando todos aceptan, el intercambio queda confirmado: cada persona se compromete a entregar su objeto en el punto indicado (o en mano) antes del domingo siguiente al mediodía. Una vez recogido, el objeto pertenece a quien lo ha recibido."
+  },
+  "Chaque dimanche, TopTroc fait circuler les objets qui dorment chez vos habitants : un échange direct ou une boucle à trois, sans argent. Moins de déchets, plus de liens entre voisins, et des chiffres pour le prouver.": {
+    "en": "Every Sunday, TopTroc puts residents' unused items back into circulation: a direct swap or a three-way loop, without money. Less waste, more connections between neighbours, and figures to prove it.",
+    "es": "Cada domingo, TopTroc pone en circulación los objetos que los habitantes ya no usan: un intercambio directo o una cadena de tres, sin dinero. Menos residuos, más vínculos entre vecinos y cifras que lo demuestran."
+  },
+  "Chaque décision est motivée : le texte est envoyé à la personne concernée, avec la possibilité de contester.": {
+    "en": "Every decision is explained: the explanation is sent to the person concerned, with the option to appeal.",
+    "es": "Cada decisión se motiva: se envía la explicación a la persona afectada, con la posibilidad de recurrir."
+  },
+  "Chaque signalement est examiné par une personne, pas par un automate.": {
+    "en": "Every report is reviewed by a person, not an automated system.",
+    "es": "Cada denuncia la examina una persona, no un sistema automático."
+  },
+  "Chaque trimestre : objets réemployés, tonnage de déchets évités estimé, nombre d'habitants touchés, par quartier.": {
+    "en": "Every quarter: items reused, estimated weight of waste avoided, number of residents reached, by neighbourhood.",
+    "es": "Cada trimestre: objetos reutilizados, estimación del peso de residuos evitados y número de habitantes participantes, por barrio."
+  },
+  "Chaque trimestre, le rapport d'impact et un point sur la suite.": {
+    "en": "Every quarter, an impact report and a review of next steps.",
+    "es": "Cada trimestre, un informe de impacto y una revisión de los siguientes pasos."
+  },
+  "Chargement des objets…": {
+    "en": "Loading items…",
+    "es": "Cargando objetos…"
+  },
+  "Chargement…": {
+    "en": "Loading…",
+    "es": "Cargando…"
+  },
+  "Chercher": {
+    "en": "Search",
+    "es": "Buscar"
+  },
+  "Chercher un objet": {
+    "en": "Search for an item",
+    "es": "Buscar un objeto"
+  },
+  "Chercher, même sans compte": {
+    "en": "Search, even without an account",
+    "es": "Buscar, incluso sin cuenta"
+  },
+  "Choisir un mot de passe": {
+    "en": "Choose a password",
+    "es": "Elegir una contraseña"
+  },
+  "Choisissez ce que vous donnez et ce que vous recevez.": {
+    "en": "Choose what you give and what you receive.",
+    "es": "Elige lo que das y lo que recibes."
+  },
+  "Choisissez ce que vous échangez, et proposez-le.": {
+    "en": "Choose what you swap, then propose it.",
+    "es": "Elige lo que intercambias y proponlo."
+  },
+  "Choisissez d'abord la catégorie": {
+    "en": "Choose the category first",
+    "es": "Elige primero la categoría"
+  },
+  "Choisissez un mot de passe : la prochaine fois, « Mon espace » en haut de page vous connecte tout de suite.": {
+    "en": "Choose a password: next time, “My space” at the top of the page will sign you in straight away.",
+    "es": "Elige una contraseña: la próxima vez, «Mi espacio», arriba de la página, te permitirá acceder al instante."
+  },
+  "Choisissez votre pseudo": {
+    "en": "Choose your username",
+    "es": "Elige tu seudónimo"
+  },
+  "Cloudinary (stockage des photos) ;": {
+    "en": "Cloudinary (photo storage);",
+    "es": "Cloudinary (almacenamiento de fotos);"
+  },
+  "Collectivités": {
+    "en": "Local authorities",
+    "es": "Administraciones locales"
+  },
+  "Collectivités · TopTroc": {
+    "en": "Local authorities · TopTroc",
+    "es": "Administraciones locales · TopTroc"
+  },
+  "Collez le lien": {
+    "en": "Paste the link",
+    "es": "Pega el enlace de"
+  },
+  "Collez le lien : on pré-remplit pour vous": {
+    "en": "Paste the link: we prefill the details for you",
+    "es": "Pega el enlace: rellenamos los datos por ti"
+  },
+  "Collez le lien d'une annonce Vinted ou Leboncoin.": {
+    "en": "Paste a link to a Vinted or Leboncoin listing.",
+    "es": "Pega el enlace de un anuncio de Vinted o Leboncoin."
+  },
+  "Collez le lien de l'annonce sur l'accueil : on vous aide à recopier votre objet sur TopTroc, sans prix, contre quelque chose qui vous servira.": {
+    "en": "Paste the listing link on the home page: we help you copy your item onto TopTroc, without a price, in exchange for something useful to you.",
+    "es": "Pega el enlace del anuncio en el inicio: te ayudamos a copiar tu objeto en TopTroc, sin precio, a cambio de algo que te sirva."
+  },
+  "Combien de temps": {
+    "en": "How long",
+    "es": "Durante cuánto tiempo"
+  },
+  "Comme neuf": {
+    "en": "Like new",
+    "es": "Como nuevo"
+  },
+  "Comment marche un échange à trois ?": {
+    "en": "How does a three-way swap work?",
+    "es": "¿Cómo funciona un intercambio entre tres?"
+  },
+  "Comment supprimer mon compte ?": {
+    "en": "How do I delete my account?",
+    "es": "¿Cómo elimino mi cuenta?"
+  },
+  "Comment ça marche": {
+    "en": "How it works",
+    "es": "Cómo funciona"
+  },
+  "Comment ça se passe": {
+    "en": "How it happens",
+    "es": "Cómo se organiza"
+  },
+  "Commerçants : devenez point de dépôt": {
+    "en": "Shop owners: become a drop-off point",
+    "es": "Comerciantes: convertíos en punto de entrega"
+  },
+  "Compte supprimé": {
+    "en": "Account deleted",
+    "es": "Cuenta eliminada"
+  },
+  "Compte visé :": {
+    "en": "Account concerned:",
+    "es": "Cuenta afectada:"
+  },
+  "Conditions générales d'utilisation": {
+    "en": "Terms of use",
+    "es": "Condiciones generales de uso"
+  },
+  "Conditions générales d'utilisation de TopTroc.": {
+    "en": "TopTroc terms of use.",
+    "es": "Condiciones generales de uso de TopTroc."
+  },
+  "Conditions générales d'utilisation · TopTroc": {
+    "en": "Terms of use · TopTroc",
+    "es": "Condiciones de uso · TopTroc"
+  },
+  "Confidentialité": {
+    "en": "Privacy",
+    "es": "Privacidad"
+  },
+  "Confidentialité · TopTroc": {
+    "en": "Privacy · TopTroc",
+    "es": "Privacidad · TopTroc"
+  },
+  "Connexion à Mon espace": {
+    "en": "Sign in to My space",
+    "es": "Acceder a Mi espacio"
+  },
+  "Contact": {
+    "en": "Contact",
+    "es": "Contacto"
+  },
+  "Contact :": {
+    "en": "Contact:",
+    "es": "Contacto:"
+  },
+  "Contenus inappropriés": {
+    "en": "Inappropriate content",
+    "es": "Contenido inapropiado"
+  },
+  "Contester une décision": {
+    "en": "Appealing a decision",
+    "es": "Recurrir una decisión"
+  },
+  "Continuer": {
+    "en": "Continue",
+    "es": "Continuar"
+  },
+  "Contre n'importe laquelle de vos demandes": {
+    "en": "For any of your requests",
+    "es": "Por cualquiera de tus solicitudes"
+  },
+  "Contrefaçon": {
+    "en": "Counterfeit",
+    "es": "Falsificación"
+  },
+  "Contrefaçons.": {
+    "en": "Counterfeits.",
+    "es": "Falsificaciones."
+  },
+  "Cookies": {
+    "en": "Cookies",
+    "es": "Cookies"
+  },
+  "Correct": {
+    "en": "Fair",
+    "es": "Aceptable"
+  },
+  "Créer mon compte": {
+    "en": "Create my account",
+    "es": "Crear mi cuenta"
+  },
+  "Créer mon compte pour l'échanger": {
+    "en": "Create my account to swap it",
+    "es": "Crear mi cuenta para intercambiarlo"
+  },
+  "Créer un compte": {
+    "en": "Create an account",
+    "es": "Crear una cuenta"
+  },
+  "Créer un compte pour troquer": {
+    "en": "Create an account to swap",
+    "es": "Crear una cuenta para intercambiar"
+  },
+  "Créez un compte gratuit, ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.": {
+    "en": "Create a free account and add what you can give: TopTroc suggests a swap, even a three-way one.",
+    "es": "Crea una cuenta gratuita y añade lo que puedes dar: TopTroc te propone un intercambio, incluso entre tres."
+  },
+  "Dans": {
+    "en": "In",
+    "es": "Dentro de"
+  },
+  "Dans un échange à trois, les participants ne se connaissent pas. Le plus simple est de déposer l'objet dans un lieu de confiance du quartier, où le suivant vient le chercher avec un code. Si vous tenez un commerce dans les Bouches-du-Rhône et que vous voulez voir passer de nouveaux visages, parlons-en.": {
+    "en": "In a three-way swap, participants do not know each other. The easiest option is to leave the item at a trusted place in the neighbourhood, where the next person collects it using a code. If you run a shop in Bouches-du-Rhône and would like to welcome new faces, let's talk.",
+    "es": "En un intercambio entre tres, los participantes no se conocen. Lo más sencillo es dejar el objeto en un lugar de confianza del barrio, donde la siguiente persona lo recoge con un código. Si tienes un comercio en Bouches-du-Rhône y quieres recibir nuevas caras, hablemos."
+  },
+  "Dans un échange, le lien": {
+    "en": "In a swap, the link",
+    "es": "En un intercambio, el enlace"
+  },
+  "De préférence": {
+    "en": "Preferred",
+    "es": "Preferiblemente"
+  },
+  "Dernière mise à jour : 16 octobre 2026": {
+    "en": "Last updated: 16 October 2026",
+    "es": "Última actualización: 16 de octubre de 2026"
+  },
+  "Des points de dépôt publics": {
+    "en": "Public drop-off points",
+    "es": "Puntos de entrega públicos"
+  },
+  "Directeur ou directrice de la publication :": {
+    "en": "Publication director:",
+    "es": "Responsable de la publicación:"
+  },
+  "Dites ce qui vous serait utile": {
+    "en": "Say what would be useful to you",
+    "es": "Indica qué necesitas"
+  },
+  "Donne : un kit de jardinage": {
+    "en": "Gives: a gardening kit",
+    "es": "Ofrece: un kit de jardinería"
+  },
+  "Donne : un vélo enfant": {
+    "en": "Gives: a child's bike",
+    "es": "Ofrece: una bicicleta infantil"
+  },
+  "Donne : une poussette": {
+    "en": "Gives: a pushchair",
+    "es": "Ofrece: un cochecito"
+  },
+  "Donnez une nouvelle vie aux objets que vous n'utilisez plus. Échangez-les contre ceux dont vous avez besoin, sans dépenser d'argent.": {
+    "en": "Give a new life to the items you no longer use. Swap them for what you need, without spending money.",
+    "es": "Da una nueva vida a los objetos que ya no usas. Cámbialos por lo que necesitas, sin gastar dinero."
+  },
+  "Décision enregistrée et envoyée": {
+    "en": "Decision recorded and sent",
+    "es": "Decisión guardada y enviada"
+  },
+  "Décrivez ce que vous cherchez": {
+    "en": "Describe what you are looking for",
+    "es": "Describe lo que buscas"
+  },
+  "Décrivez l'état de vos objets honnêtement, avec une vraie photo.": {
+    "en": "Describe your items' condition honestly, with a real photo.",
+    "es": "Describe el estado de tus objetos con sinceridad y con una foto real."
+  },
+  "Défauts, accessoires fournis, dimensions…": {
+    "en": "Defects, included accessories, dimensions…",
+    "es": "Defectos, accesorios incluidos, dimensiones…"
+  },
+  "Déjà un compte ? Se connecter avec un mot de passe": {
+    "en": "Already have an account? Sign in with a password",
+    "es": "¿Ya tienes cuenta? Accede con una contraseña"
+  },
+  "Département (13) Bouches-du-Rhône": {
+    "en": "Bouches-du-Rhône department (13)",
+    "es": "Departamento de Bouches-du-Rhône (13)"
+  },
+  "Déposez «": {
+    "en": "Drop off “",
+    "es": "Entrega «"
+  },
+  "Déposez, puis récupérez": {
+    "en": "Drop off, then collect",
+    "es": "Entrega y luego recoge"
+  },
+  "Dépôt": {
+    "en": "Drop-off",
+    "es": "Entrega"
+  },
+  "Dépôt enregistré": {
+    "en": "Drop-off recorded",
+    "es": "Entrega registrada"
+  },
+  "Dépôt enregistré.": {
+    "en": "Drop-off recorded.",
+    "es": "Entrega registrada."
+  },
+  "Détails": {
+    "en": "Details",
+    "es": "Detalles"
+  },
+  "E-mails et SMS": {
+    "en": "Emails and text messages",
+    "es": "Correos y SMS"
+  },
+  "En main propre": {
+    "en": "In person",
+    "es": "En mano"
+  },
+  "En point relais": {
+    "en": "At a collection point",
+    "es": "En un punto de recogida"
+  },
+  "Enregistrer": {
+    "en": "Save",
+    "es": "Guardar"
+  },
+  "Enregistrer le mot de passe": {
+    "en": "Save password",
+    "es": "Guardar la contraseña"
+  },
+  "Enregistrer le numéro": {
+    "en": "Save number",
+    "es": "Guardar el número"
+  },
+  "Enregistrer mon mot de passe": {
+    "en": "Save my password",
+    "es": "Guardar mi contraseña"
+  },
+  "Enregistré": {
+    "en": "Saved",
+    "es": "Guardado"
+  },
+  "Entreprise ou collectivité ?": {
+    "en": "Business or local authority?",
+    "es": "¿Empresa o administración local?"
+  },
+  "Entreprises": {
+    "en": "Businesses",
+    "es": "Empresas"
+  },
+  "Envoi de la photo…": {
+    "en": "Uploading photo…",
+    "es": "Enviando foto…"
+  },
+  "Envoyer le signalement": {
+    "en": "Send report",
+    "es": "Enviar denuncia"
+  },
+  "Espace salariés, point de dépôt :": {
+    "en": "Employee space, drop-off point:",
+    "es": "Espacio para empleados, punto de entrega:"
+  },
+  "Est-ce vraiment gratuit ?": {
+    "en": "Is it really free?",
+    "es": "¿Es realmente gratis?"
+  },
+  "Et si quelqu'un ne répond pas ou ne dépose pas ?": {
+    "en": "What if someone does not reply or drop off their item?",
+    "es": "¿Y si alguien no responde o no entrega su objeto?"
+  },
+  "Ex. Aix-en-Provence, Aubagne": {
+    "en": "E.g. Aix-en-Provence, Aubagne",
+    "es": "Ej. Aix-en-Provence, Aubagne"
+  },
+  "Ex. poussette canne": {
+    "en": "E.g. lightweight pushchair",
+    "es": "Ej. cochecito ligero"
+  },
+  "Ex. une poussette légère qui se plie d'une main, pour prendre le métro.": {
+    "en": "E.g. a lightweight pushchair that folds with one hand, for taking the metro.",
+    "es": "Ej. un cochecito ligero que se pliegue con una mano para ir en metro."
+  },
+  "Exemple de boucle : vous donnez une poussette à Sophie, Sophie donne un kit de jardinage à Loïc, Loïc vous donne un vélo enfant.": {
+    "en": "Example loop: you give a pushchair to Sophie, Sophie gives a gardening kit to Loïc, Loïc gives you a child's bike.",
+    "es": "Ejemplo de cadena: das un cochecito a Sophie, Sophie da un kit de jardinería a Loïc y Loïc te da una bicicleta infantil."
+  },
+  "Expliquez ce qui pose problème": {
+    "en": "Explain the problem",
+    "es": "Explica el problema"
+  },
+  "FAQ": {
+    "en": "FAQ",
+    "es": "Preguntas frecuentes"
+  },
+  "FAQ et contact": {
+    "en": "FAQ and contact",
+    "es": "Preguntas frecuentes y contacto"
+  },
+  "FAQ et contact · TopTroc": {
+    "en": "FAQ and contact · TopTroc",
+    "es": "Preguntas frecuentes y contacto · TopTroc"
+  },
+  "Faites un tour du Match : un cœur de chaque côté et c'est échangé.": {
+    "en": "Take a look at Match: a heart on each side and you swap.",
+    "es": "Prueba Match: un corazón por cada lado y a intercambiar."
+  },
+  "Faut-il un mot de passe ?": {
+    "en": "Do I need a password?",
+    "es": "¿Necesito una contraseña?"
+  },
+  "Fermer le menu": {
+    "en": "Close menu",
+    "es": "Cerrar el menú"
+  },
+  "Fiabilité à confirmer": {
+    "en": "Reliability to be confirmed",
+    "es": "Fiabilidad por confirmar"
+  },
+  "Flexible : j'accepte aussi d'autres choix": {
+    "en": "Flexible: I also accept other options",
+    "es": "Flexible: también acepto otras opciones"
+  },
+  "Glissez la carte vers la droite si elle vous plaît, vers la gauche sinon (ou flèches ← → du clavier). Un cœur de chaque côté et vous échangez à deux, sans attendre dimanche.": {
+    "en": "Swipe right if you like the item, left if you do not (or use the ← → keyboard arrows). A heart on each side and you swap directly, without waiting for Sunday.",
+    "es": "Desliza a la derecha si te gusta el objeto y a la izquierda si no (o usa las flechas ← → del teclado). Un corazón por cada lado y podéis intercambiar directamente, sin esperar al domingo."
+  },
+  "Grand Troc ·": {
+    "en": "Grand Troc ·",
+    "es": "Grand Troc ·"
+  },
+  "Gratuit": {
+    "en": "Free",
+    "es": "Gratis"
+  },
+  "Hébergement": {
+    "en": "Hosting",
+    "es": "Alojamiento"
+  },
+  "Il est interdit de demander ou de proposer de l'argent en complément d'un échange.": {
+    "en": "Requesting or offering money in addition to a swap is prohibited.",
+    "es": "Está prohibido pedir u ofrecer dinero como complemento de un intercambio."
+  },
+  "Il faut être majeur, ou avoir l'accord d'un parent ou tuteur.": {
+    "en": "You must be an adult or have the consent of a parent or guardian.",
+    "es": "Debes ser mayor de edad o contar con el consentimiento de un progenitor o tutor."
+  },
+  "Il prolonge la vie des objets": {
+    "en": "It extends the life of items",
+    "es": "Alarga la vida de los objetos"
+  },
+  "Il s'inscrit dans votre programme local de prévention des déchets": {
+    "en": "It fits into your local waste prevention programme",
+    "es": "Se integra en tu programa local de prevención de residuos"
+  },
+  "Il suffit d'un refus ou d'un silence pour que la boucle tombe. Les objets concernés repartent dans le Grand Troc suivant, et personne ne perd son objet. Ne pas répondre dans les 48 h ou ne pas déposer un objet promis baisse votre fiabilité ; refuser un échange, non.": {
+    "en": "A single refusal or lack of response cancels the loop. The items return to the next Grand Troc and nobody loses their item. Not replying within 48 hours or not dropping off a promised item lowers your reliability; declining a swap does not.",
+    "es": "Basta un rechazo o la falta de respuesta para cancelar la cadena. Los objetos vuelven al siguiente Grand Troc y nadie pierde su objeto. No responder en 48 horas o no entregar un objeto prometido reduce tu fiabilidad; rechazar un intercambio, no."
+  },
+  "Il touche tout le monde": {
+    "en": "It reaches everyone",
+    "es": "Llega a todo el mundo"
+  },
+  "Ils vous appartiennent, ils fonctionnent et leur état est décrit honnêtement, avec une vraie photo.": {
+    "en": "They belong to you, they work and their condition is described honestly, with a real photo.",
+    "es": "Son tuyos, funcionan y su estado se describe con sinceridad y con una foto real."
+  },
+  "Inapproprié": {
+    "en": "Inappropriate",
+    "es": "Inapropiado"
+  },
+  "Indiquez votre e-mail : le lien y sera envoyé.": {
+    "en": "Enter your email: the link will be sent there.",
+    "es": "Indica tu correo: te enviaremos el enlace allí."
+  },
+  "Indiquez votre e-mail : un lien valable 20 minutes y arrive et ouvre votre compte.": {
+    "en": "Enter your email: you will receive a link valid for 20 minutes to open your account.",
+    "es": "Indica tu correo: recibirás un enlace válido durante 20 minutos para acceder a tu cuenta."
+  },
+  "Informations": {
+    "en": "Information",
+    "es": "Información"
+  },
+  "J'accepte aussi…": {
+    "en": "I also accept…",
+    "es": "También acepto…"
+  },
+  "J'ai une annonce sur Vinted ou Leboncoin qui ne part pas.": {
+    "en": "My Vinted or Leboncoin listing is not selling.",
+    "es": "Mi anuncio de Vinted o Leboncoin no se vende."
+  },
+  "J'aime": {
+    "en": "Like",
+    "es": "Me gusta"
+  },
+  "J'habite hors des Bouches-du-Rhône.": {
+    "en": "I live outside Bouches-du-Rhône.",
+    "es": "Vivo fuera de Bouches-du-Rhône."
+  },
+  "Je demande": {
+    "en": "I want",
+    "es": "Busco"
+  },
+  "Je le donne contre…": {
+    "en": "I give it in exchange for…",
+    "es": "Lo doy a cambio de…"
+  },
+  "Je participe": {
+    "en": "Join in",
+    "es": "Participar"
+  },
+  "Je propose": {
+    "en": "I offer",
+    "es": "Ofrezco"
+  },
+  "L'objet en entier, en lumière du jour.": {
+    "en": "The whole item, in daylight.",
+    "es": "El objeto completo, con luz natural."
+  },
+  "L'éditeur du site (voir les": {
+    "en": "The site's publisher (see the",
+    "es": "El editor del sitio (consulta el"
+  },
+  "L'état": {
+    "en": "Condition",
+    "es": "Estado"
+  },
+  "La personne concernée reçoit un e-mail qui explique la décision et son motif. La personne qui a signalé est aussi prévenue de la suite donnée.": {
+    "en": "The person concerned receives an email explaining the decision and its reason. The reporter is also informed of the outcome.",
+    "es": "La persona afectada recibe un correo que explica la decisión y su motivo. También se informa del resultado a quien presentó la denuncia."
+  },
+  "La photo": {
+    "en": "The photo",
+    "es": "La foto"
+  },
+  "La photo n'a pas pu être envoyée.": {
+    "en": "The photo could not be uploaded.",
+    "es": "No se ha podido enviar la foto."
+  },
+  "Le Grand Troc": {
+    "en": "The Grand Troc",
+    "es": "El Grand Troc"
+  },
+  "Le Grand Troc a eu lieu": {
+    "en": "The Grand Troc has taken place",
+    "es": "El Grand Troc ya ha tenido lugar"
+  },
+  "Le Grand Troc de votre territoire :": {
+    "en": "Your area's Grand Troc:",
+    "es": "El Grand Troc de tu territorio:"
+  },
+  "Le Grand Troc du dimanche": {
+    "en": "The Sunday Grand Troc",
+    "es": "El Grand Troc del domingo"
+  },
+  "Le Match": {
+    "en": "Match",
+    "es": "Match"
+  },
+  "Le Match et le Grand Troc": {
+    "en": "Match and the Grand Troc",
+    "es": "Match y el Grand Troc"
+  },
+  "Le Match, à tout moment": {
+    "en": "Match, at any time",
+    "es": "Match, en cualquier momento"
+  },
+  "Le compte est gratuit. On se connecte avec un lien envoyé par e-mail, sans mot de passe.": {
+    "en": "The account is free. Sign in with a link sent by email, without a password.",
+    "es": "La cuenta es gratuita. Se accede con un enlace enviado por correo, sin contraseña."
+  },
+  "Le concept": {
+    "en": "The concept",
+    "es": "El concepto"
+  },
+  "Le dépôt sur place": {
+    "en": "On-site drop-off",
+    "es": "Entrega en el lugar de trabajo"
+  },
+  "Le lancement : communication auprès des habitants, avec vos supports et les nôtres.": {
+    "en": "Launch: communication with residents, using your materials and ours.",
+    "es": "El lanzamiento: comunicación con los habitantes con tus soportes y los nuestros."
+  },
+  "Le lieu de dépôt n'est pas encore indiqué : il apparaîtra ici.": {
+    "en": "The drop-off location has not been specified yet: it will appear here.",
+    "es": "El lugar de entrega aún no se ha indicado: aparecerá aquí."
+  },
+  "Le lieu de dépôt va être indiqué.": {
+    "en": "The drop-off location will be specified shortly.",
+    "es": "El lugar de entrega se indicará pronto."
+  },
+  "Le nom TopTroc, le logo, les textes et le graphisme du site appartiennent à l'éditeur. Les photos et descriptions des objets appartiennent aux membres qui les publient ; en les publiant, ils autorisent TopTroc à les afficher sur le site pour les besoins des échanges.": {
+    "en": "The TopTroc name, logo, text and website design belong to the publisher. Item photos and descriptions belong to the members who publish them; by publishing them, members authorise TopTroc to display them on the website for the purposes of swaps.",
+    "es": "El nombre TopTroc, el logotipo, los textos y el diseño del sitio pertenecen al editor. Las fotos y descripciones de los objetos pertenecen a los miembros que las publican; al publicarlas, autorizan a TopTroc a mostrarlas en el sitio para los intercambios."
+  },
+  "Le pilote a lieu dans les Bouches-du-Rhône (13), c'est là que les échanges se font en premier. Vous pouvez déjà créer un compte et proposer vos objets : le Grand Troc arrivera près de chez vous dès qu'il y aura assez de monde.": {
+    "en": "The pilot is running in Bouches-du-Rhône (13), where swaps are taking place first. You can already create an account and offer your items: the Grand Troc will come to your area as soon as enough people join.",
+    "es": "La prueba piloto se desarrolla en Bouches-du-Rhône (13), donde se realizan los primeros intercambios. Ya puedes crear una cuenta y ofrecer tus objetos: el Grand Troc llegará cerca de ti cuando haya suficientes participantes."
+  },
+  "Le pilote se déroule dans le département des Bouches-du-Rhône (13).": {
+    "en": "The pilot takes place in the Bouches-du-Rhône department (13).",
+    "es": "La prueba piloto se desarrolla en el departamento de Bouches-du-Rhône (13)."
+  },
+  "Le premier Grand Troc a lieu un dimanche, les dépôts se font dans la semaine.": {
+    "en": "The first Grand Troc takes place on a Sunday; drop-offs follow during the week.",
+    "es": "El primer Grand Troc se celebra un domingo y las entregas se realizan durante la semana."
+  },
+  "Le serveur ne répond pas pour l'instant. Réessayez dans un instant.": {
+    "en": "The server is not responding right now. Try again in a moment.",
+    "es": "El servidor no responde ahora. Inténtalo de nuevo en un momento."
+  },
+  "Le serveur ne répond pas. Réessayez dans un instant.": {
+    "en": "The server is not responding. Try again in a moment.",
+    "es": "El servidor no responde. Inténtalo de nuevo en un momento."
+  },
+  "Le serveur ne répond pas. Réessayez dans une minute.": {
+    "en": "The server is not responding. Try again in a minute.",
+    "es": "El servidor no responde. Inténtalo de nuevo en un minuto."
+  },
+  "Le serveur se réveille, encore quelques secondes…": {
+    "en": "The server is waking up, just a few more seconds…",
+    "es": "El servidor se está iniciando, unos segundos más…"
+  },
+  "Le site toptroc.com est édité par": {
+    "en": "The toptroc.com website is published by",
+    "es": "El sitio toptroc.com está editado por"
+  },
+  "Le titre et la catégorie": {
+    "en": "The title and category",
+    "es": "El título y la categoría"
+  },
+  "Le troc entre collègues,": {
+    "en": "Swapping between colleagues,",
+    "es": "El trueque entre compañeros,"
+  },
+  "Le troc se réinvente.": {
+    "en": "Swapping, reinvented.",
+    "es": "El trueque se reinventa."
+  },
+  "Les CSE": {
+    "en": "Works councils (CSE)",
+    "es": "Los comités de empresa (CSE)"
+  },
+  "Les Grands Trocs du dimanche se succèdent, nous suivons les échanges et les dépôts.": {
+    "en": "Sunday Grand Trocs continue; we monitor swaps and drop-offs.",
+    "es": "Los Grand Trocs del domingo se suceden; seguimos los intercambios y las entregas."
+  },
+  "Les bailleurs et gestionnaires de résidences": {
+    "en": "Landlords and residence managers",
+    "es": "Los arrendadores y gestores de residencias"
+  },
+  "Les boucles à trois que personne n'a vues. 48 h pour dire oui.": {
+    "en": "Three-way loops nobody spotted. 48 hours to accept.",
+    "es": "Las cadenas de tres que nadie había visto. 48 horas para aceptar."
+  },
+  "Les objets interdits sont listés dans les": {
+    "en": "Prohibited items are listed in the",
+    "es": "Los objetos prohibidos se enumeran en las"
+  },
+  "Les objets n'ont pas pu être chargés. Réessayez dans un instant.": {
+    "en": "Items could not be loaded. Try again in a moment.",
+    "es": "No se han podido cargar los objetos. Inténtalo de nuevo en un momento."
+  },
+  "Les objets se déposent et se récupèrent à l'accueil ou à la conciergerie. Personne ne court après personne.": {
+    "en": "Items are dropped off and collected at reception or the concierge desk. Nobody has to chase anyone.",
+    "es": "Los objetos se entregan y recogen en recepción o en la conserjería. Nadie tiene que ir detrás de nadie."
+  },
+  "Les règles du jeu, en clair. En créant un compte, vous les acceptez.": {
+    "en": "The rules, in plain language. By creating an account, you accept them.",
+    "es": "Las reglas, con claridad. Al crear una cuenta, las aceptas."
+  },
+  "Les signalements": {
+    "en": "Reports",
+    "es": "Las denuncias"
+  },
+  "Les échanges se font entre membres. Chacun reste responsable de l'objet qu'il donne, de sa description et de sa sécurité. TopTroc fait son possible pour que le service fonctionne, mais ne peut garantir qu'un échange sera trouvé pour chaque objet.": {
+    "en": "Swaps take place between members. Each person remains responsible for the item they give, its description and its safety. TopTroc does its best to keep the service running, but cannot guarantee a swap will be found for every item.",
+    "es": "Los intercambios se realizan entre miembros. Cada persona sigue siendo responsable del objeto que entrega, de su descripción y de su seguridad. TopTroc hace lo posible por mantener el servicio, pero no puede garantizar que se encuentre un intercambio para cada objeto."
+  },
+  "Les équipes RSE": {
+    "en": "CSR teams",
+    "es": "Los equipos de RSE"
+  },
+  "Lien de l'annonce": {
+    "en": "Listing link",
+    "es": "Enlace del anuncio"
+  },
+  "Lien de votre annonce": {
+    "en": "Your listing link",
+    "es": "Enlace de tu anuncio"
+  },
+  "Lien de votre annonce Vinted ou Leboncoin": {
+    "en": "Link to your Vinted or Leboncoin listing",
+    "es": "Enlace de tu anuncio de Vinted o Leboncoin"
+  },
+  "Lien envoyé à": {
+    "en": "Link sent to",
+    "es": "Enlace enviado a"
+  },
+  "Liste d'objets souhaités.": {
+    "en": "List of wanted items.",
+    "es": "Lista de objetos deseados."
+  },
+  "Lorsque des données sont traitées hors de l'Union européenne, ces transferts sont encadrés par les garanties prévues par le RGPD.": {
+    "en": "When data is processed outside the European Union, these transfers are governed by the safeguards provided for under the GDPR.",
+    "es": "Cuando se tratan datos fuera de la Unión Europea, las transferencias se regulan mediante las garantías previstas en el RGPD."
+  },
+  "Ma liste d'objets.": {
+    "en": "My list of items.",
+    "es": "Mi lista de objetos."
+  },
+  "Mairie de secteur, médiathèque, centre social, maison de quartier : les objets transitent par des lieux que les habitants connaissent.": {
+    "en": "District town hall, library, community centre, neighbourhood centre: items pass through places residents know.",
+    "es": "Ayuntamiento de distrito, biblioteca, centro social, centro vecinal: los objetos pasan por lugares que los habitantes conocen."
+  },
+  "Mairies, intercommunalités, syndicats de traitement des déchets, bailleurs sociaux : écrivez-nous, nous revenons vers vous rapidement.": {
+    "en": "Town halls, intermunicipal bodies, waste treatment authorities, social landlords: write to us and we will get back to you promptly.",
+    "es": "Ayuntamientos, mancomunidades, organismos de tratamiento de residuos y arrendadores sociales: escríbenos y te responderemos pronto."
+  },
+  "Marquez «": {
+    "en": "Mark “",
+    "es": "Marca «"
+  },
+  "Match immédiat": {
+    "en": "Instant match",
+    "es": "Match inmediato"
+  },
+  "Match ·": {
+    "en": "Match ·",
+    "es": "Match ·"
+  },
+  "Membre depuis": {
+    "en": "Member since",
+    "es": "Miembro desde"
+  },
+  "Membre fiable": {
+    "en": "Reliable member",
+    "es": "Miembro fiable"
+  },
+  "Mentions légales": {
+    "en": "Legal notice",
+    "es": "Aviso legal"
+  },
+  "Mentions légales du site toptroc.com.": {
+    "en": "Legal notice for toptroc.com.",
+    "es": "Aviso legal del sitio toptroc.com."
+  },
+  "Mentions légales · TopTroc": {
+    "en": "Legal notice · TopTroc",
+    "es": "Aviso legal · TopTroc"
+  },
+  "Menu principal": {
+    "en": "Main menu",
+    "es": "Menú principal"
+  },
+  "Mes listes": {
+    "en": "My lists",
+    "es": "Mis listas"
+  },
+  "Mes matchs": {
+    "en": "My matches",
+    "es": "Mis matches"
+  },
+  "Mes échanges": {
+    "en": "My swaps",
+    "es": "Mis intercambios"
+  },
+  "Modération": {
+    "en": "Moderation",
+    "es": "Moderación"
+  },
+  "Mon compte": {
+    "en": "My account",
+    "es": "Mi cuenta"
+  },
+  "Mon espace": {
+    "en": "My space",
+    "es": "Mi espacio"
+  },
+  "Mot de passe": {
+    "en": "Password",
+    "es": "Contraseña"
+  },
+  "Mot de passe enregistré : connectez-vous avec « Mon espace », sans e-mail": {
+    "en": "Password saved: sign in using “My space”, without an email",
+    "es": "Contraseña guardada: accede desde «Mi espacio», sin correo"
+  },
+  "Mot de passe oublié ou pas encore choisi ? Recevoir un lien par e-mail": {
+    "en": "Forgotten your password or not chosen one yet? Get a link by email",
+    "es": "¿Has olvidado tu contraseña o aún no has elegido una? Recibir un enlace por correo"
+  },
+  "Motif": {
+    "en": "Reason",
+    "es": "Motivo"
+  },
+  "Motivation de la décision (envoyée aux personnes concernées)": {
+    "en": "Reason for the decision (sent to the people concerned)",
+    "es": "Motivo de la decisión (se envía a las personas afectadas)"
+  },
+  "Ne pas répondre dans les 48 h ou ne pas déposer un objet promis fait baisser votre fiabilité, ce qui peut réduire vos chances d'entrer dans les prochaines boucles. Refuser un échange n'a aucune conséquence.": {
+    "en": "Not replying within 48 hours or not dropping off a promised item lowers your reliability, which may reduce your chances of joining future loops. Declining a swap has no consequences.",
+    "es": "No responder en 48 horas o no entregar un objeto prometido reduce tu fiabilidad y puede disminuir tus posibilidades de participar en futuras cadenas. Rechazar un intercambio no tiene consecuencias."
+  },
+  "Neon (base de données) ;": {
+    "en": "Neon (database);",
+    "es": "Neon (base de datos);"
+  },
+  "Netlify (affichage du site) et Render (serveur), aux États-Unis ;": {
+    "en": "Netlify (website hosting) and Render (server), in the United States;",
+    "es": "Netlify (alojamiento del sitio) y Render (servidor), en Estados Unidos;"
+  },
+  "Neuf": {
+    "en": "New",
+    "es": "Nuevo"
+  },
+  "Non merci": {
+    "en": "No thanks",
+    "es": "No, gracias"
+  },
+  "Non précisé": {
+    "en": "Not specified",
+    "es": "Sin especificar"
+  },
+  "Non. Vous donnez votre e-mail et recevez un lien de connexion valable 20 minutes.": {
+    "en": "No. Enter your email and receive a sign-in link valid for 20 minutes.",
+    "es": "No. Indica tu correo y recibirás un enlace de acceso válido durante 20 minutos."
+  },
+  "Noté ! Si l'intérêt est réciproque, c'est un match.": {
+    "en": "Noted! If the interest is mutual, it's a match.",
+    "es": "¡Anotado! Si el interés es mutuo, hay match."
+  },
+  "Nous faisons appel à des prestataires techniques, qui n'utilisent vos données que pour nous rendre ce service :": {
+    "en": "We use technical service providers who only use your data to provide this service to us:",
+    "es": "Recurrimos a proveedores técnicos que solo utilizan tus datos para prestarnos este servicio:"
+  },
+  "Nous gardons le moins de données possible, nous ne les vendons pas, et il n'y a ni publicité ni pistage sur TopTroc.": {
+    "en": "We keep as little data as possible, we do not sell it, and there is no advertising or tracking on TopTroc.",
+    "es": "Guardamos los mínimos datos posibles, no los vendemos y no hay publicidad ni seguimiento en TopTroc."
+  },
+  "Nous ouvrons votre espace et vous donnons de quoi l'annoncer en interne.": {
+    "en": "We open your space and provide materials to announce it internally.",
+    "es": "Abrimos tu espacio y te damos materiales para anunciarlo internamente."
+  },
+  "Nouveau membre": {
+    "en": "New member",
+    "es": "Miembro nuevo"
+  },
+  "Nouveau sur TopTroc ? Créer un compte": {
+    "en": "New to TopTroc? Create an account",
+    "es": "¿Nuevo en TopTroc? Crear una cuenta"
+  },
+  "Numéro enregistré : vous recevrez un SMS au prochain Grand Troc": {
+    "en": "Number saved: you will receive a text message at the next Grand Troc",
+    "es": "Número guardado: recibirás un SMS en el próximo Grand Troc"
+  },
+  "Numéro retiré : plus de SMS": {
+    "en": "Number removed: no more text messages",
+    "es": "Número eliminado: no recibirás más SMS"
+  },
+  "Objet n°": {
+    "en": "Item no.",
+    "es": "Objeto n.º"
+  },
+  "Objet ou contenu illicite": {
+    "en": "Illegal item or content",
+    "es": "Objeto o contenido ilícito"
+  },
+  "Objet publié": {
+    "en": "Item published",
+    "es": "Objeto publicado"
+  },
+  "Objet publié. Une fois troqué, pensez à retirer l'annonce": {
+    "en": "Item published. Once swapped, remember to remove the listing from",
+    "es": "Objeto publicado. Una vez intercambiado, recuerda retirar el anuncio de"
+  },
+  "Objets disponibles": {
+    "en": "Available items",
+    "es": "Objetos disponibles"
+  },
+  "Objets illicites": {
+    "en": "Illegal items",
+    "es": "Objetos ilícitos"
+  },
+  "Objets interdits": {
+    "en": "Prohibited items",
+    "es": "Objetos prohibidos"
+  },
+  "Objets interdits, bonne conduite, comment signaler un contenu et contester une décision.": {
+    "en": "Prohibited items, good conduct, how to report content and appeal a decision.",
+    "es": "Objetos prohibidos, buena conducta, cómo denunciar contenido y recurrir una decisión."
+  },
+  "Objets réemployés, déchets évités, salariés qui participent : un bilan simple, prêt à reprendre dans votre rapport.": {
+    "en": "Items reused, waste avoided, employees taking part: a simple summary, ready for your report.",
+    "es": "Objetos reutilizados, residuos evitados y empleados participantes: un balance sencillo, listo para tu informe."
+  },
+  "Obligatoire": {
+    "en": "Required",
+    "es": "Obligatorio"
+  },
+  "On a pré-rempli ce que dit le lien, vérifiez-le.": {
+    "en": "We prefilled what the link tells us; please check it.",
+    "es": "Hemos rellenado lo que indica el enlace; revísalo."
+  },
+  "On en parle ?": {
+    "en": "Shall we talk?",
+    "es": "¿Hablamos?"
+  },
+  "Onglets": {
+    "en": "Tabs",
+    "es": "Pestañas"
+  },
+  "Oui. Publier vos objets et vos souhaits, chercher, participer au Grand Troc du dimanche et échanger en main propre ne coûte rien. Sur TopTroc, il n'y a ni prix, ni monnaie, ni points : un objet contre un objet.": {
+    "en": "Yes. Offering items and wishes, searching, joining the Sunday Grand Troc and swapping in person cost nothing. On TopTroc there are no prices, money or points: one item for another.",
+    "es": "Sí. Publicar tus objetos y deseos, buscar, participar en el Grand Troc del domingo e intercambiar en mano es gratis. En TopTroc no hay precios, dinero ni puntos: un objeto por otro."
+  },
+  "Ouverte : toute la catégorie et celles cochées": {
+    "en": "Open: the whole category and those selected",
+    "es": "Abierta: toda la categoría y las seleccionadas"
+  },
+  "Ouverture de votre espace…": {
+    "en": "Opening your space…",
+    "es": "Abriendo tu espacio…"
+  },
+  "Ouvrir le Match": {
+    "en": "Open Match",
+    "es": "Abrir Match"
+  },
+  "Ouvrir le menu": {
+    "en": "Open menu",
+    "es": "Abrir el menú"
+  },
+  "Où": {
+    "en": "Where",
+    "es": "Dónde"
+  },
+  "Où se font les échanges ?": {
+    "en": "Where do swaps take place?",
+    "es": "¿Dónde se realizan los intercambios?"
+  },
+  "Par": {
+    "en": "By",
+    "es": "Por"
+  },
+  "Parlons de votre territoire": {
+    "en": "Let's talk about your area",
+    "es": "Hablemos de tu territorio"
+  },
+  "Particuliers": {
+    "en": "Individuals",
+    "es": "Particulares"
+  },
+  "Pas besoin d'attendre dimanche.": {
+    "en": "No need to wait for Sunday.",
+    "es": "No hace falta esperar al domingo."
+  },
+  "Pas d'argent : ni complément, ni vente déguisée.": {
+    "en": "No money: no top-ups or disguised sales.",
+    "es": "Nada de dinero: ni complementos ni ventas encubiertas."
+  },
+  "Pas de match ? On a une solution.": {
+    "en": "No match? We have a solution.",
+    "es": "¿No hay match? Tenemos una solución."
+  },
+  "Pas de match pour un objet ? Il reste en lice pour une boucle à trois ci-dessus, et pour le Grand Troc du dimanche. Vos « J'aime » y comptent comme un souhait (un objet aimé au plus par dimanche), et un « Non merci » ne vous sera pas reproposé.": {
+    "en": "No match for an item? It stays eligible for a three-way loop above and for the Sunday Grand Troc. Your likes count as a wish there (at most one liked item per Sunday), and items you decline will not be offered again.",
+    "es": "¿Un objeto no tiene match? Sigue participando en las cadenas de tres de arriba y en el Grand Troc del domingo. Tus «Me gusta» cuentan como un deseo (como máximo un objeto marcado por domingo) y no volverán a proponerte los objetos que rechaces."
+  },
+  "Pas de prix": {
+    "en": "No price",
+    "es": "Sin precio"
+  },
+  "Pas de prix. Pas de monnaie.": {
+    "en": "No prices. No money.",
+    "es": "Sin precios. Sin dinero."
+  },
+  "Pas de sous-catégorie": {
+    "en": "No subcategory",
+    "es": "Sin subcategoría"
+  },
+  "Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TopTroc a de chances d'en trouver une.": {
+    "en": "No loop yet. Add two or three items: the more you offer, the more likely TopTroc is to find one.",
+    "es": "Aún no hay cadenas. Añade dos o tres objetos: cuantos más ofrezcas, más posibilidades tendrá TopTroc de encontrar una."
+  },
+  "Pas encore de match. Un « J'aime » sur un objet marqué « Match immédiat » en crée un tout de suite.": {
+    "en": "No match yet. Liking an item marked “Instant match” creates one straight away.",
+    "es": "Aún no hay matches. Un «Me gusta» en un objeto marcado «Match inmediato» crea uno al instante."
+  },
+  "Peu importe": {
+    "en": "Any",
+    "es": "Cualquiera"
+  },
+  "Photo ou texte inapproprié": {
+    "en": "Inappropriate photo or text",
+    "es": "Foto o texto inapropiado"
+  },
+  "Photos": {
+    "en": "Photos",
+    "es": "Fotos"
+  },
+  "Pilote :": {
+    "en": "Pilot:",
+    "es": "Prueba piloto:"
+  },
+  "Plus besoin d'e-mail pour vous connecter": {
+    "en": "No more emails needed to sign in",
+    "es": "Ya no necesitas un correo para acceder"
+  },
+  "Plus de 200": {
+    "en": "More than 200",
+    "es": "Más de 200"
+  },
+  "Plus rien à vous montrer pour l'instant. Ajoutez des souhaits ou des objets : la pile se remplit dès qu'un objet correspond.": {
+    "en": "Nothing more to show for now. Add wishes or items: the stack fills up as soon as an item matches.",
+    "es": "Por ahora no hay más objetos que mostrar. Añade deseos u objetos: la pila se llena en cuanto aparece un objeto que encaja."
+  },
+  "Plus tard": {
+    "en": "Later",
+    "es": "Más tarde"
+  },
+  "Point de dépôt": {
+    "en": "Drop-off point",
+    "es": "Punto de entrega"
+  },
+  "Portable pour les SMS du Grand Troc (facultatif)": {
+    "en": "Mobile number for Grand Troc text messages (optional)",
+    "es": "Móvil para los SMS del Grand Troc (opcional)"
+  },
+  "Pour les particuliers": {
+    "en": "For individuals",
+    "es": "Para particulares"
+  },
+  "Pour qui ?": {
+    "en": "Who is it for?",
+    "es": "¿Para quién?"
+  },
+  "Pour qui ? · Collectivités": {
+    "en": "Who is it for? · Local authorities",
+    "es": "¿Para quién? · Administraciones locales"
+  },
+  "Pour qui ? · Professionnels": {
+    "en": "Who is it for? · Businesses",
+    "es": "¿Para quién? · Empresas"
+  },
+  "Pour signaler un contenu illicite ou dangereux : voir": {
+    "en": "To report illegal or dangerous content: see",
+    "es": "Para denunciar contenido ilícito o peligroso: consulta"
+  },
+  "Pour signaler un contenu illicite ou dangereux, écrivez à la même adresse en précisant l'objet ou le pseudo concerné. Nous répondons en français.": {
+    "en": "To report illegal or dangerous content, write to the same address, specifying the item or username concerned. We reply in French.",
+    "es": "Para denunciar contenido ilícito o peligroso, escribe a la misma dirección e indica el objeto o seudónimo afectado. Respondemos en francés."
+  },
+  "Pour tout ce qui n'a pas trouvé de match : une fois par semaine, TopTroc cherche les boucles à trois et les échanges à deux que personne n'a vus. Les propositions arrivent le dimanche à 18 h, vous avez 48 h pour dire oui, et les dépôts se font dans la semaine.": {
+    "en": "For items that have not found a match: once a week, TopTroc searches for three-way loops and two-way swaps nobody spotted. Offers arrive on Sunday at 6 pm (Paris time); you have 48 hours to accept and drop-offs take place during the week.",
+    "es": "Para los objetos que no han encontrado match: una vez a la semana, TopTroc busca cadenas de tres e intercambios entre dos que nadie había visto. Las propuestas llegan el domingo a las 18:00 (hora de París); tienes 48 horas para aceptar y las entregas se realizan durante la semana."
+  },
+  "Pourquoi le troc": {
+    "en": "Why swapping",
+    "es": "Por qué el trueque"
+  },
+  "Prestataires": {
+    "en": "Service providers",
+    "es": "Proveedores"
+  },
+  "Produit dangereux": {
+    "en": "Dangerous product",
+    "es": "Producto peligroso"
+  },
+  "Produit dangereux ou rappelé": {
+    "en": "Dangerous or recalled product",
+    "es": "Producto peligroso o retirado del mercado"
+  },
+  "Produits dangereux ou rappelés": {
+    "en": "Dangerous or recalled products",
+    "es": "Productos peligrosos o retirados del mercado"
+  },
+  "Professionnels": {
+    "en": "Businesses",
+    "es": "Empresas"
+  },
+  "Professionnels · TopTroc": {
+    "en": "Businesses · TopTroc",
+    "es": "Empresas · TopTroc"
+  },
+  "Proposer": {
+    "en": "Offer",
+    "es": "Ofrecer"
+  },
+  "Proposer l'échange": {
+    "en": "Propose the swap",
+    "es": "Proponer el intercambio"
+  },
+  "Proposer un objet": {
+    "en": "Offer an item",
+    "es": "Ofrecer un objeto"
+  },
+  "Proposez votre premier objet": {
+    "en": "Offer your first item",
+    "es": "Ofrece tu primer objeto"
+  },
+  "Proposition d'échange direct entre 2 utilisateurs.": {
+    "en": "Direct swap proposal between 2 users.",
+    "es": "Propuesta de intercambio directo entre 2 usuarios."
+  },
+  "Proposition d'échange via une boucle d'utilisateurs.": {
+    "en": "Swap proposal through a loop of users.",
+    "es": "Propuesta de intercambio mediante una cadena de usuarios."
+  },
+  "Proposition envoyée aux autres participants": {
+    "en": "Proposal sent to the other participants",
+    "es": "Propuesta enviada a los demás participantes"
+  },
+  "Proposition envoyée à": {
+    "en": "Proposal sent to",
+    "es": "Propuesta enviada a"
+  },
+  "Propriété intellectuelle": {
+    "en": "Intellectual property",
+    "es": "Propiedad intelectual"
+  },
+  "Précise : seulement ce que je décris": {
+    "en": "Specific: only what I describe",
+    "es": "Precisa: solo lo que describo"
+  },
+  "Précisions": {
+    "en": "Details",
+    "es": "Detalles"
+  },
+  "Pseudo": {
+    "en": "Username",
+    "es": "Seudónimo"
+  },
+  "Publier": {
+    "en": "Publish",
+    "es": "Publicar"
+  },
+  "Publier vos objets et vos souhaits": {
+    "en": "Publish your items and wishes",
+    "es": "Publicar tus objetos y deseos"
+  },
+  "Qu'est-ce que le Grand Troc du dimanche ?": {
+    "en": "What is the Sunday Grand Troc?",
+    "es": "¿Qué es el Grand Troc del domingo?"
+  },
+  "Qu'est-ce qui vous serait utile ? Une catégorie entière ouvre le plus d'échanges ; précisez la sous-catégorie, la taille ou décrivez-le si vous cherchez quelque chose de précis.": {
+    "en": "What would be useful to you? A whole category opens up the most swaps; specify the subcategory, size or description if you are looking for something specific.",
+    "es": "¿Qué necesitas? Una categoría entera abre más intercambios; indica la subcategoría, la talla o una descripción si buscas algo concreto."
+  },
+  "Que puis-je proposer ?": {
+    "en": "What can I offer?",
+    "es": "¿Qué puedo ofrecer?"
+  },
+  "Quelles données TopTroc garde, pourquoi, et vos droits.": {
+    "en": "What data TopTroc stores, why, and your rights.",
+    "es": "Qué datos guarda TopTroc, por qué y cuáles son tus derechos."
+  },
+  "Questions fréquentes sur TopTroc et comment nous contacter.": {
+    "en": "Frequently asked questions about TopTroc and how to contact us.",
+    "es": "Preguntas frecuentes sobre TopTroc y cómo contactarnos."
+  },
+  "Qui voit mes informations ?": {
+    "en": "Who can see my information?",
+    "es": "¿Quién ve mi información?"
+  },
+  "Quoi ?": {
+    "en": "What?",
+    "es": "¿Qué?"
+  },
+  "Recevoir mon lien": {
+    "en": "Get my link",
+    "es": "Recibir mi enlace"
+  },
+  "Recherche": {
+    "en": "Search",
+    "es": "Búsqueda"
+  },
+  "Recherche ouverte": {
+    "en": "Open search",
+    "es": "Búsqueda abierta"
+  },
+  "Recherche précise": {
+    "en": "Specific search",
+    "es": "Búsqueda precisa"
+  },
+  "Rechercher": {
+    "en": "Search",
+    "es": "Buscar"
+  },
+  "Recopiez-la en quelques secondes :": {
+    "en": "Copy it in a few seconds:",
+    "es": "Cópialo en unos segundos:"
+  },
+  "Rejeter": {
+    "en": "Dismiss",
+    "es": "Rechazar"
+  },
+  "Remise": {
+    "en": "Handover",
+    "es": "Entrega"
+  },
+  "Remise acceptée": {
+    "en": "Accepted handover",
+    "es": "Entrega aceptada"
+  },
+  "Remise possible": {
+    "en": "Possible handover",
+    "es": "Entrega posible"
+  },
+  "Remise sécurisée": {
+    "en": "Secure handover",
+    "es": "Entrega segura"
+  },
+  "Responsable du traitement": {
+    "en": "Data controller",
+    "es": "Responsable del tratamiento"
+  },
+  "Restez courtois avec les autres membres et au point de dépôt.": {
+    "en": "Be polite to other members and at the drop-off point.",
+    "es": "Sé respetuoso con los demás miembros y en el punto de entrega."
+  },
+  "Retenir : retirer": {
+    "en": "Uphold: remove",
+    "es": "Estimar: retirar"
+  },
+  "Retour": {
+    "en": "Back",
+    "es": "Volver"
+  },
+  "Rien de coché : contre n'importe laquelle de vos demandes. « Seulement » donne moins de boucles.": {
+    "en": "Nothing selected: for any of your requests. “Only” means fewer loops.",
+    "es": "Sin selección: por cualquiera de tus solicitudes. «Solo» permite menos cadenas."
+  },
+  "Rien pour l'instant. Élargissez vos souhaits : le prochain Grand Troc a lieu dimanche à 18 h.": {
+    "en": "Nothing yet. Broaden your wishes: the next Grand Troc is on Sunday at 6 pm (Paris time).",
+    "es": "Aún no hay nada. Amplía tus deseos: el próximo Grand Troc es el domingo a las 18:00 (hora de París)."
+  },
+  "Rien pour «": {
+    "en": "Nothing for “",
+    "es": "Sin resultados para «"
+  },
+  "Rien à déposer pour l'instant. Le dépôt s'ouvre quand tout le monde a accepté un échange.": {
+    "en": "Nothing to drop off yet. Drop-off opens once everyone has accepted a swap.",
+    "es": "Aún no hay nada que entregar. La entrega se abre cuando todos han aceptado un intercambio."
+  },
+  "Rien à faire pour l'instant": {
+    "en": "Nothing to do for now",
+    "es": "Por ahora no tienes nada pendiente"
+  },
+  "Règles et signalements": {
+    "en": "Rules and reports",
+    "es": "Normas y denuncias"
+  },
+  "Règles et signalements · TopTroc": {
+    "en": "Rules and reports · TopTroc",
+    "es": "Normas y denuncias · TopTroc"
+  },
+  "Réciproque": {
+    "en": "Mutual",
+    "es": "Recíproco"
+  },
+  "Récupérez": {
+    "en": "Collect",
+    "es": "Recoge"
+  },
+  "Rédigez une motivation (10 caractères au moins).": {
+    "en": "Enter a reason (at least 10 characters).",
+    "es": "Escribe un motivo (al menos 10 caracteres)."
+  },
+  "Répond à votre demande": {
+    "en": "Matches your request",
+    "es": "Responde a tu solicitud"
+  },
+  "Répondez :": {
+    "en": "Reply:",
+    "es": "Responde:"
+  },
+  "Répondez aux propositions dans les 48 h et déposez ce que vous avez promis.": {
+    "en": "Reply to proposals within 48 hours and drop off what you promised.",
+    "es": "Responde a las propuestas en 48 horas y entrega lo que has prometido."
+  },
+  "Répondez simplement à l'e-mail de décision en expliquant pourquoi vous n'êtes pas d'accord : elle sera réexaminée. Vous gardez dans tous les cas la possibilité de saisir le juge.": {
+    "en": "Simply reply to the decision email explaining why you disagree: it will be reviewed. You retain the right to bring the matter before a court in all cases.",
+    "es": "Responde al correo de la decisión y explica por qué no estás de acuerdo: se revisará. En cualquier caso, conservas la posibilidad de acudir a los tribunales."
+  },
+  "Réponse enregistrée": {
+    "en": "Reply recorded",
+    "es": "Respuesta registrada"
+  },
+  "Réutiliser.": {
+    "en": "Reuse.",
+    "es": "Reutilizar."
+  },
+  "S'il est retenu, l'objet est retiré et les échanges qui le concernent sont annulés. En cas de manquement grave ou répété, le compte peut être suspendu.": {
+    "en": "If upheld, the item is removed and related swaps are cancelled. In the event of a serious or repeated breach, the account may be suspended.",
+    "es": "Si se estima, se retira el objeto y se cancelan los intercambios relacionados. En caso de incumplimiento grave o reiterado, la cuenta puede suspenderse."
+  },
+  "Sa demande :": {
+    "en": "Their request:",
+    "es": "Su solicitud:"
+  },
+  "Se connecter": {
+    "en": "Sign in",
+    "es": "Acceder"
+  },
+  "Se déconnecter": {
+    "en": "Sign out",
+    "es": "Cerrar sesión"
+  },
+  "Serveur et base de données": {
+    "en": "Server and database",
+    "es": "Servidor y base de datos"
+  },
+  "Session expirée : reconnectez-vous.": {
+    "en": "Session expired: please sign in again.",
+    "es": "La sesión ha caducado: vuelve a acceder."
+  },
+  "Seuls vos salariés y accèdent, avec leur adresse e-mail professionnelle. Aucun mot de passe à gérer.": {
+    "en": "Only your employees can access it, using their work email address. No passwords to manage.",
+    "es": "Solo acceden tus empleados con su correo profesional. Sin contraseñas que gestionar."
+  },
+  "Si": {
+    "en": "If",
+    "es": "Si"
+  },
+  "Si elle tient toujours, elle vous sera proposée au Grand Troc de dimanche.": {
+    "en": "If it is still available, it will be offered to you at Sunday's Grand Troc.",
+    "es": "Si sigue disponible, se te propondrá en el Grand Troc del domingo."
+  },
+  "Signalement envoyé. Merci, il sera examiné.": {
+    "en": "Report sent. Thank you; it will be reviewed.",
+    "es": "Denuncia enviada. Gracias; se examinará."
+  },
+  "Signalements à traiter": {
+    "en": "Reports to review",
+    "es": "Denuncias pendientes"
+  },
+  "Signaler": {
+    "en": "Report",
+    "es": "Denunciar"
+  },
+  "Signaler un contenu": {
+    "en": "Report content",
+    "es": "Denunciar contenido"
+  },
+  "Simplifier.": {
+    "en": "Simplify.",
+    "es": "Simplificar."
+  },
+  "Site web": {
+    "en": "Website",
+    "es": "Sitio web"
+  },
+  "Sous-catégorie": {
+    "en": "Subcategory",
+    "es": "Subcategoría"
+  },
+  "Supprimer définitivement votre compte, vos objets et vos souhaits ? Vos échanges en cours seront annulés.": {
+    "en": "Permanently delete your account, items and wishes? Your ongoing swaps will be cancelled.",
+    "es": "¿Eliminar definitivamente tu cuenta, tus objetos y tus deseos? Se cancelarán tus intercambios en curso."
+  },
+  "Supprimer mon compte": {
+    "en": "Delete my account",
+    "es": "Eliminar mi cuenta"
+  },
+  "Suspendre aussi le compte": {
+    "en": "Also suspend the account",
+    "es": "Suspender también la cuenta"
+  },
+  "Tant que votre compte existe. Quand vous le supprimez, vos données de compte, vos objets et vos souhaits sont effacés.": {
+    "en": "As long as your account exists. When you delete it, your account data, items and wishes are erased.",
+    "es": "Mientras exista tu cuenta. Cuando la eliminas, se borran los datos de tu cuenta, tus objetos y tus deseos."
+  },
+  "Tarif selon la taille du site, sur devis. Écrivez-nous en deux lignes : qui vous êtes, combien de personnes sur place.": {
+    "en": "Price based on site size, on request. Write a few lines: who you are and how many people work on site.",
+    "es": "Precio según el tamaño del centro, bajo presupuesto. Escríbenos unas líneas: quién eres y cuántas personas hay en el centro."
+  },
+  "Tout": {
+    "en": "All",
+    "es": "Todo"
+  },
+  "Tout est": {
+    "en": "Everything is",
+    "es": "Todo es"
+  },
+  "Tout est déposé": {
+    "en": "Everything dropped off",
+    "es": "Todo entregado"
+  },
+  "Tout est déposé : récupérez votre objet !": {
+    "en": "Everything has been dropped off: collect your item!",
+    "es": "¡Ya está todo entregado: recoge tu objeto!"
+  },
+  "Tout le monde a accepté : place au dépôt !": {
+    "en": "Everyone accepted: time to drop off!",
+    "es": "¡Todos han aceptado: toca entregar!"
+  },
+  "Tout le monde a dit oui : place au dépôt.": {
+    "en": "Everyone said yes: time to drop off.",
+    "es": "Todos han aceptado: toca entregar."
+  },
+  "Tout le monde peut signaler un contenu. Les signalements sont examinés par une personne. Un objet contraire à ces règles peut être retiré, et un compte peut être suspendu en cas de manquement grave ou répété. Chaque décision vous est expliquée par e-mail et peut être contestée en y répondant. Le détail est dans les": {
+    "en": "Anyone can report content. Reports are reviewed by a person. An item that breaks these rules may be removed, and an account may be suspended for a serious or repeated breach. Every decision is explained by email and can be appealed by replying. Details are in the",
+    "es": "Cualquier persona puede denunciar contenido. Las denuncias las examina una persona. Un objeto que incumpla estas normas puede retirarse y una cuenta puede suspenderse por incumplimiento grave o reiterado. Cada decisión se explica por correo y puede recurrirse respondiendo. Los detalles están en las"
+  },
+  "Tout le monde y gagne.": {
+    "en": "Everyone benefits.",
+    "es": "Todo el mundo gana."
+  },
+  "Tout voir": {
+    "en": "View all",
+    "es": "Ver todo"
+  },
+  "Toutes les sous-catégories": {
+    "en": "All subcategories",
+    "es": "Todas las subcategorías"
+  },
+  "TopTroc : échangez ce qui dort chez vous, sans prix ni monnaie. L'échange se trouve, même à trois.": {
+    "en": "TopTroc: swap the items you no longer use, without prices or money. Find a swap, even a three-way one.",
+    "es": "TopTroc: intercambia lo que ya no usas, sin precios ni dinero. Encuentra un intercambio, incluso entre tres."
+  },
+  "TopTroc met en relation des personnes qui veulent échanger des objets, sans argent : un objet contre un objet, en direct ou en boucle de plusieurs personnes. TopTroc ne vend rien, n'achète rien et ne devient jamais propriétaire des objets échangés.": {
+    "en": "TopTroc connects people who want to swap items without money: one item for another, directly or through a loop of several people. TopTroc does not sell or buy anything and never owns the items exchanged.",
+    "es": "TopTroc conecta a personas que quieren intercambiar objetos sin dinero: un objeto por otro, directamente o en una cadena de varias personas. TopTroc no vende ni compra nada y nunca es propietario de los objetos intercambiados."
+  },
+  "TopTroc ouvre un espace réservé aux salariés de votre site. Chacun propose ce qui dort chez lui, le Grand Troc du dimanche trouve les échanges, et les objets passent par l'accueil ou la conciergerie.": {
+    "en": "TopTroc opens a space exclusively for employees at your site. Everyone offers what they no longer use, the Sunday Grand Troc finds swaps, and items pass through reception or the concierge desk.",
+    "es": "TopTroc abre un espacio exclusivo para los empleados de tu centro. Cada persona ofrece lo que ya no usa, el Grand Troc del domingo encuentra los intercambios y los objetos pasan por recepción o conserjería."
+  },
+  "TopTroc pour les collectivités : le Grand Troc de votre territoire, des points de dépôt publics et un rapport d'impact.": {
+    "en": "TopTroc for local authorities: your area's Grand Troc, public drop-off points and an impact report.",
+    "es": "TopTroc para administraciones locales: el Grand Troc de tu territorio, puntos de entrega públicos y un informe de impacto."
+  },
+  "TopTroc pour les entreprises : un espace de troc réservé à vos salariés, le dépôt à l'accueil et un bilan pour votre RSE.": {
+    "en": "TopTroc for businesses: a swap space exclusively for your employees, drop-off at reception and a CSR summary.",
+    "es": "TopTroc para empresas: un espacio de trueque exclusivo para tus empleados, entrega en recepción y un balance de RSE."
+  },
+  "TopTroc repose sur la confiance : chacun dépose, chacun récupère. Ces règles la protègent.": {
+    "en": "TopTroc relies on trust: everyone drops off, everyone collects. These rules protect it.",
+    "es": "TopTroc se basa en la confianza: cada persona entrega y cada persona recoge. Estas normas la protegen."
+  },
+  "TopTroc | Le troc se réinvente": {
+    "en": "TopTroc | Swapping, reinvented",
+    "es": "TopTroc | El trueque se reinventa"
+  },
+  "TopTroc, retour à l'accueil": {
+    "en": "TopTroc, back to home",
+    "es": "TopTroc, volver al inicio"
+  },
+  "Troquer": {
+    "en": "Swap",
+    "es": "Intercambiar"
+  },
+  "Troquez-": {
+    "en": "Swap ",
+    "es": "Intercámbia"
+  },
+  "Très bon": {
+    "en": "Very good",
+    "es": "Muy bueno"
+  },
+  "Très bon état": {
+    "en": "Very good condition",
+    "es": "Muy buen estado"
+  },
+  "Téléphone portable (facultatif)": {
+    "en": "Mobile phone (optional)",
+    "es": "Teléfono móvil (opcional)"
+  },
+  "Un Grand Troc à votre nom": {
+    "en": "A Grand Troc with your name",
+    "es": "Un Grand Troc con tu nombre"
+  },
+  "Un chiffre pour votre RSE": {
+    "en": "A figure for your CSR report",
+    "es": "Una cifra para tu RSE"
+  },
+  "Un compte par personne, avec une adresse e-mail qui vous appartient.": {
+    "en": "One account per person, using an email address you own.",
+    "es": "Una cuenta por persona, con una dirección de correo que te pertenezca."
+  },
+  "Un contenu vous semble illicite ou dangereux ? Utilisez « Signaler » sur l'objet concerné.": {
+    "en": "Does content seem illegal or dangerous? Use “Report” on the item concerned.",
+    "es": "¿Un contenido te parece ilícito o peligroso? Utiliza «Denunciar» en el objeto afectado."
+  },
+  "Un critère « obligatoire » écarte les objets qui ne l'indiquent pas ; « de préférence » les fait passer en premier sans en écarter. « Toutes les sous-catégories », « Peu importe » et les autres choix acceptés vous ouvrent plus d'échanges. Votre description est montrée aux membres qui ont ce que vous cherchez.": {
+    "en": "A “required” criterion excludes items that do not specify it; “preferred” prioritises them without excluding any. “All subcategories”, “Any” and other accepted options open up more swaps. Your description is shown to members who have what you are looking for.",
+    "es": "Un criterio «obligatorio» descarta los objetos que no lo indican; «preferiblemente» los prioriza sin descartar ninguno. «Todas las subcategorías», «Cualquiera» y las demás opciones aceptadas abren más intercambios. Tu descripción se muestra a los miembros que tienen lo que buscas."
+  },
+  "Un cœur de chaque côté, et c'est échangé.": {
+    "en": "A heart on each side, and you swap.",
+    "es": "Un corazón por cada lado y a intercambiar."
+  },
+  "Un espace à vous": {
+    "en": "Your own space",
+    "es": "Un espacio propio"
+  },
+  "Un membre": {
+    "en": "A member",
+    "es": "Un miembro"
+  },
+  "Un objet ou un membre pose problème.": {
+    "en": "There is a problem with an item or a member.",
+    "es": "Hay un problema con un objeto o un miembro."
+  },
+  "Un objet qui vous appartient, en état de marche, avec une photo et son état décrit honnêtement. Certains objets sont interdits (produits dangereux ou rappelés, contrefaçons, objets illicites) : voir les": {
+    "en": "An item you own, in working order, with a photo and an honest description of its condition. Some items are prohibited (dangerous or recalled products, counterfeits, illegal items): see the",
+    "es": "Un objeto que te pertenezca, que funcione, con una foto y una descripción sincera de su estado. Algunos objetos están prohibidos (productos peligrosos o retirados, falsificaciones y objetos ilícitos): consulta las"
+  },
+  "Un objet vous plaît ?": {
+    "en": "Like an item?",
+    "es": "¿Te gusta un objeto?"
+  },
+  "Un premier rendez-vous pour choisir le périmètre (un quartier, un arrondissement, une commune) et les lieux de dépôt.": {
+    "en": "An initial meeting to choose the area (a neighbourhood, district or town) and drop-off locations.",
+    "es": "Una primera reunión para elegir el ámbito (un barrio, un distrito o un municipio) y los lugares de entrega."
+  },
+  "Un premier échange pour comprendre votre site, vos équipes et l'endroit où déposer les objets.": {
+    "en": "An initial conversation to understand your site, your teams and where items can be dropped off.",
+    "es": "Una primera conversación para conocer tu centro, tus equipos y dónde entregar los objetos."
+  },
+  "Un rapport d'impact": {
+    "en": "An impact report",
+    "es": "Un informe de impacto"
+  },
+  "Une catégorie large ouvre le plus d'échanges.": {
+    "en": "A broad category opens up the most swaps.",
+    "es": "Una categoría amplia abre más intercambios."
+  },
+  "Une catégorie…": {
+    "en": "A category…",
+    "es": "Una categoría…"
+  },
+  "Une erreur est survenue.": {
+    "en": "An error occurred.",
+    "es": "Se ha producido un error."
+  },
+  "Une photo, un titre, une catégorie : c'est tout.": {
+    "en": "A photo, a title, a category: that's all.",
+    "es": "Una foto, un título, una categoría: nada más."
+  },
+  "Une question, une idée": {
+    "en": "A question, an idea",
+    "es": "Una pregunta, una idea"
+  },
+  "Usagé, fonctionne": {
+    "en": "Used, working",
+    "es": "Usado, funciona"
+  },
+  "Utilisez « Signaler » dans l'échange concerné, ou écrivez-nous. Chaque signalement est examiné par une personne. Voir": {
+    "en": "Use “Report” in the swap concerned, or write to us. Every report is reviewed by a person. See",
+    "es": "Utiliza «Denunciar» en el intercambio afectado o escríbenos. Cada denuncia la examina una persona. Consulta"
+  },
+  "Ville": {
+    "en": "Town",
+    "es": "Ciudad"
+  },
+  "Voir l'échange": {
+    "en": "View swap",
+    "es": "Ver el intercambio"
+  },
+  "Voir le dépôt": {
+    "en": "View drop-off",
+    "es": "Ver la entrega"
+  },
+  "Voir les objets": {
+    "en": "View items",
+    "es": "Ver los objetos"
+  },
+  "Voir les objets pour moi": {
+    "en": "View items for me",
+    "es": "Ver objetos para mí"
+  },
+  "Voir mes objets": {
+    "en": "View my items",
+    "es": "Ver mis objetos"
+  },
+  "Vos droits": {
+    "en": "Your rights",
+    "es": "Tus derechos"
+  },
+  "Vos objets, leurs photos et vos souhaits": {
+    "en": "Your items, their photos and your wishes",
+    "es": "Tus objetos, sus fotos y tus deseos"
+  },
+  "Vos questions": {
+    "en": "Your questions",
+    "es": "Tus preguntas"
+  },
+  "Vos échanges": {
+    "en": "Your swaps",
+    "es": "Tus intercambios"
+  },
+  "Vos échanges et votre fiabilité": {
+    "en": "Your swaps and reliability",
+    "es": "Tus intercambios y tu fiabilidad"
+  },
+  "Votre annonce ne part pas ?": {
+    "en": "Your listing is not selling?",
+    "es": "¿Tu anuncio no se vende?"
+  },
+  "Votre e-mail": {
+    "en": "Your email",
+    "es": "Tu correo"
+  },
+  "Votre grenier, votre placard, votre garage : qu'est-ce qui n'a pas servi cette année ? Proposez-le, avec sa photo.": {
+    "en": "Your attic, cupboard, garage: what have you not used this year? Offer it, with a photo.",
+    "es": "Tu desván, tu armario, tu garaje: ¿qué no has usado este año? Ofrécelo con su foto."
+  },
+  "Votre lien est gardé. Connectez-vous ou créez votre compte avec le bouton en haut de la page : on reprend là où vous en étiez.": {
+    "en": "Your link is saved. Sign in or create an account using the button at the top of the page: we will pick up where you left off.",
+    "es": "Tu enlace está guardado. Accede o crea una cuenta con el botón de arriba: retomaremos donde lo dejaste."
+  },
+  "Votre mot de passe": {
+    "en": "Your password",
+    "es": "Tu contraseña"
+  },
+  "Votre pseudo doit rester respectueux et ne pas usurper l'identité de quelqu'un.": {
+    "en": "Your username must be respectful and must not impersonate anyone.",
+    "es": "Tu seudónimo debe ser respetuoso y no suplantar la identidad de nadie."
+  },
+  "Votre pseudo et votre ville": {
+    "en": "Your username and town",
+    "es": "Tu seudónimo y tu ciudad"
+  },
+  "Votre pseudo et votre ville sont visibles des personnes avec qui vous échangez. Votre e-mail et votre téléphone ne sont jamais montrés aux autres membres. Tout est détaillé dans la page": {
+    "en": "Your username and town are visible to the people you swap with. Your email and phone number are never shown to other members. Full details are on the",
+    "es": "Tu seudónimo y tu ciudad son visibles para las personas con las que intercambias. Tu correo y tu teléfono nunca se muestran a otros miembros. Todos los detalles están en la página de"
+  },
+  "Votre téléphone portable": {
+    "en": "Your mobile phone",
+    "es": "Tu teléfono móvil"
+  },
+  "Vous": {
+    "en": "You",
+    "es": "Tú"
+  },
+  "Vous donnez": {
+    "en": "You give",
+    "es": "Das"
+  },
+  "Vous donnez une poussette à Inès, Inès donne une perceuse à Marc, Marc donne un vélo enfant… à vous. Personne n'a besoin de trouver « la » bonne personne : TopTroc ferme la boucle. Chacun donne une fois et reçoit une fois.": {
+    "en": "You give a pushchair to Inès, Inès gives a drill to Marc, Marc gives a child's bike… to you. Nobody needs to find “the” right person: TopTroc closes the loop. Everyone gives once and receives once.",
+    "es": "Das un cochecito a Inès, Inès da un taladro a Marc y Marc te da una bicicleta infantil… a ti. Nadie necesita encontrar a «la» persona adecuada: TopTroc cierra la cadena. Cada persona da una vez y recibe una vez."
+  },
+  "Vous et": {
+    "en": "You and",
+    "es": "Tú y"
+  },
+  "Vous le cherchiez.": {
+    "en": "You were looking for it.",
+    "es": "Lo estabas buscando."
+  },
+  "Vous pouvez accéder à vos données, les corriger, les effacer, les récupérer ou vous opposer à leur traitement en écrivant à": {
+    "en": "You can access, correct, erase or retrieve your data, or object to its processing, by writing to",
+    "es": "Puedes acceder a tus datos, corregirlos, borrarlos, recuperarlos u oponerte a su tratamiento escribiendo a"
+  },
+  "Vous pouvez supprimer votre compte à tout moment depuis Mon espace. Vos échanges en cours sont alors annulés pour les autres participants.": {
+    "en": "You can delete your account at any time from My space. Your ongoing swaps will then be cancelled for the other participants.",
+    "es": "Puedes eliminar tu cuenta en cualquier momento desde Mi espacio. Se cancelarán tus intercambios en curso para los demás participantes."
+  },
+  "Vous proposez. Vous choisissez. TopTroc s'occupe du reste.": {
+    "en": "You offer. You choose. TopTroc takes care of the rest.",
+    "es": "Tú ofreces. Tú eliges. TopTroc se encarga del resto."
+  },
+  "Vous recevez": {
+    "en": "You receive",
+    "es": "Recibes"
+  },
+  "Vous recevez le bilan : objets échangés, participants, déchets évités.": {
+    "en": "You receive the summary: items swapped, participants, waste avoided.",
+    "es": "Recibes el balance: objetos intercambiados, participantes y residuos evitados."
+  },
+  "Vous recevriez «": {
+    "en": "You would receive “",
+    "es": "Recibirías «"
+  },
+  "Vélo, poussette, perceuse…": {
+    "en": "Bike, pushchair, drill…",
+    "es": "Bicicleta, cochecito, taladro…"
+  },
+  "Vérifiez votre e-mail et votre mot de passe.": {
+    "en": "Check your email and password.",
+    "es": "Comprueba tu correo y tu contraseña."
+  },
+  "[adresse postale]": {
+    "en": "[postal address]",
+    "es": "[dirección postal]"
+  },
+  "[adresse]": {
+    "en": "[address]",
+    "es": "[dirección]"
+  },
+  "[nom et prénom, ou raison sociale et forme juridique]": {
+    "en": "[full name, or company name and legal form]",
+    "es": "[nombre y apellidos, o razón social y forma jurídica]"
+  },
+  "[nom et prénom]": {
+    "en": "[full name]",
+    "es": "[nombre y apellidos]"
+  },
+  "[numéro, ou « en cours d'immatriculation »]": {
+    "en": "[number, or “registration pending”]",
+    "es": "[número, o «en trámite de inscripción»]"
+  },
+  "a 48 h pour dire oui, puis chacun dépose dans les 7 jours.": {
+    "en": "has 48 hours to accept, then everyone drops off within 7 days.",
+    "es": "tiene 48 horas para aceptar y luego cada persona entrega en un plazo de 7 días."
+  },
+  "aime aussi un de vos objets. Proposez-lui l'échange quand vous voulez.": {
+    "en": "also likes one of your items. Propose a swap whenever you like.",
+    "es": "también ha indicado que le gusta uno de tus objetos. Propón el intercambio cuando quieras."
+  },
+  "aime un de vos objets, c'est un match : vous échangez à deux, tout de suite.": {
+    "en": "likes one of your items, it's a match: swap directly, straight away.",
+    "es": "ha indicado que le gusta uno de tus objetos; hay match: podéis intercambiar directamente, ahora mismo."
+  },
+  "aime votre": {
+    "en": "likes your",
+    "es": "le gusta tu"
+  },
+  "au bout": {
+    "en": "completed",
+    "es": "completado"
+  },
+  "au minimum": {
+    "en": "at least",
+    "es": "como mínimo"
+  },
+  "au point de dépôt avec ce code :": {
+    "en": "at the drop-off point with this code:",
+    "es": "en el punto de entrega con este código:"
+  },
+  "cher": {
+    "en": "expensive",
+    "es": "caro"
+  },
+  "cherche ce que vous avez :": {
+    "en": "is looking for what you have:",
+    "es": "busca lo que tienes:"
+  },
+  "confidentialité": {
+    "en": "privacy",
+    "es": "privacidad"
+  },
+  "corrigez-les si besoin": {
+    "en": "correct them if needed",
+    "es": "corrígelos si hace falta"
+  },
+  "de préférence": {
+    "en": "preferred",
+    "es": "preferiblemente"
+  },
+  "de votre territoire": {
+    "en": "in your area",
+    "es": "de tu territorio"
+  },
+  "déposé": {
+    "en": "dropped off",
+    "es": "entregado"
+  },
+  "dépôt": {
+    "en": "drop-off",
+    "es": "entrega"
+  },
+  "en main propre": {
+    "en": "in person",
+    "es": "en mano"
+  },
+  "en point relais": {
+    "en": "at a collection point",
+    "es": "en un punto de recogida"
+  },
+  "en précisant l'objet ou le pseudo, et pourquoi. Cette adresse est notre point de contact unique, y compris pour les autorités ; nous répondons en français.": {
+    "en": "specifying the item or username and the reason. This address is our single point of contact, including for authorities; we reply in French.",
+    "es": "indicando el objeto o seudónimo y el motivo. Esta dirección es nuestro punto de contacto único, también para las autoridades; respondemos en francés."
+  },
+  "gratuit": {
+    "en": "free",
+    "es": "gratis"
+  },
+  "h pour répondre.": {
+    "en": "hours to reply.",
+    "es": "horas para responder."
+  },
+  "h restantes": {
+    "en": "hours remaining",
+    "es": "horas restantes"
+  },
+  "jour(s), chacun récupère le sien.": {
+    "en": "day(s), everyone collects their item.",
+    "es": "día(s), cada persona recoge su objeto."
+  },
+  "la.": {
+    "en": "it.",
+    "es": "lo."
+  },
+  "mentions légales": {
+    "en": "legal notice",
+    "es": "aviso legal"
+  },
+  "mené": {
+    "en": "completed",
+    "es": "completado"
+  },
+  "objets proposés": {
+    "en": "items offered",
+    "es": "objetos ofrecidos"
+  },
+  "objets échangés entre": {
+    "en": "items swapped between",
+    "es": "objetos intercambiados entre"
+  },
+  "offre Collectivités": {
+    "en": "Local authorities offer",
+    "es": "oferta para administraciones locales"
+  },
+  "offre Professionnels": {
+    "en": "Business offer",
+    "es": "oferta para empresas"
+  },
+  "ont accepté ·": {
+    "en": "have accepted ·",
+    "es": "han aceptado ·"
+  },
+  "ou": {
+    "en": "or",
+    "es": "o"
+  },
+  "pour vous": {
+    "en": "for you",
+    "es": "para ti"
+  },
+  "précieux": {
+    "en": "valuable",
+    "es": "valioso"
+  },
+  "qui cherchent une activité utile, conviviale et qui ne coûte rien aux salariés.": {
+    "en": "looking for a useful, friendly activity that costs employees nothing.",
+    "es": "que buscan una actividad útil, amena y sin coste para los empleados."
+  },
+  "qui ne se vendent pas : jouets, petit électroménager, puériculture, outils, livres.": {
+    "en": "that do not sell: toys, small appliances, childcare equipment, tools, books.",
+    "es": "que no se venden: juguetes, pequeños electrodomésticos, artículos de puericultura, herramientas y libros."
+  },
+  "qui veulent faire circuler les objets entre voisins.": {
+    "en": "who want to circulate items between neighbours.",
+    "es": "que quieren hacer circular objetos entre vecinos."
+  },
+  "qui veulent une action de réemploi concrète et mesurée.": {
+    "en": "who want a practical, measurable reuse initiative.",
+    "es": "que quieren una iniciativa de reutilización concreta y medible."
+  },
+  "reprenez le titre de l'annonce": {
+    "en": "use the listing's title",
+    "es": "copia el título del anuncio"
+  },
+  "retiré": {
+    "en": "removed",
+    "es": "retirado"
+  },
+  "retiré par la modération": {
+    "en": "removed by moderation",
+    "es": "retirado por moderación"
+  },
+  "règles": {
+    "en": "rules",
+    "es": "normas"
+  },
+  "règles et signalements": {
+    "en": "rules and reports",
+    "es": "normas y denuncias"
+  },
+  "réponses jusqu'à": {
+    "en": "replies until",
+    "es": "respuestas hasta"
+  },
+  "réservé": {
+    "en": "reserved",
+    "es": "reservado"
+  },
+  "sans rien gérer": {
+    "en": "without managing a thing",
+    "es": "sin tener que gestionar nada"
+  },
+  "sous un objet ouvre un formulaire : choisissez le motif et expliquez ce qui pose problème. Sans compte, ou pour signaler un membre, écrivez à": {
+    "en": "under an item opens a form: choose the reason and explain the problem. Without an account, or to report a member, write to",
+    "es": "debajo de un objeto abre un formulario: elige el motivo y explica el problema. Si no tienes cuenta o quieres denunciar a un miembro, escribe a"
+  },
+  "supprimé": {
+    "en": "deleted",
+    "es": "eliminado"
+  },
+  "utile": {
+    "en": "useful",
+    "es": "útil"
+  },
+  "votre réponse": {
+    "en": "your reply",
+    "es": "tu respuesta"
+  },
+  "vous propose un échange": {
+    "en": "offers you a swap",
+    "es": "te propone un intercambio"
+  },
+  "vous@exemple.fr": {
+    "en": "you@example.com",
+    "es": "tu@ejemplo.es"
+  },
+  "« Le Grand Troc du 6e », « de votre commune » : le rendez-vous hebdomadaire porte l'identité de votre territoire.": {
+    "en": "“The Grand Troc of the 6th district”, “of your town”: the weekly event carries your area's identity.",
+    "es": "«El Grand Troc del distrito 6», «de tu municipio»: la cita semanal lleva la identidad de tu territorio."
+  },
+  "« Signaler »": {
+    "en": "“Report”",
+    "es": "«Denunciar»"
+  },
+  "· code": {
+    "en": "· code",
+    "es": "· código"
+  },
+  "· n°": {
+    "en": "· no.",
+    "es": "· n.º"
+  },
+  "»\n    à": {
+    "en": "” to",
+    "es": "» a"
+  },
+  "» avec le code": {
+    "en": "” with the code",
+    "es": "» con el código"
+  },
+  "» pour l'instant. Essayez un mot plus large (« vélo » plutôt qu'un modèle), ou créez un compte : votre souhait sera servi dès qu'un objet arrive.": {
+    "en": "” yet. Try a broader word (“bike” rather than a model), or create an account: your wish can be met as soon as an item arrives.",
+    "es": "» por ahora. Prueba una palabra más general («bicicleta» en lugar de un modelo) o crea una cuenta: tu deseo podrá cumplirse en cuanto llegue un objeto."
+  },
+  "» à": {
+    "en": "” to",
+    "es": "» a"
+  },
+  "» à mes souhaits": {
+    "en": "” to my wishes",
+    "es": "» a mis deseos"
+  },
+  "». Plus que": {
+    "en": "”. Only",
+    "es": "». Solo quedan"
+  },
+  "À faire": {
+    "en": "To do",
+    "es": "Pendiente"
+  },
+  "Ça vous plaît ?": {
+    "en": "Like what you see?",
+    "es": "¿Te gusta?"
+  },
+  "Échange direct": {
+    "en": "Direct swap",
+    "es": "Intercambio directo"
+  },
+  "Échange décliné. TopTroc cherche autre chose.": {
+    "en": "Swap declined. TopTroc is looking for another option.",
+    "es": "Intercambio rechazado. TopTroc busca otra opción."
+  },
+  "Échange en cours avec": {
+    "en": "Swap in progress with",
+    "es": "Intercambio en curso con"
+  },
+  "Échanger.": {
+    "en": "Swap.",
+    "es": "Intercambiar."
+  },
+  "Échanges": {
+    "en": "Swaps",
+    "es": "Intercambios"
+  },
+  "Économiser.": {
+    "en": "Save.",
+    "es": "Ahorrar."
+  },
+  "Écrire à contact@toptroc.com": {
+    "en": "Write to contact@toptroc.com",
+    "es": "Escribir a contact@toptroc.com"
+  },
+  "Écrivez-nous": {
+    "en": "Write to us",
+    "es": "Escríbenos"
+  },
+  "Éditeur du site": {
+    "en": "Website publisher",
+    "es": "Editor del sitio"
+  },
+  "État": {
+    "en": "Condition",
+    "es": "Estado"
+  },
+  "État correct": {
+    "en": "Fair condition",
+    "es": "Estado aceptable"
+  },
+  "État minimum": {
+    "en": "Minimum condition",
+    "es": "Estado mínimo"
+  },
+  "État à préciser": {
+    "en": "Condition to specify",
+    "es": "Estado por indicar"
+  },
+  "à conclure": {
+    "en": "to complete",
+    "es": "por concretar"
+  },
+  "à déposer": {
+    "en": "to drop off",
+    "es": "por entregar"
+  },
+  "à quelqu'un.": {
+    "en": "to someone.",
+    "es": "a alguien."
+  },
+  "échange": {
+    "en": "swap",
+    "es": "intercambio"
+  },
+  "échanges faits": {
+    "en": "completed swaps",
+    "es": "intercambios completados"
+  },
+  "échanges possibles": {
+    "en": "possible swaps",
+    "es": "intercambios posibles"
+  },
+  "♥ J'aime": {
+    "en": "♥ Like",
+    "es": "♥ Me gusta"
+  },
+  "♥ Vous aimez": {
+    "en": "♥ You like",
+    "es": "♥ Te gusta"
+  },
+  "Masquer": {
+    "en": "Hide",
+    "es": "Ocultar"
+  },
+  "Arnaque": {
+    "en": "Scam",
+    "es": "Estafa"
+  },
+  "Illicite": {
+    "en": "Illegal",
+    "es": "Ilícito"
+  },
+  "Conclure": {
+    "en": "Complete",
+    "es": "Concretar"
+  },
+  "Facultatif": {
+    "en": "Optional",
+    "es": "Opcional"
+  },
+  "Choisir…": {
+    "en": "Choose…",
+    "es": "Elegir…"
+  },
+  "Choisir": {
+    "en": "Choose",
+    "es": "Elegir"
+  },
+  "J'accepte": {
+    "en": "I accept",
+    "es": "Acepto"
+  },
+  "J'ai déposé": {
+    "en": "I dropped it off",
+    "es": "Ya lo he entregado"
+  },
+  "Pas pour moi": {
+    "en": "Not for me",
+    "es": "No es para mí"
+  },
+  "Proposer cet échange": {
+    "en": "Propose this swap",
+    "es": "Proponer este intercambio"
+  },
+  "Proposer la boucle": {
+    "en": "Propose the loop",
+    "es": "Proponer la cadena"
+  },
+  "Remettre": {
+    "en": "Relist",
+    "es": "Volver a publicar"
+  },
+  "Retirer": {
+    "en": "Remove",
+    "es": "Retirar"
+  },
+  "Signaler cet objet": {
+    "en": "Report this item",
+    "es": "Denunciar este objeto"
+  },
+  "De préférence : sinon, contre une autre de mes demandes": {
+    "en": "Preferably: otherwise, for another of my requests",
+    "es": "Preferiblemente: si no, por otra de mis solicitudes"
+  },
+  "Seulement contre celles-ci": {
+    "en": "Only for these",
+    "es": "Solo por estas"
+  },
+  "Contre": {
+    "en": "For",
+    "es": "Por"
+  },
+  "seulement": {
+    "en": "only",
+    "es": "solo"
+  },
+  "anonyme": {
+    "en": "anonymous",
+    "es": "anónimo"
+  },
+  "donnez": {
+    "en": "give",
+    "es": "das"
+  },
+  "donne": {
+    "en": "gives",
+    "es": "da"
+  },
+  "vous": {
+    "en": "you",
+    "es": "ti"
+  },
+  "dans": {
+    "en": "in",
+    "es": "dentro de"
+  },
+  "personnes.": {
+    "en": "people.",
+    "es": "personas."
+  },
+  "obligatoire ou de préférence": {
+    "en": "required or preferred",
+    "es": "obligatorio o preferiblemente"
+  },
+  "Main propre": {
+    "en": "In person",
+    "es": "En mano"
+  },
+  "Point relais": {
+    "en": "Collection point",
+    "es": "Punto de recogida"
+  },
+  "Oui": {
+    "en": "Yes",
+    "es": "Sí"
+  },
+  "Non": {
+    "en": "No",
+    "es": "No"
+  },
+  "Marque": {
+    "en": "Brand",
+    "es": "Marca"
+  },
+  "Modèle": {
+    "en": "Model",
+    "es": "Modelo"
+  },
+  "Dimensions (L × H × P, en cm)": {
+    "en": "Dimensions (W × H × D, in cm)",
+    "es": "Dimensiones (ancho × alto × fondo, en cm)"
+  },
+  "Couleur": {
+    "en": "Colour",
+    "es": "Color"
+  },
+  "Blanc": {
+    "en": "White",
+    "es": "Blanco"
+  },
+  "Noir": {
+    "en": "Black",
+    "es": "Negro"
+  },
+  "Gris": {
+    "en": "Grey",
+    "es": "Gris"
+  },
+  "Beige": {
+    "en": "Beige",
+    "es": "Beis"
+  },
+  "Marron": {
+    "en": "Brown",
+    "es": "Marrón"
+  },
+  "Bois": {
+    "en": "Wood",
+    "es": "Madera"
+  },
+  "Bleu": {
+    "en": "Blue",
+    "es": "Azul"
+  },
+  "Vert": {
+    "en": "Green",
+    "es": "Verde"
+  },
+  "Rouge": {
+    "en": "Red",
+    "es": "Rojo"
+  },
+  "Rose": {
+    "en": "Pink",
+    "es": "Rosa"
+  },
+  "Jaune": {
+    "en": "Yellow",
+    "es": "Amarillo"
+  },
+  "Orange": {
+    "en": "Orange",
+    "es": "Naranja"
+  },
+  "Violet": {
+    "en": "Purple",
+    "es": "Violeta"
+  },
+  "Doré": {
+    "en": "Gold",
+    "es": "Dorado"
+  },
+  "Argenté": {
+    "en": "Silver",
+    "es": "Plateado"
+  },
+  "Multicolore": {
+    "en": "Multicoloured",
+    "es": "Multicolor"
+  },
+  "État de fonctionnement": {
+    "en": "Working condition",
+    "es": "Estado de funcionamiento"
+  },
+  "Fonctionnel": {
+    "en": "Working",
+    "es": "Funciona"
+  },
+  "Fonctionnel avec défauts": {
+    "en": "Working with defects",
+    "es": "Funciona con defectos"
+  },
+  "Hors service": {
+    "en": "Not working",
+    "es": "No funciona"
+  },
+  "Accessoires inclus": {
+    "en": "Accessories included",
+    "es": "Accesorios incluidos"
+  },
+  "Complet": {
+    "en": "Complete",
+    "es": "Completo"
+  },
+  "Incomplet": {
+    "en": "Incomplete",
+    "es": "Incompleto"
+  },
+  "Naissance": {
+    "en": "Newborn",
+    "es": "Recién nacido"
+  },
+  "Mode & Accessoires": {
+    "en": "Fashion & Accessories",
+    "es": "Moda y accesorios"
+  },
+  "Vêtements femme": {
+    "en": "Women's clothing",
+    "es": "Ropa de mujer"
+  },
+  "Vêtements homme": {
+    "en": "Men's clothing",
+    "es": "Ropa de hombre"
+  },
+  "Chaussures femme": {
+    "en": "Women's shoes",
+    "es": "Calzado de mujer"
+  },
+  "Chaussures homme": {
+    "en": "Men's shoes",
+    "es": "Calzado de hombre"
+  },
+  "Sacs et maroquinerie": {
+    "en": "Bags and leather goods",
+    "es": "Bolsos y marroquinería"
+  },
+  "Bijoux et montres": {
+    "en": "Jewellery and watches",
+    "es": "Joyas y relojes"
+  },
+  "Accessoires de mode": {
+    "en": "Fashion accessories",
+    "es": "Accesorios de moda"
+  },
+  "Vêtements et accessoires de sport": {
+    "en": "Sportswear and accessories",
+    "es": "Ropa y accesorios deportivos"
+  },
+  "Taille": {
+    "en": "Size",
+    "es": "Talla"
+  },
+  "Taille numérique": {
+    "en": "Numeric size",
+    "es": "Talla numérica"
+  },
+  "Pointure": {
+    "en": "Shoe size",
+    "es": "Número de calzado"
+  },
+  "Genre": {
+    "en": "Gender",
+    "es": "Género"
+  },
+  "Femme": {
+    "en": "Women",
+    "es": "Mujer"
+  },
+  "Homme": {
+    "en": "Men",
+    "es": "Hombre"
+  },
+  "Unisexe": {
+    "en": "Unisex",
+    "es": "Unisex"
+  },
+  "Saison": {
+    "en": "Season",
+    "es": "Temporada"
+  },
+  "Été": {
+    "en": "Summer",
+    "es": "Verano"
+  },
+  "Hiver": {
+    "en": "Winter",
+    "es": "Invierno"
+  },
+  "Mi-saison": {
+    "en": "Mid-season",
+    "es": "Entretiempo"
+  },
+  "Toutes saisons": {
+    "en": "All seasons",
+    "es": "Todas las temporadas"
+  },
+  "High-tech & Multimédia": {
+    "en": "Technology & Multimedia",
+    "es": "Tecnología y multimedia"
+  },
+  "Smartphones et téléphones": {
+    "en": "Smartphones and phones",
+    "es": "Smartphones y teléfonos"
+  },
+  "Ordinateurs": {
+    "en": "Computers",
+    "es": "Ordenadores"
+  },
+  "Tablettes et liseuses": {
+    "en": "Tablets and e-readers",
+    "es": "Tabletas y lectores electrónicos"
+  },
+  "Télévisions et vidéoprojecteurs": {
+    "en": "TVs and projectors",
+    "es": "Televisores y proyectores"
+  },
+  "Consoles de jeux": {
+    "en": "Game consoles",
+    "es": "Consolas de videojuegos"
+  },
+  "Jeux vidéo": {
+    "en": "Video games",
+    "es": "Videojuegos"
+  },
+  "Audio, enceintes et casques": {
+    "en": "Audio, speakers and headphones",
+    "es": "Audio, altavoces y auriculares"
+  },
+  "Appareils photo et vidéo": {
+    "en": "Cameras and video equipment",
+    "es": "Cámaras de fotos y vídeo"
+  },
+  "Montres connectées": {
+    "en": "Smartwatches",
+    "es": "Relojes inteligentes"
+  },
+  "Accessoires informatiques et électroniques": {
+    "en": "Computer and electronic accessories",
+    "es": "Accesorios informáticos y electrónicos"
+  },
+  "Plateforme": {
+    "en": "Platform",
+    "es": "Plataforma"
+  },
+  "Capacité de stockage": {
+    "en": "Storage capacity",
+    "es": "Capacidad de almacenamiento"
+  },
+  "32 Go": {
+    "en": "32 GB",
+    "es": "32 GB"
+  },
+  "64 Go": {
+    "en": "64 GB",
+    "es": "64 GB"
+  },
+  "128 Go": {
+    "en": "128 GB",
+    "es": "128 GB"
+  },
+  "256 Go": {
+    "en": "256 GB",
+    "es": "256 GB"
+  },
+  "512 Go": {
+    "en": "512 GB",
+    "es": "512 GB"
+  },
+  "1 To et plus": {
+    "en": "1 TB and above",
+    "es": "1 TB o más"
+  },
+  "Bébé, Enfant & Jouets": {
+    "en": "Baby, Kids & Toys",
+    "es": "Bebés, niños y juguetes"
+  },
+  "Vêtements bébé (0–3 ans)": {
+    "en": "Baby clothes (0–3 years)",
+    "es": "Ropa de bebé (0–3 años)"
+  },
+  "Vêtements enfant (3–16 ans)": {
+    "en": "Children's clothes (3–16 years)",
+    "es": "Ropa infantil (3–16 años)"
+  },
+  "Chaussures enfant": {
+    "en": "Children's shoes",
+    "es": "Calzado infantil"
+  },
+  "Poussettes et accessoires": {
+    "en": "Pushchairs and accessories",
+    "es": "Cochecitos y accesorios"
+  },
+  "Sièges auto et rehausseurs": {
+    "en": "Car seats and boosters",
+    "es": "Sillas de coche y elevadores"
+  },
+  "Lits bébé et mobilier enfant": {
+    "en": "Cots and children's furniture",
+    "es": "Cunas y mobiliario infantil"
+  },
+  "Équipements de puériculture": {
+    "en": "Baby equipment",
+    "es": "Artículos de puericultura"
+  },
+  "Jeux d'éveil et premier âge": {
+    "en": "Baby and toddler toys",
+    "es": "Juguetes para bebés y primera infancia"
+  },
+  "Peluches et poupées": {
+    "en": "Soft toys and dolls",
+    "es": "Peluches y muñecas"
+  },
+  "Jeux de construction": {
+    "en": "Building toys",
+    "es": "Juegos de construcción"
+  },
+  "Figurines et véhicules miniatures": {
+    "en": "Figures and miniature vehicles",
+    "es": "Figuras y vehículos en miniatura"
+  },
+  "Jeux éducatifs": {
+    "en": "Educational games",
+    "es": "Juegos educativos"
+  },
+  "Jeux d'imitation": {
+    "en": "Role-play toys",
+    "es": "Juegos de imitación"
+  },
+  "Jeux d'extérieur et porteurs": {
+    "en": "Outdoor and ride-on toys",
+    "es": "Juegos de exterior y correpasillos"
+  },
+  "Âge": {
+    "en": "Age",
+    "es": "Edad"
+  },
+  "Type de poussette": {
+    "en": "Pushchair type",
+    "es": "Tipo de cochecito"
+  },
+  "Canne": {
+    "en": "Umbrella",
+    "es": "De bastón"
+  },
+  "Citadine": {
+    "en": "City",
+    "es": "Urbano"
+  },
+  "Combinée": {
+    "en": "Travel system",
+    "es": "Combinado"
+  },
+  "Double": {
+    "en": "Double",
+    "es": "Gemelar"
+  },
+  "Tout-terrain": {
+    "en": "All-terrain",
+    "es": "Todoterreno"
+  },
+  "Fixation": {
+    "en": "Attachment",
+    "es": "Fijación"
+  },
+  "Ceinture": {
+    "en": "Seat belt",
+    "es": "Cinturón"
+  },
+  "Norme": {
+    "en": "Standard",
+    "es": "Norma"
+  },
+  "Contenu": {
+    "en": "Contents",
+    "es": "Contenido"
+  },
+  "Maison & Décoration": {
+    "en": "Home & Decoration",
+    "es": "Hogar y decoración"
+  },
+  "Canapés et fauteuils": {
+    "en": "Sofas and armchairs",
+    "es": "Sofás y sillones"
+  },
+  "Tables et bureaux": {
+    "en": "Tables and desks",
+    "es": "Mesas y escritorios"
+  },
+  "Chaises et tabourets": {
+    "en": "Chairs and stools",
+    "es": "Sillas y taburetes"
+  },
+  "Lits et matelas": {
+    "en": "Beds and mattresses",
+    "es": "Camas y colchones"
+  },
+  "Armoires, commodes et rangements": {
+    "en": "Wardrobes, chests and storage",
+    "es": "Armarios, cómodas y almacenaje"
+  },
+  "Étagères et bibliothèques": {
+    "en": "Shelves and bookcases",
+    "es": "Estanterías y librerías"
+  },
+  "Mobilier d'extérieur": {
+    "en": "Outdoor furniture",
+    "es": "Muebles de exterior"
+  },
+  "Luminaires": {
+    "en": "Lighting",
+    "es": "Iluminación"
+  },
+  "Miroirs et cadres": {
+    "en": "Mirrors and frames",
+    "es": "Espejos y marcos"
+  },
+  "Tapis, rideaux et coussins": {
+    "en": "Rugs, curtains and cushions",
+    "es": "Alfombras, cortinas y cojines"
+  },
+  "Vaisselle et arts de la table": {
+    "en": "Tableware and dining",
+    "es": "Vajilla y menaje de mesa"
+  },
+  "Objets décoratifs": {
+    "en": "Decorative items",
+    "es": "Objetos decorativos"
+  },
+  "Plantes et pots": {
+    "en": "Plants and pots",
+    "es": "Plantas y macetas"
+  },
+  "Matière": {
+    "en": "Material",
+    "es": "Material"
+  },
+  "Métal": {
+    "en": "Metal",
+    "es": "Metal"
+  },
+  "Plastique": {
+    "en": "Plastic",
+    "es": "Plástico"
+  },
+  "Tissu": {
+    "en": "Fabric",
+    "es": "Tejido"
+  },
+  "Verre": {
+    "en": "Glass",
+    "es": "Vidrio"
+  },
+  "Mixte": {
+    "en": "Mixed",
+    "es": "Mixto"
+  },
+  "Style": {
+    "en": "Style",
+    "es": "Estilo"
+  },
+  "Moderne": {
+    "en": "Modern",
+    "es": "Moderno"
+  },
+  "Industriel": {
+    "en": "Industrial",
+    "es": "Industrial"
+  },
+  "Scandinave": {
+    "en": "Scandinavian",
+    "es": "Escandinavo"
+  },
+  "Classique": {
+    "en": "Classic",
+    "es": "Clásico"
+  },
+  "Sport & Loisirs": {
+    "en": "Sports & Leisure",
+    "es": "Deporte y ocio"
+  },
+  "Vélos et accessoires": {
+    "en": "Bikes and accessories",
+    "es": "Bicicletas y accesorios"
+  },
+  "Fitness et musculation": {
+    "en": "Fitness and weight training",
+    "es": "Fitness y musculación"
+  },
+  "Randonnée et camping": {
+    "en": "Hiking and camping",
+    "es": "Senderismo y camping"
+  },
+  "Sports de raquette": {
+    "en": "Racket sports",
+    "es": "Deportes de raqueta"
+  },
+  "Sports nautiques et plage": {
+    "en": "Water sports and beach",
+    "es": "Deportes acuáticos y playa"
+  },
+  "Ski et sports de glisse": {
+    "en": "Skiing and board sports",
+    "es": "Esquí y deportes de deslizamiento"
+  },
+  "Sports collectifs": {
+    "en": "Team sports",
+    "es": "Deportes de equipo"
+  },
+  "Trottinettes, rollers et skateboards": {
+    "en": "Scooters, skates and skateboards",
+    "es": "Patinetes, patines y monopatines"
+  },
+  "Équipements de loisirs extérieurs": {
+    "en": "Outdoor leisure equipment",
+    "es": "Equipos de ocio al aire libre"
+  },
+  "Vêtements et chaussures de sport": {
+    "en": "Sportswear and shoes",
+    "es": "Ropa y calzado deportivo"
+  },
+  "Vélo": {
+    "en": "Cycling",
+    "es": "Ciclismo"
+  },
+  "Randonnée": {
+    "en": "Hiking",
+    "es": "Senderismo"
+  },
+  "Natation": {
+    "en": "Swimming",
+    "es": "Natación"
+  },
+  "Enfant": {
+    "en": "Child",
+    "es": "Infantil"
+  },
+  "Niveau": {
+    "en": "Level",
+    "es": "Nivel"
+  },
+  "Débutant": {
+    "en": "Beginner",
+    "es": "Principiante"
+  },
+  "Intermédiaire": {
+    "en": "Intermediate",
+    "es": "Intermedio"
+  },
+  "Confirmé": {
+    "en": "Advanced",
+    "es": "Avanzado"
+  },
+  "Livres, Jeux & Culture": {
+    "en": "Books, Games & Culture",
+    "es": "Libros, juegos y cultura"
+  },
+  "Romans et littérature": {
+    "en": "Novels and literature",
+    "es": "Novelas y literatura"
+  },
+  "Polars et thrillers": {
+    "en": "Crime and thrillers",
+    "es": "Novelas policíacas y de suspense"
+  },
+  "BD et mangas": {
+    "en": "Comics and manga",
+    "es": "Cómics y manga"
+  },
+  "Livres jeunesse": {
+    "en": "Children's books",
+    "es": "Libros infantiles y juveniles"
+  },
+  "Livres scolaires et éducatifs": {
+    "en": "School and educational books",
+    "es": "Libros escolares y educativos"
+  },
+  "Livres pratiques et documentaires": {
+    "en": "Practical and non-fiction books",
+    "es": "Libros prácticos y documentales"
+  },
+  "Beaux livres et art": {
+    "en": "Illustrated books and art",
+    "es": "Libros ilustrados y arte"
+  },
+  "Jeux de société familiaux": {
+    "en": "Family board games",
+    "es": "Juegos de mesa familiares"
+  },
+  "Jeux de stratégie": {
+    "en": "Strategy games",
+    "es": "Juegos de estrategia"
+  },
+  "Jeux d'ambiance et de cartes": {
+    "en": "Party and card games",
+    "es": "Juegos de grupo y de cartas"
+  },
+  "Jeux coopératifs": {
+    "en": "Cooperative games",
+    "es": "Juegos cooperativos"
+  },
+  "Musique, CD et vinyles": {
+    "en": "Music, CDs and vinyl",
+    "es": "Música, CD y vinilos"
+  },
+  "Films, DVD et Blu-ray": {
+    "en": "Films, DVDs and Blu-ray",
+    "es": "Películas, DVD y Blu-ray"
+  },
+  "Livre": {
+    "en": "Book",
+    "es": "Libro"
+  },
+  "Jeu": {
+    "en": "Game",
+    "es": "Juego"
+  },
+  "Musique": {
+    "en": "Music",
+    "es": "Música"
+  },
+  "Film": {
+    "en": "Film",
+    "es": "Película"
+  },
+  "Public": {
+    "en": "Audience",
+    "es": "Público"
+  },
+  "Tout-petits": {
+    "en": "Toddlers",
+    "es": "Primera infancia"
+  },
+  "Enfants": {
+    "en": "Children",
+    "es": "Niños"
+  },
+  "Adolescents": {
+    "en": "Teenagers",
+    "es": "Adolescentes"
+  },
+  "Adultes": {
+    "en": "Adults",
+    "es": "Adultos"
+  },
+  "Langue": {
+    "en": "Language",
+    "es": "Idioma"
+  },
+  "Français": {
+    "en": "French",
+    "es": "Francés"
+  },
+  "Anglais": {
+    "en": "English",
+    "es": "Inglés"
+  },
+  "Espagnol": {
+    "en": "Spanish",
+    "es": "Español"
+  },
+  "Auteur / Artiste": {
+    "en": "Author / Artist",
+    "es": "Autor / Artista"
+  },
+  "Titre / Série": {
+    "en": "Title / Series",
+    "es": "Título / Serie"
+  },
+  "Nombre de joueurs": {
+    "en": "Number of players",
+    "es": "Número de jugadores"
+  },
+  "5 et plus": {
+    "en": "5 and above",
+    "es": "5 o más"
+  },
+  "Âge recommandé": {
+    "en": "Recommended age",
+    "es": "Edad recomendada"
+  },
+  "Bricolage & Jardin": {
+    "en": "DIY & Garden",
+    "es": "Bricolaje y jardín"
+  },
+  "Outils électroportatifs": {
+    "en": "Power tools",
+    "es": "Herramientas eléctricas"
+  },
+  "Outils à main": {
+    "en": "Hand tools",
+    "es": "Herramientas manuales"
+  },
+  "Matériel de jardinage": {
+    "en": "Gardening supplies",
+    "es": "Material de jardinería"
+  },
+  "Machines et équipements de jardin": {
+    "en": "Garden machinery and equipment",
+    "es": "Máquinas y equipos de jardín"
+  },
+  "Échelles et escabeaux": {
+    "en": "Ladders and stepladders",
+    "es": "Escaleras y escaleras de mano"
+  },
+  "Mesure et traçage": {
+    "en": "Measuring and marking",
+    "es": "Medición y trazado"
+  },
+  "Établis et rangements": {
+    "en": "Workbenches and storage",
+    "es": "Bancos de trabajo y almacenaje"
+  },
+  "Matériaux et fournitures": {
+    "en": "Materials and supplies",
+    "es": "Materiales y suministros"
+  },
+  "Équipements de protection": {
+    "en": "Protective equipment",
+    "es": "Equipos de protección"
+  },
+  "Alimentation": {
+    "en": "Power source",
+    "es": "Alimentación"
+  },
+  "Batterie": {
+    "en": "Battery",
+    "es": "Batería"
+  },
+  "Secteur": {
+    "en": "Mains",
+    "es": "Red eléctrica"
+  },
+  "Thermique": {
+    "en": "Petrol-powered",
+    "es": "De combustión"
+  },
+  "Manuel": {
+    "en": "Manual",
+    "es": "Manual"
+  },
+  "Puissance (W)": {
+    "en": "Power (W)",
+    "es": "Potencia (W)"
+  },
+  "Batterie incluse": {
+    "en": "Battery included",
+    "es": "Batería incluida"
+  },
+  "Non applicable": {
+    "en": "Not applicable",
+    "es": "No aplicable"
+  },
+  "Électroménager": {
+    "en": "Home Appliances",
+    "es": "Electrodomésticos"
+  },
+  "Petit électroménager de cuisine": {
+    "en": "Small kitchen appliances",
+    "es": "Pequeños electrodomésticos de cocina"
+  },
+  "Réfrigérateurs et congélateurs": {
+    "en": "Fridges and freezers",
+    "es": "Frigoríficos y congeladores"
+  },
+  "Lave-linge et sèche-linge": {
+    "en": "Washing machines and dryers",
+    "es": "Lavadoras y secadoras"
+  },
+  "Lave-vaisselle": {
+    "en": "Dishwashers",
+    "es": "Lavavajillas"
+  },
+  "Fours, plaques et micro-ondes": {
+    "en": "Ovens, hobs and microwaves",
+    "es": "Hornos, placas y microondas"
+  },
+  "Aspirateurs et nettoyage": {
+    "en": "Vacuum cleaners and cleaning",
+    "es": "Aspiradoras y limpieza"
+  },
+  "Repassage et entretien du linge": {
+    "en": "Ironing and laundry care",
+    "es": "Planchado y cuidado de la ropa"
+  },
+  "Soin et beauté": {
+    "en": "Personal care and beauty",
+    "es": "Cuidado personal y belleza"
+  },
+  "Chauffage et ventilation": {
+    "en": "Heating and ventilation",
+    "es": "Calefacción y ventilación"
+  },
+  "Autres appareils électroménagers": {
+    "en": "Other home appliances",
+    "es": "Otros electrodomésticos"
+  },
+  "Capacité": {
+    "en": "Capacity",
+    "es": "Capacidad"
+  },
+  "Classe énergétique": {
+    "en": "Energy rating",
+    "es": "Clase energética"
+  },
+  "Auto, Moto & Mobilité": {
+    "en": "Cars, Motorcycles & Mobility",
+    "es": "Automóviles, motos y movilidad"
+  },
+  "Accessoires automobiles": {
+    "en": "Car accessories",
+    "es": "Accesorios de automóvil"
+  },
+  "Pièces détachées automobiles": {
+    "en": "Car spare parts",
+    "es": "Piezas de recambio de automóvil"
+  },
+  "Équipements intérieurs": {
+    "en": "Interior equipment",
+    "es": "Equipamiento interior"
+  },
+  "Équipements extérieurs": {
+    "en": "Exterior equipment",
+    "es": "Equipamiento exterior"
+  },
+  "Pneus et jantes": {
+    "en": "Tyres and wheels",
+    "es": "Neumáticos y llantas"
+  },
+  "Accessoires moto et scooter": {
+    "en": "Motorcycle and scooter accessories",
+    "es": "Accesorios de moto y scooter"
+  },
+  "Casques et équipements de protection": {
+    "en": "Helmets and protective equipment",
+    "es": "Cascos y equipos de protección"
+  },
+  "Entretien automobile": {
+    "en": "Car maintenance",
+    "es": "Mantenimiento del automóvil"
+  },
+  "Accessoires de mobilité électrique": {
+    "en": "Electric mobility accessories",
+    "es": "Accesorios de movilidad eléctrica"
+  },
+  "Type de véhicule": {
+    "en": "Vehicle type",
+    "es": "Tipo de vehículo"
+  },
+  "Voiture": {
+    "en": "Car",
+    "es": "Coche"
+  },
+  "Moto": {
+    "en": "Motorcycle",
+    "es": "Moto"
+  },
+  "Modèle compatible": {
+    "en": "Compatible model",
+    "es": "Modelo compatible"
+  },
+  "Année de compatibilité": {
+    "en": "Compatible year",
+    "es": "Año de compatibilidad"
+  },
+  "Référence constructeur": {
+    "en": "Manufacturer reference",
+    "es": "Referencia del fabricante"
+  },
+  "Compatibilité universelle": {
+    "en": "Universal compatibility",
+    "es": "Compatibilidad universal"
+  },
+  "Divers & Collections": {
+    "en": "Miscellaneous & Collectibles",
+    "es": "Varios y coleccionismo"
+  },
+  "Objets de collection": {
+    "en": "Collectibles",
+    "es": "Objetos de colección"
+  },
+  "Antiquités et objets anciens": {
+    "en": "Antiques and old objects",
+    "es": "Antigüedades y objetos antiguos"
+  },
+  "Timbres et monnaies": {
+    "en": "Stamps and coins",
+    "es": "Sellos y monedas"
+  },
+  "Figurines de collection": {
+    "en": "Collectible figures",
+    "es": "Figuras de colección"
+  },
+  "Instruments de musique": {
+    "en": "Musical instruments",
+    "es": "Instrumentos musicales"
+  },
+  "Articles de fête et déguisements": {
+    "en": "Party supplies and costumes",
+    "es": "Artículos de fiesta y disfraces"
+  },
+  "Loisirs créatifs": {
+    "en": "Arts and crafts",
+    "es": "Manualidades"
+  },
+  "Fournitures de bureau": {
+    "en": "Office supplies",
+    "es": "Material de oficina"
+  },
+  "Objets insolites": {
+    "en": "Unusual objects",
+    "es": "Objetos insólitos"
+  },
+  "Autres objets": {
+    "en": "Other items",
+    "es": "Otros objetos"
+  },
+  "Type d'objet": {
+    "en": "Item type",
+    "es": "Tipo de objeto"
+  },
+  "Marque / Fabricant": {
+    "en": "Brand / Manufacturer",
+    "es": "Marca / Fabricante"
+  },
+  "Époque": {
+    "en": "Era",
+    "es": "Época"
+  },
+  "Ancien": {
+    "en": "Antique",
+    "es": "Antiguo"
+  },
+  "Contemporain": {
+    "en": "Contemporary",
+    "es": "Contemporáneo"
+  },
+  "Authenticité": {
+    "en": "Authenticity",
+    "es": "Autenticidad"
+  },
+  "Certifiée": {
+    "en": "Certified",
+    "es": "Certificada"
+  },
+  "Non certifiée": {
+    "en": "Not certified",
+    "es": "No certificada"
+  },
+  "1 mois": {
+    "en": "1 month",
+    "es": "1 mes"
+  },
+  "2 mois": {
+    "en": "2 months",
+    "es": "2 meses"
+  },
+  "3 mois": {
+    "en": "3 months",
+    "es": "3 meses"
+  },
+  "4 mois": {
+    "en": "4 months",
+    "es": "4 meses"
+  },
+  "5 mois": {
+    "en": "5 months",
+    "es": "5 meses"
+  },
+  "6 mois": {
+    "en": "6 months",
+    "es": "6 meses"
+  },
+  "8 mois": {
+    "en": "8 months",
+    "es": "8 meses"
+  },
+  "9 mois": {
+    "en": "9 months",
+    "es": "9 meses"
+  },
+  "10 mois": {
+    "en": "10 months",
+    "es": "10 meses"
+  },
+  "12 mois": {
+    "en": "12 months",
+    "es": "12 meses"
+  },
+  "14 mois": {
+    "en": "14 months",
+    "es": "14 meses"
+  },
+  "16 mois": {
+    "en": "16 months",
+    "es": "16 meses"
+  },
+  "18 mois": {
+    "en": "18 months",
+    "es": "18 meses"
+  },
+  "1 ans": {
+    "en": "1 year",
+    "es": "1 año"
+  },
+  "2 ans": {
+    "en": "2 years",
+    "es": "2 años"
+  },
+  "3 ans": {
+    "en": "3 years",
+    "es": "3 años"
+  },
+  "4 ans": {
+    "en": "4 years",
+    "es": "4 años"
+  },
+  "5 ans": {
+    "en": "5 years",
+    "es": "5 años"
+  },
+  "6 ans": {
+    "en": "6 years",
+    "es": "6 años"
+  },
+  "8 ans": {
+    "en": "8 years",
+    "es": "8 años"
+  },
+  "9 ans": {
+    "en": "9 years",
+    "es": "9 años"
+  },
+  "10 ans": {
+    "en": "10 years",
+    "es": "10 años"
+  },
+  "12 ans": {
+    "en": "12 years",
+    "es": "12 años"
+  },
+  "14 ans": {
+    "en": "14 years",
+    "es": "14 años"
+  },
+  "16 ans": {
+    "en": "16 years",
+    "es": "16 años"
+  },
+  "18 ans": {
+    "en": "18 years",
+    "es": "18 años"
+  },
+  "0–6 mois": {
+    "en": "0–6 months",
+    "es": "0–6 meses"
+  },
+  "6–12 mois": {
+    "en": "6–12 months",
+    "es": "6–12 meses"
+  },
+  "1–2 ans": {
+    "en": "1–2 years",
+    "es": "1–2 años"
+  },
+  "3–5 ans": {
+    "en": "3–5 years",
+    "es": "3–5 años"
+  },
+  "6–8 ans": {
+    "en": "6–8 years",
+    "es": "6–8 años"
+  },
+  "9–12 ans": {
+    "en": "9–12 years",
+    "es": "9–12 años"
+  },
+  "12–16 ans": {
+    "en": "12–16 years",
+    "es": "12–16 años"
+  },
+  "Aperçu de la photo": {
+    "en": "Photo preview",
+    "es": "Vista previa de la foto"
+  },
+  "Ouvrir l'annonce pour recopier la description": {
+    "en": "Open the listing to copy the description",
+    "es": "Abrir el anuncio para copiar la descripción"
+  },
+  "aussi en vente ailleurs": {
+    "en": "also listed for sale elsewhere",
+    "es": "también a la venta en otro sitio"
+  },
+  "sur": {
+    "en": "out of",
+    "es": "de"
+  },
+  "Le": {
+    "en": "On",
+    "es": "El"
+  },
+  ". Rien n'est libéré tant que tout n'est pas déposé. Sans dépôt de tous d'ici": {
+    "en": ". Nothing is released until everything is dropped off. If everyone has not dropped off within",
+    "es": ". No se libera nada hasta que todos hayan entregado. Si no todos han entregado en"
+  },
+  "Ajoutez une photo et l'état avant de remettre cet objet en ligne.": {
+    "en": "Add a photo and condition before relisting this item.",
+    "es": "Añade una foto y el estado antes de volver a publicar este objeto."
+  },
+  "Ce compte est suspendu.": {
+    "en": "This account is suspended.",
+    "es": "Esta cuenta está suspendida."
+  },
+  "Ce lien a expiré ou a déjà servi : demandez-en un nouveau.": {
+    "en": "This link has expired or has already been used: request a new one.",
+    "es": "Este enlace ha caducado o ya se ha utilizado: solicita uno nuevo."
+  },
+  "Ce pseudo est déjà pris.": {
+    "en": "This username is already taken.",
+    "es": "Este seudónimo ya está en uso."
+  },
+  "Ce signalement a déjà été traité.": {
+    "en": "This report has already been reviewed.",
+    "es": "Esta denuncia ya se ha tramitado."
+  },
+  "Cet objet a été retiré par la modération.": {
+    "en": "This item was removed by moderation.",
+    "es": "Este objeto ha sido retirado por moderación."
+  },
+  "Cet objet est engagé dans un échange.": {
+    "en": "This item is committed to a swap.",
+    "es": "Este objeto está comprometido en un intercambio."
+  },
+  "Cette catégorie existe déjà.": {
+    "en": "This category already exists.",
+    "es": "Esta categoría ya existe."
+  },
+  "Cette sous-catégorie n'existe pas dans cette catégorie.": {
+    "en": "This subcategory does not exist in this category.",
+    "es": "Esta subcategoría no existe en esta categoría."
+  },
+  "Connexion requise.": {
+    "en": "Please sign in.",
+    "es": "Debes acceder a tu cuenta."
+  },
+  "E-mail ou mot de passe incorrect.": {
+    "en": "Incorrect email or password.",
+    "es": "Correo o contraseña incorrectos."
+  },
+  "Indiquez votre e-mail pour être informé de la suite donnée.": {
+    "en": "Enter your email to be notified of the outcome.",
+    "es": "Indica tu correo para recibir información sobre el resultado."
+  },
+  "L'envoi de photos n'est pas encore configuré.": {
+    "en": "Photo uploads have not been configured yet.",
+    "es": "El envío de fotos aún no está configurado."
+  },
+  "La photo doit être envoyée depuis le site TopTroc.": {
+    "en": "The photo must be uploaded from the TopTroc website.",
+    "es": "La foto debe enviarse desde el sitio TopTroc."
+  },
+  "Numéro de téléphone invalide : par exemple 06 12 34 56 78.": {
+    "en": "Invalid phone number: for example 06 12 34 56 78.",
+    "es": "Número de teléfono no válido: por ejemplo, 06 12 34 56 78."
+  },
+  "Objet introuvable.": {
+    "en": "Item not found.",
+    "es": "Objeto no encontrado."
+  },
+  "On ne peut pas souhaiter son propre objet.": {
+    "en": "You cannot wish for your own item.",
+    "es": "No puedes solicitar tu propio objeto."
+  },
+  "Réservé à la modération.": {
+    "en": "Restricted to moderators.",
+    "es": "Reservado a moderadores."
+  },
+  "Secret des tâches planifiées absent ou incorrect.": {
+    "en": "Missing or incorrect scheduled-task secret.",
+    "es": "Secreto de tareas programadas ausente o incorrecto."
+  },
+  "Session expirée : reconnectez-vous avec un nouveau lien.": {
+    "en": "Session expired: sign in again using a new link.",
+    "es": "La sesión ha caducado: accede de nuevo con otro enlace."
+  },
+  "Trop d'essais : réessayez dans 15 minutes, ou recevez un lien de connexion par e-mail.": {
+    "en": "Too many attempts: try again in 15 minutes, or get a sign-in link by email.",
+    "es": "Demasiados intentos: vuelve a intentarlo en 15 minutos o recibe un enlace de acceso por correo."
+  },
+  "Trop de liens demandés pour cette adresse : réessayez dans une heure.": {
+    "en": "Too many links requested for this address: try again in an hour.",
+    "es": "Se han solicitado demasiados enlaces para esta dirección: inténtalo dentro de una hora."
+  },
+  "Un critère est soit obligatoire, soit préférentiel.": {
+    "en": "A criterion must be either required or preferred.",
+    "es": "Un criterio debe ser obligatorio o preferente."
+  },
+  "Un objet ne peut être que remis « disponible » ou « retire » à la main.": {
+    "en": "An item can only be manually set to available or removed.",
+    "es": "Un objeto solo puede marcarse manualmente como disponible o retirado."
+  },
+  "Un objet ne se donne que contre vos propres souhaits.": {
+    "en": "An item can only be offered for your own wishes.",
+    "es": "Un objeto solo puede ofrecerse a cambio de tus propios deseos."
+  },
+  "Un objet précis se demande sans alternative ni état minimum.": {
+    "en": "A specific item must be requested without alternatives or a minimum condition.",
+    "es": "Un objeto concreto se solicita sin alternativas ni estado mínimo."
+  },
+  "Un objet précis se demande sans sous-catégorie ni caractéristique.": {
+    "en": "A specific item must be requested without a subcategory or characteristics.",
+    "es": "Un objeto concreto se solicita sin subcategoría ni características."
+  },
+  "Un signalement porte soit sur un objet, soit sur un compte.": {
+    "en": "A report must concern either an item or an account.",
+    "es": "Una denuncia debe referirse a un objeto o a una cuenta."
+  },
+  "Un souhait porte soit sur une catégorie, soit sur un objet précis.": {
+    "en": "A wish must concern either a category or a specific item.",
+    "es": "Un deseo debe referirse a una categoría o a un objeto concreto."
+  },
+  "Une alternative est donnée deux fois.": {
+    "en": "An alternative has been entered twice.",
+    "es": "Se ha indicado una alternativa dos veces."
+  },
+  "Un objet de cette boucle n'est plus disponible.": {
+    "en": "An item in this loop is no longer available.",
+    "es": "Un objeto de esta cadena ya no está disponible."
+  },
+  "Les échanges se décident au Grand Troc du dimanche : cette boucle vous sera proposée dimanche si elle est toujours possible.": {
+    "en": "Swaps are arranged at the Sunday Grand Troc: this loop will be offered to you on Sunday if it is still possible.",
+    "es": "Los intercambios se deciden en el Grand Troc del domingo: se te propondrá esta cadena el domingo si sigue siendo posible."
+  },
+  "Ces objets ne forment pas une boucle d'échange valide pour vous.": {
+    "en": "These items do not form a valid swap loop for you.",
+    "es": "Estos objetos no forman una cadena de intercambio válida para ti."
+  },
+  "Vous ne participez pas à cet échange.": {
+    "en": "You are not part of this swap.",
+    "es": "No participas en este intercambio."
+  },
+  "Cet échange n'attend plus de réponse.": {
+    "en": "This swap is no longer awaiting replies.",
+    "es": "Este intercambio ya no espera respuestas."
+  },
+  "Le délai de réponse de 48 h est dépassé ; l'échange est annulé.": {
+    "en": "The 48-hour reply deadline has passed; the swap is cancelled.",
+    "es": "Ha vencido el plazo de respuesta de 48 horas; se ha cancelado el intercambio."
+  },
+  "On ne dépose qu'une fois l'échange accepté par tous.": {
+    "en": "You can only drop off once everyone has accepted the swap.",
+    "es": "Solo puedes entregar cuando todos hayan aceptado el intercambio."
+  },
+  "Votre dépôt est déjà enregistré.": {
+    "en": "Your drop-off has already been recorded.",
+    "es": "Tu entrega ya está registrada."
+  },
+  "Cet objet n'est plus proposé.": {
+    "en": "This item is no longer on offer.",
+    "es": "Este objeto ya no se ofrece."
+  },
+  "Vous ne pouvez proposer que l'un de vos objets.": {
+    "en": "You can only offer one of your own items.",
+    "es": "Solo puedes ofrecer uno de tus propios objetos."
+  },
+  "Cette boucle n'est plus possible : un objet a trouvé preneur entre-temps.": {
+    "en": "This loop is no longer possible: an item has found a new owner in the meantime.",
+    "es": "Esta cadena ya no es posible: un objeto ha encontrado destinatario entretanto."
+  },
+  "TopTroc pour mon entreprise": {
+    "en": "TopTroc for my business",
+    "es": "TopTroc para mi empresa"
+  },
+  "TopTroc pour notre territoire": {
+    "en": "TopTroc for our area",
+    "es": "TopTroc para nuestro territorio"
+  },
+  "souhaits": {
+    "en": "wishes",
+    "es": "deseos"
+  },
+  "et": {
+    "en": "and",
+    "es": "y"
+  },
+  "Par colis": {
+    "en": "By parcel",
+    "es": "Por paquete"
+  },
+  "Où je troque": {
+    "en": "Where I swap",
+    "es": "Dónde intercambio"
+  },
+  "Troc Premium": {
+    "en": "Troc Premium",
+    "es": "Troc Premium"
+  },
+  "Localisation": {
+    "en": "Location",
+    "es": "Ubicación"
+  },
+  "Autour de moi": {
+    "en": "Around me",
+    "es": "Cerca de mí"
+  },
+  "Seule la ville est montrée aux autres membres, jamais votre adresse.": {
+    "en": "Only the town is shown to other members, never your address.",
+    "es": "Solo se muestra la ciudad a los demás miembros, nunca tu dirección."
+  },
+  "Par colis, envoi à mes frais": {
+    "en": "By parcel, shipping at my expense",
+    "es": "Por paquete, envío a mi cargo"
+  },
+  "Format du colis": {
+    "en": "Parcel size",
+    "es": "Tamaño del paquete"
+  },
+  "Pas d'envoi par colis": {
+    "en": "No parcel shipping",
+    "es": "Sin envío por paquete"
+  },
+  "Petit colis (jusqu'à 1 kg)": {
+    "en": "Small parcel (up to 1 kg)",
+    "es": "Paquete pequeño (hasta 1 kg)"
+  },
+  "Colis moyen (jusqu'à 5 kg)": {
+    "en": "Medium parcel (up to 5 kg)",
+    "es": "Paquete mediano (hasta 5 kg)"
+  },
+  "Grand colis (jusqu'à 30 kg)": {
+    "en": "Large parcel (up to 30 kg)",
+    "es": "Paquete grande (hasta 30 kg)"
+  },
+  "Encombrant : main propre seulement": {
+    "en": "Bulky: hand-to-hand only",
+    "es": "Voluminoso: solo en mano"
+  },
+  "Remettez en main propre ou envoyez": {
+    "en": "Hand it over or ship it",
+    "es": "Entrégalo en mano o envíalo"
+  },
+  "Ville ou code postal": {
+    "en": "Town or postcode",
+    "es": "Ciudad o código postal"
+  },
+  "Retour arrière": {
+    "en": "Undo",
+    "es": "Deshacer"
+  },
+  "Super J'aime": {
+    "en": "Super Like",
+    "es": "Super Me gusta"
+  },
+  "Sans publicité": {
+    "en": "No ads",
+    "es": "Sin publicidad"
+  },
+  "Voir qui aime vos objets": {
+    "en": "See who likes your items",
+    "es": "Ver a quién le gustan tus objetos"
+  },
+  "Retour arrière dans le Match": {
+    "en": "Undo in Match",
+    "es": "Deshacer en Match"
+  },
+  "Aperçu du stock du dimanche": {
+    "en": "Preview of Sunday's stock",
+    "es": "Vista previa del stock del domingo"
+  },
+  "Avant-première du Grand Troc à 17 h": {
+    "en": "Grand Troc preview at 5 pm",
+    "es": "Preestreno del Grand Troc a las 17 h"
+  },
+  "En tête des ShortLists": {
+    "en": "Top of ShortLists",
+    "es": "Primero en las ShortLists"
+  },
+  "Priorité à égalité au Grand Troc": {
+    "en": "Tie-break priority at the Grand Troc",
+    "es": "Prioridad en caso de empate en el Grand Troc"
+  },
+  "Jusqu'à 3 zones d'intérêt": {
+    "en": "Up to 3 areas of interest",
+    "es": "Hasta 3 zonas de interés"
+  },
+  "Garantie TopTroc sur vos colis": {
+    "en": "TopTroc guarantee on your parcels",
+    "es": "Garantía TopTroc en tus paquetes"
+  },
+  "3 proches inclus": {
+    "en": "3 relatives included",
+    "es": "3 familiares incluidos"
+  },
+  "Ajouter cette zone": {
+    "en": "Add this area",
+    "es": "Añadir esta zona"
+  },
+  "Rayon": {
+    "en": "Radius",
+    "es": "Radio"
+  },
+  "Au mois": {
+    "en": "Monthly",
+    "es": "Mensual"
+  },
+  "À l'année": {
+    "en": "Yearly",
+    "es": "Anual"
+  },
+  "Acheter": {
+    "en": "Buy",
+    "es": "Comprar"
+  },
+  "Qui aime ?": {
+    "en": "Who likes it?",
+    "es": "¿A quién le gusta?"
+  },
+  "par colis": {
+    "en": "by parcel",
+    "es": "por paquete"
+  },
+  "Voir la remise": {
+    "en": "See handover",
+    "es": "Ver la entrega"
+  },
+  "remis": {
+    "en": "handed over",
+    "es": "entregado"
+  },
+  "à remettre": {
+    "en": "to hand over",
+    "es": "por entregar"
+  },
+  "envoyé": {
+    "en": "shipped",
+    "es": "enviado"
+  },
+  "à envoyer": {
+    "en": "to ship",
+    "es": "por enviar"
+  },
+  "Transporteur": {
+    "en": "Carrier",
+    "es": "Transportista"
+  },
+  "Numéro de suivi": {
+    "en": "Tracking number",
+    "es": "Número de seguimiento"
+  },
+  "J'ai envoyé le colis": {
+    "en": "I've shipped the parcel",
+    "es": "He enviado el paquete"
+  },
+  "Avant-première Premium": {
+    "en": "Premium preview",
+    "es": "Preestreno Premium"
+  },
+  "Profil vérifié": {
+    "en": "Verified profile",
+    "es": "Perfil verificado"
+  },
+  "Gérer ou résilier mon abonnement": {
+    "en": "Manage or cancel my subscription",
+    "es": "Gestionar o cancelar mi suscripción"
+  },
+  "Zones enregistrées": {
+    "en": "Areas saved",
+    "es": "Zonas guardadas"
+  },
+  "Ajouter un proche (e-mail de son compte TopTroc)": {
+    "en": "Add a relative (their TopTroc account email)",
+    "es": "Añadir un familiar (correo de su cuenta TopTroc)"
+  },
+  "Proche ajouté": {
+    "en": "Relative added",
+    "es": "Familiar añadido"
+  },
+  "Bienvenue dans Troc Premium Plus !": {
+    "en": "Welcome to Troc Premium Plus!",
+    "es": "¡Bienvenido a Troc Premium Plus!"
+  },
+  "Remise enregistrée": {
+    "en": "Handover recorded",
+    "es": "Entrega registrada"
+  }
+}

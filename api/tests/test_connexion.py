@@ -2,6 +2,7 @@
 
 from datetime import UTC, datetime, timedelta
 
+import pytest
 from conftest import jeton_du_dernier_lien
 from sqlalchemy import text
 
@@ -12,8 +13,8 @@ from montroc_api.db import engine
 def test_premiere_connexion_demande_un_pseudo(client):
     assert client.post("/auth/lien", json={"email": "Ines@Exemple.fr"}).status_code == 202
     courriel = courriels.ENVOYES[-1]
-    assert courriel.destinataire == "ines@exemple.fr" and courriel.sujet == "Votre lien de connexion à TrocTroc"
-    assert "https://troctroc.fr/#connexion=" in courriel.texte
+    assert courriel.destinataire == "ines@exemple.fr" and courriel.sujet == "Votre lien de connexion à TopTroc"
+    assert "https://toptroc.com/#connexion=" in courriel.texte
     jeton = jeton_du_dernier_lien("ines@exemple.fr")
 
     r = client.post("/auth/verifier", json={"jeton": jeton}).json()
@@ -126,3 +127,20 @@ def test_trop_d_essais_de_mot_de_passe(client, creer):
     client.post("/auth/lien", json={"email": "alice@exemple.fr"})
     client.post("/auth/verifier", json={"jeton": jeton_du_dernier_lien("alice@exemple.fr")})
     assert client.post("/auth/connexion", json=bon).status_code == 200
+
+
+@pytest.mark.parametrize(("langue", "prefixe"), [("fr", ""), ("en", "/english"), ("es", "/espanol")])
+def test_lien_connexion_garde_la_langue(client, langue, prefixe):
+    r = client.post("/auth/lien", json={"email": "ines@exemple.fr", "langue": langue})
+    assert r.status_code == 202
+    assert f"https://toptroc.com{prefixe}/#connexion=" in courriels.ENVOYES[-1].texte
+    jeton = jeton_du_dernier_lien("ines@exemple.fr")
+    r = client.post("/auth/verifier", json={"jeton": jeton, "pseudo": "Inès"})
+    assert r.status_code == 200
+    assert r.json()["utilisateur"]["pseudo"] == "Inès"
+
+
+@pytest.mark.parametrize("langue", ["de", "../", "https://exemple.fr"])
+def test_lien_connexion_refuse_une_langue_inconnue(client, langue):
+    assert client.post("/auth/lien", json={"email": "ines@exemple.fr", "langue": langue}).status_code == 422
+    assert courriels.ENVOYES == []

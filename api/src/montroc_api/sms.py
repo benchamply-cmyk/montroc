@@ -57,6 +57,6 @@ def envoyer(numero: str, texte: str) -> None:
 
 
 def boucle_proposee(numero: str, nb_echanges: int, lien: str, grand_troc: bool) -> None:
-    qui = "Le Grand Troc" if grand_troc else "TrocTroc"
+    qui = "Le Grand Troc" if grand_troc else "TopTroc"
     quoi = "un échange" if nb_echanges == 1 else f"{nb_echanges} échanges"
     envoyer(numero, f"{qui} vous propose {quoi}. Vous avez 48 h pour répondre : {lien}")

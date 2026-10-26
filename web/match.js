@@ -22,7 +22,7 @@
     return `<article class="carte${c.il_aime.length ? ' chaude' : ''}" data-i="${i}" aria-label="${esc(o.titre)}">
       <div class="ph">${o.photo_url ? `<img src="${esc(vignette(o.photo_url, 640))}" alt="" loading="lazy">` : ''}${tag}</div>
       <div class="corps"><b>${esc(o.titre)}</b>
-        <span class="muted" style="font-size:14px">${esc(ETATS[o.etat] || '')}${o.etat ? ' · ' : ''}${Detail.nom(o.categorie_slug, o.sous_categorie_slug)}${Detail.caracs(o.categorie_slug, o.caracteristiques) ? ' · ' + Detail.caracs(o.categorie_slug, o.caracteristiques) : ''} · ${esc(p.pseudo)}${p.zone ? ', ' + esc(p.zone) : ''}${p.reputation !== 'nouveau' && reputation(p) ? ' · ' + reputation(p) : ''}</span>
+        <span class="muted" style="font-size:14px">${esc(ETATS[o.etat] || '')}${o.etat ? ' · ' : ''}${Detail.nom(o.categorie_slug, o.sous_categorie_slug)}${Detail.caracs(o.categorie_slug, o.caracteristiques) ? ' · ' + Detail.caracs(o.categorie_slug, o.caracteristiques) : ''} · ${esc(p.pseudo)}${o.lieu ? ', ' + esc(o.lieu) : p.zone ? ', ' + esc(p.zone) : ''}${c.distance_km != null ? ` (${c.distance_km} km)` : ''}${c.par_colis ? ' · par colis' : ''}${p.verifie ? ' · <span class="rep fiable">Profil vérifié</span>' : ''}${p.reputation !== 'nouveau' && reputation(p) ? ' · ' + reputation(p) : ''}</span>
         ${o.description ? `<span style="font-size:14px">${esc(o.description.slice(0, 140))}${o.description.length > 140 ? '…' : ''}</span>` : ''}
         <span class="pourquoi">${pourquoi(c)}</span>
         <a class="voir" href="#objet-${o.id}" data-fiche="${o.id}">Voir la fiche</a>
@@ -32,12 +32,28 @@
   // Deux cartes empilées : celle du dessus se glisse, celle du dessous attend.
   function afficherCarrousel() {
     const n = cartes.length;
-    $('#carrousel-compte').textContent = n ? `${n} objet${n > 1 ? 's' : ''} pour vous` : '';
+    $('#carrousel-compte').textContent = n ? `${TT_I18N.count(n,'objet')} pour vous` : '';
     $('#carrousel').innerHTML = n ? cartes.slice(0, 2).map(carteHtml).reverse().join('')
       : '<p class="empty">Plus rien à vous montrer pour l\'instant. Ajoutez des souhaits ou des objets : la pile se remplit dès qu\'un objet correspond.</p>';
     const cs = $$('#carrousel .carte'); cs.forEach((c, j) => c.classList.toggle('devant', j === cs.length - 1));
     $('#ronds').hidden = $('#match-aide').hidden = !n;
+    boutonsPremium();
   }
+
+  // Troc Premium : Super J'aime (quota par semaine) et retour arrière sur le dernier « Non merci ».
+  let dernierNon = null;
+  function boutonsPremium() {
+    const av = (moi && moi.avantages) || [];
+    $('#m-super').hidden = !moi || !moi.super_jaime_restants;
+    $('#m-super').title = moi && moi.super_jaime_restants ? `Super J'aime : ${moi.super_jaime_restants} cette semaine` : '';
+    $('#m-retour').hidden = !dernierNon || !av.includes('retour_arriere');
+  }
+  $('#m-super').onclick = () => avis(true, true);
+  $('#m-retour').onclick = async () => {
+    if (!dernierNon) return;
+    try { await api(`/match/avis/${dernierNon}`, {method: 'DELETE'}); dernierNon = null; await chargerMatch(); toast('Objet remis dans la pile'); }
+    catch (err) { toast(err.message); }
+  };
 
   // Glisser la carte du dessus : au-delà d'un tiers de sa largeur, c'est un choix ; sinon elle revient.
   let glisse = null;
@@ -69,11 +85,13 @@
   });
 
   let enCours = false;
-  async function avis(aime) {
+  async function avis(aime, superJaime = false) {
     const c = cartes[0], carte = $('#carrousel .carte.devant'); if (!c || !carte || enCours) return;
     enCours = true; const id = c.objet.id;
     try {
-      const r = await api('/match/avis', {method: 'POST', body: {objet_id: id, aime}});
+      const r = await api('/match/avis', {method: 'POST', body: {objet_id: id, aime, super_jaime: superJaime}});
+      dernierNon = aime ? null : id;
+      if (superJaime) { moi.super_jaime_restants = Math.max(0, (moi.super_jaime_restants || 1) - 1); toast(`Super J'aime envoyé : ${c.proprietaire.pseudo} est prévenu.`); }
       carte.style.transform = `translateX(${aime ? 130 : -130}%) rotate(${aime ? 18 : -18}deg)`; carte.style.opacity = 0;
       await new Promise(ok => setTimeout(ok, calme ? 0 : 340));
       cartes = cartes.filter(x => x.objet.id !== id); afficherCarrousel();
@@ -108,7 +126,7 @@
   function afficherMatchs() {
     const libres = matchs.filter(x => !x.echange_id).length;
     $('#badge-match').textContent = libres; $('#badge-match').hidden = !libres;
-    $('#match-title').textContent = libres ? `${libres} match${libres > 1 ? 's' : ''} à conclure` : 'Ça vous plaît ?';
+    $('#match-title').textContent = libres ? `${TT_I18N.count(libres,'match')} à conclure` : 'Ça vous plaît ?';
     $('#matchs').innerHTML = matchs.map(matchHtml).join('')
       || '<p class="empty">Pas encore de match. Un « J\'aime » sur un objet marqué « Match immédiat » en crée un tout de suite.</p>';
     mesMatchs = matchs; afficherEspace();

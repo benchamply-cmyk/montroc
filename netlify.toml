@@ -1,7 +1,7 @@
-# Configuration Netlify : le site est le dossier web/, publié tel quel (pas d'étape de build).
+# Les versions anglaise et espagnole sont générées depuis les mêmes sources françaises.
 [build]
   publish = "web"
-  command = ""
+  command = "npm run build"
 
 # En-têtes de sécurité sur toutes les pages.
 [[headers]]
@@ -10,12 +10,25 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"  # « Autour de moi » (localisation des objets et zone d'intérêt)
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
 
-# Toujours servir le site sur troctroc.fr (sans www).
+# Toujours servir le site sur toptroc.com (sans www). L'ancien domaine troctroc.fr (gardé chez OVH) redirige
+# en 301 vers la même page : les liens déjà partagés et les liens de connexion déjà envoyés restent valables.
+[[redirects]]
+  from = "https://www.toptroc.com/*"
+  to = "https://toptroc.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://troctroc.fr/*"
+  to = "https://toptroc.com/:splat"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "https://www.troctroc.fr/*"
-  to = "https://troctroc.fr/:splat"
+  to = "https://toptroc.com/:splat"
   status = 301
   force = true
