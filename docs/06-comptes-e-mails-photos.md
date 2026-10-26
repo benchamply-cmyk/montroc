@@ -55,7 +55,7 @@ Onglet **Match** du site : un carrousel d'objets qui répondent à mes souhaits 
 
 **Match à trois** : sous la pile, l'onglet Match montre aussi des boucles à trois possibles tout de suite, où chacun reçoit un objet qu'il a demandé ou déjà aimé. « Proposer la boucle » vaut accord pour sa part ; les deux autres ont 48 h pour dire oui. Dans la pile, à égalité, les objets d'un propriétaire fiable et peu convoités (peu d'autres « J'aime ») passent devant.
 
-Le Grand Troc du dimanche ne s'occupe plus que de ce que le Match n'a pas conclu : les boucles à trois et les échanges à deux sans match. Un « J'aime » y compte comme un souhait de l'objet, et un « Non merci » comme un refus (l'objet ne vous sera pas proposé).
+Le Grand Troc du dimanche ne s'occupe plus que de ce que le Match n'a pas conclu : les boucles à trois et les échanges à deux sans match. Vos « J'aime » y comptent ensemble comme un seul souhait, classé après vos souhaits déclarés : on reçoit au plus un objet aimé par Grand Troc (réglage `COUPS_DE_COEUR_PAR_GRAND_TROC` sur Render, de 1 à 5). Un « Non merci » compte comme un refus (l'objet ne vous sera pas proposé).
 
 ### Le Grand Troc du dimanche
 
