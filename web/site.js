@@ -163,7 +163,7 @@
   async function envoyerLien(){
     const email=pop.email.value.trim();
     if(!pop.email.checkValidity()||!email){dire('Indiquez votre e-mail : le lien y sera envoyé.');pop.email.focus();return}
-    try{await appeler('/auth/lien',{email});dire(`Lien envoyé à ${email} : ouvrez l'e-mail sur cet appareil et cliquez dessus. Vous pourrez ensuite choisir un mot de passe.`,true)}
+    try{await appeler('/auth/lien',{email,langue:TT_I18N.lang});dire(`Lien envoyé à ${email} : ouvrez l'e-mail sur cet appareil et cliquez dessus. Vous pourrez ensuite choisir un mot de passe.`,true)}
     catch(err){dire(err.message)}
   }
   pop.querySelector('[data-lien]').onclick=envoyerLien;
