@@ -55,9 +55,7 @@ def demander_lien(donnees: DemandeLien, session: SessionDep):
 
     jeton = secrets.token_urlsafe(32)
     session.add(m.JetonConnexion(email=email, empreinte=empreinte(jeton), expire_le=datetime.now(UTC) + DUREE_LIEN))
-    prefixe = {"fr": "", "en": "/english", "es": "/espanol"}[donnees.langue]
-    lien = f"{get_settings().site_url.rstrip('/')}{prefixe}/#connexion={jeton}"
-    courriels.apres_validation(session, courriels.lien_magique, email, lien)
+    courriels.apres_validation(session, courriels.lien_magique, email, f"{get_settings().site_url}/#connexion={jeton}")
     session.commit()
     return {"envoye": True}
 

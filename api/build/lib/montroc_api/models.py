@@ -124,12 +124,6 @@ class Categorie(Base):
     __table_args__ = (CheckConstraint("slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'", name="slug_format"),)
 
 
-# Réputation affichée (``Utilisateur.reputation``) : la fiabilité vaut (tenus + 9) / (tenus + 9 + manqués).
-ECHANGES_POUR_ETRE_FIABLE = 3
-SEUIL_FIABLE = 0.9  # au plus un manquement pour 0 à 9 échanges menés
-SEUIL_A_CONFIRMER = 0.75  # trois manquements sans échange mené au bout
-
-
 class Utilisateur(Horodatage, Base):
     __tablename__ = "utilisateurs"
 
@@ -145,10 +139,6 @@ class Utilisateur(Horodatage, Base):
     # la fiabilité en découle (services.noter_engagement). Un refus n'est pas un manquement.
     engagements_tenus: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     engagements_manques: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
-    # Réponses données aux boucles du Grand Troc (hors « j'accepte d'office » et accords du Match) : le math trade
-    # en tire la chance qu'il dise oui à la prochaine (services.acceptation).
-    reponses_oui: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
-    reponses_non: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     # Compte suspendu par la modération : plus de connexion, objets retirés des échanges.
     suspendu_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     # Mot de passe facultatif (empreinte scrypt, voir motdepasse.py) : sans lui, on se connecte par lien magique.
@@ -166,28 +156,9 @@ class Utilisateur(Horodatage, Base):
     def a_un_mot_de_passe(self) -> bool:
         return self.mot_de_passe is not None
 
-    @property
-    def echanges_menes(self) -> int:
-        """Échanges menés au bout : chaque objet déposé à temps."""
-        return self.engagements_tenus or 0
-
-    @property
-    def reputation(self) -> str:
-        """Ce que les autres membres voient de sa fiabilité : « nouveau » tant qu'il n'a rien mené ni manqué,
-        « fiable » après quelques échanges menés au bout sans (presque) rien manquer, « a_confirmer » après
-        plusieurs absences de réponse ou dépôts manqués, « membre » entre les deux."""
-        if not self.engagements_tenus and not self.engagements_manques:
-            return "nouveau"
-        if self.fiabilite <= SEUIL_A_CONFIRMER:
-            return "a_confirmer"
-        if self.engagements_tenus >= ECHANGES_POUR_ETRE_FIABLE and self.fiabilite >= SEUIL_FIABLE:
-            return "fiable"
-        return "membre"
-
     __table_args__ = (
         CheckConstraint("fiabilite >= 0 AND fiabilite <= 1", name="fiabilite_0_1"),
         CheckConstraint("engagements_tenus >= 0 AND engagements_manques >= 0", name="engagements_positifs"),
-        CheckConstraint("reponses_oui >= 0 AND reponses_non >= 0", name="reponses_positives"),
         # E-mail unique sans tenir compte de la casse.
         Index("uq_utilisateurs_email_lower", func.lower(email), unique=True),
     )
@@ -306,12 +277,6 @@ class GrandTroc(Horodatage, Base):
     # Repêchage du mardi 18 h : seconde passe sur ce qui s'est libéré (refus, absences de réponse).
     repeche_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     nb_objets_repeches: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
-    # Remplaçants trouvés pendant les 48 h de réponse, dès qu'un refus libère des objets (chaque heure).
-    nb_objets_remplaces: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
-    # Trace de chaque calcul (``services.trace_du_calcul``) : moteur utilisé (exact ou heuristique), longueur
-    # de boucle retenue, statuts de CP-SAT, durée… Pour savoir si la production a basculé en mode dégradé.
-    calcul: Mapped[dict] = mapped_column(JSONB, default=dict, server_default="{}")
-    calcul_repechage: Mapped[dict | None] = mapped_column(JSONB)
 
     echanges: Mapped[list[Echange]] = relationship(back_populates="grand_troc")
 
@@ -337,10 +302,6 @@ class Echange(Horodatage, Base):
     # Le Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande ou un accord de match).
     grand_troc_id: Mapped[int | None] = mapped_column(ForeignKey("grands_trocs.id", ondelete="SET NULL"), index=True)
     grand_troc: Mapped[GrandTroc | None] = relationship(back_populates="echanges")
-    # Boucle de remplacement, proposée pendant les 48 h de réponse après un refus (``services.remplacements``).
-    remplacement: Mapped[bool] = mapped_column(default=False, server_default="false")
-    # Boucle du Grand Troc annulée dont les objets libérés ont déjà servi à chercher des remplaçants.
-    remplacants_cherches_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     transferts: Mapped[list[Transfert]] = relationship(
         back_populates="echange", cascade="all, delete-orphan", order_by="Transfert.position"
@@ -360,9 +321,6 @@ class Transfert(Base):
     donneur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
     receveur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
     objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), index=True)
-    # Le souhait du receveur que ce transfert sert : tant que l'échange n'est pas annulé, il compte dans la
-    # quantité du souhait (une poussette reçue n'en appelle pas une deuxième). Vide pour un « J'aime » du Match.
-    souhait_id: Mapped[int | None] = mapped_column(ForeignKey("souhaits.id", ondelete="SET NULL"), index=True)
     reponse: Mapped[Reponse] = mapped_column(
         _enum(Reponse, "reponse"), default=Reponse.en_attente, server_default=Reponse.en_attente.value
     )
@@ -381,8 +339,7 @@ class Transfert(Base):
         UniqueConstraint("echange_id", "position", name="uq_transferts_echange_position"),
         UniqueConstraint("echange_id", "objet_id", name="uq_transferts_echange_objet"),
         CheckConstraint("donneur_id <> receveur_id", name="donneur_different_receveur"),
-        # Jusqu'à 6 personnes, la limite du moteur (troc_echanges.boucles.LONGUEUR_MAX_ABSOLUE).
-        CheckConstraint("position >= 0 AND position < 6", name="boucle_max_6"),
+        CheckConstraint("position >= 0 AND position < 3", name="boucle_max_3"),
     )
 
 

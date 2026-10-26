@@ -12,18 +12,13 @@ router = APIRouter(prefix="/taches", tags=["tâches planifiées"], dependencies=
 
 @router.post("/horaires", response_model=ResultatTaches)
 def horaires(session: SessionDep):
-    """Toutes les heures : rappels « plus que 12 h », annulation des échanges dont le délai est dépassé,
-    remplaçants pour qui a été lâché par un refus, puis repêchage du mardi une fois toutes les réponses au
-    Grand Troc rentrées."""
+    """Toutes les heures : rappels « plus que 12 h », annulation des échanges dont le délai est dépassé, puis
+    repêchage du mardi une fois toutes les réponses au Grand Troc rentrées."""
     rappels, expires = services.taches_horaires(session)
-    session.flush()
-    remplaces = services.remplacements(session)
     session.flush()
     repeches = services.repechage(session)
     session.commit()
-    return ResultatTaches(
-        rappels_envoyes=rappels, echanges_expires=expires, objets_remplaces=remplaces, objets_repeches=repeches
-    )
+    return ResultatTaches(rappels_envoyes=rappels, echanges_expires=expires, objets_repeches=repeches)
 
 
 @router.post("/grand-troc", response_model=ResultatGrandTroc)

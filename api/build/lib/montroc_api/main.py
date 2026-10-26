@@ -16,7 +16,7 @@ app = FastAPI(
     title="API montroc",
     version=__version__,
     description=(
-        "TopTroc, troc sans prix ni monnaie : le Match (accords 1 à 1 à tout moment) et le Grand Troc du "
+        "TrocTroc, troc sans prix ni monnaie : le Match (accords 1 à 1 à tout moment) et le Grand Troc du "
         "dimanche (boucles d'échange de 2 ou 3 personnes)."
     ),
 )

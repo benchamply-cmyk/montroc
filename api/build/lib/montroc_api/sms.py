@@ -27,9 +27,9 @@ ENVOYES: list[Sms] = []
 def envoyer(numero: str, texte: str) -> None:
     """Envoie un SMS au numéro international (+33…). Une panne est journalisée sans faire échouer la requête."""
     reglages = get_settings()
-    if not reglages.brevo_api_key or not reglages.sms_actifs:
+    if not reglages.brevo_api_key:
         ENVOYES.append(Sms(numero, texte))
-        journal.warning("SMS non envoyé (Brevo non configuré ou SMS coupés) à %s : %s", numero, texte)
+        journal.warning("SMS non envoyé (Brevo non configuré) à %s : %s", numero, texte)
         return
     corps = {
         "type": "transactional",
@@ -57,6 +57,6 @@ def envoyer(numero: str, texte: str) -> None:
 
 
 def boucle_proposee(numero: str, nb_echanges: int, lien: str, grand_troc: bool) -> None:
-    qui = "Le Grand Troc" if grand_troc else "TopTroc"
+    qui = "Le Grand Troc" if grand_troc else "TrocTroc"
     quoi = "un échange" if nb_echanges == 1 else f"{nb_echanges} échanges"
     envoyer(numero, f"{qui} vous propose {quoi}. Vous avez 48 h pour répondre : {lien}")

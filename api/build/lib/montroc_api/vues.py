@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 
 from troc_echanges import Boucle
 
-from . import matchs, services
+from . import matchs
 from . import models as m
+from .config import get_settings
 from .schemas import (
     BoucleProposee,
     CarteMatch,
@@ -36,7 +37,7 @@ def echange(e: m.Echange, lecteur_id: int | None = None) -> EchangeLecture:
         expire_le=e.expire_le,
         grand_troc_jour=e.grand_troc.jour if e.grand_troc else None,
         par_match=e.par_match,
-        point_de_depot=services.point_de_depot(e) or None,
+        point_de_depot=get_settings().point_de_depot or None,
         transferts=[
             TransfertLecture(
                 id=t.id,
