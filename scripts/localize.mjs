@@ -51,7 +51,7 @@ export function build(){
   for(const p of pages){
    let s=t.html(fs.readFileSync(path.join(root,'web',p),'utf8').replace(/<link rel="(?:canonical|alternate)"[^>]*>\n?/g,'')).replace('<html lang="fr">',`<html lang="${lang}">`);
    // Scripts communs aux pages de la même langue, assets visuels inchangés.
-   s=s.replace(/src="(?:\/)?(site|match)\.js"/g,`src="/${prefix}/$1.js"`).replace('src="annonce.js"','src="/annonce.js"');
+   s=s.replace(/src="(?:\/)?(site|match|premium)\.js"/g,`src="/${prefix}/$1.js"`).replace('src="annonce.js"','src="/annonce.js"');
    s=s.replace('<script src="/langue.js">',`<script src="/${prefix}/messages.js"></script>\n<script src="/langue.js">`);
    s=s.replace(/href="(\/(?:#|$|pros\/|collectivites\/|faq\/|mentions-legales\/|cgu\/|confidentialite\/|regles\/)[^"]*)"/g,`href="/${prefix}$1"`);
    const canonical='/'+p.replace(/index\.html$/,'');
@@ -59,7 +59,7 @@ export function build(){
    s=s.replace('</head>',`<link rel="canonical" href="https://troctroc.fr/${prefix}${canonical}">\n${alternates}\n</head>`);
    const target=path.join(out,p);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,s);
   }
-  for(const name of ['site','match'])fs.writeFileSync(path.join(out,`${name}.js`),t.js(fs.readFileSync(path.join(root,'web',`${name}.js`),'utf8')));
+  for(const name of ['site','match','premium'])fs.writeFileSync(path.join(out,`${name}.js`),t.js(fs.readFileSync(path.join(root,'web',`${name}.js`),'utf8')));
   fs.writeFileSync(path.join(out,'messages.js'),`window.TT_MESSAGES=${JSON.stringify(Object.fromEntries(Object.entries(catalogue).map(([k,v])=>[k,v[lang]])))};\n`);
  }
  console.log(`Generated ${pages.length} pages per language (English and Español).`);

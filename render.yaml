@@ -53,6 +53,19 @@ services:
       # Facultatif : un lieu par zone, « Marseille 6e = adresse ; Aix-en-Provence = adresse ».
       - key: POINTS_DE_DEPOT
         sync: false
+      # Business model V2 (voir api/src/montroc_api/premium.py) : lieux publics conseillés pour la main propre,
+      # liens de paiement Stripe « plus_mois = https://buy.stripe.com/… ; … », secret du webhook /premium/stripe,
+      # portail client Stripe (résiliation), encart publicitaire « texte | lien ».
+      - key: LIEUX_DE_RENCONTRE
+        sync: false
+      - key: STRIPE_LIENS
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PORTAIL
+        sync: false
+      - key: ENCART_PUBLICITE
+        sync: false
 
   # Pré-production : même API, déployée depuis la branche preprod, sur une branche Neon « preprod » (copie de
   # la production). Les e-mails partent tous à COURRIELS_VERS, les SMS sont coupés : aucun membre n'est
@@ -100,3 +113,16 @@ services:
         sync: false   # même valeur que le secret GitHub TACHES_SECRET_PREPROD
       - key: POINT_DE_DEPOT
         value: Point de dépôt de test (pré-production)
+      # Business model V2 (voir api/src/montroc_api/premium.py) : lieux publics conseillés pour la main propre,
+      # liens de paiement Stripe « plus_mois = https://buy.stripe.com/… ; … », secret du webhook /premium/stripe,
+      # portail client Stripe (résiliation), encart publicitaire « texte | lien ».
+      - key: LIEUX_DE_RENCONTRE
+        sync: false
+      - key: STRIPE_LIENS
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PORTAIL
+        sync: false
+      - key: ENCART_PUBLICITE
+        sync: false
