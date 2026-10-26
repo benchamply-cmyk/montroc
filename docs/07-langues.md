@@ -1,6 +1,6 @@
 # Langues du site
 
-Le français reste à la racine. Les versions anglaise et espagnole suivent les mêmes chemins, préfixés par `/english/` et `/espanol/` (ex. `/english/faq/`, `/espanol/pros/`). Le menu permet de changer de langue en gardant la page, les paramètres et l'ancre en cours. La session reste partagée sur le même domaine. Les ancres et identifiants métier restent identiques.
+Le français reste à la racine. Les versions anglaise et espagnole suivent les mêmes chemins, préfixés par `/english/` et `/espanol/` (ex. `/english/faq/`, `/espanol/pros/`). Le bouton de langue affiche le drapeau et le code de la version active (FR, EN ou ES). Le survol à la souris ou le clic ouvre les deux autres langues ; le clavier permet aussi l'ouverture (Entrée/Espace ou flèche bas) et la fermeture (Échap). Le drapeau anglais est la croix de saint Georges. Les drapeaux sont des SVG intégrés pour un rendu identique sur tous les systèmes. Le changement garde la page, les paramètres et l'ancre en cours. La session reste partagée sur le même domaine. Les ancres et identifiants métier restent identiques.
 
 ## Modifier le contenu
 
