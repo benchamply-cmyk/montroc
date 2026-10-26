@@ -10,7 +10,7 @@ Coche au fur et à mesure :
 - [ ] 4. Site déployé sur Netlify
 - [ ] 5. DNS OVH pointés vers Netlify et Render
 - [ ] 6. HTTPS actif et vérifications faites
-- [ ] 7. Branche `main` protégée sur GitHub
+- [ ] 7. Branche `prod` protégée sur GitHub
 
 ---
 
@@ -56,7 +56,7 @@ Le schéma (tables, contraintes) n'est pas créé à la main : l'API applique le
 ## 4. Déployer le site sur Netlify
 
 1. Sur **https://app.netlify.com** : **Add new project → Import an existing project → GitHub** (Netlify appelle désormais les sites des « projects »), choisis `benchamply-cmyk/montroc`.
-2. Netlify lit [`netlify.toml`](../netlify.toml) : dossier publié `web`, pas de commande de build. Branche de production : **`main`**. Clique **Deploy**.
+2. Netlify lit [`netlify.toml`](../netlify.toml) : dossier publié `web`, pas de commande de build. Branche de production : **`prod`**. Clique **Deploy**.
 3. Vérifie l'adresse provisoire `https://troctroc.netlify.app`.
 4. **Project configuration → Domain management → Add a domain** : `troctroc.fr`. Netlify propose aussi `www.troctroc.fr` : accepte. Vérifie que `troctroc.fr` est marqué **Primary domain**.
 5. Netlify propose d'utiliser **Netlify DNS** : refuse (« Set up DNS externally » / garder OVH). Note les valeurs qu'il affiche :
@@ -93,15 +93,15 @@ Dans **Web Cloud → Noms de domaine → troctroc.fr → Zone DNS** :
    - `https://api.troctroc.fr/sante` répond `ok` ;
    - `https://api.troctroc.fr/docs` affiche la documentation de l'API.
 
-## 7. Protéger la branche `main` sur GitHub
+## 7. Protéger la branche `prod` sur GitHub
 
-Dans le dépôt : **Settings → Branches → Add branch ruleset** (ou *Add rule*), cible `main` :
+Dans le dépôt : **Settings → Branches → Add branch ruleset** (ou *Add rule*), cible `prod` :
 
 - **Require a pull request before merging** ;
 - **Require status checks to pass** : coche *Moteur d'échanges* et *API et base de données* (ils apparaissent après la première CI) ;
 - **Block force pushes**.
 
-Ainsi, rien n'arrive en production sans pull request et sans tests verts. Comme Netlify et Render déploient `main`, **fusionner une PR = mettre en ligne**.
+Ainsi, rien n'arrive en production sans pull request et sans tests verts. Comme Netlify et Render déploient `prod`, **fusionner la PR `preprod → prod` = mettre en ligne**.
 
 ---
 

@@ -4,15 +4,15 @@ name: Versions
 # - lancé à la main avec un numéro (Actions > Versions > Run workflow, ex. 0.6.0) : prépare la version sur
 #   preprod. Les lignes de changelog.d/ rejoignent CHANGELOG.md, VERSION change dans web/site.js, et la
 #   branche chore/version-X.Y.Z part en PR vers preprod ;
-# - à chaque arrivée sur main : si la VERSION de web/site.js n'a pas encore d'étiquette, on crée l'étiquette
+# - à chaque arrivée sur prod : si la VERSION de web/site.js n'a pas encore d'étiquette, on crée l'étiquette
 #   vX.Y.Z et la Release GitHub, avec le texte de CHANGELOG.md.
 on:
   push:
-    branches: [main]
+    branches: [prod]
   workflow_dispatch:
     inputs:
       version:
-        description: "Version à préparer sur preprod (ex. 0.6.0). Vide : seulement les étiquettes de main."
+        description: "Version à préparer sur preprod (ex. 0.6.0). Vide : seulement les étiquettes de prod."
         required: false
         default: ""
       titre:
@@ -84,7 +84,7 @@ jobs:
           if [ ! -s notes.md ]; then echo "Pas de section [$v] dans CHANGELOG.md"; exit 1; fi
           gh release create "v$v" --target "$GITHUB_SHA" --title "v$v" --notes-file notes.md
 
-      # Ménage décidé par Ben le 2026-10-17 : branches dont la PR est déjà fusionnée dans main.
+      # Ménage décidé par Ben le 2026-10-17 : branches dont la PR est déjà fusionnée dans main (devenue prod).
       # Une branche n'est supprimée que si elle pointe encore sur le commit attendu (rien de neuf dessus).
       - name: Ménage des anciennes branches (une seule fois)
         run: |

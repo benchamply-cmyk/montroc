@@ -14,7 +14,7 @@ flowchart LR
 
 | Brique | Dossier | Hébergement | Rôle |
 |---|---|---|---|
-| Site | `web/` | **Netlify** (gratuit) | Pages HTML/CSS/JS servies telles quelles. Déploiement automatique à chaque fusion dans `main`, aperçu automatique sur chaque pull request. |
+| Site | `web/` | **Netlify** (gratuit) | Pages HTML/CSS/JS servies telles quelles. Déploiement automatique à chaque arrivée sur `prod`, aperçu automatique sur chaque pull request. |
 | API | `api/` | **Render** (gratuit au départ, Frankfurt) | Python 3.12 + FastAPI. Reçoit les requêtes du site, lit/écrit la base, appelle le moteur. Documentation interactive sur `/docs`. |
 | Moteur | `algorithme/` | (dans l'API) | Bibliothèque Python qui trouve les boucles d'échange (2 à 4 personnes au Grand Troc, 3 si le marché est trop grand) et le « math trade », selon les dix règles du matching (voir `algorithme/README.md`). Sans dépendance obligatoire, testable seule ; avec OR-Tools (installé par l'API), le math trade est résolu exactement. |
 | Base | `api/alembic/` (schéma) | **Neon** (PostgreSQL managé, Frankfurt) | Données : utilisateurs, objets, souhaits, échanges. Sauvegardes et restauration gérées par Neon. |

@@ -2,19 +2,19 @@
 
 ## Principe
 
-- **`main` = la production.** Netlify (site) et Render (API) déploient automatiquement chaque nouveau commit de `main`.
+- **`prod` = la production** (appelée `main` jusqu'au 26/10/2026). Netlify (site) et Render (API) déploient automatiquement chaque nouveau commit de `prod`.
 - **`preprod` = la pré-production** (depuis le 26/10/2026). Toutes les branches partent de `preprod` et y reviennent par une PR. Elle a son site, son API et sa copie de la base (voir [Pré-production](#pré-production)).
-- **`main` ne reçoit que `preprod`**, par une PR `preprod → main`, quand la campagne de tests de régression est verte et que Ben a validé.
-- On ne travaille **jamais directement** sur `main` ni sur `preprod`.
+- **`prod` ne reçoit que `preprod`**, par une PR `preprod → prod`, quand la campagne de tests de régression est verte et que Ben a validé.
+- On ne travaille **jamais directement** sur `prod` ni sur `preprod`.
 - Une branche = un sujet. Petite, courte, fusionnée vite (*Squash and merge*), remise à jour avec `preprod` avant la fusion.
 
 ```
-feature/… fix/… docs/… chore/… mobile/…  ──PR──▶  preprod  ──PR (jeudi)──▶  main  ──▶  étiquette vX.Y.Z
+feature/… fix/… docs/… chore/… mobile/…  ──PR──▶  preprod  ──PR (jeudi)──▶  prod  ──▶  étiquette vX.Y.Z
         ▲                                            │
         └──────── test rouge : on corrige ───────────┘
 ```
 
-Le contrôle **Règles des branches** (`.github/workflows/regles.yml`) vérifie chaque PR : base `main` seulement depuis `preprod` ; vers `preprod`, un nom `type/sujet` et un fichier `changelog.d/`.
+Le contrôle **Règles des branches** (`.github/workflows/regles.yml`) vérifie chaque PR : base `prod` seulement depuis `preprod` ; vers `preprod`, un nom `type/sujet` et un fichier `changelog.d/`.
 
 ## Nommer les branches
 
@@ -50,7 +50,7 @@ Sur la PR :
 3. le contrôle **Règles des branches** vérifie le nom de la branche et le fichier `changelog.d/` ;
 4. quand tout est vert et relu : mettre la branche à jour avec `preprod` (*Update branch*), puis **Squash and merge**. La branche est supprimée, la pré-production est déployée.
 
-Chaque semaine (le jeudi), une PR `preprod → main` livre la production. Pas de livraison du samedi au mardi soir (Grand Troc et 48 h de réponse), sauf correctif urgent passé par `preprod`.
+Chaque semaine (le jeudi), une PR `preprod → prod` livre la production. Pas de livraison du samedi au mardi soir (Grand Troc et 48 h de réponse), sauf correctif urgent passé par `preprod`.
 
 ## Messages de commit
 
@@ -58,7 +58,7 @@ Une phrase à l'impératif qui dit ce que fait le commit, en français : « Ajou
 
 ## Versions
 
-Chaque version est une étiquette Git `vMAJEUR.MINEUR.CORRECTIF` posée sur `main`, et décrite dans [CHANGELOG.md](../CHANGELOG.md).
+Chaque version est une étiquette Git `vMAJEUR.MINEUR.CORRECTIF` posée sur `prod`, et décrite dans [CHANGELOG.md](../CHANGELOG.md).
 
 | Ce qui change | Chiffre qui monte | Exemple |
 |---|---|---|
@@ -71,13 +71,13 @@ Tant qu'on est en bêta, la version commence par `0.`.
 Pour sortir une version :
 1. dans chaque PR, ajouter un fichier d'une ligne `changelog.d/<sujet>.md`, jamais de ligne dans `CHANGELOG.md` : deux PR ouvertes ensemble ne se gênent plus (voir [changelog.d/README.md](../changelog.d/README.md)) ;
 2. pour préparer la version : *Actions → Versions → Run workflow*, branche `preprod`, numéro `0.6.0` (ou `python3 scripts/version.py 0.6.0` en local). Les lignes rejoignent `CHANGELOG.md`, `VERSION` change en haut de `web/site.js` (pied de page), et une PR `chore/version-0.6.0` part vers `preprod` (une PR ouverte par le robot ne lance pas la CI : la fermer puis la rouvrir) ;
-3. à l'arrivée sur `main` (PR `preprod → main`), le workflow **Versions** (`.github/workflows/versions.yml`) voit une `VERSION` sans étiquette : il crée l'étiquette `v0.5.0` et la *Release* GitHub avec le texte du journal. Rien à faire à la main.
+3. à l'arrivée sur `prod` (PR `preprod → prod`), le workflow **Versions** (`.github/workflows/versions.yml`) voit une `VERSION` sans étiquette : il crée l'étiquette `v0.5.0` et la *Release* GitHub avec le texte du journal. Rien à faire à la main.
 
 Les branches fusionnées se suppriment seules si l'option *Settings → General → Automatically delete head branches* est cochée sur GitHub.
 
 ## Pré-production
 
-| Brique | Production (`main`) | Pré-production (`preprod`) |
+| Brique | Production (`prod`) | Pré-production (`preprod`) |
 |---|---|---|
 | Site | troctroc.fr (Netlify) | déploiement de branche Netlify : `preprod--troctroc.netlify.app` |
 | API | `montroc-api` sur Render (api.troctroc.fr) | `montroc-api-preprod` sur Render (`render.yaml`), `montroc-api-preprod.onrender.com` |
@@ -98,7 +98,7 @@ Faite le 26/10/2026. Le service Render `montroc-api-preprod` a été créé dire
 
 ### Protection des branches (Settings → Branches → Add rule, une règle par branche)
 
-| Réglage | `main` | `preprod` |
+| Réglage | `prod` | `preprod` |
 |---|---|---|
 | Require a pull request before merging | oui | oui |
 | Require approvals | non | 1 (voir la note) |

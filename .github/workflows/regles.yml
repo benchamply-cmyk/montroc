@@ -1,8 +1,8 @@
 name: Règles des branches
 
-# Le chemin d'une modification : branche type/sujet → PR vers preprod → PR preprod → main.
+# Le chemin d'une modification : branche type/sujet → PR vers preprod → PR preprod → prod.
 # Ce contrôle échoue quand une PR s'en écarte. Pour qu'il bloque la fusion, l'ajouter aux « status checks »
-# obligatoires de main et de preprod (Settings > Branches, voir docs/05-git-et-branches.md).
+# obligatoires de prod et de preprod (Settings > Branches, voir docs/05-git-et-branches.md).
 on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
@@ -23,9 +23,9 @@ jobs:
           erreur() { echo "::error::$1"; echec=1; }
           echec=0
           case "$BASE" in
-            main)
+            prod)
               # La production ne reçoit que la pré-production, une fois la campagne de tests verte.
-              [ "$TETE" = "preprod" ] || erreur "main n'accepte que les PR venant de preprod (cette PR vient de « $TETE »). Changez sa base pour preprod."
+              [ "$TETE" = "preprod" ] || erreur "prod n'accepte que les PR venant de preprod (cette PR vient de « $TETE »). Changez sa base pour preprod."
               ;;
             preprod)
               if ! echo "$TETE" | grep -Eq '^((feature|fix|docs|chore|db|mobile)/[a-z0-9][a-z0-9.-]*|revert-.+)$'; then

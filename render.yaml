@@ -6,7 +6,7 @@ services:
     runtime: python
     region: frankfurt
     plan: free
-    branch: main
+    branch: prod
     # Ne redéploie que si l'API ou le moteur changent.
     buildFilter:
       paths:
