@@ -573,6 +573,27 @@ def test_grand_troc_saute_une_boucle_devenue_impossible(client, creer, monkeypat
     assert (r.json()["grand_troc"]["nb_boucles"], r.json()["grand_troc"]["nb_objets"]) == (1, 2)
 
 
+def test_reputation_visible_des_autres_membres(client, creer):
+    (a, b, c), echange = creer.echange_abc()
+    profil = client.get(f"/utilisateurs/{b.id}").json()
+    assert profil["reputation"] == "nouveau" and profil["echanges_menes"] == 0
+    for p in (a, b, c):
+        client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": True}, headers=p.headers)
+    client.post(f"/echanges/{echange['id']}/depot", headers=b.headers)
+    profil = client.get(f"/utilisateurs/{b.id}").json()
+    assert profil["reputation"] == "membre" and profil["echanges_menes"] == 1
+    assert client.get("/moi", headers=b.headers).json()["echanges_menes"] == 1
+
+    # Trois échanges menés au bout sans manquement : fiable ; trois absences de réponse : à confirmer.
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE utilisateurs SET engagements_tenus = 3 WHERE id = :id"), {"id": b.id})
+        conn.execute(
+            text("UPDATE utilisateurs SET engagements_manques = 3, fiabilite = 0.75 WHERE id = :id"), {"id": c.id}
+        )
+    assert client.get(f"/utilisateurs/{b.id}").json()["reputation"] == "fiable"
+    assert client.get(f"/utilisateurs/{c.id}").json()["reputation"] == "a_confirmer"
+
+
 def test_plafond_d_echanges_par_personne(client, creer, monkeypatch):
     """Un gros déposant ne reçoit pas plus de PLAFOND_ECHANGES_GRAND_TROC objets au même Grand Troc."""
     monkeypatch.setattr(services.get_settings(), "plafond_echanges_grand_troc", 2)

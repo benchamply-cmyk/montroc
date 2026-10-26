@@ -103,6 +103,8 @@ class Moi(Lecture):
     zone: str | None
     telephone: str | None = None
     fiabilite: float
+    echanges_menes: int
+    reputation: str
     cree_le: datetime
     est_moderateur: bool = False
     a_un_mot_de_passe: bool = False
@@ -127,6 +129,9 @@ class UtilisateurLecture(Lecture):
     pseudo: str
     zone: str | None
     fiabilite: float
+    # Échanges menés au bout et réputation (nouveau, membre, fiable, a_confirmer) : voir ``Utilisateur.reputation``.
+    echanges_menes: int
+    reputation: str
     cree_le: datetime
 
 
@@ -403,6 +408,8 @@ class Membre(Lecture):
     pseudo: str
     zone: str | None
     fiabilite: float
+    echanges_menes: int
+    reputation: str
 
 
 class CarteMatch(BaseModel):
