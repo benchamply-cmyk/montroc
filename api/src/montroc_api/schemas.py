@@ -97,6 +97,25 @@ class ChoixMotDePasse(BaseModel):
     mot_de_passe: str = Field(min_length=8, max_length=200)
 
 
+class ZoneInteret(BaseModel):
+    """Une zone où je veux troquer en main propre : « autour de moi » ou une ville, et un rayon."""
+
+    libelle: str = Field(min_length=1, max_length=80, examples=["Marseille 6e"])
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+    rayon_km: float = Field(default=10, ge=1, le=200)
+
+    @field_validator("latitude", "longitude")
+    @classmethod
+    def _arrondi(cls, v: float) -> float:
+        return arrondir(v)
+
+
+def arrondir(coordonnee: float) -> float:
+    """0,01° ≈ 1 km : on ne garde jamais une position précise (domicile)."""
+    return round(coordonnee, 2)
+
+
 class Moi(Lecture):
     id: int
     email: str
@@ -109,6 +128,16 @@ class Moi(Lecture):
     cree_le: datetime
     est_moderateur: bool = False
     a_un_mot_de_passe: bool = False
+    zones_interet: list[ZoneInteret] = Field(default_factory=list)
+    toute_la_france: bool = False
+    verifie: bool = False
+    # Troc Premium : la formule dont je profite (la mienne ou celle de ma famille), jusqu'à quand, ses avantages.
+    formule: str | None = None
+    premium_jusqu_au: datetime | None = None
+    avantages: list[str] = Field(default_factory=list)
+    essai_disponible: bool = False
+    super_jaime_restants: int = 0
+    zones_max: int = 1
 
 
 class MoiModification(AvecTelephone):
@@ -116,6 +145,9 @@ class MoiModification(AvecTelephone):
     zone: str | None = Field(default=None, max_length=80)
     # null ou "" pour ne plus recevoir de SMS.
     telephone: str | None = Field(default=None, max_length=30)
+    # Zones d'intérêt (une, trois avec Troc Premium) et « toute la France » (objets lointains, par colis).
+    zones_interet: list[ZoneInteret] | None = Field(default=None, max_length=3)
+    toute_la_france: bool | None = None
 
 
 class ResultatConnexion(BaseModel):
@@ -168,20 +200,52 @@ Caracteristiques = Annotated[dict[str, str], Field(default_factory=dict, max_len
 
 
 def _modes_echange(modes: list[str] | None) -> list[str] | None:
+    """Modes acceptés par une demande : tous cochés = aucun précisé, la liste vide les accepte tous (colis compris :
+    recevoir un colis ne coûte rien au receveur)."""
     if modes is None:
         return None
     inconnus = set(modes) - set(nomenclature.MODES_ECHANGE)
     if inconnus:
         raise ValueError(f"Mode d'échange inconnu : {', '.join(sorted(inconnus))}.")
-    # Tous cochés = aucun précisé : la liste vide les accepte tous.
     propres = sorted(set(modes))
     return [] if len(propres) == len(nomenclature.MODES_ECHANGE) else propres
+
+
+def _modes_objet(modes: list[str] | None) -> list[str] | None:
+    """Modes possibles pour un objet : la liste vide vaut les modes par défaut (main propre, point de dépôt) ;
+    le colis, payé par l'expéditeur, doit être coché."""
+    if not modes:
+        return modes
+    propres = _modes_echange(modes) or sorted(nomenclature.MODES_ECHANGE)
+    return [] if set(propres) == set(nomenclature.MODES_PAR_DEFAUT) else propres
+
+
+class Localisation(BaseModel):
+    """La localisation d'un objet (« Ajouter une localisation ») et son format d'envoi, s'il peut partir en colis."""
+
+    lieu: str | None = Field(default=None, max_length=120, examples=["Marseille 6e"])
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
+    format_colis: str | None = Field(default=None, max_length=20)
+
+    @model_validator(mode="after")
+    def _localisation(self):
+        if (self.latitude is None) != (self.longitude is None):
+            raise ValueError("Une localisation a une latitude et une longitude.")
+        if self.latitude is not None:
+            self.latitude, self.longitude = arrondir(self.latitude), arrondir(self.longitude)
+        if self.format_colis is not None and self.format_colis not in nomenclature.FORMATS_COLIS:
+            raise ValueError(f"Format de colis inconnu : {self.format_colis}.")
+        modes = getattr(self, "modes_echange", None) or []
+        if "colis" in modes and nomenclature.FORMATS_COLIS.get(self.format_colis or "", ("", None))[1] is None:
+            raise ValueError("Pour un envoi par colis, indiquez un format de colis (30 kg au plus).")
+        return self
 
 
 ModesEchange = Annotated[list[str], Field(default_factory=list, max_length=len(nomenclature.MODES_ECHANGE))]
 
 
-class ObjetCreation(BaseModel):
+class ObjetCreation(Localisation):
     categorie_slug: str
     sous_categorie_slug: str | None = Field(default=None, max_length=50)
     caracteristiques: Caracteristiques
@@ -197,7 +261,7 @@ class ObjetCreation(BaseModel):
     modes_echange: ModesEchange
 
     _photo = field_validator("photo_url")(_photo_cloudinary)
-    _modes = field_validator("modes_echange")(_modes_echange)
+    _modes = field_validator("modes_echange")(_modes_objet)
     _origine = field_validator("annonce_origine")(_annonce_origine)
 
     @model_validator(mode="after")
@@ -208,7 +272,7 @@ class ObjetCreation(BaseModel):
         return self
 
 
-class ObjetModification(BaseModel):
+class ObjetModification(Localisation):
     titre: str | None = Field(default=None, min_length=1, max_length=120)
     description: str | None = Field(default=None, max_length=2000)
     etat: EtatObjet | None = None
@@ -221,7 +285,7 @@ class ObjetModification(BaseModel):
     caracteristiques: dict[str, str] | None = Field(default=None, max_length=12)
     modes_echange: list[str] | None = Field(default=None, max_length=len(nomenclature.MODES_ECHANGE))
 
-    _modes = field_validator("modes_echange")(_modes_echange)
+    _modes = field_validator("modes_echange")(_modes_objet)
 
     @model_validator(mode="after")
     def statut_manuel(self):
@@ -242,6 +306,8 @@ class ObjetLecture(Lecture):
     photo_url: str | None
     statut: StatutObjet
     modes_echange: list[str]
+    lieu: str | None = None
+    format_colis: str | None = None
     cree_le: datetime
 
 
@@ -251,6 +317,8 @@ class MonObjet(ObjetLecture):
     annonce_origine: str | None
     contre_souhait_ids: list[int]
     contre_strict: bool
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class Alternative(BaseModel):
@@ -385,6 +453,13 @@ class TransfertLecture(BaseModel):
     depose_le: datetime | None
     # Visible seulement du donneur (pour marquer le paquet) et du receveur (pour le récupérer).
     code_retrait: str | None = None
+    # Main propre, colis (payé par le donneur) ou point de dépôt ; pour un colis, le suivi et la garantie.
+    mode: str = "main_propre"
+    transporteur: str | None = None
+    numero_suivi: str | None = None
+    garantie: bool = False
+    # Où envoyer le colis : visible du receveur qui l'a donnée et de son donneur seulement.
+    adresse_livraison: str | None = None
 
 
 class EchangeLecture(BaseModel):
@@ -398,6 +473,10 @@ class EchangeLecture(BaseModel):
     # Accord 1 à 1 conclu après un match.
     par_match: bool = False
     point_de_depot: str | None = None
+    # Lieu public conseillé pour les remises en main propre (réglage LIEUX_DE_RENCONTRE).
+    lieu_de_rencontre: str | None = None
+    # Boucle du Grand Troc vue en avant-première (Troc Premium), avant l'annonce de 18 h.
+    avant_premiere: bool = False
     transferts: list[TransfertLecture]
 
 
@@ -411,6 +490,7 @@ class Membre(Lecture):
     fiabilite: float
     echanges_menes: int
     reputation: str
+    verifie: bool = False
 
 
 class CarteMatch(BaseModel):
@@ -428,11 +508,32 @@ class CarteMatch(BaseModel):
     il_aime: list[ObjetResume]
     # Mes objets qui répondent à ses souhaits.
     il_cherche: list[ObjetResume]
+    # Distance depuis ma zone d'intérêt la plus proche, et s'il faudrait passer par un colis.
+    distance_km: float | None = None
+    par_colis: bool = False
 
 
 class AvisCreation(BaseModel):
     objet_id: int
     aime: bool
+    # « Super J'aime » (Troc Premium, quota par semaine) : le propriétaire est prévenu.
+    super_jaime: bool = False
+
+
+class Interesse(BaseModel):
+    membre: Membre
+    depuis: datetime
+    super_jaime: bool
+    en_tete: bool
+    ses_objets: list[ObjetResume]
+
+
+class ListeInteresses(BaseModel):
+    """Qui aime mon objet : la ShortList d'un objet convoité, ou tous les intéressés avec Troc Premium."""
+
+    nb_jaime: int
+    convoite: bool
+    interesses: list[Interesse]
 
 
 class MatchLecture(BaseModel):
@@ -457,6 +558,63 @@ class AccordCreation(BaseModel):
 
 class ReponseEchange(BaseModel):
     accepte: bool
+
+
+class Remise(BaseModel):
+    """J'ai remis ou envoyé mon objet ; pour un colis, le transporteur et le numéro de suivi."""
+
+    transporteur: str | None = Field(default=None, max_length=40)
+    numero_suivi: str | None = Field(default=None, max_length=60)
+
+
+class AdresseLivraison(BaseModel):
+    adresse: str = Field(min_length=5, max_length=300)
+
+
+# --- Troc Premium ---
+
+
+class FormuleLecture(BaseModel):
+    cle: str
+    nom: str
+    prix_mois: float | None
+    prix_an: float | None
+    prix_unique: float | None
+    avantages: list[str]
+    super_jaime_par_semaine: int
+    # Liens de paiement Stripe : « mois », « an » ou « pass » (vides tant que le paiement n'est pas configuré).
+    liens: dict[str, str]
+
+
+class FormatColis(BaseModel):
+    cle: str
+    libelle: str
+    poids_max_kg: int | None
+
+
+class CataloguePremium(BaseModel):
+    formules: list[FormuleLecture]
+    formats_colis: list[FormatColis]
+    jours_essai: int
+    portail: str | None
+    # Encart publicitaire, montré seulement à qui n'a pas « sans publicité ».
+    publicite_texte: str | None
+    publicite_lien: str | None
+
+
+class PremiumModeration(BaseModel):
+    """La modération ouvre ou ferme une formule (geste commercial, partenaire, remboursement)."""
+
+    formule: Literal["essentiel", "plus", "famille", "pro", "pass"] | None
+    jusqu_au: datetime | None = None
+
+
+class VerificationModeration(BaseModel):
+    verifie: bool
+
+
+class MembreFamille(BaseModel):
+    email: EmailStr
 
 
 class GrandTrocLecture(Lecture):

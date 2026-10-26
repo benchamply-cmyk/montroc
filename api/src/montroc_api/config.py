@@ -65,6 +65,22 @@ class Settings(BaseSettings):
     # zone de la plupart de ses participants (« Marseille » vaut aussi pour « Marseille 6e »), sinon POINT_DE_DEPOT.
     # Ex. : « Marseille 6e = Ressourcerie, rue des Trois-Rois, 13006 Marseille ; Aix-en-Provence = Café, … ».
     points_de_depot: str = ""
+    # Lieux publics conseillés pour la remise en main propre, même format : « zone = lieu ; … ».
+    # Ex. : « Marseille 6e = Place Jean-Jaurès, devant la médiathèque ; Aix-en-Provence = Cours Mirabeau ».
+    lieux_de_rencontre: str = ""
+
+    # Troc Premium (voir premium.py). Liens de paiement Stripe (Payment Links) par formule et durée, séparés par
+    # des « ; » : « plus_mois = https://buy.stripe.com/… ; plus_an = … ; pass = … ». Sans lien, la formule
+    # s'affiche sans bouton de paiement (essai gratuit seulement).
+    stripe_liens: str = ""
+    # Secret de signature du webhook Stripe (whsec_…), pour /premium/stripe.
+    stripe_webhook_secret: str = ""
+    # Portail client Stripe : changer de carte ou résilier en trois clics.
+    stripe_portail: str = ""
+    # Encart publicitaire montré aux membres sans formule « sans publicité » : « texte | lien ». Vide : aucun.
+    encart_publicite: str = ""
+    # Durée de l'essai gratuit de Premium Plus, une fois par compte (0 : pas d'essai).
+    jours_essai_premium: int = Field(default=30, ge=0, le=90)
 
     @property
     def database_url_normalisee(self) -> str:
@@ -98,16 +114,35 @@ class Settings(BaseSettings):
     @property
     def liste_points_de_depot(self) -> list[tuple[str, str]]:
         """(zone en minuscules, lieu) pour chaque entrée de POINTS_DE_DEPOT, dans l'ordre."""
-        points = []
-        for entree in self.points_de_depot.split(";"):
-            zone, egal, lieu = entree.partition("=")
-            if egal and zone.strip() and lieu.strip():
-                points.append((" ".join(zone.split()).lower(), lieu.strip()))
-        return points
+        return _liste_par_zone(self.points_de_depot)
+
+    @property
+    def liste_lieux_de_rencontre(self) -> list[tuple[str, str]]:
+        return _liste_par_zone(self.lieux_de_rencontre)
+
+    @property
+    def liens_stripe(self) -> dict[str, str]:
+        """{formule_duree : lien de paiement} lus dans STRIPE_LIENS."""
+        liens = {}
+        for entree in self.stripe_liens.split(";"):
+            cle, egal, url = entree.partition("=")
+            if egal and cle.strip() and url.strip().startswith("https://"):
+                liens[cle.strip()] = url.strip()
+        return liens
 
     @property
     def liste_cors(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+
+def _liste_par_zone(valeur: str) -> list[tuple[str, str]]:
+    """« zone = lieu ; … » → [(zone en minuscules, lieu)], dans l'ordre."""
+    lieux = []
+    for entree in valeur.split(";"):
+        zone, egal, lieu = entree.partition("=")
+        if egal and zone.strip() and lieu.strip():
+            lieux.append((" ".join(zone.split()).lower(), lieu.strip()))
+    return lieux
 
 
 @lru_cache

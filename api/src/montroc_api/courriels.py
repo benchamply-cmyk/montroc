@@ -184,30 +184,72 @@ def plus_que_12_h(email: str, pseudo: str, recoit: str, lien: str) -> None:
 
 
 def echange_accepte(
-    email: str, pseudo: str, donne: str, code: str, point_de_depot: str, lien: str, limite: datetime
+    email: str, pseudo: str, donne: str, code: str, mode: str, lieu: str, receveur: str, lien: str, limite: datetime
 ) -> None:
-    lieu = f"Point de dépôt : {point_de_depot}\n\n" if point_de_depot else ""
+    """Au donneur, quand tout le monde a dit oui : comment faire parvenir son objet, selon le mode de remise."""
+    if mode == "colis":
+        sujet = "C'est oui pour tout le monde : à vous d'envoyer"
+        consigne = (
+            f"Envoyez « {donne} » à {receveur} par colis, à vos frais, avant {quand(limite)}. L'adresse ou le point "
+            f"relais de livraison s'affiche sur TrocTroc dès que {receveur} l'a indiqué. Photographiez l'objet "
+            "avant de fermer le colis, puis saisissez le transporteur et le numéro de suivi sur TrocTroc."
+        )
+    elif mode == "point_relais":
+        sujet = "C'est oui pour tout le monde : à vous de déposer"
+        consigne = (
+            f"Déposez « {donne} » avant {quand(limite)}, emballé et marqué du code {code}, puis indiquez-le sur "
+            f"TrocTroc.\n\n{f'Point de dépôt : {lieu}' if lieu else ''}"
+        )
+    else:
+        sujet = "C'est oui pour tout le monde : rencontrez-vous"
+        conseil = f"Lieu public conseillé : {lieu}\n\n" if lieu else ""
+        consigne = (
+            f"Convenez d'un rendez-vous avec {receveur} pour lui remettre « {donne} » en main propre avant "
+            f"{quand(limite)}, de préférence dans un lieu public, puis indiquez la remise sur TrocTroc.\n\n{conseil}"
+        )
     envoyer(
         email,
-        "C'est oui pour tout le monde : à vous de déposer",
-        f"Bonjour {pseudo},\n\nTout le monde a accepté l'échange. Déposez « {donne} » avant {quand(limite)}, "
-        f"emballé et marqué du code {code}, puis indiquez-le sur TrocTroc.\n\n{lieu}Rien n'est remis tant que "
-        f"tout le monde n'a pas déposé.\n\nVoir l'échange : {lien}",
+        sujet,
+        f"Bonjour {pseudo},\n\nTout le monde a accepté l'échange. {consigne.strip()}\n\nL'échange est terminé "
+        f"quand chacun a remis ou envoyé son objet.\n\nVoir l'échange : {lien}",
     )
 
 
 def a_depose(email: str, pseudo: str, deposant: str, restants: int, lien: str) -> None:
-    suite = "Plus que vous !" if restants == 1 else f"Encore {restants} dépôts avant de récupérer votre objet."
-    envoyer(email, f"{deposant} a déposé", f"Bonjour {pseudo},\n\n{deposant} a déposé son objet. {suite}\n\n{lien}")
-
-
-def tout_est_depose(email: str, pseudo: str, recoit: str, code: str, point_de_depot: str) -> None:
-    lieu = f" au point de dépôt ({point_de_depot})" if point_de_depot else " au point de dépôt"
+    suite = "Plus que vous !" if restants == 1 else f"Encore {restants} remises avant la fin de l'échange."
     envoyer(
         email,
-        "Tout est déposé : votre objet vous attend",
-        f"Bonjour {pseudo},\n\nTout le monde a déposé. Récupérez « {recoit} »{lieu} avec le code {code}.\n\n"
-        "Merci d'avoir troqué !",
+        f"{deposant} a remis ou envoyé son objet",
+        f"Bonjour {pseudo},\n\n{deposant} a remis ou envoyé son objet. {suite}\n\n{lien}",
+    )
+
+
+def tout_est_depose(
+    email: str, pseudo: str, recoit: str, code: str, mode: str, lieu: str, suivi: str | None = None
+) -> None:
+    if mode == "point_relais":
+        ou = f" au point de dépôt ({lieu})" if lieu else " au point de dépôt"
+        sujet, texte = (
+            "Tout est déposé : votre objet vous attend",
+            f"Tout le monde a déposé. Récupérez « {recoit} »{ou} avec le code {code}.",
+        )
+    elif mode == "colis":
+        sujet = "Tout est envoyé : votre colis arrive"
+        texte = f"Tout le monde a remis ou envoyé son objet. « {recoit} » arrive par colis" + (
+            f" (suivi : {suivi})." if suivi else "."
+        )
+        texte += " Signalez tout problème dans les 48 h après réception."
+    else:
+        sujet, texte = "Échange terminé", f"Tout le monde a remis son objet : « {recoit} » est à vous."
+    envoyer(email, sujet, f"Bonjour {pseudo},\n\n{texte}\n\nMerci d'avoir troqué !")
+
+
+def super_jaime(email: str, pseudo: str, de: str, objet: str, lien: str) -> None:
+    envoyer(
+        email,
+        f"{de} a eu un coup de cœur pour « {objet} »",
+        f"Bonjour {pseudo},\n\n{de} vous envoie un Super J'aime pour « {objet} ». Regardez ses objets : s'il y en "
+        f"a un qui vous plaît, c'est un match.\n\n{lien}",
     )
 
 

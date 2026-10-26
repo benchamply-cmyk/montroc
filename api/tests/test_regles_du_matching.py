@@ -61,7 +61,7 @@ def test_etat_minimum_modes_d_echange_et_alternatives(client, creer):
 def test_demande_invalide(client, creer):
     bruno = creer.utilisateur("bruno")
     for detail in (
-        {"modes_echange": ["colis"]},
+        {"modes_echange": ["livraison"]},
         {"etat_min": "usage"},
         {"mode_recherche": "au hasard"},
         {"caracteristiques": {"marque": "Bosch"}, "preferences": {"marque": "Makita"}},
@@ -70,7 +70,7 @@ def test_demande_invalide(client, creer):
         assert _souhait(client, bruno, "bricolage", **detail).status_code == 422, detail
     assert _souhait(client, bruno, "bricolage", alternatives=[{"categorie_slug": "inconnue"}]).status_code == 404
     # Tous les modes cochés : aucun précisé.
-    r = _souhait(client, bruno, "bricolage", modes_echange=["main_propre", "point_relais"])
+    r = _souhait(client, bruno, "bricolage", modes_echange=["main_propre", "point_relais", "colis"])
     assert r.json()["modes_echange"] == []
 
 

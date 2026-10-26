@@ -30,8 +30,22 @@ class Caracteristique:
 
 
 LONGUEUR_LIBRE = 60
-# Modes d'échange (logistique) : un objet et une demande sans mode précisé les acceptent tous.
-MODES_ECHANGE = {"main_propre": "Main propre", "point_relais": "Point relais"}
+# Modes d'échange (logistique). Un objet et une demande sans mode précisé acceptent les modes par défaut : la
+# main propre (et le point de dépôt s'il y en a un). Le colis, payé par l'expéditeur, se choisit explicitement.
+MODES_ECHANGE = {
+    "main_propre": "Main propre",
+    "point_relais": "Point relais",
+    "colis": "Colis (frais d'envoi à ma charge)",
+}
+MODES_PAR_DEFAUT = ("main_propre", "point_relais")
+# Format d'envoi d'un objet : poids maximum du colis en kg, None pour un objet trop gros pour un colis
+# (au-delà de 30 kg, ou hors gabarit) qui ne s'échange qu'en main propre.
+FORMATS_COLIS = {
+    "petit": ("Petit colis (jusqu'à 1 kg)", 1),
+    "moyen": ("Colis moyen (jusqu'à 5 kg)", 5),
+    "grand": ("Grand colis (jusqu'à 30 kg)", 30),
+    "encombrant": ("Encombrant (main propre seulement)", None),
+}
 OUI_NON = ("Oui", "Non")
 MARQUE = Caracteristique("marque", "Marque")
 MODELE = Caracteristique("modele", "Modèle")

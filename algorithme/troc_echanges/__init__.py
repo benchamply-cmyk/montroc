@@ -9,11 +9,13 @@ from . import solveur_exact
 from .boucles import boucles_autour, enumerer_boucles
 from .graphe import GrapheEchanges
 from .math_trade import Solution, math_trade
-from .modele import ETATS, MODES_RECHERCHE, Boucle, Contraintes, Marche, Objet, Souhait, Transfert, Utilisateur
+from .modele import (ETATS, MODE_COLIS, MODES_RECHERCHE, Boucle, Contraintes, Marche, Objet, Souhait, Transfert,
+                     Utilisateur, ZoneInteret, distance_km)
 from .robustesse import contraintes_apres_refus, proba_tous_acceptent, remplacants, replanifier
 
 __all__ = [
-    "ETATS", "MODES_RECHERCHE", "Boucle", "Contraintes", "GrapheEchanges", "Marche", "Objet", "Solution", "Souhait",
-    "Transfert", "Utilisateur", "boucles_autour", "contraintes_apres_refus", "enumerer_boucles",
-    "math_trade", "proba_tous_acceptent", "remplacants", "replanifier", "solveur_exact",
+    "ETATS", "MODE_COLIS", "MODES_RECHERCHE", "Boucle", "Contraintes", "GrapheEchanges", "Marche", "Objet",
+    "Solution", "Souhait", "Transfert", "Utilisateur", "ZoneInteret", "boucles_autour", "contraintes_apres_refus",
+    "distance_km", "enumerer_boucles", "math_trade", "proba_tous_acceptent", "remplacants", "replanifier",
+    "solveur_exact",
 ]

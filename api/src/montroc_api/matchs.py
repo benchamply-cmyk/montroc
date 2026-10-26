@@ -16,7 +16,7 @@ from troc_echanges import Boucle, boucles_autour
 from troc_echanges import Objet as ObjetMoteur
 from troc_echanges import Transfert as TransfertMoteur
 
-from . import courriels
+from . import courriels, premium
 from . import models as m
 from .config import get_settings
 from .services import (
@@ -123,7 +123,7 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
                 ),
             )
         ):
-            voulus = [o for o in mes_objets if souhait_correspond(s, o) and zone_acceptee(s, s.utilisateur, moi)]
+            voulus = [o for o in mes_objets if souhait_correspond(s, o) and zone_acceptee(s, s.utilisateur, o)]
             if voulus:
                 liste = il_cherche.setdefault(s.utilisateur_id, [])
                 liste += [o for o in voulus if o not in liste]
@@ -159,10 +159,8 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
     )
     cartes = []
     for o in candidats:
-        souhait = next(
-            (s for s in mes_souhaits if souhait_correspond(s, o) and zone_acceptee(s, moi, o.proprietaire)), None
-        )
-        if souhait is None and not zone_acceptee(None, moi, o.proprietaire):
+        souhait = next((s for s in mes_souhaits if souhait_correspond(s, o) and zone_acceptee(s, moi, o)), None)
+        if souhait is None and not zone_acceptee(None, moi, o):
             continue
         cartes.append(
             Carte(
@@ -187,7 +185,7 @@ def souhait_servi(receveur: m.Utilisateur, objet: m.Objet) -> m.Souhait | None:
         (
             s
             for s in sorted(receveur.souhaits, key=lambda s: (s.rang, s.id))
-            if souhait_correspond(s, objet) and zone_acceptee(s, receveur, objet.proprietaire)
+            if souhait_correspond(s, objet) and zone_acceptee(s, receveur, objet)
         ),
         None,
     )
@@ -207,9 +205,11 @@ class Match:
     echange: m.Echange | None = None
 
 
-def donner_avis(session: Session, moi: m.Utilisateur, objet_id: int, aime: bool) -> Match | None:
-    """« J'aime » ou « Non merci » sur un objet. Renvoie le match avec son propriétaire, s'il y en a un ;
-    l'e-mail « C'est un match » ne part que la première fois."""
+def donner_avis(
+    session: Session, moi: m.Utilisateur, objet_id: int, aime: bool, super_jaime: bool = False
+) -> Match | None:
+    """« J'aime », « Super J'aime » (Troc Premium) ou « Non merci » sur un objet. Renvoie le match avec son
+    propriétaire, s'il y en a un ; l'e-mail « C'est un match » ne part que la première fois."""
     objet = session.get(m.Objet, objet_id)
     if objet is None or objet.proprietaire_id == moi.id or objet.statut != m.StatutObjet.disponible:
         raise ErreurMetier("Cet objet n'est plus proposé.")
@@ -217,11 +217,20 @@ def donner_avis(session: Session, moi: m.Utilisateur, objet_id: int, aime: bool)
     avant = match_avec(session, moi, autre)
 
     avis = session.get(m.Avis, (moi.id, objet_id))
+    super_jaime = super_jaime and aime and not (avis is not None and avis.super)
+    if super_jaime and premium.super_jaime_restants(session, moi) < 1:
+        raise ErreurMetier("Plus de Super J'aime cette semaine : ils reviennent lundi (ou avec Troc Premium).")
     if avis is None:
-        session.add(m.Avis(utilisateur_id=moi.id, objet_id=objet_id, aime=aime))
+        avis = m.Avis(utilisateur_id=moi.id, objet_id=objet_id, aime=aime)
+        session.add(avis)
     else:
         avis.aime = aime
+    avis.super = aime and (super_jaime or avis.super)
     session.flush()
+    if super_jaime:
+        courriels.apres_validation(
+            session, courriels.super_jaime, autre.email, autre.pseudo, moi.pseudo, objet.titre, lien_match()
+        )
     if not aime:
         return None
     match = match_avec(session, moi, autre)
@@ -362,3 +371,63 @@ def conclure_boucle(session: Session, moi: m.Utilisateur, objet_ids: list[int]) 
         if b.objets == cible:
             return proposer(session, b, moi.id)
     raise ErreurMetier("Cette boucle n'est plus possible : un objet a trouvé preneur entre-temps.")
+
+
+def retour_arriere(session: Session, moi: m.Utilisateur, objet_id: int) -> None:
+    """Annule un « Non merci » (Troc Premium) : l'objet revient dans le carrousel."""
+    if not premium.a(moi, premium.RETOUR_ARRIERE):
+        raise ErreurMetier("Le retour arrière fait partie de Troc Premium.")
+    avis = session.get(m.Avis, (moi.id, objet_id))
+    if avis is None or avis.aime:
+        raise ErreurMetier("Seul un « Non merci » peut être annulé.")
+    session.delete(avis)
+
+
+# --- ShortList des objets convoités ---
+
+
+@dataclass
+class Interesse:
+    membre: m.Utilisateur
+    depuis: datetime
+    super: bool
+    # Sa demande passe en tête : Super J'aime, ou Premium « ShortList » parmi ses 5 « J'aime » les plus récents.
+    en_tete: bool
+    # Ses objets disponibles : en aimer un fait un match.
+    ses_objets: list[m.Objet]
+
+
+def interesses(session: Session, moi: m.Utilisateur, objet_id: int) -> tuple[int, list[Interesse]]:
+    """Qui aime mon objet. Un objet aimé par 5 membres ou plus est « convoité » : son propriétaire voit sa ShortList,
+    les 5 demandes en tête (Super J'aime, puis Premium, puis les plus anciennes) ; il choisit toujours librement.
+    Avec « voir qui a aimé » (Troc Premium), il voit tous les intéressés, sur tous ses objets.
+    Renvoie (nombre de « J'aime », intéressés montrés)."""
+    objet = session.get(m.Objet, objet_id)
+    if objet is None or objet.proprietaire_id != moi.id:
+        raise ErreurMetier("Cet objet n'est pas à vous.")
+    avis = session.scalars(
+        select(m.Avis).join(m.Avis.objet).where(m.Avis.objet_id == objet_id, m.Avis.aime).order_by(m.Avis.cree_le)
+    ).all()
+    tous_voir = premium.a(moi, premium.VOIR_QUI_AIME)
+    if len(avis) < premium.SEUIL_CONVOITE and not tous_voir:
+        return len(avis), []
+    liste = []
+    for a in avis:
+        membre = session.get(m.Utilisateur, a.utilisateur_id)
+        if membre.suspendu_le is not None:
+            continue
+        en_tete = a.super or (premium.a(membre, premium.SHORTLIST) and _parmi_ses_derniers(session, membre, objet_id))
+        siens = _mes_objets(session, membre.id)
+        liste.append(Interesse(membre, a.cree_le, a.super, en_tete, siens))
+    liste.sort(key=lambda i: (not i.super, not i.en_tete, i.depuis))
+    return len(avis), liste if tous_voir else liste[: premium.TAILLE_SHORTLIST]
+
+
+def _parmi_ses_derniers(session: Session, membre: m.Utilisateur, objet_id: int) -> bool:
+    derniers = session.scalars(
+        select(m.Avis.objet_id)
+        .where(m.Avis.utilisateur_id == membre.id, m.Avis.aime)
+        .order_by(m.Avis.cree_le.desc())
+        .limit(premium.SHORTLISTS_ACTIVES)
+    ).all()
+    return objet_id in derniers

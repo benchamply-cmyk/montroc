@@ -83,9 +83,17 @@ class GrapheEchanges:
             options.sort(key=self._ordre)
 
     def _zone_acceptee(self, objet, souhait, receveur: str) -> bool:
-        """Le lieu de l'objet (le sien, sinon la zone de son propriétaire) est-il dans une zone acceptée ?
-        Lieu inconnu : accepté. Sans zones précisées sur le souhait, même zone que le receveur
+        """L'objet peut-il parvenir au receveur ? S'il a choisi des zones d'intérêt (ou toute la France) : l'objet
+        dans une de ses zones, sinon par colis si le souhait et l'objet l'acceptent (``Utilisateur.acces``).
+        Sinon, par noms de zones : le lieu de l'objet (le sien, sinon la zone de son propriétaire) dans une zone
+        acceptée ; lieu inconnu : accepté ; sans zones précisées sur le souhait, même zone que le receveur
         (si ``Marche.meme_zone``)."""
+        u = self.marche.utilisateurs[receveur]
+        if u.zones_geographiques and not souhait.zones:
+            acces = u.acces(objet)
+            if acces == "loin":
+                return souhait.accepte_le_colis() and objet.accepte_le_colis()
+            return acces is not None
         zone = objet.zone or self.marche.utilisateurs[objet.proprietaire].zone
         if zone is None:
             return True

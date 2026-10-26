@@ -22,14 +22,20 @@ router = APIRouter(prefix="/match", tags=["match"])
 @router.get("/carrousel", response_model=list[CarteMatch])
 def carrousel(utilisateur: UtilisateurConnecte, session: SessionDep, limite: int = Query(20, ge=1, le=50)):
     """Les objets qui correspondent à mes souhaits, ceux qui feraient un match tout de suite d'abord."""
-    return [vues.carte(c) for c in matchs.carrousel(session, utilisateur, limite)]
+    return [vues.carte(c, utilisateur) for c in matchs.carrousel(session, utilisateur, limite)]
 
 
 @router.post("/avis", response_model=ResultatAvis)
 def donner_avis(donnees: AvisCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
     """« J'aime » ou « Non merci ». Si l'autre aime déjà un de mes objets, c'est un match."""
-    match = metier(matchs.donner_avis, session, utilisateur, donnees.objet_id, donnees.aime)
+    match = metier(matchs.donner_avis, session, utilisateur, donnees.objet_id, donnees.aime, donnees.super_jaime)
     return ResultatAvis(match=vues.match(match) if match else None)
+
+
+@router.delete("/avis/{objet_id}", status_code=204)
+def retour_arriere(objet_id: int, utilisateur: UtilisateurConnecte, session: SessionDep):
+    """Retour arrière (Troc Premium) : annule un « Non merci », l'objet revient dans le carrousel."""
+    metier(matchs.retour_arriere, session, utilisateur, objet_id)
 
 
 @router.get("", response_model=list[MatchLecture])
