@@ -1,0 +1,69 @@
+name: Règles des branches
+
+# Le chemin d'une modification : branche type/sujet-vX.Y → PR vers preprod → PR preprod → prod (numérotée V5.200…).
+# Ce contrôle échoue quand une PR s'en écarte. Pour qu'il bloque la fusion, l'ajouter aux « status checks »
+# obligatoires de prod et de preprod (Settings > Branches, voir docs/05-git-et-branches.md).
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  regles:
+    name: Règles des branches
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Vérifier la PR
+        env:
+          BASE: ${{ github.base_ref }}
+          TETE: ${{ github.head_ref }}
+        run: |
+          erreur() { echo "::error::$1"; echec=1; }
+          echec=0
+          case "$BASE" in
+            prod)
+              # La production ne reçoit que la pré-production, une fois la campagne de tests verte.
+              [ "$TETE" = "preprod" ] || erreur "prod n'accepte que les PR venant de preprod (cette PR vient de « $TETE »). Changez sa base pour preprod."
+              # Chaque livraison a son numéro (V5.200, V5.300…), préparé par le workflow Versions.
+              v=$(sed -n "s/.*const VERSION='\([0-9.]*\)'.*/\1/p" web/site.js)
+              possibles=$(python3 scripts/version.py livraisons-possibles)
+              if [[ " $possibles " != *" $v "* ]]; then
+                erreur "Version de prod V$v dans web/site.js : attendu V${possibles%% *} (ou V${possibles##* } si Ben a décidé une version majeure). Lancez Actions > Versions > Run workflow (branche preprod), fusionnez la PR « Livraison » dans preprod, puis revenez ici."
+              else
+                echo "Livraison en V$v."
+              fi
+              ;;
+            preprod)
+              suivante=$(python3 scripts/version.py suivante)
+              if [[ "$TETE" == chore/version-* || "$TETE" == revert-* ]]; then
+                : # branches ouvertes par le workflow Versions ou par le bouton Revert de GitHub
+              elif ! echo "$TETE" | grep -Eq '^(feature|fix|docs|chore|db|mobile)/[a-z0-9][a-z0-9.-]*-v[0-9]+\.[0-9]+$'; then
+                erreur "Nom de branche « $TETE » : attendu type/sujet-vX.Y (feature/, fix/, docs/, chore/, db/, mobile/), en minuscules, sans accents, terminé par la version de preprod visée, ex. feature/photos-v$suivante (python3 scripts/version.py branche feature photos)."
+              elif [ "${TETE##*-v}" != "$suivante" ]; then
+                # Le nom d'une branche ne change plus une fois la PR ouverte : un écart (autre PR fusionnée avant) n'est qu'un avertissement.
+                echo "::warning::La branche annonce V${TETE##*-v}, mais cette PR deviendra V$suivante en preprod (une autre PR est passée avant). Rien à faire."
+              fi
+              echo "Fusionnée maintenant, cette PR met preprod en V$suivante."
+              git diff --name-only "origin/$BASE...HEAD" > modifies.txt
+              if [[ "$TETE" != chore/version-* && "$TETE" != revert-* ]]; then
+                # La version de prod (web/site.js) ne change qu'à la préparation d'une livraison.
+                # (Exception unique : le passage de l'ancienne numérotation 0.x.y à V5.100.)
+                if git diff "origin/$BASE...HEAD" -- web/site.js | grep -q "^+.*const VERSION=" \
+                  && ! git diff "origin/$BASE...HEAD" -- web/site.js | grep -q "^-.*const VERSION='0\."; then
+                  erreur "Ne pas changer VERSION dans web/site.js : la version de prod change seulement avec Actions > Versions (préparer la livraison)."
+                fi
+                # Les lignes du journal passent par changelog.d/ : plus de conflits sur CHANGELOG.md.
+                if git diff "origin/$BASE...HEAD" -- CHANGELOG.md | grep -q '^+- '; then
+                  erreur "Ne pas ajouter de ligne dans CHANGELOG.md : mettre la ligne dans un fichier changelog.d/<sujet>.md."
+                fi
+                grep -Eq '^changelog\.d/.+\.md$' modifies.txt || erreur "Ajouter un fichier changelog.d/<sujet>.md d'une ligne qui dit ce qui change."
+              fi
+              ;;
+            *)
+              echo "Base « $BASE » : pas de règle particulière."
+              ;;
+          esac
+          [ "$echec" = 0 ] && echo "Règles respectées."
+          exit "$echec"

@@ -6,7 +6,7 @@ services:
     runtime: python
     region: frankfurt
     plan: free
-    branch: main
+    branch: prod
     # Ne redéploie que si l'API ou le moteur changent.
     buildFilter:
       paths:
@@ -37,7 +37,7 @@ services:
       - key: SMTP_MOT_DE_PASSE
         sync: false
       - key: EMAIL_EXPEDITEUR
-        value: TrocTroc <bonjour@troctroc.fr>
+        value: TrocTroc <contact@troctroc.fr>   # l'expéditeur validé chez Brevo
       # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary.
       - key: CLOUDINARY_URL
         sync: false
@@ -50,3 +50,53 @@ services:
       # Lieu de dépôt affiché aux participants (adresse et horaires).
       - key: POINT_DE_DEPOT
         sync: false
+      # Facultatif : un lieu par zone, « Marseille 6e = adresse ; Aix-en-Provence = adresse ».
+      - key: POINTS_DE_DEPOT
+        sync: false
+
+  # Pré-production : même API, déployée depuis la branche preprod, sur une branche Neon « preprod » (copie de
+  # la production). Les e-mails partent tous à COURRIELS_VERS, les SMS sont coupés : aucun membre n'est
+  # contacté depuis la copie. Le Grand Troc s'y lance à la main (Actions > Tâches planifiées > preprod).
+  - type: web
+    name: montroc-api-preprod
+    runtime: python
+    region: frankfurt
+    plan: free
+    branch: preprod
+    buildFilter:
+      paths:
+        - api/**
+        - algorithme/**
+        - render.yaml
+    buildCommand: pip install ./algorithme ./api
+    startCommand: cd api && alembic upgrade head && uvicorn montroc_api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /sante
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: DATABASE_URL
+        sync: false   # chaîne de connexion de la branche Neon « preprod »
+      - key: CORS_ORIGINS
+        value: https://preprod--troctroc.netlify.app
+      - key: ENVIRONNEMENT
+        value: preprod
+      - key: SITE_URL
+        value: https://preprod--troctroc.netlify.app
+      - key: COURRIELS_VERS
+        sync: false   # l'adresse qui reçoit tous les e-mails de la pré-production
+      - key: SMS_ACTIFS
+        value: "false"
+      - key: ECHANGES_A_LA_DEMANDE
+        value: "true"
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_EXPEDITEUR
+        value: TrocTroc preprod <contact@troctroc.fr>
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: MODERATEURS
+        sync: false
+      - key: TACHES_SECRET
+        sync: false   # même valeur que le secret GitHub TACHES_SECRET_PREPROD
+      - key: POINT_DE_DEPOT
+        value: Point de dépôt de test (pré-production)

@@ -124,6 +124,12 @@ class Categorie(Base):
     __table_args__ = (CheckConstraint("slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'", name="slug_format"),)
 
 
+# Réputation affichée (``Utilisateur.reputation``) : la fiabilité vaut (tenus + 9) / (tenus + 9 + manqués).
+ECHANGES_POUR_ETRE_FIABLE = 3
+SEUIL_FIABLE = 0.9  # au plus un manquement pour 0 à 9 échanges menés
+SEUIL_A_CONFIRMER = 0.75  # trois manquements sans échange mené au bout
+
+
 class Utilisateur(Horodatage, Base):
     __tablename__ = "utilisateurs"
 
@@ -159,6 +165,24 @@ class Utilisateur(Horodatage, Base):
     @property
     def a_un_mot_de_passe(self) -> bool:
         return self.mot_de_passe is not None
+
+    @property
+    def echanges_menes(self) -> int:
+        """Échanges menés au bout : chaque objet déposé à temps."""
+        return self.engagements_tenus or 0
+
+    @property
+    def reputation(self) -> str:
+        """Ce que les autres membres voient de sa fiabilité : « nouveau » tant qu'il n'a rien mené ni manqué,
+        « fiable » après quelques échanges menés au bout sans (presque) rien manquer, « a_confirmer » après
+        plusieurs absences de réponse ou dépôts manqués, « membre » entre les deux."""
+        if not self.engagements_tenus and not self.engagements_manques:
+            return "nouveau"
+        if self.fiabilite <= SEUIL_A_CONFIRMER:
+            return "a_confirmer"
+        if self.engagements_tenus >= ECHANGES_POUR_ETRE_FIABLE and self.fiabilite >= SEUIL_FIABLE:
+            return "fiable"
+        return "membre"
 
     __table_args__ = (
         CheckConstraint("fiabilite >= 0 AND fiabilite <= 1", name="fiabilite_0_1"),
@@ -282,6 +306,8 @@ class GrandTroc(Horodatage, Base):
     # Repêchage du mardi 18 h : seconde passe sur ce qui s'est libéré (refus, absences de réponse).
     repeche_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     nb_objets_repeches: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    # Remplaçants trouvés pendant les 48 h de réponse, dès qu'un refus libère des objets (chaque heure).
+    nb_objets_remplaces: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     # Trace de chaque calcul (``services.trace_du_calcul``) : moteur utilisé (exact ou heuristique), longueur
     # de boucle retenue, statuts de CP-SAT, durée… Pour savoir si la production a basculé en mode dégradé.
     calcul: Mapped[dict] = mapped_column(JSONB, default=dict, server_default="{}")
@@ -311,6 +337,10 @@ class Echange(Horodatage, Base):
     # Le Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande ou un accord de match).
     grand_troc_id: Mapped[int | None] = mapped_column(ForeignKey("grands_trocs.id", ondelete="SET NULL"), index=True)
     grand_troc: Mapped[GrandTroc | None] = relationship(back_populates="echanges")
+    # Boucle de remplacement, proposée pendant les 48 h de réponse après un refus (``services.remplacements``).
+    remplacement: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Boucle du Grand Troc annulée dont les objets libérés ont déjà servi à chercher des remplaçants.
+    remplacants_cherches_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     transferts: Mapped[list[Transfert]] = relationship(
         back_populates="echange", cascade="all, delete-orphan", order_by="Transfert.position"

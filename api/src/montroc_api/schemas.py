@@ -103,6 +103,8 @@ class Moi(Lecture):
     zone: str | None
     telephone: str | None = None
     fiabilite: float
+    echanges_menes: int
+    reputation: str
     cree_le: datetime
     est_moderateur: bool = False
     a_un_mot_de_passe: bool = False
@@ -127,6 +129,9 @@ class UtilisateurLecture(Lecture):
     pseudo: str
     zone: str | None
     fiabilite: float
+    # Échanges menés au bout et réputation (nouveau, membre, fiable, a_confirmer) : voir ``Utilisateur.reputation``.
+    echanges_menes: int
+    reputation: str
     cree_le: datetime
 
 
@@ -403,6 +408,8 @@ class Membre(Lecture):
     pseudo: str
     zone: str | None
     fiabilite: float
+    echanges_menes: int
+    reputation: str
 
 
 class CarteMatch(BaseModel):
@@ -461,6 +468,7 @@ class GrandTrocLecture(Lecture):
     duree_s: float
     repeche_le: datetime | None
     nb_objets_repeches: int
+    nb_objets_remplaces: int
 
 
 class InfosGrandTroc(BaseModel):
@@ -482,6 +490,8 @@ class ResultatGrandTroc(BaseModel):
 class ResultatTaches(BaseModel):
     rappels_envoyes: int
     echanges_expires: int
+    # Remplaçants après un refus, pendant les 48 h de réponse : None s'il n'y avait rien à chercher.
+    objets_remplaces: int | None = None
     # Repêchage du mardi 18 h : None s'il n'a pas eu lieu à cet appel.
     objets_repeches: int | None = None
 

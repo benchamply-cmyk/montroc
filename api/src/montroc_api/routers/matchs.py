@@ -4,7 +4,16 @@ from fastapi import APIRouter, Query
 
 from .. import matchs, vues
 from ..deps import SessionDep, UtilisateurConnecte
-from ..schemas import AccordCreation, AvisCreation, CarteMatch, EchangeLecture, MatchLecture, ResultatAvis
+from ..schemas import (
+    AccordCreation,
+    AvisCreation,
+    BoucleProposee,
+    CarteMatch,
+    EchangeCreation,
+    EchangeLecture,
+    MatchLecture,
+    ResultatAvis,
+)
 from .echanges import metier
 
 router = APIRouter(prefix="/match", tags=["match"])
@@ -32,4 +41,17 @@ def mes_matchs(utilisateur: UtilisateurConnecte, session: SessionDep):
 def conclure(donnees: AccordCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
     """Je propose l'échange 1 à 1 à mon match : ma part est acceptée, l'autre a 48 h pour dire oui."""
     echange = metier(matchs.conclure, session, utilisateur, donnees.mon_objet_id, donnees.son_objet_id)
+    return vues.echange(echange, utilisateur.id)
+
+
+@router.get("/boucles", response_model=list[BoucleProposee])
+def boucles_a_trois(utilisateur: UtilisateurConnecte, session: SessionDep, limite: int = Query(5, ge=1, le=20)):
+    """Le Match à trois : les boucles à trois possibles tout de suite, où chacun reçoit ce qu'il a demandé ou aimé."""
+    return vues.boucles(session, matchs.boucles_a_trois(session, utilisateur, limite))
+
+
+@router.post("/boucle", response_model=EchangeLecture, status_code=201)
+def conclure_boucle(donnees: EchangeCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
+    """Je propose une boucle à trois (ses objets dans l'ordre) : ma part est acceptée, les autres ont 48 h."""
+    echange = metier(matchs.conclure_boucle, session, utilisateur, donnees.objets)
     return vues.echange(echange, utilisateur.id)

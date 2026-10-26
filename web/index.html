@@ -396,6 +396,11 @@ details.plus summary::-webkit-details-marker{display:none}
 .fiche-membre{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
 .fiche-membre .avatar{width:42px;height:42px;font-size:18px}
 .fiche-membre div{display:flex;flex-direction:column;font-size:14px}
+.etapes-trois{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.etapes-trois li{display:flex;align-items:center;gap:10px}
+.etapes-trois img{width:40px;height:40px;object-fit:cover;border-radius:8px}
+.rep{display:inline-block;padding:1px 8px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--muted)}
+.rep.fiable{border-color:var(--mark);color:var(--mark)}
 .fiche-actions{display:flex;flex-direction:column;gap:10px}
 .fiche-actions .acc-btn{width:100%}
 .fiche-actions .note{font-size:14px}
@@ -715,9 +720,14 @@ details.plus summary::-webkit-details-marker{display:none}
       <button class="oui" type="button" id="m-oui" aria-label="J'aime"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
     </div>
     <p class="muted aide" id="match-aide" hidden>Glissez la carte vers la droite si elle vous plaît, vers la gauche sinon (ou flèches ← → du clavier). Un cœur de chaque côté et vous échangez à deux, sans attendre dimanche.</p>
+    <div id="bloc-trois" hidden style="display:flex;flex-direction:column;gap:16px">
+      <div class="list-head" style="margin:8px 0 -4px"><span class="label">Boucles à trois</span></div>
+      <p class="muted" style="font-size:14px;margin:0">Chacun reçoit ce qu'il a demandé ou aimé. Proposez la boucle : les deux autres ont 48 h pour dire oui.</p>
+      <div id="boucles-trois" style="display:flex;flex-direction:column;gap:16px"></div>
+    </div>
     <div class="list-head" style="margin:8px 0 -12px"><span class="label">Mes matchs</span></div>
     <div id="matchs" style="display:flex;flex-direction:column;gap:16px"></div>
-    <p class="muted" style="font-size:14px">Pas de match pour un objet ? Il reste en lice pour le Grand Troc du dimanche, qui cherche aussi les boucles à trois. Vos « J'aime » y comptent comme des souhaits, et un « Non merci » ne vous sera pas reproposé.</p>
+    <p class="muted" style="font-size:14px">Pas de match pour un objet ? Il reste en lice pour une boucle à trois ci-dessus, et pour le Grand Troc du dimanche. Vos « J'aime » y comptent comme un souhait (un objet aimé au plus par dimanche), et un « Non merci » ne vous sera pas reproposé.</p>
   </section>
 
   <!-- REMISE -->
@@ -771,7 +781,9 @@ details.plus summary::-webkit-details-marker{display:none}
 <script>
 /* Le site parle à l'API (api.troctroc.fr, ou localhost en développement). La session est un jeton
    gardé dans le navigateur et envoyé dans l'en-tête Authorization. */
-const API = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8001' : 'https://api.troctroc.fr';
+// Pré-production (branche preprod sur Netlify) : son API à elle, sur une copie de la base (même règle que site.js).
+const API = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8001'
+  : /^preprod(--|\.)/.test(location.hostname) ? 'https://montroc-api-preprod.onrender.com' : 'https://api.troctroc.fr';
 const ETATS = {neuf:'Neuf', comme_neuf:'Comme neuf', tres_bon:'Très bon état', bon:'Bon état', correct:'État correct', usage:'Usagé, fonctionne'};
 const MODES = {main_propre:'en main propre', point_relais:'en point relais'};
 const STATUTS = {disponible:'', reserve:'réservé', retire:'retiré', modere:'retiré par la modération'};
@@ -928,7 +940,7 @@ function afficherSession(){
   $$('[data-anon]').forEach(x=>x.hidden=!!moi); $$('[data-auth]').forEach(x=>x.hidden=!moi);
   document.body.classList.toggle('membre',!!moi);
   TT.compte(!!moi); $('#compte').title=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
-  if(moi){$('#esp-avatar').textContent=(moi.pseudo||'?')[0].toUpperCase(); $('#esp-nom').textContent=moi.pseudo; $('#esp-zone').textContent=moi.zone||'';
+  if(moi){$('#esp-avatar').textContent=(moi.pseudo||'?')[0].toUpperCase(); $('#esp-nom').textContent=moi.pseudo; $('#esp-zone').innerHTML=[esc(moi.zone||''),reputation(moi)].filter(Boolean).join(' · ');
     $('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`; $('#f-phone').telephone.value=moi.telephone||'';
     store.set('troc.email',moi.email); $$('#f-mdp [name=email],#f-mdp-rappel [name=email]').forEach(x=>x.value=moi.email);
     $('#mdp-titre').textContent=moi.a_un_mot_de_passe?'Changer de mot de passe':'Choisir un mot de passe';
@@ -1300,6 +1312,14 @@ document.addEventListener('click',e=>{
   ['ai','cherche'].includes(o)?montrerPanneau(o):go(o);
 });
 
+/* Réputation d'un membre (voir Utilisateur.reputation dans l'API) : pastille et échanges menés au bout. */
+const REPUTATIONS={nouveau:'Nouveau membre',fiable:'Membre fiable',a_confirmer:'Fiabilité à confirmer'};
+function reputation(u){
+  if(!u||!u.reputation)return '';
+  const n=u.echanges_menes||0, pastille=REPUTATIONS[u.reputation]?`<span class="rep ${u.reputation}">${REPUTATIONS[u.reputation]}</span>`:'';
+  return [pastille,n?`${n} échange${n>1?'s':''} mené${n>1?'s':''} au bout`:''].filter(Boolean).join(' · ');
+}
+
 /* Fiche d'un objet : grande photo, ce qu'il faut savoir, qui le propose, et l'action (J'aime ou créer un compte). */
 let avantFiche={vue:'home',hash:''}, ficheObjet=null;
 const grande=url=>url.replace('/image/upload/','/image/upload/c_limit,w_1000,h_1000,q_auto,f_auto/');
@@ -1331,7 +1351,7 @@ async function ouvrirObjet(id){
           ${o.modes_echange.length?`<dt>Remise</dt><dd>${o.modes_echange.map(m=>MODES[m]||m).join(', ')}</dd>`:''}
         </dl>
         ${o.description?`<p class="fiche-desc">${esc(o.description)}</p>`:''}
-        <div class="fiche-membre"><span class="avatar" aria-hidden="true">${esc(pseudo[0].toUpperCase())}</span><div><b>${esc(pseudo)}</b>${qui?`<span class="muted">Membre depuis ${new Date(qui.cree_le).toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</span>`:''}</div></div>
+        <div class="fiche-membre"><span class="avatar" aria-hidden="true">${esc(pseudo[0].toUpperCase())}</span><div><b>${esc(pseudo)}</b>${qui?`<span class="muted">Membre depuis ${new Date(qui.cree_le).toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</span><span class="muted">${reputation(qui)}</span>`:''}</div></div>
         <div class="fiche-actions">${actions}</div>
         ${moi&&!mien?`<button class="linkbtn signaler" type="button" data-signaler="${o.id}" data-titre="${esc(o.titre)}">Signaler cet objet</button>`:''}
       </div>`;

@@ -32,4 +32,4 @@ Domaine chez OVH, site sur Netlify, API sur Render, base sur Neon : suivre [docs
 
 ## Contribuer
 
-Une branche par fonctionnalité, fusion dans `main` par pull request avec la CI verte : [docs/05-git-et-branches.md](docs/05-git-et-branches.md).
+Une branche par fonctionnalité, PR vers `preprod`, puis livraison `preprod → prod` avec la CI verte : [docs/05-git-et-branches.md](docs/05-git-et-branches.md).
