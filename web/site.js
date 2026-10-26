@@ -85,7 +85,9 @@
      mot de passe (sans e-mail à attendre), avec le lien magique en secours. C'est la seule entrée du site :
      « Créer un compte » passe la même fenêtre en mode e-mail seul (le lien reçu ouvre l'inscription). Le bouton s'appelle « Mon espace »
      dès qu'un compte a déjà servi sur cet appareil, « Se connecter » sinon. */
-  const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001':'https://api.troctroc.fr';
+  // Pré-production (déploiement de la branche preprod sur Netlify) : son API à elle, sur une copie de la base.
+  const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001'
+    :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.troctroc.fr';
   const memo={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch{}}};
   const c=$('#compte'), pop=$('#pop-cnx'), msg=pop.querySelector('.pop-msg');
   let connecte=!!memo.get('troc.jeton'), ouvertLe=-1;

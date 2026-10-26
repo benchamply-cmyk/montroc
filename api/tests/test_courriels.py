@@ -2,7 +2,7 @@
 
 import json
 
-from montroc_api import courriels
+from montroc_api import courriels, sms
 from montroc_api.config import get_settings
 
 
@@ -36,3 +36,24 @@ def test_envoi_par_brevo(monkeypatch):
     assert corps["sender"] == {"name": "TrocTroc", "email": "bonjour@troctroc.fr"}
     assert corps["to"] == [{"email": "ines@exemple.fr"}] and corps["subject"] == "Une boucle vous attend"
     assert corps["textContent"].startswith("Bonjour Inès")
+
+
+def test_preproduction_redirige_les_courriels(monkeypatch):
+    """En pré-production, tout part à une seule adresse : jamais aux membres de la copie de la base."""
+    monkeypatch.setattr(get_settings(), "courriels_vers", "ben@exemple.fr")
+    courriels.envoyer("ines@exemple.fr", "Une boucle vous attend", "Bonjour Inès")
+
+    (courriel,) = [c for c in courriels.ENVOYES if c.sujet.endswith("Une boucle vous attend")]
+    assert courriel.destinataire == "ben@exemple.fr"
+    assert courriel.sujet == "[pour ines@exemple.fr] Une boucle vous attend"
+
+
+def test_preproduction_coupe_les_sms(monkeypatch):
+    envoyes = []
+    monkeypatch.setattr(get_settings(), "brevo_api_key", "cle-brevo")
+    monkeypatch.setattr(get_settings(), "sms_actifs", False)
+    monkeypatch.setattr(sms, "urlopen", lambda requete, timeout: envoyes.append(requete))
+    sms.envoyer("+33600000000", "Le Grand Troc vous propose un échange")
+
+    assert envoyes == []
+    assert sms.ENVOYES[-1].numero == "+33600000000"
