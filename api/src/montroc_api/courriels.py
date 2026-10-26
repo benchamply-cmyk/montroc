@@ -54,7 +54,7 @@ def envoyer(destinataire: str, sujet: str, texte: str) -> None:
     message["From"] = reglages.email_expediteur
     message["To"] = destinataire
     message["Subject"] = sujet
-    message["Message-ID"] = make_msgid(domain="troctroc.fr")
+    message["Message-ID"] = make_msgid(domain="toptroc.com")
     message.set_content(courriel.texte)
     try:
         with smtplib.SMTP_SSL(
@@ -71,7 +71,7 @@ def _par_brevo(courriel: Courriel) -> None:
     reglages = get_settings()
     nom, adresse = parseaddr(reglages.email_expediteur)
     corps = {
-        "sender": {"name": nom or "TrocTroc", "email": adresse},
+        "sender": {"name": nom or "TopTroc", "email": adresse},
         "to": [{"email": courriel.destinataire}],
         "subject": courriel.sujet,
         "textContent": courriel.texte,
@@ -95,7 +95,7 @@ def _par_brevo(courriel: Courriel) -> None:
 SIGNATURE = """
 
 --
-TrocTroc, l'échange sans prix ni monnaie
+TopTroc, l'échange sans prix ni monnaie
 {site}
 """
 
@@ -129,8 +129,8 @@ def _oublier(session: Session) -> None:
 def lien_magique(email: str, lien: str) -> None:
     envoyer(
         email,
-        "Votre lien de connexion à TrocTroc",
-        "Bonjour,\n\nPour vous connecter à TrocTroc, ouvrez ce lien (valable 20 minutes, une seule fois) :"
+        "Votre lien de connexion à TopTroc",
+        "Bonjour,\n\nPour vous connecter à TopTroc, ouvrez ce lien (valable 20 minutes, une seule fois) :"
         f"\n\n{lien}\n\n"
         "Si vous n'avez rien demandé, ignorez simplement cet e-mail : personne ne peut se connecter sans ce lien.",
     )
@@ -147,7 +147,7 @@ def quand(moment: datetime) -> str:
 
 
 def boucle_vous_attend(email: str, pseudo: str, donne: str, recoit: str, lien: str, grand_troc: bool = False) -> None:
-    trouve = "Le Grand Troc du dimanche a trouvé" if grand_troc else "TrocTroc a trouvé"
+    trouve = "Le Grand Troc du dimanche a trouvé" if grand_troc else "TopTroc a trouvé"
     envoyer(
         email,
         "Grand Troc : une boucle vous attend" if grand_troc else "Une boucle vous attend",
@@ -191,7 +191,7 @@ def echange_accepte(
         email,
         "C'est oui pour tout le monde : à vous de déposer",
         f"Bonjour {pseudo},\n\nTout le monde a accepté l'échange. Déposez « {donne} » avant {quand(limite)}, "
-        f"emballé et marqué du code {code}, puis indiquez-le sur TrocTroc.\n\n{lieu}Rien n'est remis tant que "
+        f"emballé et marqué du code {code}, puis indiquez-le sur TopTroc.\n\n{lieu}Rien n'est remis tant que "
         f"tout le monde n'a pas déposé.\n\nVoir l'échange : {lien}",
     )
 
@@ -215,7 +215,7 @@ def echange_annule(email: str, pseudo: str, raison: str, lien: str) -> None:
     envoyer(
         email,
         "Échange annulé",
-        f"Bonjour {pseudo},\n\n{raison} Vos objets redeviennent disponibles et TrocTroc cherche déjà d'autres "
+        f"Bonjour {pseudo},\n\n{raison} Vos objets redeviennent disponibles et TopTroc cherche déjà d'autres "
         f"échanges.\n\n{lien}",
     )
 

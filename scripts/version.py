@@ -1,4 +1,4 @@
-"""Numérotation des versions TrocTroc (règle de Ben du 26/10/2026, voir docs/05-git-et-branches.md).
+"""Numérotation des versions TopTroc (règle de Ben du 26/10/2026, voir docs/05-git-et-branches.md).
 
 - prod : V5.100, puis +100 à chaque livraison preprod → prod (V5.200, V5.300…), étiquette Git « V5.200 » ;
 - preprod : V5.1000, puis +1000 à chaque PR fusionnée dans preprod (V5.2000, V5.3000…), étiquette « preprod-V5.2000 » ;

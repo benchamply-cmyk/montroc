@@ -5,17 +5,17 @@
 
 ## En une phrase
 
-troctroc.fr permet d'échanger des objets **sans prix ni monnaie** : chacun publie ce qu'il a et ce qui lui serait utile, et le moteur trouve des boucles d'échange de 2 ou 3 personnes.
+toptroc.com permet d'échanger des objets **sans prix ni monnaie** : chacun publie ce qu'il a et ce qui lui serait utile, et le moteur trouve des boucles d'échange de 2 ou 3 personnes.
 
 ## Architecture
 
 | Brique | Technologie | Hébergeur | Adresse |
 |---|---|---|---|
-| Site | HTML/CSS/JS statique (`web/`) | Netlify | https://troctroc.fr |
-| API | Python 3.12, FastAPI (`api/`) | Render, Frankfurt | https://api.troctroc.fr (doc : `/docs`) |
+| Site | HTML/CSS/JS statique (`web/`) | Netlify | https://toptroc.com |
+| API | Python 3.12, FastAPI (`api/`) | Render, Frankfurt | https://api.toptroc.com (doc : `/docs`) |
 | Moteur d'échanges | Python pur (`algorithme/`) | dans l'API | — |
 | Base de données | PostgreSQL 16 | Neon, Frankfurt | privée (chaîne de connexion secrète) |
-| Domaine, DNS, e-mails | troctroc.fr, 10 adresses @troctroc.fr | OVH (offre Startup) | — |
+| Domaine, DNS, e-mails | toptroc.com, 10 adresses @toptroc.com | OVH (offre Startup) | — |
 | Code, CI | Git, GitHub Actions | GitHub | https://github.com/benchamply-cmyk/montroc |
 
 Choix clés :
@@ -30,12 +30,12 @@ Choix clés :
 | OVH | domaine, zone DNS, e-mails | Startup | ☐ |
 | Neon | projet `troctroc` (branches `main`, `dev`) | gratuite au départ | ☐ |
 | Render | service `montroc-api` | gratuite au départ (Starter au lancement public) | ☐ |
-| Netlify | site troctroc.fr | gratuite | ☐ |
+| Netlify | site toptroc.com | gratuite | ☐ |
 | GitHub | dépôt, CI, pull requests | gratuite | ☐ |
 
 ## Zone DNS (OVH)
 
-Zone **troctroc.fr** :
+Zone **toptroc.com** :
 
 | Type | Sous-domaine | Cible |
 |---|---|---|
@@ -50,7 +50,7 @@ Ne jamais supprimer les entrées MX/SPF/DKIM (e-mails OVH). DNSSEC activé. Cert
 | Variable | Production (Render) | Local (`api/.env`) |
 |---|---|---|
 | `DATABASE_URL` | chaîne Neon, branche `main` (secrète) | `postgresql+psycopg://montroc:montroc@localhost:5432/montroc` |
-| `CORS_ORIGINS` | `https://troctroc.fr,https://www.troctroc.fr` | `http://localhost:8000,…` |
+| `CORS_ORIGINS` | `https://toptroc.com,https://www.toptroc.com` | `http://localhost:8000,…` |
 | `ENVIRONNEMENT` | `production` | `local` |
 | `TEST_DATABASE_URL` | — | base `montroc_test` (vidée par les tests) |
 

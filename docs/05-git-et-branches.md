@@ -94,8 +94,8 @@ Les branches fusionnées se suppriment seules si l'option *Settings → General 
 
 | Brique | Production (`prod`) | Pré-production (`preprod`) |
 |---|---|---|
-| Site | troctroc.fr (Netlify) | déploiement de branche Netlify : `preprod--troctroc.netlify.app` |
-| API | `montroc-api` sur Render (api.troctroc.fr) | `montroc-api-preprod` sur Render (`render.yaml`), `montroc-api-preprod.onrender.com` |
+| Site | toptroc.com (Netlify) | déploiement de branche Netlify : `preprod--troctroc.netlify.app` |
+| API | `montroc-api` sur Render (api.toptroc.com) | `montroc-api-preprod` sur Render (`render.yaml`), `montroc-api-preprod.onrender.com` |
 | Base | Neon, branche principale | branche Neon `preprod`, copie de la production |
 | E-mails, SMS | Brevo | tous les e-mails à `COURRIELS_VERS` (le vrai destinataire en tête du sujet), `SMS_ACTIFS=false` |
 | Grand Troc | dimanche 18 h, tâche planifiée | à la main : *Actions → Tâches planifiées → Run workflow*, environnement `preprod` |
