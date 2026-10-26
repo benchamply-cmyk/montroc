@@ -1,0 +1,1 @@
+- Tâches horaires : l'expiration des échanges suit la même horloge que le Grand Troc ; les tests ne dépendent plus de la date du jour.

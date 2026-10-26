@@ -39,6 +39,8 @@ ENVOYES: list[Courriel] = []
 def envoyer(destinataire: str, sujet: str, texte: str) -> None:
     """Envoie un e-mail texte. Une panne d'envoi est journalisée sans faire échouer la requête."""
     reglages = get_settings()
+    if reglages.courriels_vers:
+        destinataire, sujet = reglages.courriels_vers, f"[pour {destinataire}] {sujet}"
     courriel = Courriel(destinataire, sujet, texte + SIGNATURE.format(site=reglages.site_url))
     if not reglages.envoi_configure:
         ENVOYES.append(courriel)
