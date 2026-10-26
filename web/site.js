@@ -11,7 +11,7 @@
   <a class="logo" href="/" aria-label="TrocTroc, retour à l'accueil">${LOGO}<span>Troc<span class="logo-2">Troc</span></span></a>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
-      <li><a href="/#concept">Le concept</a></li>
+      <li><a href="/#decouvrir">Le concept</a></li>
       <li><a href="/#comment-ca-marche">Comment ça marche</a></li>
       <li><a href="/#grand-troc">Le Grand Troc</a></li>
       <li><a href="/#objets">Voir les objets</a></li>
@@ -28,13 +28,15 @@
     <a class="compte" id="compte" href="/#se-connecter" aria-controls="pop-cnx">${PERSO}<span>Se connecter</span></a>
     <form class="pop-cnx" id="pop-cnx" hidden aria-label="Connexion à Mon espace">
       <b class="pop-titre">Connexion à Mon espace</b>
+      <p class="pop-aide" hidden>Indiquez votre e-mail : un lien valable 20 minutes y arrive et ouvre votre compte.</p>
       <label><span>Votre e-mail</span><input type="email" name="email" required autocomplete="username" placeholder="vous@exemple.fr"></label>
-      <label><span>Votre mot de passe</span>
+      <label class="pop-champ-mdp"><span>Votre mot de passe</span>
         <span class="pop-mdp"><input type="password" name="mot_de_passe" required autocomplete="current-password"><button type="button" class="pop-voir" aria-pressed="false">Afficher</button></span></label>
       <button class="pop-ok" type="submit">Se connecter</button>
       <p class="pop-msg" role="status" hidden></p>
       <button class="pop-lien" type="button" data-lien>Mot de passe oublié ou pas encore choisi ? Recevoir un lien par e-mail</button>
-      <a class="pop-lien" href="/#se-connecter" data-creer>Nouveau sur TrocTroc ? Créer un compte</a>
+      <button class="pop-lien" type="button" data-creer>Nouveau sur TrocTroc ? Créer un compte</button>
+      <button class="pop-lien" type="button" data-retour hidden>Déjà un compte ? Se connecter avec un mot de passe</button>
     </form>
   </div>
   <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 7h16"/><path class="b2" d="M4 12h16"/><path class="b3" d="M4 17h16"/></svg></button>
@@ -80,12 +82,15 @@
   if(liste.querySelector('[aria-current]'))sous.classList.add('actif');
 
   /* « Mon espace » : connecté, le bouton mène à l'espace. Sinon, il ouvre juste en dessous la connexion par
-     mot de passe (sans e-mail à attendre), avec le lien magique en secours. Le bouton s'appelle « Mon espace »
+     mot de passe (sans e-mail à attendre), avec le lien magique en secours. C'est la seule entrée du site :
+     « Créer un compte » passe la même fenêtre en mode e-mail seul (le lien reçu ouvre l'inscription). Le bouton s'appelle « Mon espace »
      dès qu'un compte a déjà servi sur cet appareil, « Se connecter » sinon. */
-  const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001':'https://api.troctroc.fr';
+  // Pré-production (déploiement de la branche preprod sur Netlify) : son API à elle, sur une copie de la base.
+  const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001'
+    :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.troctroc.fr';
   const memo={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch{}}};
   const c=$('#compte'), pop=$('#pop-cnx'), msg=pop.querySelector('.pop-msg');
-  let connecte=!!memo.get('troc.jeton');
+  let connecte=!!memo.get('troc.jeton'), ouvertLe=-1;
   function compte(oui){
     connecte=oui;
     c.querySelector('span').textContent=oui||memo.get('troc.email')?'Mon espace':'Se connecter';
@@ -93,12 +98,20 @@
     if(oui)ouvrirConnexion(false);
   }
   function dire(texte,ok){msg.textContent=texte;msg.classList.toggle('ok',!!ok);msg.hidden=!texte}
-  function ouvrirConnexion(oui=true,email){
+  function modeCreer(oui){
+    pop.classList.toggle('creer',oui);
+    pop.querySelector('.pop-titre').textContent=oui?'Créer un compte':'Connexion à Mon espace';
+    pop.querySelector('.pop-aide').hidden=!oui;
+    pop.querySelector('.pop-champ-mdp').hidden=oui; pop.mot_de_passe.required=!oui;
+    pop.querySelector('.pop-ok').textContent=oui?'Recevoir mon lien':'Se connecter';
+    pop.querySelector('[data-lien]').hidden=oui; pop.querySelector('[data-creer]').hidden=oui; pop.querySelector('[data-retour]').hidden=!oui;
+  }
+  function ouvrirConnexion(oui=true,email,creer=false){
     pop.hidden=!oui; c.setAttribute('aria-expanded',oui);
     if(!oui)return;
-    fermer(); dire('');
+    ouvertLe=performance.now(); fermer(); dire(''); modeCreer(creer);
     if(email||!pop.email.value)pop.email.value=email||memo.get('troc.email')||'';
-    (pop.email.value?pop.mot_de_passe:pop.email).focus();
+    (pop.email.value&&!creer?pop.mot_de_passe:pop.email).focus();
   }
   // Le serveur gratuit s'endort : la première requête peut échouer le temps qu'il redémarre (jusqu'à une minute).
   // On réessaie tout seul plutôt que de laisser la personne face à une erreur.
@@ -124,7 +137,8 @@
     e.target.textContent=v?'Masquer':'Afficher'; e.target.setAttribute('aria-pressed',v);
   };
   pop.onsubmit=async e=>{
-    e.preventDefault(); const b=pop.querySelector('.pop-ok'); b.disabled=true; b.textContent='Connexion…'; dire('');
+    e.preventDefault(); if(pop.classList.contains('creer'))return envoyerLien();
+    const b=pop.querySelector('.pop-ok'); b.disabled=true; b.textContent='Connexion…'; dire('');
     try{
       const r=await appeler('/auth/connexion',{email:pop.email.value.trim(),mot_de_passe:pop.mot_de_passe.value});
       memo.set('troc.jeton',r.jeton); memo.set('troc.email',r.utilisateur.email); pop.reset(); compte(true);
@@ -132,14 +146,17 @@
     }catch(err){dire(err.message);pop.mot_de_passe.select()}
     finally{b.disabled=false;b.textContent='Se connecter'}
   };
-  pop.querySelector('[data-lien]').onclick=async()=>{
+  async function envoyerLien(){
     const email=pop.email.value.trim();
     if(!pop.email.checkValidity()||!email){dire('Indiquez votre e-mail : le lien y sera envoyé.');pop.email.focus();return}
     try{await appeler('/auth/lien',{email});dire(`Lien envoyé à ${email} : ouvrez l'e-mail sur cet appareil et cliquez dessus. Vous pourrez ensuite choisir un mot de passe.`,true)}
     catch(err){dire(err.message)}
-  };
-  pop.querySelector('[data-creer]').addEventListener('click',()=>ouvrirConnexion(false));
-  document.addEventListener('click',e=>{if(!pop.hidden&&!pop.contains(e.target)&&!c.contains(e.target))ouvrirConnexion(false)});
+  }
+  pop.querySelector('[data-lien]').onclick=envoyerLien;
+  pop.querySelector('[data-creer]').onclick=()=>{modeCreer(true);dire('');pop.email.focus()};
+  pop.querySelector('[data-retour]').onclick=()=>{modeCreer(false);dire('');(pop.email.value?pop.mot_de_passe:pop.email).focus()};
+  // Un clic qui vient d'ouvrir la fenêtre (bouton d'une page, par exemple) ne la referme pas aussitôt.
+  document.addEventListener('click',e=>{if(!pop.hidden&&e.timeStamp>ouvertLe&&!pop.contains(e.target)&&!c.contains(e.target))ouvrirConnexion(false)});
   pop.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();ouvrirConnexion(false);c.focus()}});
 
   compte(connecte);

@@ -1,18 +1,61 @@
 name: Versions
 
-# À chaque arrivée sur main : si la version écrite en haut de web/site.js (VERSION) n'a pas encore
-# d'étiquette, on crée l'étiquette vX.Y.Z et la Release GitHub, avec le texte de CHANGELOG.md.
+# Deux tâches :
+# - lancé à la main avec un numéro (Actions > Versions > Run workflow, ex. 0.6.0) : prépare la version sur
+#   preprod. Les lignes de changelog.d/ rejoignent CHANGELOG.md, VERSION change dans web/site.js, et la
+#   branche chore/version-X.Y.Z part en PR vers preprod ;
+# - à chaque arrivée sur main : si la VERSION de web/site.js n'a pas encore d'étiquette, on crée l'étiquette
+#   vX.Y.Z et la Release GitHub, avec le texte de CHANGELOG.md.
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version à préparer sur preprod (ex. 0.6.0). Vide : seulement les étiquettes de main."
+        required: false
+        default: ""
+      titre:
+        description: "Titre de la version (facultatif)"
+        required: false
+        default: ""
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
+  preparer:
+    name: Préparer la version
+    if: github.event_name == 'workflow_dispatch' && inputs.version != ''
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ inputs.version }}
+      TITRE: ${{ inputs.titre }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: preprod
+      - name: Rassembler changelog.d/ dans CHANGELOG.md
+        run: python3 scripts/version.py "$VERSION" ${TITRE:+"$TITRE"}
+      - name: Branche et PR vers preprod
+        run: |
+          branche="chore/version-$VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branche"
+          git add -A CHANGELOG.md web/site.js changelog.d
+          git commit -m "Version $VERSION"
+          git push -u origin "$branche"
+          # Une PR ouverte par ce robot ne lance pas la CI (règle de GitHub) : la fermer puis la rouvrir la lance.
+          gh pr create --base preprod --head "$branche" --title "Version $VERSION" \
+            --body "Prépare la version $VERSION : lignes de changelog.d/ rassemblées dans CHANGELOG.md, VERSION à $VERSION dans web/site.js. Fermer puis rouvrir la PR pour lancer la CI." \
+            || echo "::warning::PR non créée (autoriser GitHub Actions à créer des PR dans Settings > Actions). Ouvrir : https://github.com/${{ github.repository }}/compare/preprod...$branche"
+
   etiquettes:
     name: Étiquettes et releases
+    if: github.event_name == 'push' || inputs.version == ''
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
