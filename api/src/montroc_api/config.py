@@ -56,6 +56,9 @@ class Settings(BaseSettings):
     # Nombre maximum de boucles (donc d'objets reçus) par personne au même Grand Troc, repêchage compris :
     # un gros déposant ne prend pas tout le dimanche pendant que d'autres n'ont rien. 0 : pas de plafond.
     plafond_echanges_grand_troc: int = Field(default=3, ge=0, le=20)
+    # Combien d'objets un membre peut recevoir au même Grand Troc grâce à ses « J'aime » du Match : ils comptent
+    # ensemble comme un seul souhait, classé après ses souhaits déclarés.
+    coups_de_coeur_par_grand_troc: int = Field(default=1, ge=1, le=5)
     # Lieu de dépôt affiché aux participants d'un échange accepté (adresse, horaires).
     point_de_depot: str = ""
 

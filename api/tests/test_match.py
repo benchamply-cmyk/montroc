@@ -93,3 +93,37 @@ def test_le_grand_troc_tient_compte_du_match(client, creer):
     assert r.status_code == 200, r.text
     (echange,) = r.json()["echanges"]
     assert {t["objet"]["id"] for t in echange["transferts"]} == {velo, livre}
+
+
+def test_les_j_aime_ne_font_recevoir_qu_un_objet_par_grand_troc(client, creer):
+    """Tous les « J'aime » d'un membre forment un seul souhait, de quantité 1 par défaut."""
+    alice, bruno, dino = creer.utilisateur("alice"), creer.utilisateur("bruno"), creer.utilisateur("dino")
+    creer.objet(alice, "culture", "Livre 1")
+    creer.objet(alice, "culture", "Livre 2")
+    velo_bruno = creer.objet(bruno, "sport", "Vélo de Bruno")
+    velo_dino = creer.objet(dino, "sport", "Vélo de Dino")
+    creer.souhait(bruno, "culture")
+    creer.souhait(dino, "culture")
+    _avis(client, alice, velo_bruno)
+    _avis(client, alice, velo_dino)
+
+    r = client.post("/taches/grand-troc?force=true", headers=TACHES)
+    assert r.status_code == 200, r.text
+    assert len(r.json()["echanges"]) == 1
+
+
+def test_reglage_des_j_aime_par_grand_troc(client, creer, monkeypatch):
+    monkeypatch.setattr(services.get_settings(), "coups_de_coeur_par_grand_troc", 2)
+    alice, bruno, dino = creer.utilisateur("alice"), creer.utilisateur("bruno"), creer.utilisateur("dino")
+    creer.objet(alice, "culture", "Livre 1")
+    creer.objet(alice, "culture", "Livre 2")
+    velo_bruno = creer.objet(bruno, "sport", "Vélo de Bruno")
+    velo_dino = creer.objet(dino, "sport", "Vélo de Dino")
+    creer.souhait(bruno, "culture")
+    creer.souhait(dino, "culture")
+    _avis(client, alice, velo_bruno)
+    _avis(client, alice, velo_dino)
+
+    r = client.post("/taches/grand-troc?force=true", headers=TACHES)
+    assert r.status_code == 200, r.text
+    assert len(r.json()["echanges"]) == 2
