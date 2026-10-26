@@ -1,0 +1,1 @@
+- Réputation : la fiche d'un objet, la carte du Match et Mon espace montrent les échanges menés au bout et une pastille « Nouveau membre », « Membre fiable » ou « Fiabilité à confirmer », tirée de la fiabilité (qui monte à chaque dépôt et baisse sans réponse ou sans dépôt).
