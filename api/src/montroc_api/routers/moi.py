@@ -6,17 +6,19 @@ import time
 from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import func, select
 
+from .. import matchs, nomenclature, premium, services, vues
 from .. import models as m
-from .. import nomenclature, services, vues
 from ..config import get_settings
 from ..deps import SessionDep, UtilisateurConnecte, obtenir_ou_404
 from ..schemas import (
     BoucleProposee,
     EchangeLecture,
+    ListeInteresses,
     Moi,
     MoiModification,
     MonObjet,
     ObjetCreation,
+    ObjetLecture,
     ObjetModification,
     PhotoSignature,
     SouhaitCreation,
@@ -40,7 +42,14 @@ def modifier(donnees: MoiModification, utilisateur: UtilisateurConnecte, session
         )
     ):
         raise HTTPException(409, "Ce pseudo est déjà pris.")
-    for champ, valeur in donnees.model_dump(exclude_unset=True).items():
+    if donnees.zones_interet is not None and len(donnees.zones_interet) > premium.zones_max(utilisateur):
+        raise HTTPException(
+            409, "Une zone d'intérêt sans Troc Premium : passez à Premium Plus pour en enregistrer jusqu'à trois."
+        )
+    changements = donnees.model_dump(exclude_unset=True)
+    if changements.get("toute_la_france", False) is None:
+        del changements["toute_la_france"]
+    for champ, valeur in changements.items():
         setattr(utilisateur, champ, valeur)
     session.commit()
     return moi(utilisateur)
@@ -135,8 +144,34 @@ def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: Utili
             raise HTTPException(422, str(e)) from None
     for champ, valeur in changements.items():
         setattr(objet, champ, valeur)
+    if (
+        "colis" in objet.modes_echange
+        and nomenclature.FORMATS_COLIS.get(objet.format_colis or "", ("", None))[1] is None
+    ):
+        raise HTTPException(422, "Pour un envoi par colis, indiquez un format de colis (30 kg au plus).")
     session.commit()
     return objet
+
+
+@router.get("/objets/{objet_id}/interesses", response_model=ListeInteresses)
+def interesses(objet_id: int, utilisateur: UtilisateurConnecte, session: SessionDep):
+    """Qui aime mon objet : la ShortList d'un objet convoité (5 « J'aime » ou plus), ou tous les intéressés avec
+    « voir qui a aimé » (Troc Premium)."""
+    try:
+        nb, liste = matchs.interesses(session, utilisateur, objet_id)
+    except services.ErreurMetier:
+        raise HTTPException(404, f"Objet {objet_id} introuvable.") from None
+    return ListeInteresses(
+        nb_jaime=nb, convoite=nb >= premium.SEUIL_CONVOITE, interesses=[vues.interesse(i) for i in liste]
+    )
+
+
+@router.get("/apercu", response_model=list[ObjetLecture])
+def apercu_du_stock(utilisateur: UtilisateurConnecte, session: SessionDep):
+    """Aperçu du stock (Troc Premium) : les objets qui répondent à mes souhaits et iront au prochain Grand Troc."""
+    if not premium.a(utilisateur, premium.APERCU_DU_STOCK):
+        raise HTTPException(403, "L'aperçu du stock fait partie de Troc Premium.")
+    return services.apercu_du_stock(session, utilisateur)
 
 
 # --- Souhaits ---

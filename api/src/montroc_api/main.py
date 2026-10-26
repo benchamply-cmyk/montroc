@@ -10,14 +10,26 @@ from sqlalchemy import text
 from . import __version__
 from .config import get_settings
 from .deps import SessionDep
-from .routers import auth, catalogue, echanges, grand_troc, matchs, moi, objets, signalements, taches, utilisateurs
+from .routers import (
+    auth,
+    catalogue,
+    echanges,
+    grand_troc,
+    matchs,
+    moi,
+    objets,
+    premium,
+    signalements,
+    taches,
+    utilisateurs,
+)
 
 app = FastAPI(
     title="API montroc",
     version=__version__,
     description=(
         "TopTroc, troc sans prix ni monnaie : le Match (accords 1 à 1 à tout moment) et le Grand Troc du "
-        "dimanche (boucles d'échange de 2 ou 3 personnes)."
+        "dimanche (boucles d'échange de 2 ou 3 personnes), en main propre ou par colis, et Troc Premium."
     ),
 )
 app.add_middleware(
@@ -28,7 +40,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for module in (auth, moi, catalogue, objets, utilisateurs, matchs, echanges, grand_troc, signalements, taches):
+for module in (auth, moi, catalogue, objets, utilisateurs, matchs, echanges, grand_troc, premium, signalements, taches):
     app.include_router(module.router)
 
 

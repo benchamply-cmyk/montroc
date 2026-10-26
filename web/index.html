@@ -426,6 +426,16 @@ details.plus summary::-webkit-details-marker{display:none}
 .ronds .oui{border:0;background:var(--accent);color:var(--accent-ink);width:76px;height:76px}
 .ronds svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:2.2}
 .ronds .oui svg{fill:currentColor;stroke:none;width:32px;height:32px}
+.ronds .retour-m,.ronds .super{width:48px;height:48px;border:2px solid var(--line);background:var(--surface);color:var(--muted)}
+.ronds .super{color:#f5c542;border-color:#f5c542}.ronds .super svg{fill:currentColor;stroke:none;width:24px;height:24px}
+.lieu-ligne{display:flex;gap:8px;align-items:stretch}.lieu-ligne .input{flex:1;min-width:0}
+.interrupteur{display:flex;gap:8px;align-items:center;font-size:14px;margin-top:10px}
+.formules{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+.formule{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.formule.conseillee{border-color:var(--accent)}.formule .prix{color:var(--muted);font-size:14px}
+.formule ul,.c-premium ul{margin:0;padding-left:18px;font-size:14px}
+.pub{border:1px dashed var(--line);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--muted)}
+.interesses{flex-basis:100%;display:flex;flex-direction:column;gap:6px}
 .aide{font-size:14px;text-align:center}
 @media (prefers-reduced-motion:reduce){.pile-match .carte{transition:none}}
 .ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -532,6 +542,7 @@ details.plus summary::-webkit-details-marker{display:none}
         </ul>
         <p class="muted" style="font-size:14px">Entreprise ou collectivité ? <a href="/pros/">Professionnels</a> · <a href="/collectivites/">Collectivités</a></p>
       </div>
+      <aside class="pub" data-pub hidden></aside>
       <form class="card stack troquez" id="f-import-home">
         <span class="label">Votre annonce ne part pas ?</span>
         <h2>Troquez-<em>la.</em></h2>
@@ -628,7 +639,8 @@ details.plus summary::-webkit-details-marker{display:none}
             <fieldset class="choix" id="alt-wish" hidden><legend>J'accepte aussi…</legend><div class="row"></div></fieldset>
             <fieldset class="choix"><legend>Remise acceptée</legend><div class="row">
               <label><input type="checkbox" name="mode" value="main_propre" checked>En main propre</label>
-              <label><input type="checkbox" name="mode" value="point_relais" checked>En point relais</label></div></fieldset>
+              <label hidden data-point-relais><input type="checkbox" name="mode" value="point_relais" checked>En point relais</label>
+              <label><input type="checkbox" name="mode" value="colis" checked>Par colis</label></div></fieldset>
             <label class="field"><span>Autres villes acceptées <span class="muted" style="font-weight:400">(facultatif, en plus de la vôtre)</span></span>
               <input class="input" name="zones" maxlength="300" placeholder="Ex. Aix-en-Provence, Aubagne"></label>
             <label class="field"><span>Décrivez ce que vous cherchez <span class="muted" style="font-weight:400">(facultatif)</span></span>
@@ -640,6 +652,10 @@ details.plus summary::-webkit-details-marker{display:none}
         </details>
       </section>
     </div>
+
+    <div class="card" id="c-zones"><span class="label">Où je troque</span><div id="zones"></div></div>
+    <div class="card c-premium" id="c-premium"><span class="label">Troc Premium</span><div id="premium"></div></div>
+    <aside class="pub" data-pub hidden></aside>
 
     <div class="card">
       <span class="label">Mon compte</span>
@@ -677,11 +693,22 @@ details.plus summary::-webkit-details-marker{display:none}
         <label><input type="radio" name="etat" value="tres_bon"><span>Très bon</span></label>
         <label><input type="radio" name="etat" value="bon"><span>Bon</span></label>
         <label><input type="radio" name="etat" value="correct"><span>Correct</span></label></div></fieldset>
+      <div class="field localisation"><span>Localisation</span>
+        <div class="lieu-ligne"><input class="input" name="lieu" id="lieu-obj" list="lieux-obj" maxlength="120" placeholder="Ville ou code postal" autocomplete="off">
+          <button class="btn" type="button" id="autour-obj">Autour de moi</button></div>
+        <datalist id="lieux-obj"></datalist>
+        <input type="hidden" name="latitude"><input type="hidden" name="longitude">
+        <span class="muted" style="font-size:13px">Seule la ville est montrée aux autres membres, jamais votre adresse.</span></div>
       <details class="plus"><summary>+ Précisions et remise <span class="muted">(facultatif)</span></summary>
         <div class="stack" style="display:flex;flex-direction:column;gap:14px;padding-top:12px">
           <fieldset class="choix"><legend>Remise possible</legend><div class="row">
             <label><input type="checkbox" name="mode" value="main_propre" checked>En main propre</label>
-            <label><input type="checkbox" name="mode" value="point_relais" checked>En point relais</label></div></fieldset>
+            <label hidden data-point-relais><input type="checkbox" name="mode" value="point_relais" checked>En point relais</label>
+            <label><input type="checkbox" name="mode" value="colis">Par colis, envoi à mes frais</label></div></fieldset>
+          <label class="field"><span>Format du colis</span><select class="input" name="format_colis">
+            <option value="">Pas d'envoi par colis</option><option value="petit">Petit colis (jusqu'à 1 kg)</option>
+            <option value="moyen">Colis moyen (jusqu'à 5 kg)</option><option value="grand">Grand colis (jusqu'à 30 kg)</option>
+            <option value="encombrant">Encombrant : main propre seulement</option></select></label>
           <label class="field"><span>Précisions</span><textarea class="input" name="description" maxlength="2000" placeholder="Défauts, accessoires fournis, dimensions…"></textarea></label>
         </div></details>
       <details class="plus" id="d-annonce"><summary>+ Déjà en vente sur Vinted ou Leboncoin ?</summary>
@@ -721,7 +748,9 @@ details.plus summary::-webkit-details-marker{display:none}
     <div class="match-entete"><h2 id="match-title">Ça vous plaît ?</h2><span class="muted" id="carrousel-compte"></span></div>
     <div class="pile-match" id="carrousel" aria-live="polite"></div>
     <div class="ronds" id="ronds" hidden>
+      <button class="retour-m" type="button" id="m-retour" aria-label="Retour arrière" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
       <button class="non" type="button" id="m-non" aria-label="Non merci"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <button class="super" type="button" id="m-super" aria-label="Super J'aime" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button>
       <button class="oui" type="button" id="m-oui" aria-label="J'aime"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
     </div>
     <p class="muted aide" id="match-aide" hidden>Glissez la carte vers la droite si elle vous plaît, vers la gauche sinon (ou flèches ← → du clavier). Un cœur de chaque côté et vous échangez à deux, sans attendre dimanche.</p>
@@ -738,7 +767,7 @@ details.plus summary::-webkit-details-marker{display:none}
   <!-- REMISE -->
   <section class="view" id="v-drop" hidden>
     <nav class="onglets" data-espace aria-label="Mon espace"></nav>
-    <div class="hero"><span class="label">Remise sécurisée</span><h2>Déposez, puis récupérez</h2></div>
+    <div class="hero"><span class="label">Remise</span><h2>Remettez en main propre ou envoyez</h2></div>
     <div id="drops" style="display:flex;flex-direction:column;gap:22px"></div>
   </section>
 
@@ -791,7 +820,7 @@ details.plus summary::-webkit-details-marker{display:none}
 const API = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8001'
   : /^preprod(--|\.)/.test(location.hostname) ? 'https://montroc-api-preprod.onrender.com' : 'https://api.toptroc.com';
 const ETATS = {neuf:'Neuf', comme_neuf:'Comme neuf', tres_bon:'Très bon état', bon:'Bon état', correct:'État correct', usage:'Usagé, fonctionne'};
-const MODES = {main_propre:'en main propre', point_relais:'en point relais'};
+const MODES = {main_propre:'en main propre', point_relais:'en point relais', colis:'par colis'};
 const STATUTS = {disponible:'', reserve:'réservé', retire:'retiré', modere:'retiré par la modération'};
 const MOTIFS = {dangereux:'Produit dangereux', illegal:'Illicite', contrefacon:'Contrefaçon', arnaque:'Arnaque', inapproprie:'Inapproprié', autre:'Autre'};
 
@@ -956,6 +985,7 @@ function afficherSession(){
     $('#mdp-titre').textContent=moi.a_un_mot_de_passe?'Changer de mot de passe':'Choisir un mot de passe';
     $('#mdp-bouton').textContent=moi.a_un_mot_de_passe?'Changer le mot de passe':'Enregistrer le mot de passe'}
   else $('#f-mdp-rappel').hidden=true;
+  if(typeof Premium!=='undefined')Premium.afficher();
 }
 function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);afficherSession();go('home')}
 
@@ -1038,6 +1068,7 @@ $('#f-obj').onsubmit=async e=>{
     const photo=await envoyerPhoto(f.photo.files[0]); b.textContent='Publication…';
     await api('/moi/objets',{method:'POST',body:{titre:f.titre.value.trim(),categorie_slug:f.categorie_slug.value,etat:f.etat.value,
       sous_categorie_slug:f.sous_categorie_slug.value||null,caracteristiques:Detail.valeurs(f),modes_echange:Detail.modes(f),
+      format_colis:f.format_colis.value||null,...Premium.localisation(f),
       description:f.description.value.trim()||null,annonce_origine:annonce?annonce.lien:null,...photo}});
     f.reset(); Detail.remplir(f,false); $('#photo-txt').innerHTML=PHOTO_VIDE; $('#import-guide').hidden=true; f.querySelectorAll('details').forEach(d=>d.open=false);
     toast(annonce?`Objet publié. Une fois troqué, pensez à retirer l'annonce ${annonce.site}.`:'Objet publié');
@@ -1177,7 +1208,8 @@ async function chargerListes(){
       <span>${esc(ETATS[o.etat]||'État à préciser')} · ${Detail.nom(o.categorie_slug,o.sous_categorie_slug)}${d?' · '+d:''}${o.annonce_origine?` · <a href="${esc(o.annonce_origine)}" target="_blank" rel="noopener noreferrer">aussi en vente ailleurs</a>`:''}</span></div>
       ${o.statut==='disponible'?`<button class="linkbtn" data-retirer="${o.id}">Retirer</button>`:''}
       ${o.statut==='retire'&&o.photo_url?`<button class="linkbtn" data-remettre="${o.id}">Remettre</button>`:''}
-      <span class="muted" style="flex-basis:100%;font-size:13px">${contreTexte(o)} · <button class="linkbtn" data-contre="${o.id}">Choisir</button></span>
+      <span class="muted" style="flex-basis:100%;font-size:13px">${contreTexte(o)} · <button class="linkbtn" data-contre="${o.id}">Choisir</button>${o.lieu?' · '+esc(o.lieu):''}${o.statut==='disponible'?` · <button class="linkbtn" data-interesses="${o.id}">Qui aime ?</button>`:''}</span>
+      <div class="interesses" id="interesses-${o.id}" hidden></div>
       ${contreEditeur(o)}
     </div>`}).join('')+AJOUTER:'<p class="empty">Votre grenier, votre placard, votre garage : qu\'est-ce qui n\'a pas servi cette année ? Proposez-le, avec sa photo.</p>'+AJOUTER;
   $('#wishes').innerHTML=souhaits.length?souhaits.map(s=>{
@@ -1246,10 +1278,12 @@ function carteEchange(e){
   if(e.statut==='propose'&&mien&&mien.reponse==='en_attente')
     bas=`<div class="btns"><button class="btn primary" data-repondre="${e.id}" data-oui="1">J'accepte</button><button class="btn" data-repondre="${e.id}">Pas pour moi</button></div>`;
   else if(e.statut==='propose')bas=`<p class="status">C'est noté. On attend ${attente.join(' et ')}.</p>`;
-  else bas=`<p class="status">Tout le monde a dit oui : place au dépôt.</p><button class="btn" data-go="drop">Voir le dépôt</button>`;
+  else bas=`<p class="status">Tout le monde a dit oui : place à la remise.</p><button class="btn" data-go="drop">Voir la remise</button>`;
   return `<article class="card featured" id="echange-${e.id}">
     <span class="tag ${e.par_match?'m':'a'}">${e.par_match?'Match · ':e.grand_troc_jour?'Grand Troc · ':''}${ts.length===3?'Boucle à trois':'Échange direct'}</span>
+    ${e.avant_premiere?'<span class="tag m">Avant-première Premium</span>':''}
     ${chaine(ts)}${recap(ts)}
+    ${mien?`<p class="muted" style="font-size:14px">Vous recevez ${MODES[mien.mode]||''}${mien.mode==='colis'?', envoyé aux frais de '+esc(mien.donneur_pseudo):''}.</p>`:''}
     ${e.statut==='propose'?`<div class="acc">${ts.map(t=>`<span class="dot ${t.reponse==='acceptee'?'on':''}"></span>`).join('')}<span>${oui}/${ts.length} ont accepté · ${heures(e.expire_le)} h restantes</span></div>`:''}
     ${bas}</article>`;
 }
@@ -1288,7 +1322,8 @@ function prochaineAction(){
     return {titre:`Répondez : ${r.donneur_pseudo} vous propose un échange`,detail:`Vous recevriez « ${r.objet.titre} ». Plus que ${heures(enAttente.expire_le)} h pour répondre.`,bouton:"Voir l'échange",faire:()=>go('trades')}}
   const aDeposer=echanges.find(e=>e.statut==='accepte'&&e.transferts.some(t=>t.donneur_id===moi.id&&!t.depose_le));
   if(aDeposer){const d=aDeposer.transferts.find(t=>t.donneur_id===moi.id);
-    return {titre:`Déposez « ${d.objet.titre} »`,detail:aDeposer.point_de_depot?`${aDeposer.point_de_depot} · code ${d.code_retrait||''}`:'Le lieu de dépôt va être indiqué.',bouton:'Voir le dépôt',faire:()=>go('drop')}}
+    return {titre:d.mode==='colis'?`Envoyez « ${d.objet.titre} »`:d.mode==='main_propre'?`Remettez « ${d.objet.titre} » à ${d.receveur_pseudo}`:`Déposez « ${d.objet.titre} »`,
+      detail:d.mode==='colis'?'Par colis, à vos frais, avec le numéro de suivi.':d.mode==='main_propre'?(aDeposer.lieu_de_rencontre||'Convenez d\'un rendez-vous dans un lieu public.'):aDeposer.point_de_depot?`${aDeposer.point_de_depot} · code ${d.code_retrait||''}`:'Le lieu de dépôt va être indiqué.',bouton:'Voir la remise',faire:()=>go('drop')}}
   const m=mesMatchs.find(x=>!x.echange_id);
   if(m)return {titre:`C'est un match avec ${m.avec.pseudo} !`,detail:'Choisissez ce que vous échangez, et proposez-le.',bouton:'Conclure',faire:()=>{go('match');document.getElementById('match-'+m.avec.id)?.scrollIntoView({block:'center'})}};
   if(!mesObjets.length)return {titre:'Proposez votre premier objet',detail:"Une photo, un titre, une catégorie : c'est tout.",bouton:'Proposer un objet',faire:versProposer};
@@ -1310,7 +1345,7 @@ $('#afaire').addEventListener('click',e=>{if(e.target.closest('#afaire-btn')&&ac
 function marquerOnglets(){
   if(!moi)return;
   const enCours=echanges.filter(e=>e.statut==='propose'||e.statut==='accepte').length;
-  const ongl=[['ai','Je propose',mesObjets.length],['cherche','Je demande',mesSouhaits.length],['trades','Échanges',enCours],['drop','Dépôt','']];
+  const ongl=[['ai','Je propose',mesObjets.length],['cherche','Je demande',mesSouhaits.length],['trades','Échanges',enCours],['drop','Remise','']];
   if(moi.est_moderateur)ongl.push(['mod','Modération','']);
   const actif=vueActuelle==='lists'?panneau:vueActuelle;
   const html=ongl.map(([k,l,n])=>`<button type="button" data-onglet="${k}"${k===actif?' aria-current="page"':''}>${l}${n!==''?`<small>${n}</small>`:''}</button>`).join('');
@@ -1385,28 +1420,57 @@ $('#fiche').addEventListener('click',async e=>{
     catch(err){toast(err.message);b.disabled=false}}
 });
 
-/* Dépôt */
+/* Remise : en main propre (par défaut), par colis payé par l'expéditeur (avec son suivi), ou au point de dépôt. */
+const REMISES={main_propre:['remis','à remettre'],colis:['envoyé','à envoyer'],point_relais:['déposé','à déposer']};
 function afficherDepots(){
   const liste=echanges.filter(e=>e.statut==='accepte'||(e.statut==='termine'&&Date.now()-new Date(e.cree_le)<30*864e5));
   $('#drops').innerHTML=liste.map(e=>{
     const ts=e.transferts, don=ts.find(t=>t.donneur_id===moi.id), rec=ts.find(t=>t.receveur_id===moi.id), faits=ts.filter(t=>t.depose_le).length;
     if(!don||!rec)return '';
     const lieu=e.point_de_depot?`<b>${esc(e.point_de_depot)}</b>`:'<span class="muted">Le lieu de dépôt n\'est pas encore indiqué : il apparaîtra ici.</span>';
-    if(e.statut==='termine')return `<div class="card"><span class="tag a">Tout est déposé</span>
-      <p>Récupérez <b>${esc(rec.objet.titre)}</b> au point de dépôt avec ce code :</p><span class="code">${esc(rec.code_retrait||'')}</span>
-      <div class="place"><span class="muted">Point de dépôt</span><span>${lieu}</span></div></div>`;
-    return `<div style="display:flex;flex-direction:column;gap:14px">
-      <div class="slots" style="grid-template-columns:repeat(${ts.length},1fr)">${ts.map(t=>`<div class="slot ${t.depose_le?'done':''}"><span class="who">${nom(t.donneur_id,t.donneur_pseudo)}</span><span class="st">${t.depose_le?'déposé':'à déposer'}</span></div>`).join('')}</div>
-      <div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-        <p style="font-size:15px">${TT_I18N.count(faits,'depot')} sur ${ts.length}. Rien n'est libéré tant que tout n'est pas déposé. Sans dépôt de tous d'ici ${Math.ceil(heures(e.expire_le)/24)} jour(s), chacun récupère le sien.</p></div>
-      <div class="card"><span class="label">Point de dépôt</span>${lieu}
+    const suivi=t=>t.numero_suivi?`<div class="place"><span class="muted">Suivi du colis</span><span>${esc(t.transporteur||'')} ${esc(t.numero_suivi)}</span></div>`:'';
+    if(e.statut==='termine'){
+      if(rec.mode==='point_relais')return `<div class="card"><span class="tag a">Tout est déposé</span>
+        <p>Récupérez <b>${esc(rec.objet.titre)}</b> au point de dépôt avec ce code :</p><span class="code">${esc(rec.code_retrait||'')}</span>
+        <div class="place"><span class="muted">Point de dépôt</span><span>${lieu}</span></div></div>`;
+      return `<div class="card"><span class="tag a">Échange terminé</span><p><b>${esc(rec.objet.titre)}</b> ${rec.mode==='colis'?'arrive par colis.':'est à vous.'} Merci d'avoir troqué !</p>${suivi(rec)}</div>`;
+    }
+    let action;
+    if(don.depose_le)action=`<p class="status">${REMISES[don.mode][0]==='envoyé'?'Envoi enregistré.':'Remise enregistrée.'}</p>${suivi(don)}`;
+    else if(don.mode==='colis')action=`<p>Envoyez <b>${esc(don.objet.titre)}</b> à ${esc(don.receveur_pseudo)} par colis, à vos frais${don.garantie?', couvert par la Garantie TopTroc':''}. Photographiez l'objet avant de fermer le colis.</p>
+        ${don.adresse_livraison?`<div class="place"><span class="muted">Adresse ou point relais</span><span><b>${esc(don.adresse_livraison)}</b></span></div>`:`<p class="muted">${esc(don.receveur_pseudo)} n'a pas encore indiqué où recevoir le colis.</p>`}
+        <form class="stack" data-envoi="${e.id}"><div class="grid2">
+          <label class="field"><span>Transporteur</span><input class="input" name="transporteur" required maxlength="40" placeholder="Mondial Relay, Colissimo…"></label>
+          <label class="field"><span>Numéro de suivi</span><input class="input" name="numero_suivi" required maxlength="60"></label></div>
+          <div class="btns"><button class="btn primary">J'ai envoyé le colis</button></div></form>`;
+    else if(don.mode==='point_relais')action=`<div class="place"><span class="muted">Point de dépôt</span><span>${lieu}</span></div>
         <div class="place"><span class="muted">Marquez « ${esc(don.objet.titre)} » avec le code</span><span class="code">${esc(don.code_retrait||'')}</span></div>
-        <div class="btns">${don.depose_le?'<p class="status">Dépôt enregistré.</p>':`<button class="btn primary" data-deposer="${e.id}">J'ai déposé ${esc(don.objet.titre)}</button>`}</div></div></div>`;
-  }).join('')||'<p class="empty">Rien à déposer pour l\'instant. Le dépôt s\'ouvre quand tout le monde a accepté un échange.</p>';
+        <div class="btns"><button class="btn primary" data-deposer="${e.id}">J'ai déposé ${esc(don.objet.titre)}</button></div>`;
+    else action=`<p>Convenez d'un rendez-vous avec ${esc(don.receveur_pseudo)} pour lui remettre <b>${esc(don.objet.titre)}</b>, de préférence dans un lieu public.</p>
+        ${e.lieu_de_rencontre?`<div class="place"><span class="muted">Lieu conseillé</span><span><b>${esc(e.lieu_de_rencontre)}</b></span></div>`:''}
+        <div class="btns"><button class="btn primary" data-deposer="${e.id}">J'ai remis ${esc(don.objet.titre)}</button></div>`;
+    const recevoir=rec.mode==='colis'&&!rec.depose_le?`<form class="stack" data-adresse="${e.id}">
+        <label class="field"><span>Où recevoir « ${esc(rec.objet.titre)} » ? Adresse ou point relais (seul ${esc(rec.donneur_pseudo)} la voit)</span>
+        <input class="input" name="adresse" required minlength="5" maxlength="300" value="${esc(rec.adresse_livraison||'')}"></label>
+        <div class="btns"><button class="btn">Enregistrer</button></div></form>`:suivi(rec);
+    return `<div style="display:flex;flex-direction:column;gap:14px">
+      <div class="slots" style="grid-template-columns:repeat(${ts.length},1fr)">${ts.map(t=>`<div class="slot ${t.depose_le?'done':''}"><span class="who">${nom(t.donneur_id,t.donneur_pseudo)}</span><span class="st">${REMISES[t.mode][t.depose_le?0:1]}</span></div>`).join('')}</div>
+      <p class="muted" style="font-size:15px">${faits} sur ${ts.length}. Sans remise de tous d'ici ${Math.ceil(heures(e.expire_le)/24)} jour(s), l'échange est annulé et la fiabilité de qui n'a rien remis baisse.</p>
+      <div class="card"><span class="label">${MODES[don.mode]}</span>${action}</div>${recevoir?`<div class="card">${recevoir}</div>`:''}</div>`;
+  }).join('')||'<p class="empty">Rien à remettre pour l\'instant. La remise s\'ouvre quand tout le monde a accepté un échange.</p>';
 }
 $('#drops').onclick=async e=>{
   const id=e.target.dataset.deposer; if(!id)return; e.target.disabled=true;
-  try{const x=await api(`/echanges/${id}/depot`,{method:'POST'});toast(x.statut==='termine'?'Tout est déposé : récupérez votre objet !':'Dépôt enregistré')}catch(err){toast(err.message)}
+  try{const x=await api(`/echanges/${id}/depot`,{method:'POST'});toast(x.statut==='termine'?'Échange terminé : merci d\'avoir troqué !':'Remise enregistrée')}catch(err){toast(err.message)}
+  chargerEchanges();
+};
+$('#drops').onsubmit=async e=>{
+  e.preventDefault(); const f=e.target;
+  try{
+    if(f.dataset.envoi)await api(`/echanges/${f.dataset.envoi}/depot`,{method:'POST',body:{transporteur:f.transporteur.value.trim(),numero_suivi:f.numero_suivi.value.trim()}});
+    if(f.dataset.adresse)await api(`/echanges/${f.dataset.adresse}/adresse`,{method:'POST',body:{adresse:f.adresse.value.trim()}});
+    toast('Enregistré');
+  }catch(err){toast(err.message)}
   chargerEchanges();
 };
 
@@ -1518,5 +1582,6 @@ async function demarrer(){
 demarrer();
 </script>
 <script src="match.js"></script>
+<script src="premium.js"></script>
 </body>
 </html>

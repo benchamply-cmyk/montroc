@@ -8,8 +8,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from troc_echanges import (Contraintes, GrapheEchanges, Marche, Souhait, boucles_autour,  # noqa: E402
-                           enumerer_boucles, math_trade, proba_tous_acceptent, remplacants, replanifier,
+from troc_echanges import (Contraintes, GrapheEchanges, Marche, Souhait, ZoneInteret, boucles_autour,  # noqa: E402
+                           distance_km, enumerer_boucles, math_trade, proba_tous_acceptent, remplacants, replanifier,
                            solveur_exact)
 
 AVEC_ORTOOLS = unittest.skipUnless(solveur_exact.disponible(), "OR-Tools n'est pas installé")
@@ -740,3 +740,47 @@ class TestObjetsAttendus(unittest.TestCase):
                 verifier_solution(self, m, sol, lm)
                 attendu = optimum_force_brute_borne(m, lm, lambda b: b.longueur * b.proba_reussite)
                 self.assertAlmostEqual(sol.esperance_objets, attendu, delta=0.005 * attendu + 1e-9, msg=f"seed {seed}")
+
+
+# Cours Julien (Marseille 6e), Vieux-Port (≈ 1,5 km), Aix-en-Provence (≈ 25 km), Lyon (≈ 280 km).
+COURS_JULIEN, VIEUX_PORT, AIX, LYON = (43.2943, 5.3832), (43.2951, 5.3664), (43.5297, 5.4474), (45.7640, 4.8357)
+
+
+class TestZonesInteret(unittest.TestCase):
+    """Chacun choisit ses zones d'intérêt (un centre et un rayon) ou toute la France ; chaque objet a sa position."""
+
+    def marche(self, position, zones=(), france=False, modes_souhait=(), modes_objet=()):
+        m = marche_paire(Souhait(categorie="bricolage", modes=frozenset(modes_souhait)), position=position,
+                         modes=modes_objet)
+        u = m.utilisateurs["A"]
+        u.zones_interet = tuple(ZoneInteret(*centre, rayon) for centre, rayon in zones)
+        u.toute_la_france = france
+        return m
+
+    def test_distance(self):
+        self.assertAlmostEqual(distance_km(COURS_JULIEN, LYON), 278, delta=5)
+        self.assertLess(distance_km(COURS_JULIEN, VIEUX_PORT), 2)
+
+    def test_objet_dans_une_zone(self):
+        autour = [(COURS_JULIEN, 3)]
+        self.assertTrue(echange_possible(self.marche(VIEUX_PORT, autour)))
+        self.assertFalse(echange_possible(self.marche(AIX, autour)), "hors de son rayon")
+        self.assertTrue(echange_possible(self.marche(AIX, autour + [(AIX, 10)])), "deuxième zone")
+        self.assertTrue(echange_possible(self.marche(None, autour)), "lieu inconnu : accepté")
+
+    def test_loin_seulement_par_colis(self):
+        autour = [(COURS_JULIEN, 3)]
+        self.assertFalse(echange_possible(self.marche(LYON, autour, france=True, modes_souhait={"main_propre"})))
+        self.assertFalse(echange_possible(self.marche(LYON, autour, france=True, modes_souhait={"main_propre", "colis"},
+                                                      modes_objet={"main_propre"})), "l'objet ne voyage pas")
+        self.assertTrue(echange_possible(self.marche(LYON, autour, france=True, modes_souhait={"main_propre", "colis"},
+                                                     modes_objet={"main_propre", "colis"})))
+        self.assertTrue(echange_possible(self.marche(LYON, france=True)), "modes non précisés : tous")
+        # Tout près, la main propre suffit, même sans colis.
+        self.assertTrue(echange_possible(self.marche(VIEUX_PORT, autour, france=True, modes_souhait={"main_propre"})))
+
+    def test_math_trade(self):
+        m = self.marche(LYON, [(COURS_JULIEN, 3)])
+        self.assertEqual(math_trade(m).nb_objets_echanges, 0)
+        m.utilisateurs["A"].toute_la_france = True
+        self.assertEqual(math_trade(m).nb_objets_echanges, 2)

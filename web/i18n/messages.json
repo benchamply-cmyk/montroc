@@ -3914,5 +3914,205 @@
   "et": {
     "en": "and",
     "es": "y"
+  },
+  "Par colis": {
+    "en": "By parcel",
+    "es": "Por paquete"
+  },
+  "Où je troque": {
+    "en": "Where I swap",
+    "es": "Dónde intercambio"
+  },
+  "Troc Premium": {
+    "en": "Troc Premium",
+    "es": "Troc Premium"
+  },
+  "Localisation": {
+    "en": "Location",
+    "es": "Ubicación"
+  },
+  "Autour de moi": {
+    "en": "Around me",
+    "es": "Cerca de mí"
+  },
+  "Seule la ville est montrée aux autres membres, jamais votre adresse.": {
+    "en": "Only the town is shown to other members, never your address.",
+    "es": "Solo se muestra la ciudad a los demás miembros, nunca tu dirección."
+  },
+  "Par colis, envoi à mes frais": {
+    "en": "By parcel, shipping at my expense",
+    "es": "Por paquete, envío a mi cargo"
+  },
+  "Format du colis": {
+    "en": "Parcel size",
+    "es": "Tamaño del paquete"
+  },
+  "Pas d'envoi par colis": {
+    "en": "No parcel shipping",
+    "es": "Sin envío por paquete"
+  },
+  "Petit colis (jusqu'à 1 kg)": {
+    "en": "Small parcel (up to 1 kg)",
+    "es": "Paquete pequeño (hasta 1 kg)"
+  },
+  "Colis moyen (jusqu'à 5 kg)": {
+    "en": "Medium parcel (up to 5 kg)",
+    "es": "Paquete mediano (hasta 5 kg)"
+  },
+  "Grand colis (jusqu'à 30 kg)": {
+    "en": "Large parcel (up to 30 kg)",
+    "es": "Paquete grande (hasta 30 kg)"
+  },
+  "Encombrant : main propre seulement": {
+    "en": "Bulky: hand-to-hand only",
+    "es": "Voluminoso: solo en mano"
+  },
+  "Remettez en main propre ou envoyez": {
+    "en": "Hand it over or ship it",
+    "es": "Entrégalo en mano o envíalo"
+  },
+  "Ville ou code postal": {
+    "en": "Town or postcode",
+    "es": "Ciudad o código postal"
+  },
+  "Retour arrière": {
+    "en": "Undo",
+    "es": "Deshacer"
+  },
+  "Super J'aime": {
+    "en": "Super Like",
+    "es": "Super Me gusta"
+  },
+  "Sans publicité": {
+    "en": "No ads",
+    "es": "Sin publicidad"
+  },
+  "Voir qui aime vos objets": {
+    "en": "See who likes your items",
+    "es": "Ver a quién le gustan tus objetos"
+  },
+  "Retour arrière dans le Match": {
+    "en": "Undo in Match",
+    "es": "Deshacer en Match"
+  },
+  "Aperçu du stock du dimanche": {
+    "en": "Preview of Sunday's stock",
+    "es": "Vista previa del stock del domingo"
+  },
+  "Avant-première du Grand Troc à 17 h": {
+    "en": "Grand Troc preview at 5 pm",
+    "es": "Preestreno del Grand Troc a las 17 h"
+  },
+  "En tête des ShortLists": {
+    "en": "Top of ShortLists",
+    "es": "Primero en las ShortLists"
+  },
+  "Priorité à égalité au Grand Troc": {
+    "en": "Tie-break priority at the Grand Troc",
+    "es": "Prioridad en caso de empate en el Grand Troc"
+  },
+  "Jusqu'à 3 zones d'intérêt": {
+    "en": "Up to 3 areas of interest",
+    "es": "Hasta 3 zonas de interés"
+  },
+  "Garantie TopTroc sur vos colis": {
+    "en": "TopTroc guarantee on your parcels",
+    "es": "Garantía TopTroc en tus paquetes"
+  },
+  "3 proches inclus": {
+    "en": "3 relatives included",
+    "es": "3 familiares incluidos"
+  },
+  "Ajouter cette zone": {
+    "en": "Add this area",
+    "es": "Añadir esta zona"
+  },
+  "Rayon": {
+    "en": "Radius",
+    "es": "Radio"
+  },
+  "Au mois": {
+    "en": "Monthly",
+    "es": "Mensual"
+  },
+  "À l'année": {
+    "en": "Yearly",
+    "es": "Anual"
+  },
+  "Acheter": {
+    "en": "Buy",
+    "es": "Comprar"
+  },
+  "Qui aime ?": {
+    "en": "Who likes it?",
+    "es": "¿A quién le gusta?"
+  },
+  "par colis": {
+    "en": "by parcel",
+    "es": "por paquete"
+  },
+  "Voir la remise": {
+    "en": "See handover",
+    "es": "Ver la entrega"
+  },
+  "remis": {
+    "en": "handed over",
+    "es": "entregado"
+  },
+  "à remettre": {
+    "en": "to hand over",
+    "es": "por entregar"
+  },
+  "envoyé": {
+    "en": "shipped",
+    "es": "enviado"
+  },
+  "à envoyer": {
+    "en": "to ship",
+    "es": "por enviar"
+  },
+  "Transporteur": {
+    "en": "Carrier",
+    "es": "Transportista"
+  },
+  "Numéro de suivi": {
+    "en": "Tracking number",
+    "es": "Número de seguimiento"
+  },
+  "J'ai envoyé le colis": {
+    "en": "I've shipped the parcel",
+    "es": "He enviado el paquete"
+  },
+  "Avant-première Premium": {
+    "en": "Premium preview",
+    "es": "Preestreno Premium"
+  },
+  "Profil vérifié": {
+    "en": "Verified profile",
+    "es": "Perfil verificado"
+  },
+  "Gérer ou résilier mon abonnement": {
+    "en": "Manage or cancel my subscription",
+    "es": "Gestionar o cancelar mi suscripción"
+  },
+  "Zones enregistrées": {
+    "en": "Areas saved",
+    "es": "Zonas guardadas"
+  },
+  "Ajouter un proche (e-mail de son compte TopTroc)": {
+    "en": "Add a relative (their TopTroc account email)",
+    "es": "Añadir un familiar (correo de su cuenta TopTroc)"
+  },
+  "Proche ajouté": {
+    "en": "Relative added",
+    "es": "Familiar añadido"
+  },
+  "Bienvenue dans Troc Premium Plus !": {
+    "en": "Welcome to Troc Premium Plus!",
+    "es": "¡Bienvenido a Troc Premium Plus!"
+  },
+  "Remise enregistrée": {
+    "en": "Handover recorded",
+    "es": "Entrega registrada"
   }
 }

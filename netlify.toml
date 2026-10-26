@@ -10,7 +10,7 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"  # « Autour de moi » (localisation des objets et zone d'intérêt)
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
 
 # Toujours servir le site sur toptroc.com (sans www). L'ancien domaine troctroc.fr (gardé chez OVH) redirige

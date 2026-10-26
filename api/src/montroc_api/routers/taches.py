@@ -20,6 +20,7 @@ def horaires(session: SessionDep):
     remplaces = services.remplacements(session)
     session.flush()
     repeches = services.repechage(session)
+    services.annoncer_grand_troc(session)  # l'annonce de 18 h, si l'appel du dimanche l'a manquée
     session.commit()
     return ResultatTaches(
         rappels_envoyes=rappels, echanges_expires=expires, objets_remplaces=remplaces, objets_repeches=repeches
@@ -28,7 +29,8 @@ def horaires(session: SessionDep):
 
 @router.post("/grand-troc", response_model=ResultatGrandTroc)
 def grand_troc(session: SessionDep, force: bool = False):
-    """Le dimanche à partir de 18 h (heure de Paris) : maximum d'objets échangés sur tout le stock.
+    """Le dimanche à partir de 17 h (heure de Paris) : maximum d'objets échangés sur tout le stock, montré d'abord
+    aux Premium (avant-première), puis annoncé à tous à 18 h.
 
     Sans effet avant l'heure ou si le Grand Troc du jour a déjà eu lieu ; ``force`` le lance tout de suite.
     """

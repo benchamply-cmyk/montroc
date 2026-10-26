@@ -48,7 +48,7 @@ for(const [lang,prefix] of [['en','english'],['es','espanol']]){
    }
    for(const js of scripts(html))parse(js,{ecmaVersion:'latest'});
   }
-  for(const js of ['site','match','messages'])parse(read(`web/${prefix}/${js}.js`),{ecmaVersion:'latest'});
+  for(const js of ['site','match','premium','messages'])parse(read(`web/${prefix}/${js}.js`),{ecmaVersion:'latest'});
  });
  test(`${lang}: le code, les routes API et les identifiants gardent leur sens`,()=>{
   const t=translator(lang);
