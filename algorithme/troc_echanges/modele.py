@@ -91,6 +91,9 @@ class Souhait:
     - ``modes`` : modes d'échange acceptés (main propre, point relais…), vide : tous ;
     - ``zones`` : zones géographiques acceptées ; vide : la règle du marché
       (même zone que soi si ``Marche.meme_zone``) ;
+    - ``objets`` : plusieurs objets précis, n'importe lequel convient (les
+      « J'aime » du Match regroupés en un seul souhait : avec ``quantite`` 1,
+      dix coups de cœur ne font pas recevoir dix objets) ;
     - ``ref`` : identifiant libre de l'application (son numéro en base), repris
       par chaque transfert qui sert ce souhait (``Transfert.souhait_ref``).
 
@@ -112,10 +115,12 @@ class Souhait:
     modes: frozenset[str] = frozenset()
     zones: frozenset[str] = frozenset()
     ref: str | None = None
+    objets: frozenset[str] = frozenset()
 
     def __post_init__(self):
-        if (self.categorie is None) == (self.objet_id is None):
-            raise ValueError("Un souhait porte soit sur une catégorie, soit sur un objet précis.")
+        object.__setattr__(self, "objets", frozenset(self.objets))
+        if [self.categorie is not None, self.objet_id is not None, bool(self.objets)].count(True) != 1:
+            raise ValueError("Un souhait porte soit sur une catégorie, soit sur un objet précis, soit sur des objets précis.")
         if self.rang < 1 or self.quantite < 1:
             raise ValueError("rang et quantite doivent être >= 1.")
         if self.categorie is None and (self.sous_categorie is not None or self.criteres or self.preferences
@@ -153,6 +158,8 @@ class Souhait:
             return False
         if self.objet_id is not None:
             return objet.id == self.objet_id
+        if self.objets:
+            return objet.id in self.objets
         if self._vise(objet) is None:
             return False
         if self.etat_min is not None and (objet.etat not in ETATS
@@ -165,7 +172,7 @@ class Souhait:
 
     def qualite(self, objet: Objet) -> int:
         """Qualité d'un objet qui correspond : visé en premier, puis critères préférentiels respectés."""
-        if self.objet_id is not None:
+        if self.objet_id is not None or self.objets:
             return QUALITE_CIBLE
         q = QUALITE_CIBLE if self._vise(objet) else 0
         if objet.categorie == self.categorie:
