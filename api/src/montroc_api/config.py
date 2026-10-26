@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     smtp_utilisateur: str = ""
     smtp_mot_de_passe: str = ""
     email_expediteur: str = "TrocTroc <bonjour@troctroc.fr>"
+    # Pré-production : tous les e-mails partent à cette adresse (le vrai destinataire en tête du sujet),
+    # pour ne jamais écrire aux membres depuis une copie de la base. Vide en production.
+    courriels_vers: str = ""
+    # Pré-production : false coupe les SMS (ils sont seulement écrits dans le journal).
+    sms_actifs: bool = True
     # Nom affiché comme expéditeur des SMS (Brevo, 11 caractères au plus, lettres et chiffres).
     sms_expediteur: str = "TrocTroc"
 
