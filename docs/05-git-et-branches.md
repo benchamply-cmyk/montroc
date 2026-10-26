@@ -123,6 +123,16 @@ Faite le 26/10/2026. Le service Render `montroc-api-preprod` a été créé dire
 
 Note sur la relecture : GitHub n'accepte pas qu'on approuve sa propre PR. Tant que Ben est seul sur le dépôt, laisser *Require approvals* à 1 sur `preprod` mais cocher *Allow specified actors to bypass* pour Ben (ou ne pas cocher *Do not allow bypassing*) : il fusionne après avoir relu les PR ouvertes par Claude.
 
+### Jeton du workflow Versions (une fois, par Ben)
+
+Le jeton fourni d'office à GitHub Actions ne peut pas poser d'étiquette ni pousser de branche sur un commit de `preprod` dont les fichiers `.github/workflows/` diffèrent de `prod` (erreur 403 « Resource not accessible by integration »). Le workflow **Versions** utilise donc un jeton personnel :
+
+1. GitHub → photo de profil → *Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token* ; nom `versions-troctroc`, expiration 1 an, *Only select repositories* : `montroc` ;
+2. *Repository permissions* : **Contents : Read and write**, **Workflows : Read and write**, **Pull requests : Read and write** ;
+3. copier le jeton, puis dans le dépôt : *Settings → Secrets and variables → Actions → New repository secret*, nom **`VERSIONS_TOKEN`**.
+
+Bonus : la PR « Livraison » ouverte avec ce jeton lance la CI d'elle-même. Penser à renouveler le jeton à son expiration (le job « Version de preprod » échoue alors avec un message qui le dit).
+
 Et dans *Settings → General* : *Allow squash merging* seul coché, *Automatically delete head branches* coché. *Settings → Actions → General* : cocher *Allow GitHub Actions to create and approve pull requests* (pour la PR de version).
 
 ## Feuille de route

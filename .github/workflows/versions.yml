@@ -35,19 +35,18 @@ jobs:
     if: github.event_name == 'push' && github.ref_name == 'preprod'
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ github.token }}
+      # Jeton personnel de Ben (Contents + Workflows) : celui de GitHub Actions est refusé dès que les workflows
+      # de preprod diffèrent de prod.
+      GH_TOKEN: ${{ secrets.VERSIONS_TOKEN || github.token }}
       GH_REPO: ${{ github.repository }}
     steps:
       - uses: actions/checkout@v4
       - name: Étiquette preprod-V…
         run: |
           etiqueter() { # étiquette, commit
-            # Le jeton du workflow ne peut pas créer une étiquette directement (git/refs : 403) sur un commit qui
-            # touche .github/workflows/ ; l'API des releases le peut. On crée donc une release puis on la supprime,
-            # l'étiquette reste.
-            gh release create "$1" --target "$2" --title "$1" --notes "Pré-production" --prerelease >/dev/null
-            gh release delete "$1" --yes
-            echo "étiquette $1 sur $2"
+            gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$1" -f sha="$2" >/dev/null && echo "étiquette $1 sur $2" && return
+            echo "::error::Étiquette $1 refusée. Le jeton par défaut de GitHub Actions ne peut pas étiqueter un commit de preprod dont les workflows diffèrent de prod : ajouter le secret VERSIONS_TOKEN (voir docs/05-git-et-branches.md, Mise en place)."
+            return 1
           }
           # Rattrapage (une seule fois) : preprod était en V5.1000 le 26/10/2026, puis V5.2000 avec la PR #59.
           git ls-remote --exit-code --tags origin preprod-V5.1000 >/dev/null || etiqueter preprod-V5.1000 70a8efdf0c781fdd43cd898b2ea60dca89d80432
@@ -62,13 +61,14 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.VERSIONS_TOKEN || github.token }}
       MAJEURE: ${{ inputs.majeure }}
       TITRE: ${{ inputs.titre }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: preprod
+          token: ${{ secrets.VERSIONS_TOKEN || github.token }}
       - name: Rassembler changelog.d/ dans CHANGELOG.md
         run: |
           options=()
@@ -85,7 +85,7 @@ jobs:
           git add -A CHANGELOG.md web/site.js changelog.d
           git commit -m "Livraison V$VERSION"
           git push -u origin "$branche"
-          # Une PR ouverte par ce robot ne lance pas la CI (règle de GitHub) : la fermer puis la rouvrir la lance.
+          # Sans VERSIONS_TOKEN, une PR ouverte par le robot ne lance pas la CI (règle de GitHub) : la fermer puis la rouvrir.
           gh pr create --base preprod --head "$branche" --title "Livraison V$VERSION" \
             --body "Prépare la livraison V$VERSION de prod : lignes de changelog.d/ rassemblées dans CHANGELOG.md, VERSION à $VERSION dans web/site.js. Fermer puis rouvrir la PR pour lancer la CI. Une fois fusionnée, ouvrir la PR preprod → prod." \
             || echo "::warning::PR non créée (autoriser GitHub Actions à créer des PR dans Settings > Actions). Ouvrir : https://github.com/${{ github.repository }}/compare/preprod...$branche"
