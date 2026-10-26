@@ -114,11 +114,26 @@
     mesMatchs = matchs; afficherEspace();
   }
 
+  // Le Match à trois : des boucles possibles tout de suite, où chacun reçoit ce qu'il a demandé ou aimé.
+  let boucles = [];
+  function boucleHtml(b, i) {
+    const nom = (id, pseudo) => id === moi.id ? 'Vous' : esc(pseudo);
+    const etapes = b.etapes.map(e => `<li>${e.objet.photo_url ? `<img src="${esc(vignette(e.objet.photo_url, 56))}" alt="">` : ''}
+      <span><b>${nom(e.donneur_id, e.donneur_pseudo)}</b> ${e.donneur_id === moi.id ? 'donnez' : 'donne'} « ${esc(e.objet.titre)} » à <b>${e.receveur_id === moi.id ? 'vous' : esc(e.receveur_pseudo)}</b></span></li>`).join('');
+    return `<article class="card featured"><span class="tag a">Boucle à trois</span>
+      <ol class="etapes-trois">${etapes}</ol>
+      <div class="btns"><button class="btn primary" type="button" data-boucle="${i}">Proposer la boucle</button></div></article>`;
+  }
+  function afficherBoucles() {
+    $('#bloc-trois').hidden = !boucles.length;
+    $('#boucles-trois').innerHTML = boucles.map(boucleHtml).join('');
+  }
+
   async function chargerMatch() {
     if (!moi) return;
     try {
-      [cartes, matchs] = await Promise.all([api('/match/carrousel?limite=30'), api('/match'), Detail.charger()]);
-      afficherCarrousel(); afficherMatchs();
+      [cartes, matchs, boucles] = await Promise.all([api('/match/carrousel?limite=30'), api('/match'), api('/match/boucles').catch(() => []), Detail.charger()]);
+      afficherBoucles(); afficherCarrousel(); afficherMatchs();
     } catch (err) { toast(err.message); }
   }
 
@@ -139,6 +154,17 @@
   $('#v-match').addEventListener('click', async e => {
     const v = e.target.closest('[data-voir-echange]');
     if (v) { e.preventDefault(); go('trades'); const c = document.getElementById('echange-' + v.dataset.voirEchange); if (c) c.scrollIntoView(); return; }
+
+    const t = e.target.closest('[data-boucle]');
+    if (t) {
+      const b = boucles[t.dataset.boucle]; t.disabled = true;
+      try {
+        await api('/match/boucle', {method: 'POST', body: {objets: b.etapes.map(x => x.objet.id)}});
+        toast('Boucle proposée : les deux autres ont 48 h pour dire oui.');
+        await Promise.all([chargerMatch(), chargerEchanges()]);
+      } catch (err) { toast(err.message); t.disabled = false; }
+      return;
+    }
 
     const a = e.target.closest('[data-accord]');
     if (a) {

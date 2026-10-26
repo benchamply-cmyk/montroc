@@ -95,6 +95,34 @@ def test_le_grand_troc_tient_compte_du_match(client, creer):
     assert {t["objet"]["id"] for t in echange["transferts"]} == {velo, livre}
 
 
+def test_match_a_trois_sans_attendre_dimanche(client, creer, monkeypatch):
+    monkeypatch.setattr(services.get_settings(), "echanges_a_la_demande", False)
+    (a, b, c), objets = creer.boucle_abc()
+    (boucle,) = client.get("/match/boucles", headers=a.headers).json()
+    assert boucle["longueur"] == 3
+    ordre = [e["objet"]["id"] for e in boucle["etapes"]]
+    assert set(ordre) == set(objets)
+
+    r = client.post("/match/boucle", json={"objets": ordre}, headers=a.headers)
+    assert r.status_code == 201, r.text
+    reponses = {t["receveur_id"]: t["reponse"] for t in r.json()["transferts"]}
+    assert reponses[a.id] == "acceptee" and reponses[b.id] == reponses[c.id] == "en_attente"
+    assert client.get("/match/boucles", headers=b.headers).json() == []  # objets réservés
+    assert client.post("/match/boucle", json={"objets": ordre}, headers=a.headers).status_code == 409
+
+
+def test_carrousel_classe_les_objets_les_plus_accessibles_d_abord(client, creer):
+    alice, bruno, chloe = creer.utilisateur("alice"), creer.utilisateur("bruno"), creer.utilisateur("chloe")
+    creer.souhait(alice, "sport")
+    velo_chloe = creer.objet(chloe, "sport", "Vélo de Chloé")
+    velo_bruno = creer.objet(bruno, "sport", "Vélo de Bruno")
+    # Le vélo de Bruno, plus récent, passerait devant ; mais six autres membres l'aiment déjà.
+    for k in range(6):
+        _avis(client, creer.utilisateur(f"fan{k}"), velo_bruno)
+    cartes = client.get("/match/carrousel", headers=alice.headers).json()
+    assert [c["objet"]["id"] for c in cartes] == [velo_chloe, velo_bruno]
+
+
 def test_les_j_aime_ne_font_recevoir_qu_un_objet_par_grand_troc(client, creer):
     """Tous les « J'aime » d'un membre forment un seul souhait, de quantité 1 par défaut."""
     alice, bruno, dino = creer.utilisateur("alice"), creer.utilisateur("bruno"), creer.utilisateur("dino")
