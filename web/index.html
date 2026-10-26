@@ -771,7 +771,9 @@ details.plus summary::-webkit-details-marker{display:none}
 <script>
 /* Le site parle à l'API (api.troctroc.fr, ou localhost en développement). La session est un jeton
    gardé dans le navigateur et envoyé dans l'en-tête Authorization. */
-const API = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8001' : 'https://api.troctroc.fr';
+// Pré-production (branche preprod sur Netlify) : son API à elle, sur une copie de la base (même règle que site.js).
+const API = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://localhost:8001'
+  : /^preprod(--|\.)/.test(location.hostname) ? 'https://montroc-api-preprod.onrender.com' : 'https://api.troctroc.fr';
 const ETATS = {neuf:'Neuf', comme_neuf:'Comme neuf', tres_bon:'Très bon état', bon:'Bon état', correct:'État correct', usage:'Usagé, fonctionne'};
 const MODES = {main_propre:'en main propre', point_relais:'en point relais'};
 const STATUTS = {disponible:'', reserve:'réservé', retire:'retiré', modere:'retiré par la modération'};

@@ -11,7 +11,7 @@ La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branche
 
 ## [À venir]
 
-Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis passe sous un numéro quand on étiquette.
+Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici quand on prépare la version (`python3 scripts/version.py X.Y.Z`).
 
 - Site : une seule couleur vive (le jaune) et des pictogrammes au trait ; étapes de l'accueil « Je propose » / « Je demande », textes du Match et du Grand Troc reformulés (#43).
 - Accueil : la section « Le concept » est retirée ; le lien du menu mène au haut de l'accueil (#46).
@@ -67,7 +67,8 @@ Ce qui est fusionné dans `main` depuis la dernière version vient ici, puis pas
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/v0.4.1...main
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/v0.5.0...preprod
+[0.5.0]: https://github.com/benchamply-cmyk/montroc/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/benchamply-cmyk/montroc/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/benchamply-cmyk/montroc/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/benchamply-cmyk/montroc/compare/v0.2.0...v0.3.0
