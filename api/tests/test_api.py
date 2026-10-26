@@ -505,7 +505,8 @@ def test_repechage_du_mardi(client, creer, monkeypatch):
     r = client.post("/taches/horaires", headers=TACHES).json()
     assert r["objets_remplaces"] is None and r["objets_repeches"] is None
     # Mardi 18 h 17 : l'échange expire, le repêchage propose la poussette à l'autre, une seule fois.
-    _decaler(echange["id"], -1)
+    with engine.begin() as conn:
+        conn.execute(text("UPDATE echanges SET expire_le = :t"), {"t": _dimanche(18, 5, jour=20)})
     monkeypatch.setattr(services, "_maintenant", lambda: _dimanche(18, 17, jour=20))
     assert client.post("/taches/horaires", headers=TACHES).json()["objets_repeches"] == 2
     assert client.post("/taches/horaires", headers=TACHES).json()["objets_repeches"] is None
