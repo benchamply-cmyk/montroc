@@ -84,7 +84,7 @@ API locale : http://localhost:8001/docs — Site local : `make site` puis http:/
 
 ## Organisation Git
 
-`prod` = production (ex-`main`), `preprod` = pré-production. Une branche par sujet : `feature/…`, `fix/…`, `docs/…`, `chore/…`, `db/…`. Fusion par pull request vers `preprod` (*Squash and merge*), CI verte obligatoire. Étiquettes de version `vX.Y.Z` aux étapes importantes.
+`prod` = production (ex-`main`), `preprod` = pré-production. Une branche par sujet, avec la version de preprod visée : `feature/…-v5.2000`, `fix/…`, `docs/…`, `chore/…`, `db/…`, `mobile/…`. Fusion par pull request vers `preprod` (*Squash and merge*), CI verte obligatoire. Versions : prod `V5.100` (+100 par livraison), preprod `V5.1000` (+1000 par PR fusionnée), étiquetées automatiquement ; le premier chiffre change quand Ben le décide.
 
 ## État d'avancement
 

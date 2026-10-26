@@ -1,22 +1,22 @@
 name: Versions
 
-# Deux tâches :
-# - lancé à la main avec un numéro (Actions > Versions > Run workflow, ex. 0.6.0) : prépare la version sur
-#   preprod. Les lignes de changelog.d/ rejoignent CHANGELOG.md, VERSION change dans web/site.js, et la
-#   branche chore/version-X.Y.Z part en PR vers preprod ;
-# - à chaque arrivée sur prod : si la VERSION de web/site.js n'a pas encore d'étiquette, on crée l'étiquette
-#   vX.Y.Z et la Release GitHub, avec le texte de CHANGELOG.md.
+# Numérotation de Ben (26/10/2026, voir docs/05-git-et-branches.md) :
+# - à chaque arrivée sur preprod (une PR fusionnée) : étiquette preprod-V5.2000, preprod-V5.3000… (+1000) ;
+# - lancé à la main (Actions > Versions > Run workflow, branche preprod) : prépare la livraison vers prod. Les lignes
+#   de changelog.d/ rejoignent CHANGELOG.md sous [V5.200], VERSION change dans web/site.js, et la branche
+#   chore/version-5.200 part en PR vers preprod. Case « majeure » : V6.100 (seulement quand Ben le décide) ;
+# - à chaque arrivée sur prod (livraison preprod → prod) : étiquette V5.200 et Release GitHub, avec le texte du journal.
 on:
   push:
-    branches: [prod]
+    branches: [prod, preprod]
   workflow_dispatch:
     inputs:
-      version:
-        description: "Version à préparer sur preprod (ex. 0.6.0). Vide : seulement les étiquettes de prod."
-        required: false
-        default: ""
+      majeure:
+        description: "Nouvelle version majeure (V6.100) : seulement quand Ben le décide"
+        type: boolean
+        default: false
       titre:
-        description: "Titre de la version (facultatif)"
+        description: "Titre de la livraison (facultatif)"
         required: false
         default: ""
 
@@ -24,21 +24,52 @@ permissions:
   contents: write
   pull-requests: write
 
+# Deux fusions rapprochées ne doivent pas prendre le même numéro.
+concurrency:
+  group: versions-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  preparer:
-    name: Préparer la version
-    if: github.event_name == 'workflow_dispatch' && inputs.version != ''
+  preprod:
+    name: Version de preprod
+    if: github.event_name == 'push' && github.ref_name == 'preprod'
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      VERSION: ${{ inputs.version }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Étiquette preprod-V…
+        run: |
+          etiqueter() { # étiquette, commit
+            gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$1" -f sha="$2" >/dev/null && echo "étiquette $1 sur $2"
+          }
+          # Point de départ (une seule fois) : preprod était en V5.1000 le 26/10/2026.
+          git ls-remote --exit-code --tags origin preprod-V5.1000 >/dev/null || etiqueter preprod-V5.1000 70a8efdf0c781fdd43cd898b2ea60dca89d80432
+          if git ls-remote --tags origin 'preprod-V*' | grep -q "^$GITHUB_SHA"; then echo "Ce commit a déjà sa version."; exit 0; fi
+          v=$(python3 scripts/version.py suivante)
+          etiqueter "preprod-V$v" "$GITHUB_SHA"
+          echo "### Preprod en V$v" >> "$GITHUB_STEP_SUMMARY"
+
+  preparer:
+    name: Préparer la livraison
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      MAJEURE: ${{ inputs.majeure }}
       TITRE: ${{ inputs.titre }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: preprod
       - name: Rassembler changelog.d/ dans CHANGELOG.md
-        run: python3 scripts/version.py "$VERSION" ${TITRE:+"$TITRE"}
+        run: |
+          options=()
+          [ "$MAJEURE" = true ] && options+=(--majeure)
+          [ -n "$TITRE" ] && options+=("$TITRE")
+          v=$(python3 scripts/version.py livraison "${options[@]}")
+          echo "VERSION=$v" >> "$GITHUB_ENV"
       - name: Branche et PR vers preprod
         run: |
           branche="chore/version-$VERSION"
@@ -46,16 +77,16 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$branche"
           git add -A CHANGELOG.md web/site.js changelog.d
-          git commit -m "Version $VERSION"
+          git commit -m "Livraison V$VERSION"
           git push -u origin "$branche"
           # Une PR ouverte par ce robot ne lance pas la CI (règle de GitHub) : la fermer puis la rouvrir la lance.
-          gh pr create --base preprod --head "$branche" --title "Version $VERSION" \
-            --body "Prépare la version $VERSION : lignes de changelog.d/ rassemblées dans CHANGELOG.md, VERSION à $VERSION dans web/site.js. Fermer puis rouvrir la PR pour lancer la CI." \
+          gh pr create --base preprod --head "$branche" --title "Livraison V$VERSION" \
+            --body "Prépare la livraison V$VERSION de prod : lignes de changelog.d/ rassemblées dans CHANGELOG.md, VERSION à $VERSION dans web/site.js. Fermer puis rouvrir la PR pour lancer la CI. Une fois fusionnée, ouvrir la PR preprod → prod." \
             || echo "::warning::PR non créée (autoriser GitHub Actions à créer des PR dans Settings > Actions). Ouvrir : https://github.com/${{ github.repository }}/compare/preprod...$branche"
 
   etiquettes:
-    name: Étiquettes et releases
-    if: github.event_name == 'push' || inputs.version == ''
+    name: Étiquettes et releases de prod
+    if: github.event_name == 'push' && github.ref_name == 'prod'
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -65,24 +96,27 @@ jobs:
 
       - name: Versions passées (une seule fois)
         run: |
-          creer() { # version, commit
-            gh release view "v$1" >/dev/null 2>&1 && return
-            awk -v v="$1" '$0 ~ "^## \\[" v "\\]" {ok=1; next} /^(## )?\[/ {ok=0} ok' CHANGELOG.md > notes.md
-            gh release create "v$1" --target "$2" --title "v$1" --notes-file notes.md
+          creer() { # étiquette, titre de section dans CHANGELOG.md, commit
+            gh release view "$1" >/dev/null 2>&1 && return
+            awk -v v="$2" '$0 ~ "^## \\[" v "\\]" {ok=1; next} /^(## )?\[/ {ok=0} ok' CHANGELOG.md > notes.md
+            gh release create "$1" --target "$3" --title "$1" --notes-file notes.md
           }
-          creer 0.1.0 9096857ce6992018137ecb49ebb4aa6c741daf9a
-          creer 0.2.0 8499834cb37e3281aa17644587f2ccb3fa9e574f
-          creer 0.3.0 46d63b091f0c642a624ebccfff7184747390b084
-          creer 0.4.0 827fec4645404179f7bda7d1f1e23cd490b713be
+          creer v0.1.0 0.1.0 9096857ce6992018137ecb49ebb4aa6c741daf9a
+          creer v0.2.0 0.2.0 8499834cb37e3281aa17644587f2ccb3fa9e574f
+          creer v0.3.0 0.3.0 46d63b091f0c642a624ebccfff7184747390b084
+          creer v0.4.0 0.4.0 827fec4645404179f7bda7d1f1e23cd490b713be
+          # Point de départ de la nouvelle numérotation : la production du 26/10/2026.
+          creer V5.100 V5.100 506021ebd5a6c8429629300dd36a7ca05d4754dc
 
-      - name: Version actuelle
+      - name: Version livrée
         run: |
           v=$(sed -n "s/.*const VERSION='\([0-9.]*\)'.*/\1/p" web/site.js)
           if [ -z "$v" ]; then echo "VERSION introuvable dans web/site.js"; exit 1; fi
-          if gh release view "v$v" >/dev/null 2>&1; then echo "v$v existe déjà"; exit 0; fi
-          awk -v v="$v" '$0 ~ "^## \\[" v "\\]" {ok=1; next} /^(## )?\[/ {ok=0} ok' CHANGELOG.md > notes.md
-          if [ ! -s notes.md ]; then echo "Pas de section [$v] dans CHANGELOG.md"; exit 1; fi
-          gh release create "v$v" --target "$GITHUB_SHA" --title "v$v" --notes-file notes.md
+          if gh release view "V$v" >/dev/null 2>&1; then echo "V$v existe déjà"; exit 0; fi
+          awk -v v="V$v" '$0 ~ "^## \\[" v "\\]" {ok=1; next} /^(## )?\[/ {ok=0} ok' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then echo "Pas de section [V$v] dans CHANGELOG.md"; exit 1; fi
+          gh release create "V$v" --target "$GITHUB_SHA" --title "V$v" --notes-file notes.md
+          echo "### Prod en V$v" >> "$GITHUB_STEP_SUMMARY"
 
       # Ménage décidé par Ben le 2026-10-17 : branches dont la PR est déjà fusionnée dans main (devenue prod).
       # Une branche n'est supprimée que si elle pointe encore sur le commit attendu (rien de neuf dessus).

@@ -1,17 +1,21 @@
 # Journal des versions
 
-Toutes les évolutions de TrocTroc, version par version. Chaque version correspond à une étiquette Git (`v0.4.1`…) posée sur `prod` (la branche de production, appelée `main` jusqu'au 26/10/2026).
+Toutes les évolutions de TrocTroc, version par version.
 
-Numérotation `vMAJEUR.MINEUR.CORRECTIF` :
-- **MINEUR** monte à chaque lot de nouvelles fonctionnalités ;
-- **CORRECTIF** monte pour une correction ou un petit ajustement ;
-- **MAJEUR** passera à `1` au lancement public à Marseille. Avant, on reste en `0.x` (bêta).
+Numérotation (décidée par Ben le 26/10/2026) :
+* **prod** (la production) : `V5.100`, puis **+100 à chaque livraison** `preprod → prod` (`V5.200`, `V5.300`…). Chaque livraison a son étiquette Git (`V5.200`) et sa section ci-dessous ;
+* **preprod** (la pré-production) : `V5.1000`, puis **+1000 à chaque PR fusionnée** dans `preprod` (`V5.2000`, `V5.3000`…), étiquette `preprod-V5.2000` posée automatiquement ;
+* le **premier chiffre** monte à la prochaine version stable, quand Ben le décide : prod passe à `V6.100`, puis preprod à `V6.1000` une fois cette version en production.
 
-La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branches.md).
+Avant le 26/10/2026, les versions étaient numérotées `v0.x.y` (sections plus bas). La règle complète est dans [docs/05-git-et-branches.md](docs/05-git-et-branches.md).
 
 ## [À venir]
 
-Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici quand on prépare la version (`python3 scripts/version.py X.Y.Z`).
+Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici à la préparation de la livraison (`python3 scripts/version.py livraison`).
+
+## [V5.100] – 2026-10-26 · Nouvelle numérotation
+
+Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous), point de départ de la numérotation `V5.x`.
 
 - Site : une seule couleur vive (le jaune) et des pictogrammes au trait ; étapes de l'accueil « Je propose » / « Je demande », textes du Match et du Grand Troc reformulés (#43).
 - Accueil : la section « Le concept » est retirée ; le lien du menu mène au haut de l'accueil (#46).
@@ -67,7 +71,8 @@ Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les 
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/v0.5.0...preprod
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V5.100...preprod
+[V5.100]: https://github.com/benchamply-cmyk/montroc/compare/v0.5.0...V5.100
 [0.5.0]: https://github.com/benchamply-cmyk/montroc/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/benchamply-cmyk/montroc/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/benchamply-cmyk/montroc/compare/v0.3.0...v0.4.0

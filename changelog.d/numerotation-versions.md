@@ -1,0 +1,1 @@
+- Versions : nouvelle numérotation, prod en V5.100 (+100 à chaque livraison) et preprod en V5.1000 (+1000 à chaque PR fusionnée), étiquettes posées automatiquement ; les branches se nomment type/sujet-vX.Y ; le pied de page affiche V5.100 (ou la version preprod sur le site de pré-production).
