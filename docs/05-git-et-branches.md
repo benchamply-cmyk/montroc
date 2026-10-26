@@ -9,37 +9,42 @@
 - Une branche = un sujet. Petite, courte, fusionnée vite (*Squash and merge*), remise à jour avec `preprod` avant la fusion.
 
 ```
-feature/… fix/… docs/… chore/… mobile/…  ──PR──▶  preprod  ──PR (jeudi)──▶  prod  ──▶  étiquette vX.Y.Z
+feature/…-v5.2000 fix/…-v5.3000 …  ──PR──▶  preprod (V5.2000…)  ──PR (jeudi)──▶  prod (V5.200…)
         ▲                                            │
         └──────── test rouge : on corrige ───────────┘
 ```
 
-Le contrôle **Règles des branches** (`.github/workflows/regles.yml`) vérifie chaque PR : base `prod` seulement depuis `preprod` ; vers `preprod`, un nom `type/sujet` et un fichier `changelog.d/`.
+Le contrôle **Règles des branches** (`.github/workflows/regles.yml`) vérifie chaque PR : base `prod` seulement depuis `preprod` ; vers `preprod`, un nom `type/sujet-vX.Y` et un fichier `changelog.d/` ; vers `prod`, un numéro de livraison préparé (voir [Versions](#versions)).
 
 ## Nommer les branches
 
+Forme : **`type/sujet-vX.Y`**, où `vX.Y` est la version que prendra `preprod` à la fusion (la prochaine : dernière version de preprod + 1000).
+
 | Préfixe | Pour | Exemple |
 |---|---|---|
-| `feature/` | nouvelle fonctionnalité | `feature/authentification` |
-| `fix/` | correction de bug | `fix/delai-48h-fuseau` |
-| `docs/` | documentation seule | `docs/guide-dns` |
-| `chore/` | outillage, dépendances, CI | `chore/maj-fastapi` |
-| `db/` | migration de données délicate | `db/fusion-categories` |
-| `mobile/` | application mobile (Expo) | `mobile/notifications` |
+| `feature/` | nouvelle fonctionnalité | `feature/authentification-v5.2000` |
+| `fix/` | correction de bug | `fix/delai-48h-fuseau-v5.2000` |
+| `docs/` | documentation seule | `docs/guide-dns-v5.2000` |
+| `chore/` | outillage, dépendances, CI | `chore/maj-fastapi-v5.2000` |
+| `db/` | migration de données délicate | `db/fusion-categories-v5.2000` |
+| `mobile/` | application mobile (Expo) | `mobile/notifications-v5.2000` |
 
 En minuscules, mots séparés par des tirets, sans accents. Le sujet dit **ce que la branche change**, pour qu'on comprenne l'évolution rien qu'en lisant la liste des branches.
 
-Les fils de discussion Claude reçoivent d'office une branche `claude/project-thread-xxxx`. Pour qu'ils suivent cette règle, les instructions du projet leur demandent de créer leur branche sous la forme `type/sujet`, partie de `preprod`, avec un fichier `changelog.d/`.
+Pour connaître le nom à donner : `python3 scripts/version.py branche feature photos` répond `feature/photos-v5.2000` (d'après les étiquettes du dépôt). Si deux branches partent en même temps avec le même numéro, la seconde fusionnée prendra en réalité le numéro suivant : le contrôle le signale par un simple avertissement, rien à renommer (le nom d'une branche ne change plus une fois la PR ouverte).
+
+Les fils de discussion Claude reçoivent d'office une branche `claude/project-thread-xxxx`. Pour qu'ils suivent cette règle, les instructions du projet leur demandent de créer leur branche sous la forme `type/sujet-vX.Y`, partie de `preprod`, avec un fichier `changelog.d/`.
 
 ## Le cycle d'une fonctionnalité
 
 ```
 git switch preprod && git pull              # partir de la pré-production
-git switch -c feature/photos-objets         # créer la branche
+python3 scripts/version.py branche feature photos-objets   # → feature/photos-objets-v5.2000
+git switch -c feature/photos-objets-v5.2000 # créer la branche
 # … coder, make tests …
 echo "- Objets : jusqu'à 3 photos par objet." > changelog.d/photos-objets.md   # la ligne du journal
 git add -p && git commit -m "Ajoute l'envoi de photos pour les objets"
-git push -u origin feature/photos-objets    # publier la branche
+git push -u origin feature/photos-objets-v5.2000   # publier la branche
 ```
 
 Puis sur GitHub : **Compare & pull request**, **base : `preprod`**. Le modèle de PR s'affiche ; remplis *Avant / Après / Comment*.
@@ -48,7 +53,7 @@ Sur la PR :
 1. la **CI** lance les tests du moteur, le style, la vérification des migrations et les tests de l'API sur PostgreSQL ;
 2. **Netlify** publie un aperçu du site (*Deploy Preview*) avec son lien ;
 3. le contrôle **Règles des branches** vérifie le nom de la branche et le fichier `changelog.d/` ;
-4. quand tout est vert et relu : mettre la branche à jour avec `preprod` (*Update branch*), puis **Squash and merge**. La branche est supprimée, la pré-production est déployée.
+4. quand tout est vert et relu : mettre la branche à jour avec `preprod` (*Update branch*), puis **Squash and merge**. La branche est supprimée, la pré-production est déployée et le workflow **Versions** lui donne son numéro (étiquette `preprod-V5.2000`).
 
 Chaque semaine (le jeudi), une PR `preprod → prod` livre la production. Pas de livraison du samedi au mardi soir (Grand Troc et 48 h de réponse), sauf correctif urgent passé par `preprod`.
 
@@ -58,20 +63,30 @@ Une phrase à l'impératif qui dit ce que fait le commit, en français : « Ajou
 
 ## Versions
 
-Chaque version est une étiquette Git `vMAJEUR.MINEUR.CORRECTIF` posée sur `prod`, et décrite dans [CHANGELOG.md](../CHANGELOG.md).
+Règle décidée par Ben le 26/10/2026. Les étiquettes Git font foi ; elles sont posées par le workflow **Versions** (`.github/workflows/versions.yml`), jamais à la main.
 
-| Ce qui change | Chiffre qui monte | Exemple |
+| | Production (`prod`) | Pré-production (`preprod`) |
 |---|---|---|
-| un lot de nouvelles fonctionnalités | MINEUR | `v0.4.1` → `v0.5.0` |
-| une correction, un petit ajustement | CORRECTIF | `v0.5.0` → `v0.5.1` |
-| le lancement public | MAJEUR | `v0.9.3` → `v1.0.0` |
+| Version au 26/10/2026 | `V5.100` | `V5.1000` |
+| Monte de | **+100 à chaque livraison** `preprod → prod` | **+1000 à chaque PR fusionnée** dans `preprod` |
+| Suite | `V5.200`, `V5.300`, `V5.400`… | `V5.2000`, `V5.3000`, `V5.4000`… |
+| Étiquette Git | `V5.200` (+ *Release* GitHub avec le journal) | `preprod-V5.2000` |
+| Affichée dans le pied de page | `VERSION` en haut de `web/site.js` | dernière étiquette `preprod-V…` (lue sur GitHub par le site preprod) |
+| Version majeure | `V6.100` à la prochaine version stable, **quand Ben le décide** | `V6.1000` une fois `V6.100` en production |
 
-Tant qu'on est en bêta, la version commence par `0.`.
+### Ce qui se passe tout seul
 
-Pour sortir une version :
-1. dans chaque PR, ajouter un fichier d'une ligne `changelog.d/<sujet>.md`, jamais de ligne dans `CHANGELOG.md` : deux PR ouvertes ensemble ne se gênent plus (voir [changelog.d/README.md](../changelog.d/README.md)) ;
-2. pour préparer la version : *Actions → Versions → Run workflow*, branche `preprod`, numéro `0.6.0` (ou `python3 scripts/version.py 0.6.0` en local). Les lignes rejoignent `CHANGELOG.md`, `VERSION` change en haut de `web/site.js` (pied de page), et une PR `chore/version-0.6.0` part vers `preprod` (une PR ouverte par le robot ne lance pas la CI : la fermer puis la rouvrir) ;
-3. à l'arrivée sur `prod` (PR `preprod → prod`), le workflow **Versions** (`.github/workflows/versions.yml`) voit une `VERSION` sans étiquette : il crée l'étiquette `v0.5.0` et la *Release* GitHub avec le texte du journal. Rien à faire à la main.
+- **PR fusionnée dans `preprod`** : le workflow **Versions** pose l'étiquette `preprod-V…` suivante sur le commit. Le pied de page du site preprod l'affiche.
+- **Livraison fusionnée dans `prod`** : le workflow **Versions** crée l'étiquette `V…` et la *Release* GitHub avec la section du journal.
+- **Contrôle Règles des branches** : il refuse une branche sans `-vX.Y`, une PR qui change `VERSION` à la main, et une PR `preprod → prod` dont le numéro de livraison n'est pas préparé.
+
+### Livrer la production (chaque jeudi)
+
+1. *Actions → Versions → Run workflow*, branche `preprod` (cocher *majeure* seulement quand Ben décide de passer à `V6.100`). Le robot calcule le numéro (`V5.200`), range les lignes de `changelog.d/` dans `CHANGELOG.md`, met `VERSION` à `5.200` dans `web/site.js` et ouvre la PR `chore/version-5.200` vers `preprod` (une PR ouverte par le robot ne lance pas la CI : la fermer puis la rouvrir). En local : `python3 scripts/version.py livraison`.
+2. Fusionner cette PR dans `preprod` (preprod prend elle aussi son numéro +1000).
+3. Ouvrir la PR `preprod → prod`, la fusionner une fois les tests verts : `V5.200` est en production, étiquetée.
+
+Les lignes du journal : dans chaque PR, un fichier d'une ligne `changelog.d/<sujet>.md`, jamais de ligne dans `CHANGELOG.md` (voir [changelog.d/README.md](../changelog.d/README.md)). Les versions d'avant le 26/10/2026 restent étiquetées `v0.1.0` … `v0.5.0`.
 
 Les branches fusionnées se suppriment seules si l'option *Settings → General → Automatically delete head branches* est cochée sur GitHub.
 
