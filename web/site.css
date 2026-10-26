@@ -61,7 +61,7 @@ header.site.colle{border-bottom-color:var(--line)}
 .pop-msg.ok{color:var(--ok)}
 .pop-lien{border:0;background:none;padding:0;text-align:left;color:var(--muted);font-size:13px;text-decoration:underline;text-underline-offset:3px}
 .pop-lien:hover{color:var(--ink)}
-@media (max-width:959px){.pop-cnx{position:fixed;right:16px;top:calc(var(--haut) + 6px)}}
+@media (max-width:1199px){.pop-cnx{position:fixed;right:16px;top:calc(var(--haut) + 6px)}}
 
 .burger{display:none;flex:none;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:none;place-items:center;padding:0}
 .burger svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
@@ -71,7 +71,7 @@ header.site.colle{border-bottom-color:var(--line)}
 .burger[aria-expanded="true"] .b3{transform:translateY(-5px) rotate(-45deg)}
 
 /* Mobile et tablette : le menu passe dans le bouton ☰ et s'ouvre en plein écran. */
-@media (max-width:959px){
+@media (max-width:1199px){
   .site-in{gap:10px}
   .logo{margin-right:auto}
   .burger{display:grid}
@@ -136,3 +136,10 @@ footer.site .pilote .version{color:inherit;text-transform:none;text-decoration:n
 @media (prefers-reduced-motion:reduce){
   .menu,.menu.ouvert,.burger path,.logo svg,.menu a,.menu .sous>button{transition:none}
 }
+
+/* Sélecteur de langue : même menu sur ordinateur et mobile. */
+.langue select{max-width:128px;padding:8px 24px 8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}
+.langue select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+@media (max-width:1199px){.langue{padding:18px 0}.langue select{max-width:100%;min-height:44px;font-size:17px}}

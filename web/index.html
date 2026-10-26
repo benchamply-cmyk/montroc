@@ -431,6 +431,11 @@ details.plus summary::-webkit-details-marker{display:none}
 .ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .puces .ico{width:16px;height:16px}
 </style>
+<link rel="canonical" href="https://troctroc.fr/">
+<link rel="alternate" hreflang="fr" href="https://troctroc.fr/">
+<link rel="alternate" hreflang="en" href="https://troctroc.fr/english/">
+<link rel="alternate" hreflang="es" href="https://troctroc.fr/espanol/">
+<link rel="alternate" hreflang="x-default" href="https://troctroc.fr/">
 </head>
 <body class="large">
 <header class="site"></header>
@@ -776,6 +781,7 @@ details.plus summary::-webkit-details-marker{display:none}
   </form>
 </dialog>
 
+<script src="/langue.js"></script>
 <script src="/site.js"></script>
 <script src="annonce.js"></script>
 <script>
@@ -805,7 +811,8 @@ async function api(chemin,{method='GET',body}={}){
   if(r.status===401&&jeton){deconnecte();throw new Error('Session expirée : reconnectez-vous.')}
   if(r.status===204)return null;
   const data=await r.json().catch(()=>null);
-  if(!r.ok){const d=data&&data.detail;throw new Error(typeof d==='string'?d:(Array.isArray(d)?d.map(x=>x.msg).join(' · '):'Une erreur est survenue.'))}
+  if(!r.ok){const d=data&&data.detail;throw new Error(typeof d==='string'?TT_I18N.error(d):(Array.isArray(d)?d.map(x=>TT_I18N.error(x.msg)).join(' · '):'Une erreur est survenue.'))}
+  if(chemin==='/categories')return data.map(c=>({...c,libelle:TT_I18N.t(c.libelle),sous_categories:c.sous_categories.map(x=>({...x,libelle:TT_I18N.t(x.libelle)})),caracteristiques:c.caracteristiques.map(x=>({...x,libelle:TT_I18N.t(x.libelle)}))}));
   return data;
 }
 
@@ -869,9 +876,12 @@ async function naviguer(h){
   const cible=h&&document.getElementById(h.slice(1)); if(cible)cible.scrollIntoView({behavior:calmeDefil});
 }
 document.addEventListener('click',e=>{
-  const a=e.target.closest('a[href="/"],a[href^="/#"]');
-  if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
-  e.preventDefault(); TT.fermer(); naviguer(a.getAttribute('href').slice(1));
+  const a=e.target.closest('a[href]');
+  if(!a)return;
+  const u=new URL(a.href,location.href);
+  if(u.origin!==location.origin||u.pathname!==TT_I18N.localPath('/'))return;
+  if(e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
+  e.preventDefault(); TT.fermer(); naviguer(u.hash);
 });
 
 /* Animations de l'accueil (coupées si l'appareil demande moins de mouvement). */
@@ -1079,7 +1089,7 @@ const Detail=(()=>{
   // « Taille : 4 ans · Marque : Petit Bateau », déjà échappé
   function caracs(cat,valeurs){
     const defs=detail[cat]?.caracteristiques||[];
-    return Object.entries(valeurs||{}).map(([k,v])=>`${esc((defs.find(d=>d.cle===k)||{}).libelle||k)} : ${esc(v)}`).join(' · ');
+    return Object.entries(valeurs||{}).map(([k,v])=>`${esc((defs.find(d=>d.cle===k)||{}).libelle||k)} : ${esc(defs.find(d=>d.cle===k)?.options?TT_I18N.t(v):v)}`).join(' · ');
   }
   /* Remplit la sous-catégorie et les caractéristiques du formulaire selon la catégorie choisie. Dans une demande,
      chaque caractéristique est un critère obligatoire ou de préférence. Une caractéristique propre à certaines
@@ -1098,7 +1108,7 @@ const Detail=(()=>{
     const defs=(c?.caracteristiques||[]).filter(d=>!d.pour||d.pour.includes(sous));
     zone.hidden=!defs.length;
     zone.innerHTML=defs.map(d=>`<label class="field"><span>${esc(d.libelle)}</span>${d.options
-      ?`<select class="input" data-carac="${esc(d.cle)}"><option value="">${demande?'Peu importe':'Non précisé'}</option>${d.options.map(o=>`<option>${esc(o)}</option>`).join('')}</select>`
+      ?`<select class="input" data-carac="${esc(d.cle)}"><option value="">${demande?'Peu importe':'Non précisé'}</option>${d.options.map(o=>`<option value="${esc(o)}">${esc(TT_I18N.t(o))}</option>`).join('')}</select>`
       :`<input class="input" data-carac="${esc(d.cle)}" maxlength="60" placeholder="${demande?'Peu importe':'Facultatif'}">`}${demande
       ?`<select class="input niveau" data-niveau="${esc(d.cle)}" aria-label="${esc(d.libelle)} : obligatoire ou de préférence"><option value="o">Obligatoire</option><option value="p">De préférence</option></select>`:''}</label>`).join('');
     zone.querySelectorAll('[data-carac]').forEach(x=>{if(avant[x.dataset.carac])x.value=avant[x.dataset.carac]});
@@ -1154,7 +1164,7 @@ function contreEditeur(o){
     <div class="row"><button class="btn primary" type="submit">Enregistrer</button></div>
   </form>`;
 }
-const pluriel=(n,mot)=>`${n} ${mot}${n>1?'s':''}`;
+const pluriel=TT_I18N.count;
 const AJOUTER='<button class="tuile-ajout" type="button" data-proposer><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Ajouter</button>';
 async function chargerListes(){
   const [objets,souhaits]=await Promise.all([api('/moi/objets'),api('/moi/souhaits'),Detail.charger()]);
@@ -1254,7 +1264,7 @@ async function chargerEchanges(){
   const enCours=echanges.filter(e=>e.statut==='propose'||e.statut==='accepte');
   const aRepondre=enCours.filter(e=>e.statut==='propose'&&e.transferts.some(t=>t.receveur_id===moi.id&&t.reponse==='en_attente')).length;
   $('#badge').textContent=aRepondre; $('#badge').hidden=!aRepondre;
-  $('#trades-title').textContent=aRepondre?`${aRepondre} échange${aRepondre>1?'s':''} attend${aRepondre>1?'ent':''} votre réponse`:'Vos échanges';
+  $('#trades-title').textContent=aRepondre?TT_I18N.pending(aRepondre):'Vos échanges';
   $('#trades-current').innerHTML=enCours.map(carteEchange).join('')||'<p class="empty">Pas encore de boucle. Ajoutez deux ou trois objets : plus vous en proposez, plus TrocTroc a de chances d\'en trouver une.</p>';
   $('#trades-possible').innerHTML=boucles.map(carteBoucle).join('')||'<p class="empty">Rien pour l\'instant. Élargissez vos souhaits : le prochain Grand Troc a lieu dimanche à 18 h.</p>';
   afficherDepots(); afficherEspace();
@@ -1317,7 +1327,7 @@ const REPUTATIONS={nouveau:'Nouveau membre',fiable:'Membre fiable',a_confirmer:'
 function reputation(u){
   if(!u||!u.reputation)return '';
   const n=u.echanges_menes||0, pastille=REPUTATIONS[u.reputation]?`<span class="rep ${u.reputation}">${REPUTATIONS[u.reputation]}</span>`:'';
-  return [pastille,n?`${n} échange${n>1?'s':''} mené${n>1?'s':''} au bout`:''].filter(Boolean).join(' · ');
+  return [pastille,n?TT_I18N.completed(n):''].filter(Boolean).join(' · ');
 }
 
 /* Fiche d'un objet : grande photo, ce qu'il faut savoir, qui le propose, et l'action (J'aime ou créer un compte). */
@@ -1388,7 +1398,7 @@ function afficherDepots(){
     return `<div style="display:flex;flex-direction:column;gap:14px">
       <div class="slots" style="grid-template-columns:repeat(${ts.length},1fr)">${ts.map(t=>`<div class="slot ${t.depose_le?'done':''}"><span class="who">${nom(t.donneur_id,t.donneur_pseudo)}</span><span class="st">${t.depose_le?'déposé':'à déposer'}</span></div>`).join('')}</div>
       <div class="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-        <p style="font-size:15px">${faits} dépôt${faits>1?'s':''} sur ${ts.length}. Rien n'est libéré tant que tout n'est pas déposé. Sans dépôt de tous d'ici ${Math.ceil(heures(e.expire_le)/24)} jour(s), chacun récupère le sien.</p></div>
+        <p style="font-size:15px">${TT_I18N.count(faits,'depot')} sur ${ts.length}. Rien n'est libéré tant que tout n'est pas déposé. Sans dépôt de tous d'ici ${Math.ceil(heures(e.expire_le)/24)} jour(s), chacun récupère le sien.</p></div>
       <div class="card"><span class="label">Point de dépôt</span>${lieu}
         <div class="place"><span class="muted">Marquez « ${esc(don.objet.titre)} » avec le code</span><span class="code">${esc(don.code_retrait||'')}</span></div>
         <div class="btns">${don.depose_le?'<p class="status">Dépôt enregistré.</p>':`<button class="btn primary" data-deposer="${e.id}">J'ai déposé ${esc(don.objet.titre)}</button>`}</div></div></div>`;
@@ -1437,7 +1447,7 @@ $('#reports').onclick=async e=>{
 const PARIS={timeZone:'Europe/Paris'};
 function texteDuree(ms){
   const min=Math.max(1,Math.round(ms/6e4)), j=Math.floor(min/1440), h=Math.floor(min%1440/60), m=min%60;
-  return j?`${j} j ${h} h`:h?`${h} h ${String(m).padStart(2,'0')}`:`${m} min`;
+  return j?`${j} ${TT_I18N.lang==='fr'?'j':'d'} ${h} h`:h?`${h} h ${String(m).padStart(2,'0')}`:`${m} min`;
 }
 function afficherGrandTroc(){
   if(!grandTroc)return;
@@ -1451,7 +1461,7 @@ function afficherGrandTroc(){
     if(!dernier){x.hidden=true;return}
     const jour=new Date(dernier.jour+'T12:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
     x.textContent=dernier.nb_boucles
-      ?`Le ${jour} : ${dernier.nb_boucles} boucle${dernier.nb_boucles>1?'s':''}, ${dernier.nb_objets} objets échangés entre ${dernier.nb_participants} personnes.`
+      ?TT_I18N.summary(jour,dernier.nb_boucles,dernier.nb_objets,dernier.nb_participants)
       :`Le ${jour} : pas de boucle trouvée. Plus il y a d'objets et de souhaits, plus il y en aura dimanche.`;
     x.hidden=false;
   });
@@ -1469,7 +1479,7 @@ async function chercher(q,cat=''){
   try{
     const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat);
     const objets=await api('/objets'+(p.size?'?'+p:''));
-    $('#search-count').textContent=objets.length?`${objets.length>=200?'Plus de 200':objets.length} objet${objets.length>1?'s':''} disponible${objets.length>1?'s':''}`:'';
+    $('#search-count').textContent=objets.length?TT_I18N.available(objets.length):'';
     $('#results').innerHTML=objets.length?objets.map(carteObjet).join('')
       :!q?`<p class="empty">Aucun objet proposé pour l'instant. Soyez le premier : créez un compte et ajoutez ce qui dort chez vous.</p>`
       :`<p class="empty">Rien pour « ${esc(q)} » pour l'instant. Essayez un mot plus large (« vélo » plutôt qu'un modèle), ou créez un compte : votre souhait sera servi dès qu'un objet arrive.</p>`;

@@ -2,7 +2,7 @@
 
 import re
 from datetime import date, datetime
-from typing import Annotated
+from typing import Annotated, Literal
 from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
@@ -51,6 +51,7 @@ class CategorieDetaillee(CategorieLecture):
 
 class DemandeLien(BaseModel):
     email: EmailStr
+    langue: Literal["fr", "en", "es"] = "fr"
 
 
 def normaliser_telephone(valeur: str | None) -> str | None:

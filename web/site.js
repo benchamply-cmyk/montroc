@@ -22,6 +22,7 @@
           <li><a href="/collectivites/">Collectivités</a></li>
         </ul>
       </li>
+      ${TT_I18N.menu()}
     </ul>
   </nav>
   <div class="compte-zone">
@@ -65,11 +66,13 @@
       if(v)lienVersion.textContent=`V${v.join('.')} · preprod`;
     }).catch(()=>{});
   }
+  if(haut)TT_I18N.links(haut);
+  if(pied)TT_I18N.links(pied);
   if(!haut)return;
 
   const $=s=>haut.querySelector(s);
   const menu=$('#menu'), burger=$('.burger'), sous=$('.sous'), bSous=sous.querySelector('button'), liste=sous.querySelector('ul');
-  const mobile=matchMedia('(max-width:959px)');
+  const mobile=matchMedia('(max-width:1199px)');
 
   function ouvrirSous(oui){bSous.setAttribute('aria-expanded',oui);liste.hidden=!oui}
   function ouvrirMenu(oui){
@@ -105,7 +108,7 @@
   function compte(oui){
     connecte=oui;
     c.querySelector('span').textContent=oui||memo.get('troc.email')?'Mon espace':'Se connecter';
-    c.setAttribute('href',oui?'/#monespace':'/#se-connecter');
+    c.setAttribute('href',TT_I18N.localPath(oui?'/#monespace':'/#se-connecter'));
     if(oui)ouvrirConnexion(false);
   }
   function dire(texte,ok){msg.textContent=texte;msg.classList.toggle('ok',!!ok);msg.hidden=!texte}
@@ -136,7 +139,7 @@
       await new Promise(ok=>setTimeout(ok,10000));
     }
     const d=await r.json().catch(()=>null);
-    if(!r.ok){const x=d&&d.detail;throw new Error(typeof x==='string'?x:'Vérifiez votre e-mail et votre mot de passe.')}
+    if(!r.ok){const x=d&&d.detail;throw new Error(typeof x==='string'?TT_I18N.error(x):'Vérifiez votre e-mail et votre mot de passe.')}
     return d;
   }
   c.addEventListener('click',e=>{
@@ -153,14 +156,14 @@
     try{
       const r=await appeler('/auth/connexion',{email:pop.email.value.trim(),mot_de_passe:pop.mot_de_passe.value});
       memo.set('troc.jeton',r.jeton); memo.set('troc.email',r.utilisateur.email); pop.reset(); compte(true);
-      if(window.TT.surConnexion)window.TT.surConnexion(r); else location.href='/#monespace';
+      if(window.TT.surConnexion)window.TT.surConnexion(r); else location.href=TT_I18N.localPath('/#monespace');
     }catch(err){dire(err.message);pop.mot_de_passe.select()}
     finally{b.disabled=false;b.textContent='Se connecter'}
   };
   async function envoyerLien(){
     const email=pop.email.value.trim();
     if(!pop.email.checkValidity()||!email){dire('Indiquez votre e-mail : le lien y sera envoyé.');pop.email.focus();return}
-    try{await appeler('/auth/lien',{email});dire(`Lien envoyé à ${email} : ouvrez l'e-mail sur cet appareil et cliquez dessus. Vous pourrez ensuite choisir un mot de passe.`,true)}
+    try{await appeler('/auth/lien',{email,langue:TT_I18N.lang});dire(`Lien envoyé à ${email} : ouvrez l'e-mail sur cet appareil et cliquez dessus. Vous pourrez ensuite choisir un mot de passe.`,true)}
     catch(err){dire(err.message)}
   }
   pop.querySelector('[data-lien]').onclick=envoyerLien;
