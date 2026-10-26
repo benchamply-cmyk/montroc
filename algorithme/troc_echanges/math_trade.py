@@ -146,9 +146,12 @@ def math_trade(marche: Marche, longueur_max: int | None = 3, objectif: str = "ec
         base = b.longueur if objectif == "echanges" else b.longueur * b.proba_reussite
         poids.append(base + (departage if objectif == "echanges" else departage * 1e-3))
         ressources.append([("o", t.objet.id) for t in b.transferts]
-                          + [("s",) + t.cle_souhait for t in b.transferts])
+                          + [("s",) + t.cle_souhait for t in b.transferts]
+                          + [("u", p) for p in b.participants if marche.utilisateurs[p].plafond is not None])
 
     def capacite(r):
+        if r[0] == "u":
+            return marche.utilisateurs[r[1]].plafond
         return 1 if r[0] == "o" else graphe.capacite_souhait.get(r[1:], 0)
 
     choix, optimal = empaquetage.resoudre(poids, ressources, capacite, taille_exacte,
@@ -191,6 +194,10 @@ def _trade_maximizer(graphe: GrapheEchanges) -> list[Boucle]:
     idx = {}
     for nom in [("S",), ("T",)] + [("u", u) for u in users] + [("o", o) for o in objets] + [("s",) + s for s in souhaits]:
         idx[nom] = len(idx)
+    # Plafond de boucles par personne : ce qu'elle reçoit passe par un nœud de capacité ``plafond``.
+    plafonnes = {u for u in users if graphe.marche.utilisateurs[u].plafond is not None}
+    for u in sorted(plafonnes):
+        idx[("r", u)] = len(idx)
     S, T = idx[("S",)], idx[("T",)]
     reseau = FlotCoutMin(len(idx))
     rang_max = max(t.rang for t in transferts)
@@ -203,8 +210,11 @@ def _trade_maximizer(graphe: GrapheEchanges) -> list[Boucle]:
         nb_objets[o.proprietaire] = nb_objets.get(o.proprietaire, 0) + 1
     for u, n in nb_objets.items():
         reseau.ajouter_arc(idx[("u", u)], T, n, 0)
+    for u in sorted(plafonnes):
+        reseau.ajouter_arc(idx[("r", u)], idx[("u", u)], graphe.marche.utilisateurs[u].plafond, 0)
     for s in souhaits:
-        reseau.ajouter_arc(idx[("s",) + s], idx[("u", s[0])], graphe.capacite_souhait[s], 0)
+        arrivee = idx[("r", s[0])] if s[0] in plafonnes else idx[("u", s[0])]
+        reseau.ajouter_arc(idx[("s",) + s], arrivee, graphe.capacite_souhait[s], 0)
     arc_transfert: dict[int, Transfert] = {}
     for t in transferts:
         e = reseau.ajouter_arc(idx[("o", t.objet.id)], idx[("s",) + t.cle_souhait], 1, t.rang)

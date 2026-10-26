@@ -1,0 +1,1 @@
+- Grand Troc : une même personne reçoit au plus 3 objets par Grand Troc, repêchage compris ; un gros déposant ne prend plus tout le dimanche (réglage `PLAFOND_ECHANGES_GRAND_TROC`, 0 pour aucun plafond).
