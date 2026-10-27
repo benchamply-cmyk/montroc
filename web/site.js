@@ -114,8 +114,22 @@
     if(!oui)sous.forEach(item=>ouvrirSous(item,false));
   }
   function fermer(){ouvrirMenu(false);sous.forEach(item=>ouvrirSous(item,false))}
-  burger.onclick=()=>ouvrirMenu(!menu.classList.contains('ouvert'));
+  /* À la souris, tout s'ouvre au survol (Ben, 27/10) : le menu ☰, ses sous-menus et la connexion. Un court délai
+     avant de refermer laisse passer la souris du bouton au panneau. Au doigt et au clavier, le clic reste nécessaire. */
+  let survolLe=-1;
+  const recent=()=>performance.now()-survolLe<600; // le clic qui suit un survol ne referme pas ce qui vient de s'ouvrir
+  function survol(zones,ouvrir,refermer){
+    let minuteur;
+    zones.forEach(z=>{
+      z.addEventListener('pointerenter',e=>{if(e.pointerType!=='mouse')return;clearTimeout(minuteur);if(ouvrir())survolLe=performance.now()});
+      z.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')minuteur=setTimeout(refermer,250)});
+    });
+  }
+  survol([burger,menu],()=>{if(menu.classList.contains('ouvert'))return false;ouvrirMenu(true);return true},()=>{if(!menu.contains(document.activeElement))fermer()});
+  sous.forEach(item=>item.addEventListener('pointerenter',e=>{if(e.pointerType!=='mouse')return;sous.forEach(other=>ouvrirSous(other,other===item));survolLe=performance.now()}));
+  burger.onclick=()=>{if(!recent())ouvrirMenu(!menu.classList.contains('ouvert'))};
   sous.forEach(item=>item.querySelector('button').onclick=()=>{
+    if(recent())return;
     const ouvrir=item.querySelector('button').getAttribute('aria-expanded')!=='true';
     sous.forEach(other=>ouvrirSous(other,false));
     ouvrirSous(item,ouvrir);
@@ -228,8 +242,12 @@
   haut.querySelector('[data-devenir]').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();ouvrirConnexion(true,undefined,true)});
   c.addEventListener('click',e=>{
     if(connecte||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
-    e.preventDefault(); e.stopImmediatePropagation(); ouvrirConnexion(pop.hidden);
+    e.preventDefault(); e.stopImmediatePropagation(); if(!recent())ouvrirConnexion(pop.hidden);
   },true);
+  // Survol de « Se connecter / S'inscrire » : la fenêtre s'ouvre, et se referme en partant tant que rien n'y a été saisi.
+  let emailOuvert='';
+  survol([c.parentElement],()=>{if(connecte||!pop.hidden)return false;ouvrirConnexion(true);emailOuvert=pop.email.value;return true},
+    ()=>{if(!pop.hidden&&!pop.mot_de_passe.value&&pop.email.value===emailOuvert)ouvrirConnexion(false)});
   pop.querySelector('.pop-voir').onclick=e=>{
     const v=pop.mot_de_passe.type==='password'; pop.mot_de_passe.type=v?'text':'password';
     e.target.textContent=v?'Masquer':'Afficher'; e.target.setAttribute('aria-pressed',v);
