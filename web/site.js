@@ -186,7 +186,7 @@
     if(actif&&actif!==bouton)actif.setAttribute('aria-expanded','false');
     actif=bouton;bouton.setAttribute('aria-expanded','true');panneau.replaceChildren();
     const lien=(texte,slug)=>{const a=element('a',texte);a.href=TT_I18N.localPath('/')+'#categorie='+encodeURIComponent(slug);return a};
-    // La catégorie en gras, séparée de ses sous-catégories en italique (Ben, 27/10).
+    // La catégorie en gras, séparée de ses sous-catégories en graisse normale (Ben, 27/10).
     const tete=element('div',null,'categorie-tete'), a=lien(null,c.slug), ul=element('ul',null,'categorie-liste');
     a.insertAdjacentHTML('afterbegin',GRILLE);a.append(element('strong',traduire(c.libelle)),element('span',traduire('Voir tout'),'categorie-voir'));tete.append(a);
     (c.sous_categories||[]).forEach(x=>{const li=element('li');li.append(lien(traduire(x.libelle),c.slug+'/'+x.slug));ul.append(li)});

@@ -274,7 +274,7 @@ html{scroll-padding-top:calc(var(--haut) + var(--haut-categories) + 12px)}
 .categorie-tete strong{font-weight:700}
 .categorie-tete .categorie-voir{color:var(--muted);font-size:14px;font-weight:500}
 .categorie-tete a:hover,.categorie-tete a:focus-visible,.categorie-tete a:hover .categorie-voir{color:var(--mark)}
-.categorie-liste a{font-style:italic;font-weight:400}
+.categorie-liste a{font-weight:400}
 .categorie-tete svg{width:18px;height:18px;fill:currentColor;flex:none}
 @media(max-width:700px){.categorie-liste{columns:2 140px;column-gap:20px}.categorie-liste a{font-size:14px}.categories-panneau{padding:12px 16px}.categories-defile button{font-size:13px}}
 
