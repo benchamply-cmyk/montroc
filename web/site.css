@@ -21,6 +21,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-off
 .logo{border:0;background:none;padding:0;color:var(--ink);text-decoration:none;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:8px;flex:none}
 .logo svg{width:26px;height:26px;transition:transform .6s cubic-bezier(.6,0,.2,1)}
 .logo:hover svg{transform:rotate(180deg)}
+.logo.inverse svg{transform:rotate(180deg)}
+.logo.inverse:hover svg{transform:rotate(360deg)}
 .logo-2{color:var(--mark)}
 
 /* Menu du haut : collé en haut de l'écran, liens en typo blanche, « Se connecter » toujours visible à droite. */
@@ -99,9 +101,8 @@ footer.site .in{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1
 footer.site nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 20px}
 footer.site a{color:var(--ink);text-decoration:none}
 footer.site a:hover{text-decoration:underline;text-decoration-color:var(--mark);text-underline-offset:3px}
-footer.site .pilote{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
-footer.site .pilote b{color:var(--mark);font-weight:500}
-footer.site .pilote .version{color:inherit;text-transform:none;text-decoration:none;opacity:.7}
+footer.site .pied-version{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+footer.site .pied-version .version{color:inherit;text-transform:none;text-decoration:none;opacity:.7}
 
 /* Pages d'information (pros, collectivités, FAQ, pages légales) */
 .page main{max-width:720px;margin:0 auto;padding:40px 16px 0}
@@ -139,11 +140,10 @@ footer.site .pilote .version{color:inherit;text-transform:none;text-decoration:n
   .menu,.menu.ouvert,.burger path,.logo svg,.menu a,.menu .sous>button{transition:none}
 }
 
-/* Drapeaux identiques sur tous les systèmes, y compris le drapeau anglais. */
+/* Choix de la langue : son code (FR, EN, ES), sans drapeau. */
 .langue{position:relative}
 .langue-bouton,.menu .langue a{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap}
 .langue-bouton:focus-visible,.menu .langue a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.langue-drapeau{width:27px;height:18px;flex:none;border-radius:2px;box-shadow:0 0 0 1px #ffffff20}
 .langue-chevron{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2}
 .langue-bouton[aria-expanded="true"] .langue-chevron{transform:rotate(180deg)}
 .menu .langue>ul{position:absolute;top:100%;right:0;min-width:110px;padding:7px;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 28px #0006;z-index:2}
@@ -155,3 +155,171 @@ footer.site .pilote .version{color:inherit;text-transform:none;text-decoration:n
 /* Relief des surfaces (thème Acier bleuté) : dégradé vertical, reflet sur le bord haut, ombre portée. */
 .carte,.appel,.pop-cnx,.menu .sous>ul,.menu .langue>ul,.langue-bouton{background-image:linear-gradient(180deg,var(--surface),var(--surface-2));box-shadow:var(--reflet),var(--ombre)}
 header.site::before{background:linear-gradient(180deg,color-mix(in srgb,var(--bg-2) 90%,transparent),color-mix(in srgb,var(--bg) 86%,transparent));box-shadow:inset 0 -1px 0 rgba(200,220,255,.10)}
+
+
+/* Navigation inspirée des plateformes de seconde main : recherche visible et rubriques séparées. */
+:root{--haut:116px}
+.site-in{height:var(--haut);max-width:1280px;display:grid;grid-template-columns:auto minmax(180px,1fr) auto;grid-template-rows:64px 52px;column-gap:22px;row-gap:0}
+.site-in>.logo{grid-column:1;grid-row:1}
+.site-in>.recherche-entete{grid-column:2;grid-row:1}
+.site-in>.compte-zone{grid-column:3;grid-row:1}
+.site-in>.menu{grid-column:1/-1;grid-row:2;justify-content:flex-start;align-self:stretch;border-top:1px solid var(--line)}
+.menu>ul{gap:12px}
+.recherche-entete{display:flex;align-items:center;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:0 6px 0 13px;height:43px}
+.recherche-entete:focus-within{outline:2px solid var(--mark);outline-offset:2px}
+.recherche-entete svg{width:19px;height:19px;flex:none;stroke:var(--muted);stroke-width:1.8;fill:none}
+.recherche-entete input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:var(--ink);padding:9px 12px;font:inherit;font-size:15px}
+.recherche-entete input::placeholder{color:var(--muted)}
+.recherche-entete button{border:0;background:none;color:var(--ink);font-size:14px;font-weight:600;padding:8px 10px}
+.recherche-entete button:hover{color:var(--mark)}
+@media(max-width:1199px){
+  :root{--haut:116px}
+  .site-in{grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:64px 52px;gap:0 10px}
+  .site-in>.logo{grid-column:1;grid-row:1}
+  .site-in>.compte-zone{grid-column:2;grid-row:1}
+  .site-in>.burger{grid-column:3;grid-row:1}
+  .site-in>.recherche-entete{grid-column:1/-1;grid-row:2;align-self:start}
+  .site-in>.menu{grid-column:auto;grid-row:auto;border:0}
+}
+
+
+/* Recherche, offres et langues restent accessibles dans l'en-tête. */
+@media (min-width:1200px){
+ .site-in{grid-template-columns:auto minmax(180px,1fr) auto auto;column-gap:16px}
+ .site-in>.recherche-entete{grid-column:2}
+ .site-in>.menu-actions{grid-column:3;grid-row:1;align-self:center;border:0;justify-content:flex-end}
+ .site-in>.compte-zone{grid-column:4}
+ .site-in>#menu{grid-column:1/-1;grid-row:2}
+}
+.menu-actions>ul{list-style:none;margin:0;padding:0}
+@media(max-width:1199px){
+ .site-in{grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:64px 52px;column-gap:8px}
+ .site-in>.recherche-entete{grid-column:1;grid-row:2}
+ .site-in>.menu-actions{grid-column:2/4;grid-row:2;position:relative;inset:auto;display:flex;align-self:start;align-items:center;justify-content:flex-end;opacity:1;visibility:visible;transform:none;transition:none;overflow:visible;background:none;padding:0;border:0}
+ .menu-actions>ul{display:flex;flex-direction:row;align-items:center;gap:4px}
+ .menu-actions>ul>li{border:0}
+ .menu-actions>ul>li.sous>button{font-family:var(--body);font-weight:600;font-size:14px;letter-spacing:0;width:auto;min-height:43px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+ .menu-actions .sous>button svg{width:12px;height:12px}
+ .menu-actions .sous>ul{position:absolute;top:calc(100% + 6px);left:auto;right:0;transform:none;min-width:200px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+ .menu-actions .sous>ul a{font-size:15px;padding:10px 12px}
+ .menu-actions .langue{padding:0}
+ .menu-actions .langue-bouton{min-height:43px;font-size:14px}
+ .menu-actions .langue>ul{position:absolute;top:100%;right:0;min-width:110px;width:auto;margin:0;padding:7px;background:var(--surface);border:1px solid var(--line);box-shadow:0 12px 28px #0006}
+ .menu-actions .langue a{min-height:44px;font-size:14px;padding:8px 10px}
+ .recherche-entete{padding-left:9px}
+ .recherche-entete input{padding-inline:7px}
+}
+@media(max-width:600px){
+ .recherche-entete button{font-size:0;padding:8px}
+ .recherche-entete button::after{content:"→";font-size:18px;line-height:1}
+ .menu-actions .langue-bouton{gap:4px;padding:8px 6px}
+}
+
+
+/* Menu déroulant unique, avec ses cinq rubriques. */
+:root{--haut:64px}
+.site-in{position:relative;grid-template-columns:auto minmax(160px,1fr) auto auto;grid-template-rows:64px}
+.site-in>.recherche-entete{grid-column:2;grid-row:1}
+.site-in>.menu-actions{grid-column:3;grid-row:1;display:flex;position:relative;inset:auto;align-self:center;align-items:center;justify-content:flex-end;opacity:1;visibility:visible;transform:none;overflow:visible;background:none;padding:0;border:0}
+.menu-actions>ul{display:flex;flex-direction:row;align-items:center;gap:8px}
+.menu-actions>ul>li{border:0}
+.menu-actions .langue{padding:0}
+.menu-actions .langue-bouton{min-height:42px;font-size:14px}
+.menu-actions .langue>ul{position:absolute;top:100%;right:0;min-width:110px;width:auto;margin:0;padding:7px;background:var(--surface);border:1px solid var(--line);box-shadow:0 12px 28px #0006}
+.menu-actions .langue a{min-height:42px;font-size:14px;padding:8px 10px}
+.menu-actions .burger{display:grid}
+.site-in>.compte-zone{grid-column:4;grid-row:1}
+.site-in>#menu{position:absolute;top:calc(var(--haut) - 4px);right:16px;left:auto;bottom:auto;width:min(320px,calc(100vw - 32px));max-height:calc(100dvh - var(--haut) - 12px);overflow-y:auto;display:block;grid-column:auto;grid-row:auto;align-self:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px;box-shadow:0 18px 40px rgba(0,0,0,.45);opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .2s,transform .2s,visibility 0s .2s}
+.site-in>#menu.ouvert{opacity:1;visibility:visible;transform:none;transition:opacity .2s,transform .2s}
+#menu>ul{display:flex;flex-direction:column;align-items:stretch;gap:0;margin:0;padding:0}
+#menu>ul>li{border-bottom:1px solid var(--line)}
+#menu>ul>li:last-child{border-bottom:0}
+#menu>ul>li>a,#menu .sous>button{font:600 16px var(--body);letter-spacing:normal;padding:13px 12px;border-radius:8px;width:100%;justify-content:space-between;background-image:none}
+#menu>ul>li>a:hover,#menu .sous>button:hover{background:var(--bg)}
+#menu .sous>ul{position:static;transform:none;min-width:0;background:none;border:0;box-shadow:none;padding:0 0 8px 12px}
+#menu .sous>ul a{font-size:14px;padding:9px 12px;white-space:normal}
+@media(max-width:1199px){
+ :root{--haut:116px}
+ .site-in{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:64px 52px;column-gap:8px}
+ .site-in>.logo{grid-column:1;grid-row:1}
+ .site-in>.compte-zone{grid-column:2;grid-row:1}
+ .site-in>.recherche-entete{grid-column:1;grid-row:2;align-self:start}
+ .site-in>.menu-actions{grid-column:2;grid-row:2;align-self:start}
+ .site-in>#menu{top:calc(var(--haut) - 4px)}
+}
+
+
+/* Bande de catégories sous l'en-tête, défilante sur les écrans étroits. */
+:root{--haut-categories:48px}
+html{scroll-padding-top:calc(var(--haut) + var(--haut-categories) + 12px)}
+.categories-barre{height:var(--haut-categories);border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg)}
+.categories-defile{max-width:1280px;margin:auto;height:100%;display:flex;align-items:center;gap:22px;overflow-x:auto;overscroll-behavior-x:contain;padding:0 16px;scrollbar-width:thin}
+.categories-defile a{flex:none;color:var(--muted);font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;padding:12px 0}
+.categories-defile a:hover,.categories-defile a:focus-visible{color:var(--ink);text-decoration:underline;text-decoration-color:var(--mark);text-underline-offset:6px}
+@media(min-width:1200px){.site-in>.recherche-entete{max-width:420px;width:100%;justify-self:start}}
+@media(max-width:1199px){.categories-defile{gap:20px}.categories-defile a{font-size:13px}}
+
+
+/* Détails de chaque catégorie : survol à la souris, clic et clavier. */
+.categories-barre{position:relative}
+.categories-defile button{flex:none;border:0;background:none;color:var(--muted);font:600 14px var(--body);white-space:nowrap;padding:12px 0}
+.categories-defile button:hover,.categories-defile button[aria-expanded="true"]{color:var(--ink);text-decoration:underline;text-decoration-color:var(--mark);text-underline-offset:6px}
+.categories-panneau{position:absolute;left:50%;top:100%;transform:translateX(-50%);width:min(1100px,calc(100vw - 32px));max-height:calc(100dvh - var(--haut) - var(--haut-categories) - 16px);overflow:auto;padding:20px 24px;background:var(--surface);border:1px solid var(--line);border-radius:0 0 var(--r) var(--r);box-shadow:0 18px 40px #0009;color:var(--ink)}
+.categorie-liste{list-style:none;margin:0;padding:0;columns:3 220px;column-gap:32px}
+.categorie-liste li{break-inside:avoid}
+.categorie-liste a{display:flex;align-items:center;gap:10px;padding:9px 0;color:var(--ink);font-size:15px;text-decoration:none}
+.categorie-liste a:hover,.categorie-liste a:focus-visible{color:var(--mark)}
+.categorie-tete{border-bottom:1px solid var(--line);margin-bottom:10px;padding-bottom:10px}
+.categorie-tete a{display:inline-flex;align-items:center;gap:10px;padding:6px 0;color:var(--ink);text-decoration:none;font-size:17px}
+.categorie-tete strong{font-weight:700}
+.categorie-tete .categorie-voir{color:var(--muted);font-size:14px;font-weight:500}
+.categorie-tete a:hover,.categorie-tete a:focus-visible,.categorie-tete a:hover .categorie-voir{color:var(--mark)}
+.categorie-liste a{font-weight:400}
+.categorie-tete svg{width:18px;height:18px;fill:currentColor;flex:none}
+@media(max-width:700px){.categorie-liste{columns:2 140px;column-gap:20px}.categorie-liste a{font-size:14px}.categories-panneau{padding:12px 16px}.categories-defile button{font-size:13px}}
+
+
+/* Ordre de l'en-tête (Ben, 27/10) : logo, recherche, ☰, Se connecter / S'inscrire, langue, « ? » (FAQ).
+   Une seule ligne qui se resserre ; sous 700 px, la recherche passe sur une deuxième ligne pleine largeur. */
+:root{--haut:64px}
+.site-in{display:flex;align-items:center;gap:10px;height:var(--haut);z-index:2} /* au-dessus de la bande des catégories : le menu ☰ s'ouvre par-dessus */
+.site-in>.logo{margin-right:6px}
+.site-in>.recherche-entete{flex:1 1 auto;min-width:140px;max-width:560px;width:auto;margin-right:auto;align-self:center}
+.site-in>.menu-actions{flex:none;align-self:center}
+.site-in>.burger,.site-in>.favoris,.menu-actions .aide{display:grid;place-items:center;justify-content:center;flex:none;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:none;padding:0}
+.menu-actions .aide{color:var(--ink);text-decoration:none;font:700 18px/1 var(--body);background-image:none}
+.site-in>.favoris{color:var(--ink)}
+.site-in>.favoris svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linejoin:round}
+.site-in>.favoris:hover,.site-in>.favoris[aria-current="page"]{border-color:var(--mark);color:var(--mark)}
+.menu-actions .aide:hover{border-color:var(--mark);color:var(--mark);background:none}
+.site-in>.compte-zone{order:0}
+.site-in>.menu-actions>ul{gap:8px}
+@media(max-width:1199px){.site-in{column-gap:8px}.compte{padding:8px 12px}.menu-actions .langue-chevron{display:none}}
+@media(max-width:860px){.compte span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.compte{padding:0;width:42px;height:42px;justify-content:center}.compte svg{display:block;width:18px;height:18px}}
+@media(max-width:699px){
+  :root{--haut:116px}
+  .site-in{flex-wrap:wrap;align-content:center;row-gap:8px}
+  .site-in>.logo{margin-right:auto}
+  .site-in>.recherche-entete{order:9;flex:1 0 100%;max-width:none;margin:0}
+}
+@media(max-width:479px){.site-in>.logo>span{display:none}.site-in{column-gap:6px}}
+@media(max-width:360px){.site-in{gap:6px}.site-in>.burger,.site-in>.favoris,.menu-actions .aide,.compte{width:38px;height:38px}.compte svg{display:block}}
+
+/* Mini barre au défilement (Ben, 27/10) : en descendant, l'en-tête se resserre et la bande des catégories se replie.
+   Il revient en entier au survol, au clavier ou tout en haut de la page. */
+.site-in,.categories-barre,.site-in>.burger,.site-in>.favoris,.menu-actions .aide,.compte,.logo{transition:height .25s,width .25s,border-color .2s,opacity .2s,font-size .25s}
+header.site.reduit{--haut:48px}
+header.site.reduit .categories-barre{height:0;border-width:0;overflow:hidden;opacity:0}
+header.site.reduit .site-in>.burger,header.site.reduit .site-in>.favoris,header.site.reduit .menu-actions .aide{width:34px;height:34px}
+header.site.reduit .compte{padding-top:5px;padding-bottom:5px}
+header.site.reduit .logo{font-size:15px}
+header.site.reduit .logo svg{width:22px;height:22px}
+header.site.reduit .recherche-entete{height:36px}
+header.site.reduit .langue-bouton{min-height:34px;height:34px}
+@media(max-width:860px){header.site.reduit .compte{width:34px;height:34px;padding:0}}
+@media(max-width:699px){header.site.reduit{--haut:52px}header.site.reduit .site-in>.recherche-entete{display:none}}
+@media (prefers-reduced-motion:reduce){.site-in,.categories-barre,.site-in>.burger,.site-in>.favoris,.menu-actions .aide,.compte,.logo{transition:none}}
+
+/* Bouton Se connecter / S'inscrire (Ben, 27/10) : gris argenté au repos, jaune au survol ou une fois ouvert. */
+.compte{background:linear-gradient(180deg,#E4E7EB,#AFB5BE);color:var(--accent-ink);border:1px solid #CDD2D9}
+.compte:hover,.compte:focus-visible,.compte[aria-expanded="true"],.compte[aria-current="page"]{background:var(--mark);border-color:var(--mark);color:var(--accent-ink)}

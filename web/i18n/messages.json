@@ -1347,6 +1347,10 @@
     "en": "Item published. Once swapped, remember to remove the listing from",
     "es": "Objeto publicado. Una vez intercambiado, recuerda retirar el anuncio de"
   },
+  "Demander un objet": {
+    "en": "Request an item",
+    "es": "Pedir un objeto"
+  },
   "Objets disponibles": {
     "en": "Available items",
     "es": "Objetos disponibles"
@@ -4522,5 +4526,145 @@
   "il sert seulement à départager, jamais au prix d'un échange perdu pour un autre membre.": {
     "en": "it only breaks ties, never at the cost of a swap lost for another member.",
     "es": "solo sirve para desempatar, nunca a costa de un intercambio perdido para otro miembro."
+  },
+  "Le catalogue": {
+    "en": "The catalogue",
+    "es": "El catálogo"
+  },
+  "Les offres": {
+    "en": "Our offers",
+    "es": "Las ofertas"
+  },
+  "Recherches personnalisées": {
+    "en": "Personalised searches",
+    "es": "Búsquedas personalizadas"
+  },
+  "Devenir membre": {
+    "en": "Become a member",
+    "es": "Hazte miembro"
+  },
+  "Que cherchez-vous ?": {
+    "en": "What are you looking for?",
+    "es": "¿Qué buscas?"
+  },
+  "Rechercher sur TopTroc": {
+    "en": "Search TopTroc",
+    "es": "Buscar en TopTroc"
+  },
+  "Recherchez parmi les objets et les pages du site.": {
+    "en": "Search items and pages on the site.",
+    "es": "Busca entre los artículos y las páginas del sitio."
+  },
+  "Pages du site": {
+    "en": "Site pages",
+    "es": "Páginas del sitio"
+  },
+  "Objets": {
+    "en": "Items",
+    "es": "Artículos"
+  },
+  "Aucune page trouvée.": {
+    "en": "No pages found.",
+    "es": "No se encontraron páginas."
+  },
+  "Aucun objet trouvé.": {
+    "en": "No items found.",
+    "es": "No se encontraron artículos."
+  },
+  "Objets temporairement indisponibles.": {
+    "en": "Items temporarily unavailable.",
+    "es": "Artículos temporalmente no disponibles."
+  },
+  "Certaines pages sont temporairement indisponibles.": {
+    "en": "Some pages are temporarily unavailable.",
+    "es": "Algunas páginas no están disponibles temporalmente."
+  },
+  "Voir tout": {
+    "en": "See all",
+    "es": "Ver todo"
+  },
+  "Se connecter / S'inscrire": {
+    "en": "Log in / Sign up",
+    "es": "Iniciar sesión / Registrarse"
+  },
+  "Mode": {
+    "en": "Fashion",
+    "es": "Moda"
+  },
+  "Maison": {
+    "en": "Home",
+    "es": "Hogar"
+  },
+  "Multimédia": {
+    "en": "Multimedia",
+    "es": "Multimedia"
+  },
+  "Loisirs": {
+    "en": "Leisure",
+    "es": "Ocio"
+  },
+  "Culture": {
+    "en": "Culture",
+    "es": "Cultura"
+  },
+  "Bricolage": {
+    "en": "DIY",
+    "es": "Bricolaje"
+  },
+  "Auto, Moto": {
+    "en": "Car, Moto",
+    "es": "Coche, Moto"
+  },
+  "Divers": {
+    "en": "Other",
+    "es": "Varios"
+  },
+  "Effacer les filtres": {
+    "en": "Clear filters",
+    "es": "Borrar filtros"
+  },
+  "Fil d'Ariane": {
+    "en": "Breadcrumb",
+    "es": "Ruta de navegación"
+  },
+  "Toutes": {
+    "en": "All",
+    "es": "Todas"
+  },
+  "Classer par": {
+    "en": "Sort by",
+    "es": "Ordenar por"
+  },
+  "Plus récents": {
+    "en": "Newest first",
+    "es": "Más recientes"
+  },
+  "Plus anciens": {
+    "en": "Oldest first",
+    "es": "Más antiguos"
+  },
+  "Aucun objet ne correspond à ces filtres pour l'instant.": {
+    "en": "No items match these filters yet.",
+    "es": "Ningún artículo coincide con estos filtros por ahora."
+  },
+  "Aucun objet proposé dans cette catégorie pour l'instant.": {
+    "en": "No items offered in this category yet.",
+    "es": "Todavía no hay artículos en esta categoría."
+  },
+  "Retirer le filtre": {
+    "en": "Remove filter",
+    "es": "Quitar el filtro"
+  },
+  "Favoris": {
+    "en": "Favourites",
+    "es": "Favoritos"
+  },
+  "Vos favoris": {
+    "en": "Your favourites",
+    "es": "Tus favoritos"
+  },
+  "Les objets que vous aimez apparaîtront ici.": {
+    "en": "Items you like will appear here.",
+    "es": "Los artículos que te gustan aparecerán aquí."
   }
 }
