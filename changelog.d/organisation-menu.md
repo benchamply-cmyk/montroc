@@ -1,1 +1,1 @@
-- Menu du haut réorganisé : barre de recherche sur tout le site, rubriques Le catalogue et Les offres, bande des catégories d'objets (#75).
+- Menu du haut réorganisé : barre de recherche sur tout le site, rubriques Le catalogue et Les offres, bande des catégories d'objets (#76).
