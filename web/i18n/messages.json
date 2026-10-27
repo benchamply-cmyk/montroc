@@ -4650,5 +4650,17 @@
   "Retirer le filtre": {
     "en": "Remove filter",
     "es": "Quitar el filtro"
+  },
+  "Favoris": {
+    "en": "Favourites",
+    "es": "Favoritos"
+  },
+  "Vos favoris": {
+    "en": "Your favourites",
+    "es": "Tus favoritos"
+  },
+  "Les objets que vous aimez apparaîtront ici.": {
+    "en": "Items you like will appear here.",
+    "es": "Los artículos que te gustan aparecerán aquí."
   }
 }

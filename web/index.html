@@ -588,6 +588,12 @@ details.plus summary::-webkit-details-marker{display:none}
     <div id="global-objets" class="results"></div>
   </section>
 
+  <!-- FAVORIS (bouton cœur de l'en-tête) : page vide pour l'instant. -->
+  <section class="view" id="v-favoris" hidden>
+    <div class="hero"><span class="label">Favoris</span><h2>Vos favoris</h2></div>
+    <p class="empty">Les objets que vous aimez apparaîtront ici.</p>
+  </section>
+
   <!-- PAGE D'UNE CATÉGORIE (« Voir tout » de la bande des catégories) : sous-catégories et filtres, comme Vinted. -->
   <section class="view" id="v-categorie" hidden>
     <nav class="fil" aria-label="Fil d'Ariane"><a href="/#objets">Objets</a><span id="cat-fil"></span></nav>
@@ -892,7 +898,7 @@ async function api(chemin,{method='GET',body}={}){
 
 /* Historique : chaque vue ouverte a son adresse (#monespace, #echanges, #objet-12…) et sa propre entrée,
    pour revenir à la vue précédente avec le bouton Précédent du navigateur ou le geste du trackpad. */
-const ADRESSES={home:'',lists:'#monespace',trades:'#echanges',drop:'#depot',mod:'#moderation',match:'#match',proposer:'#proposer'};
+const ADRESSES={home:'',favoris:'#favoris',lists:'#monespace',trades:'#echanges',drop:'#depot',mod:'#moderation',match:'#match',proposer:'#proposer'};
 function marquer(h,remplacer){
   if(location.hash===h)return;
   const url=h||location.pathname+location.search;
@@ -915,7 +921,7 @@ addEventListener('popstate',()=>{TT.fermer();TT.ouvrirConnexion(false);suivre(lo
 
 const ESPACE=['lists','trades','drop','mod'];
 function go(v,{adresse,remplacer=false}={}){
-  if(!moi&&!['home','signup','search','objet','global','categorie'].includes(v)){v='home';remplacer=true}
+  if(!moi&&!['home','signup','search','objet','global','categorie','favoris'].includes(v)){v='home';remplacer=true}
   if(adresse===undefined)adresse=ADRESSES[v];
   if(adresse!==undefined)marquer(adresse,remplacer);
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
@@ -944,6 +950,7 @@ async function naviguer(h){
   if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
   if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return pageCategorie(c,sous)}
   if(h==='#objets')return chercher('');
+  if(h==='#favoris')return go('favoris');
   if(h==='#monespace'){
     // Session gardée sur cet appareil mais pas encore relue (serveur qui se réveille) : on l'attend.
     if(jeton&&!moi){toast('Ouverture de votre espace…'); await chargerSession()}
@@ -1735,7 +1742,7 @@ async function demarrer(){
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(h.startsWith('#categorie=')){if(moi)toutCharger();suivre(h);return}
   if(h==='#recherche-site'||h.startsWith('#site=')){if(moi)toutCharger();suivre(h);return}
-  if(['#objets','#se-connecter'].includes(h)||(h==='#monespace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
+  if(['#objets','#se-connecter','#favoris'].includes(h)||(h==='#monespace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
   if(!moi)return;
   await gt; await toutCharger();
   if(store.get('troc.annonce'))reprendreAnnonce();
