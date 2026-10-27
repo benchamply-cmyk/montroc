@@ -74,7 +74,7 @@
     <li><a href="/confidentialite/">Confidentialité</a></li>
     <li><a href="/regles/">Règles et signalements</a></li>
   </ul></nav>
-  <p class="pilote" style="margin:0">Pilote : <b>Département (13) Bouches-du-Rhône</b> · <a class="version" href="https://github.com/benchamply-cmyk/montroc/blob/prod/CHANGELOG.md">V${VERSION}</a></p>
+  <p class="pied-version" style="margin:0"><a class="version" href="https://github.com/benchamply-cmyk/montroc/blob/prod/CHANGELOG.md">V${VERSION}</a></p>
 </div>`;
   // En pré-production, la version (V5.2000, V5.3000…) est la dernière étiquette preprod-V… posée par le workflow Versions.
   const lienVersion=document.querySelector('a.version');
@@ -186,7 +186,7 @@
     if(actif&&actif!==bouton)actif.setAttribute('aria-expanded','false');
     actif=bouton;bouton.setAttribute('aria-expanded','true');panneau.replaceChildren();
     const lien=(texte,slug)=>{const a=element('a',texte);a.href=TT_I18N.localPath('/')+'#categorie='+encodeURIComponent(slug);return a};
-    // La catégorie en gras, séparée de ses sous-catégories en italique (Ben, 27/10).
+    // La catégorie en gras, séparée de ses sous-catégories en graisse normale (Ben, 27/10).
     const tete=element('div',null,'categorie-tete'), a=lien(null,c.slug), ul=element('ul',null,'categorie-liste');
     a.insertAdjacentHTML('afterbegin',GRILLE);a.append(element('strong',traduire(c.libelle)),element('span',traduire('Voir tout'),'categorie-voir'));tete.append(a);
     (c.sous_categories||[]).forEach(x=>{const li=element('li');li.append(lien(traduire(x.libelle),c.slug+'/'+x.slug));ul.append(li)});

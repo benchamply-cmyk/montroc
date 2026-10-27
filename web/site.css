@@ -101,9 +101,8 @@ footer.site .in{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1
 footer.site nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 20px}
 footer.site a{color:var(--ink);text-decoration:none}
 footer.site a:hover{text-decoration:underline;text-decoration-color:var(--mark);text-underline-offset:3px}
-footer.site .pilote{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
-footer.site .pilote b{color:var(--mark);font-weight:500}
-footer.site .pilote .version{color:inherit;text-transform:none;text-decoration:none;opacity:.7}
+footer.site .pied-version{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+footer.site .pied-version .version{color:inherit;text-transform:none;text-decoration:none;opacity:.7}
 
 /* Pages d'information (pros, collectivités, FAQ, pages légales) */
 .page main{max-width:720px;margin:0 auto;padding:40px 16px 0}
@@ -275,7 +274,7 @@ html{scroll-padding-top:calc(var(--haut) + var(--haut-categories) + 12px)}
 .categorie-tete strong{font-weight:700}
 .categorie-tete .categorie-voir{color:var(--muted);font-size:14px;font-weight:500}
 .categorie-tete a:hover,.categorie-tete a:focus-visible,.categorie-tete a:hover .categorie-voir{color:var(--mark)}
-.categorie-liste a{font-style:italic;font-weight:400}
+.categorie-liste a{font-weight:400}
 .categorie-tete svg{width:18px;height:18px;fill:currentColor;flex:none}
 @media(max-width:700px){.categorie-liste{columns:2 140px;column-gap:20px}.categorie-liste a{font-size:14px}.categories-panneau{padding:12px 16px}.categories-defile button{font-size:13px}}
 
@@ -320,6 +319,10 @@ header.site.reduit .langue-bouton{min-height:34px;height:34px}
 @media(max-width:860px){header.site.reduit .compte{width:34px;height:34px;padding:0}}
 @media(max-width:699px){header.site.reduit{--haut:52px}header.site.reduit .site-in>.recherche-entete{display:none}}
 @media (prefers-reduced-motion:reduce){.site-in,.categories-barre,.site-in>.burger,.site-in>.favoris,.menu-actions .aide,.compte,.logo{transition:none}}
+
+/* Bouton Se connecter / S'inscrire (Ben, 27/10) : gris argenté au repos, jaune au survol ou une fois ouvert. */
+.compte{background:linear-gradient(180deg,#E4E7EB,#AFB5BE);color:var(--accent-ink);border:1px solid #CDD2D9}
+.compte:hover,.compte:focus-visible,.compte[aria-expanded="true"],.compte[aria-current="page"]{background:var(--mark);border-color:var(--mark);color:var(--accent-ink)}
 /* Compteur du cœur « Favoris » de l'en-tête (mode visiteur) */
 .site-in>.favoris{position:relative}
 .favoris-nb{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--mark);color:#111318;font-size:11px;font-weight:700;line-height:18px;text-align:center}

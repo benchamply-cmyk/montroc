@@ -515,7 +515,7 @@ dialog.visiteur .sablier{font-size:40px}
         <p class="acc-fort">Vous proposez. Vous choisissez. TopTroc s'occupe du reste.</p>
         <div class="acc-btns">
           <button class="acc-btn y" type="button" data-proposer>Proposer un objet</button>
-          <button class="acc-btn g" type="button" data-objets>Objets disponibles</button>
+          <button class="acc-btn g" type="button" data-objets>Demander un objet</button>
         </div>
         <form class="acc-search" id="f-search-home" role="search">
           <select name="cat" aria-label="Catégorie"><option value="">Tout</option></select>
@@ -1034,7 +1034,7 @@ const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
 })();
 
 /* Boutons de l'accueil : « Proposer un objet » (et « Je participe ») mène au formulaire d'objet, même sans compte
-   (mode visiteur : le compte est demandé à la dernière étape, « Publier ») ; « Objets disponibles » et « Tout voir »
+   (mode visiteur : le compte est demandé à la dernière étape, « Publier ») ; « Demander un objet » et « Tout voir »
    ouvrent tout ce qui est proposé. */
 // Se connecter ou créer un compte : uniquement par la fenêtre du bouton en haut de page (site.js).
 function versCompte(){scrollTo({top:0,behavior:calmeDefil});TT.ouvrirConnexion(true,undefined,!store.get('troc.email'))}
