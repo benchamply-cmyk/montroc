@@ -24,6 +24,13 @@ from sqlalchemy.orm import Session
 from .config import get_settings
 
 journal = logging.getLogger("montroc.courriels")
+# Sans réglage, Python n'écrit que les avertissements : on veut aussi voir chaque e-mail accepté par Brevo
+# dans le journal Render, pour savoir si un e-mail manquant est parti ou non.
+if not journal.handlers:
+    _sortie = logging.StreamHandler()
+    _sortie.setFormatter(logging.Formatter("%(levelname)s:     %(name)s - %(message)s"))
+    journal.addHandler(_sortie)
+    journal.setLevel(logging.INFO)
 
 
 @dataclass
@@ -84,7 +91,14 @@ def _par_brevo(courriel: Courriel) -> None:
     )
     try:
         with urlopen(requete, timeout=20) as reponse:
-            reponse.read()
+            message_id = json.loads(reponse.read() or b"{}").get("messageId", "?")
+        journal.info(
+            "E-mail « %s » accepté par Brevo pour %s (expéditeur %s, messageId %s)",
+            courriel.sujet,
+            courriel.destinataire,
+            adresse,
+            message_id,
+        )
     except HTTPError as e:
         # Brevo explique son refus (clé invalide, expéditeur non validé…) : le garder dans le journal.
         journal.error("Brevo refuse l'e-mail « %s » (%s) : %s", courriel.sujet, e.code, e.read()[:500])
@@ -113,9 +127,15 @@ def apres_validation(session: Session, fonction: Callable[..., None], *args) -> 
 def _expedier(session: Session) -> None:
     for fonction, args in session.info.pop("courriels", []):
         if get_settings().envoi_configure:
-            _envois.submit(fonction, *args)
+            _envois.submit(fonction, *args).add_done_callback(_signaler_panne)
         else:
             fonction(*args)
+
+
+def _signaler_panne(envoi) -> None:
+    """Une erreur imprévue dans le fil d'envoi serait perdue sans bruit : la garder dans le journal."""
+    if (erreur := envoi.exception()) is not None:
+        journal.error("Échec d'envoi d'un e-mail : %r", erreur)
 
 
 @event.listens_for(Session, "after_rollback")
