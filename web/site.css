@@ -421,7 +421,7 @@ header.site.reduit .langue-bouton{min-height:34px;height:34px}
 .assistant-tete button svg{width:18px;height:18px}
 .assistant-fil{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
 .assistant-msg{max-width:88%;padding:9px 13px;border-radius:16px;font-size:14.5px;line-height:1.45;overflow-wrap:anywhere}
-.assistant-msg p{margin:0}.assistant-msg p+p,.assistant-msg ul{margin:.5em 0 0}.assistant-msg ul{padding-left:1.1em}
+.assistant-msg p{margin:0}.assistant-msg p+p,.assistant-msg ul,.assistant-msg ul+p{margin:.5em 0 0}.assistant-msg ul{padding-left:1.1em}
 .assistant-msg.bot{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:5px}
 .assistant-msg.moi{align-self:flex-end;background:var(--ink);color:var(--accent-ink);border-bottom-right-radius:5px;white-space:pre-wrap}
 .assistant-msg a{color:var(--mark)}
