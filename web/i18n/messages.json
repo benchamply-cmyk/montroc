@@ -1347,6 +1347,10 @@
     "en": "Item published. Once swapped, remember to remove the listing from",
     "es": "Objeto publicado. Una vez intercambiado, recuerda retirar el anuncio de"
   },
+  "Demander un objet": {
+    "en": "Request an item",
+    "es": "Pedir un objeto"
+  },
   "Objets disponibles": {
     "en": "Available items",
     "es": "Objetos disponibles"
