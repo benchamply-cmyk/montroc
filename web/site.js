@@ -145,7 +145,17 @@
   addEventListener('scroll',()=>haut.classList.toggle('colle',scrollY>4),{passive:true});
   // Le logo suit le défilement : les deux T s'inversent en descendant, reviennent en remontant.
   const logo=haut.querySelector('.logo');let dernierY=scrollY;
-  addEventListener('scroll',()=>{const y=scrollY,d=y-dernierY;if(Math.abs(d)<8)return;logo.classList.toggle('inverse',d>0&&y>4);dernierY=y},{passive:true});
+  // En descendant, l'en-tête se réduit à une mini barre (sans la bande des catégories) ;
+  // il revient en entier au survol, au clavier, ou tout en haut de la page.
+  const ouvertDansHaut=()=>haut.matches(':hover')||haut.contains(document.activeElement)||menu.classList.contains('ouvert')||haut.querySelector('[aria-expanded="true"],.categories-panneau:not([hidden]),.pop-cnx:not([hidden])');
+  const deplier=()=>haut.classList.remove('reduit');
+  addEventListener('scroll',()=>{const y=scrollY,d=y-dernierY;
+    if(y<=4){deplier();logo.classList.remove('inverse');dernierY=y;return}
+    if(Math.abs(d)<8)return;
+    logo.classList.toggle('inverse',d>0);
+    if(d>0&&y>120&&!ouvertDansHaut())haut.classList.add('reduit');
+    dernierY=y},{passive:true});
+  haut.addEventListener('pointerenter',deplier);haut.addEventListener('focusin',deplier);
 
   // Page en cours : soulignée dans le menu.
   const ici=location.pathname;

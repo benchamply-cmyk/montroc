@@ -300,3 +300,18 @@ html{scroll-padding-top:calc(var(--haut) + var(--haut-categories) + 12px)}
 }
 @media(max-width:479px){.site-in>.logo>span{display:none}.site-in{column-gap:6px}}
 @media(max-width:360px){.site-in{gap:6px}.site-in>.burger,.site-in>.favoris,.menu-actions .aide,.compte{width:38px;height:38px}.compte svg{display:block}}
+
+/* Mini barre au défilement (Ben, 27/10) : en descendant, l'en-tête se resserre et la bande des catégories se replie.
+   Il revient en entier au survol, au clavier ou tout en haut de la page. */
+.site-in,.categories-barre,.site-in>.burger,.site-in>.favoris,.menu-actions .aide,.compte,.logo{transition:height .25s,width .25s,border-color .2s,opacity .2s,font-size .25s}
+header.site.reduit{--haut:48px}
+header.site.reduit .categories-barre{height:0;border-width:0;overflow:hidden;opacity:0}
+header.site.reduit .site-in>.burger,header.site.reduit .site-in>.favoris,header.site.reduit .menu-actions .aide{width:34px;height:34px}
+header.site.reduit .compte{padding-top:5px;padding-bottom:5px}
+header.site.reduit .logo{font-size:15px}
+header.site.reduit .logo svg{width:22px;height:22px}
+header.site.reduit .recherche-entete{height:36px}
+header.site.reduit .langue-bouton{min-height:34px;height:34px}
+@media(max-width:860px){header.site.reduit .compte{width:34px;height:34px;padding:0}}
+@media(max-width:699px){header.site.reduit{--haut:52px}header.site.reduit .site-in>.recherche-entete{display:none}}
+@media (prefers-reduced-motion:reduce){.site-in,.categories-barre,.site-in>.burger,.site-in>.favoris,.menu-actions .aide,.compte,.logo{transition:none}}
