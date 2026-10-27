@@ -1,1 +1,1 @@
-- Design et UX : retouches de l'interface du site à partir de l'aperçu de la V6.100 (en cours).
+- Design : fond Acier bleuté avec reliefs et ombres, nouveau logo (deux T emboîtés), titre de l'accueil retravaillé, et une page dédiée pour Le concept, Comment ça marche, Le Grand Troc et Particuliers.
