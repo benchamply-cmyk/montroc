@@ -4711,10 +4711,6 @@
     "en": ", then disappear.",
     "es": ", y luego desaparecen."
   },
-  "Avec un compte gratuit, ils sont gardés pour toujours, sur tous vos appareils, et TopTroc cherche l'échange qui vous les apporte.": {
-    "en": "With a free account, they're kept forever on all your devices, and TopTroc looks for the swap that brings them to you.",
-    "es": "Con una cuenta gratuita, se guardan para siempre en todos tus dispositivos, y TopTroc busca el intercambio que te los trae."
-  },
   "Créer mon compte gratuit": {
     "en": "Create my free account",
     "es": "Crear mi cuenta gratuita"
@@ -4787,10 +4783,6 @@
     "en": "Your searches and favourites are sent to TopTroc for these alerts only, then deleted after 6 months without a visit.",
     "es": "Tus búsquedas y favoritos se envían a TopTroc solo para estos avisos, y se borran tras 6 meses sin visita."
   },
-  "Vos favoris restent tant que l'objet est proposé. Ils comptent comme des « J'aime » : si son propriétaire aime un de vos objets, c'est un match.": {
-    "en": "Your favourites stay as long as the item is listed. They count as Likes: if its owner likes one of your items, it's a match.",
-    "es": "Tus favoritos se quedan mientras el objeto esté publicado. Cuentan como «Me gusta»: si su dueño quiere uno de tus objetos, es un match."
-  },
   "Vos favoris s'effacent 24 h après leur ajout : le prochain dans": {
     "en": "Your favourites disappear 24 h after you add them: the next one in",
     "es": "Tus favoritos se borran 24 h después de añadirlos: el próximo en"
@@ -4806,10 +4798,6 @@
   "Garder mes favoris": {
     "en": "Keep my favourites",
     "es": "Guardar mis favoritos"
-  },
-  "Aucun favori pour l'instant. Touchez le cœur d'un objet pour le retrouver ici.": {
-    "en": "No favourites yet. Tap the heart on an item to find it here.",
-    "es": "Aún no hay favoritos. Toca el corazón de un objeto para encontrarlo aquí."
   },
   "Effacer l'historique": {
     "en": "Clear history",
@@ -4879,14 +4867,6 @@
     "en": "Add the photo again, then publish.",
     "es": "Añade de nuevo la foto y publica."
   },
-  "Votre favori est gardé dans votre compte": {
-    "en": "Your favourite is saved in your account",
-    "es": "Tu favorito se guarda en tu cuenta"
-  },
-  "favoris sont gardés dans votre compte": {
-    "en": "favourites are saved in your account",
-    "es": "favoritos se guardan en tu cuenta"
-  },
   "Sans compte, si vous demandez à être prévenu": {
     "en": "Without an account, if you ask to be notified",
     "es": "Sin cuenta, si pides que te avisemos"
@@ -4898,5 +4878,37 @@
   "Aucun cookie publicitaire ni de mesure d'audience. Votre navigateur garde seulement un jeton de connexion, pour que vous restiez connecté, et, sans compte, vos favoris (24 h) et vos dernières recherches, qui ne quittent pas votre appareil sauf si vous demandez à être prévenu.": {
     "en": "No advertising or audience-measurement cookies. Your browser only keeps a login token, so you stay signed in, and, without an account, your favourites (24 h) and your latest searches, which never leave your device unless you ask to be notified.",
     "es": "Ninguna cookie publicitaria ni de medición de audiencia. Tu navegador solo guarda un token de sesión, para que sigas conectado, y, sin cuenta, tus favoritos (24 h) y tus últimas búsquedas, que no salen de tu dispositivo salvo si pides que te avisemos."
+  },
+  "Vos favoris restent tant que l'objet est proposé. Pour un match, touchez aussi le cœur « J'aime » : si son propriétaire aime un de vos objets, vous échangez à deux.": {
+    "en": "Your favourites stay as long as the item is listed. For a match, also tap the Like heart: if its owner likes one of your items, you swap one-to-one.",
+    "es": "Tus favoritos se quedan mientras el objeto esté publicado. Para un match, toca también el corazón «Me gusta»: si su dueño quiere uno de tus objetos, intercambiáis entre dos."
+  },
+  "Aucun favori pour l'instant. Touchez l'étoile d'un objet pour le retrouver ici.": {
+    "en": "No favourites yet. Tap the star on an item to find it here.",
+    "es": "Aún no hay favoritos. Toca la estrella de un objeto para encontrarlo aquí."
+  },
+  "Avec un compte gratuit, ils sont gardés pour toujours, sur tous vos appareils, et vous pouvez proposer l'échange.": {
+    "en": "With a free account, they're kept forever on all your devices, and you can offer a swap.",
+    "es": "Con una cuenta gratuita, se guardan para siempre en todos tus dispositivos, y puedes proponer el intercambio."
+  },
+  "Retirer le J'aime": {
+    "en": "Remove Like",
+    "es": "Quitar el Me gusta"
+  },
+  "Vous aimez": {
+    "en": "You like this",
+    "es": "Te gusta"
+  },
+  "J'aime retiré": {
+    "en": "Like removed",
+    "es": "Me gusta quitado"
+  },
+  "favoris sont gardés dans votre compte": {
+    "en": "favourites are saved in your account",
+    "es": "favoritos se guardan en tu cuenta"
+  },
+  "Votre favori est gardé dans votre compte": {
+    "en": "Your favourite is saved in your account",
+    "es": "Tu favorito se guarda en tu cuenta"
   }
 }

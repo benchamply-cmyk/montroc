@@ -1,4 +1,5 @@
-"""Mode visiteur : suivi des recherches et des favoris par e-mail ou téléphone, sans compte.
+"""Mode visiteur : favoris des membres (l'étoile), et suivi des recherches et des favoris par e-mail ou téléphone,
+sans compte.
 
 Revision ID: 0020
 Revises: 0019
@@ -17,6 +18,23 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
+    op.create_table(
+        "favoris",
+        sa.Column("utilisateur_id", sa.Integer(), nullable=False),
+        sa.Column("objet_id", sa.Integer(), nullable=False),
+        sa.Column("cree_le", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["objet_id"], ["objets.id"], name=op.f("fk_favoris_objet_id_objets"), ondelete="CASCADE"
+        ),
+        sa.ForeignKeyConstraint(
+            ["utilisateur_id"],
+            ["utilisateurs.id"],
+            name=op.f("fk_favoris_utilisateur_id_utilisateurs"),
+            ondelete="CASCADE",
+        ),
+        sa.PrimaryKeyConstraint("utilisateur_id", "objet_id", name=op.f("pk_favoris")),
+    )
+    op.create_index(op.f("ix_favoris_objet_id"), "favoris", ["objet_id"])
     op.create_table(
         "suivis_visiteurs",
         sa.Column("id", sa.Integer(), nullable=False),
@@ -44,3 +62,5 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_suivis_visiteurs_telephone"), table_name="suivis_visiteurs")
     op.drop_index(op.f("ix_suivis_visiteurs_email"), table_name="suivis_visiteurs")
     op.drop_table("suivis_visiteurs")
+    op.drop_index(op.f("ix_favoris_objet_id"), table_name="favoris")
+    op.drop_table("favoris")

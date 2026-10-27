@@ -1,4 +1,4 @@
-"""Mode visiteur : catalogue complet sans compte, favoris des membres, suivi par e-mail ou SMS sans compte."""
+"""Mode visiteur : catalogue complet sans compte, favoris (étoile) des membres, suivi par e-mail ou SMS sans compte."""
 
 import re
 from datetime import UTC, datetime, timedelta
@@ -31,18 +31,22 @@ def test_catalogue_complet_par_pages_sans_compte(client, creer):
     assert client.get("/objets", params={"limite": 500}).status_code == 422
 
 
-def test_favoris_d_un_membre_et_retrait_du_coeur(client, creer):
+def test_favoris_d_un_membre_distincts_des_j_aime(client, creer):
     alice, bruno = creer.utilisateur("alice"), creer.utilisateur("bruno")
     velo, lampe = creer.objet(alice, "sport", titre="vélo"), creer.objet(alice, "maison", titre="lampe")
-    for objet_id in (velo, lampe):
-        assert (
-            client.post("/match/avis", json={"objet_id": objet_id, "aime": True}, headers=bruno.headers).status_code
-            == 200
-        )
-    assert [o["id"] for o in client.get("/match/favoris", headers=bruno.headers).json()] == [lampe, velo]
+    for objet_id in (velo, lampe, velo):  # deux fois le même : sans effet
+        assert client.post("/moi/favoris", json={"objet_id": objet_id}, headers=bruno.headers).status_code == 204
+    assert [o["id"] for o in client.get("/moi/favoris", headers=bruno.headers).json()] == [lampe, velo]
+    assert client.delete(f"/moi/favoris/{lampe}", headers=bruno.headers).status_code == 204
+    assert [o["id"] for o in client.get("/moi/favoris", headers=bruno.headers).json()] == [velo]
+    # Une étoile n'est pas un « J'aime » : aucun match, rien dans le Match.
+    assert client.get("/match", headers=bruno.headers).json() == []
+    assert client.post("/moi/favoris", json={"objet_id": velo}, headers=alice.headers).status_code == 409
+    assert client.get("/moi/favoris").status_code == 401
+    # Le cœur se retire librement.
+    assert client.post("/match/avis", json={"objet_id": lampe, "aime": True}, headers=bruno.headers).status_code == 200
+    assert client.get("/match/avis", headers=bruno.headers).json() == [lampe]
     assert client.delete(f"/match/avis/{lampe}", headers=bruno.headers).status_code == 204
-    assert [o["id"] for o in client.get("/match/favoris", headers=bruno.headers).json()] == [velo]
-    assert client.get("/match/favoris").status_code == 401
 
 
 def test_suivi_par_email_confirme_puis_alerte(client, creer):

@@ -208,7 +208,7 @@ def test_super_j_aime_et_retour_arriere(client, creer):
     assert objets[1] not in _carrousel(client, bruno)
     assert client.delete(f"/match/avis/{objets[1]}", headers=bruno.headers).status_code == 204
     assert objets[1] in _carrousel(client, bruno)
-    # Retirer un « J'aime » (le cœur des favoris) est libre.
+    # Retirer un « J'aime » (le cœur) est libre.
     assert client.delete(f"/match/avis/{objets[0]}", headers=bruno.headers).status_code == 204
 
 

@@ -708,7 +708,11 @@ class Decision(BaseModel):
     motivation: str = Field(min_length=10, max_length=2000)
 
 
-# --- Mode visiteur : suivi sans compte ---
+# --- Mode visiteur : favoris et suivi sans compte ---
+
+
+class FavoriCreation(BaseModel):
+    objet_id: int
 
 
 class RechercheSuivie(BaseModel):

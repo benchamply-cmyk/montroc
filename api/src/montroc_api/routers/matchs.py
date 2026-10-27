@@ -1,8 +1,10 @@
 """Le Match : le carrousel d'objets, « J'aime » / « Non merci », mes matchs et l'accord 1 à 1."""
 
 from fastapi import APIRouter, Query
+from sqlalchemy import select
 
 from .. import matchs, vues
+from .. import models as m
 from ..deps import SessionDep, UtilisateurConnecte
 from ..schemas import (
     AccordCreation,
@@ -12,7 +14,6 @@ from ..schemas import (
     EchangeCreation,
     EchangeLecture,
     MatchLecture,
-    ObjetLecture,
     ResultatAvis,
 )
 from .echanges import metier
@@ -33,16 +34,18 @@ def donner_avis(donnees: AvisCreation, utilisateur: UtilisateurConnecte, session
     return ResultatAvis(match=vues.match(match) if match else None)
 
 
+@router.get("/avis", response_model=list[int])
+def mes_j_aime(utilisateur: UtilisateurConnecte, session: SessionDep):
+    """Les objets que j'aime (le cœur), pour l'afficher plein sur les cartes."""
+    return session.scalars(
+        select(m.Avis.objet_id).where(m.Avis.utilisateur_id == utilisateur.id, m.Avis.aime.is_(True))
+    ).all()
+
+
 @router.delete("/avis/{objet_id}", status_code=204)
 def retour_arriere(objet_id: int, utilisateur: UtilisateurConnecte, session: SessionDep):
-    """Retire un « J'aime » (le cœur des favoris), ou annule un « Non merci » (retour arrière, Troc Premium)."""
+    """Retire un « J'aime » (le cœur), ou annule un « Non merci » (retour arrière, Troc Premium)."""
     metier(matchs.retour_arriere, session, utilisateur, objet_id)
-
-
-@router.get("/favoris", response_model=list[ObjetLecture])
-def mes_favoris(utilisateur: UtilisateurConnecte, session: SessionDep):
-    """Les objets que j'aime : la page « Favoris » d'un membre (le cœur pose un « J'aime »)."""
-    return matchs.favoris(session, utilisateur)
 
 
 @router.get("", response_model=list[MatchLecture])

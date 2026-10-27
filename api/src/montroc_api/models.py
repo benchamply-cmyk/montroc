@@ -516,6 +516,18 @@ class Signalement(Horodatage, Base):
     __table_args__ = (CheckConstraint("length(trim(explication)) >= 10", name="explication_utile"),)
 
 
+class Favori(Horodatage, Base):
+    """L'étoile « Favoris » d'un membre : un objet mis de côté pour le retrouver. Distinct du « J'aime » du Match
+    (le cœur), qui pèse dans les matchs et le Grand Troc ; un favori n'engage à rien."""
+
+    __tablename__ = "favoris"
+
+    utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), primary_key=True)
+    objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), primary_key=True, index=True)
+
+    objet: Mapped[Objet] = relationship()
+
+
 class SuiviVisiteur(Horodatage, Base):
     """Mode visiteur : une personne sans compte laisse un e-mail ou un téléphone pour suivre ses recherches et ses
     favoris (alertes « nouvel objet » et rappel avant que ses favoris de 24 h s'effacent).

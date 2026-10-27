@@ -1,6 +1,7 @@
 /* Mode visiteur : tout le site sans compte, et des raisons douces d'en créer un.
-   - Favoris (bouton cœur) : gardés 24 h dans le navigateur d'un visiteur, avec une fenêtre qui le dit ; pour un membre,
-     le cœur pose un « J'aime » (GET /match/favoris), gardé tant que l'objet est proposé.
+   - Favoris (l'étoile) : gardés 24 h dans le navigateur d'un visiteur, avec une fenêtre qui le dit ; pour un membre,
+     gardés dans son compte (/moi/favoris) tant que l'objet est proposé. Un favori n'engage à rien.
+   - « J'aime » (le cœur), pour les membres seulement : c'est le Match (/match/avis), une autre fonctionnalité (Ben, 27/10).
    - Historique des dernières recherches, sur l'appareil.
    - Suivi par e-mail ou SMS, sans compte (POST /suivis) : nouveaux objets pour ses recherches et rappel avant que
      ses favoris s'effacent. Rien ne part avant le clic sur le lien de confirmation.
@@ -11,39 +12,47 @@ const Visiteur = (() => {
   const DUREE = 24 * 36e5, FAVORIS_MAX = 50, RECHERCHES_MAX = 10, AVERTIR_TOUS_LES = 24 * 36e5;
   const lire = (cle, defaut) => { try { return JSON.parse(store.get(cle)) ?? defaut; } catch { return defaut; } };
   const ecrire = (cle, valeur) => store.set(cle, valeur == null ? null : JSON.stringify(valeur));
+  const ETOILE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>';
   const COEUR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
   let favorisMembre = new Map(); // objet_id → objet, pour un membre
+  let aimes = new Set(); // objets qu'un membre aime (le cœur du Match)
   let attente = null; // annonce en attente (photo comprise) si le navigateur n'a pas pu tout garder
 
-  // --- Favoris ---------------------------------------------------------------------------------------------------
+  // --- Favoris (l'étoile) et « J'aime » (le cœur) -------------------------------------------------------------------
   function favorisLocaux() {
     const tous = lire('troc.favoris', []), vivants = tous.filter(f => Date.now() - new Date(f.ajoute_le) < DUREE);
     if (vivants.length !== tous.length) ecrire('troc.favoris', vivants);
     return vivants;
   }
   const est = id => moi ? favorisMembre.has(id) : favorisLocaux().some(f => f.objet_id === id);
+  const aime = id => aimes.has(id);
   const nombre = () => moi ? favorisMembre.size : favorisLocaux().length;
   const resteMs = f => DUREE - (Date.now() - new Date(f.ajoute_le));
+  const texteEtoile = oui => oui ? 'Retirer des favoris' : 'Ajouter aux favoris';
+  const texteCoeur = oui => oui ? 'Retirer le J\'aime' : 'J\'aime';
 
-  function coeur(o) {
+  // Sur une carte : l'étoile pour tous, le cœur en plus pour un membre ; rien sur ses propres objets.
+  function boutons(o) {
     if (moi && o.proprietaire_id === moi.id) return '';
-    const oui = est(o.id);
-    return `<button class="coeur${oui ? ' oui' : ''}" type="button" data-coeur="${o.id}" aria-pressed="${oui}" aria-label="${oui ? 'Retirer des favoris' : 'Ajouter aux favoris'}" title="${oui ? 'Retirer des favoris' : 'Ajouter aux favoris'}">${COEUR}</button>`;
+    const etoile = est(o.id), coeur = aime(o.id);
+    return `<div class="pastilles">${moi ? `<button class="pastille jaime${coeur ? ' oui' : ''}" type="button" data-jaime="${o.id}" aria-pressed="${coeur}" aria-label="${texteCoeur(coeur)}" title="${texteCoeur(coeur)}">${COEUR}</button>` : ''}<button class="pastille etoile${etoile ? ' oui' : ''}" type="button" data-etoile="${o.id}" aria-pressed="${etoile}" aria-label="${texteEtoile(etoile)}" title="${texteEtoile(etoile)}">${ETOILE}</button></div>`;
+  }
+  // Sur la fiche d'un objet : les mêmes, en grands boutons.
+  function boutonsFiche(o) {
+    const etoile = est(o.id), coeur = aime(o.id);
+    return `<button class="acc-btn g etoile-fiche${etoile ? ' oui' : ''}" type="button" data-etoile="${o.id}" aria-pressed="${etoile}">${ETOILE}<span>${etoile ? 'Dans vos favoris' : 'Ajouter aux favoris'}</span></button>`
+      + (moi ? `<button class="acc-btn a jaime-fiche${coeur ? ' oui' : ''}" type="button" data-jaime="${o.id}" aria-pressed="${coeur}">${COEUR}<span>${coeur ? 'Vous aimez' : 'J\'aime'}</span></button>` : '');
   }
   const objetsVus = new Map(); // ce que les cartes affichées ont montré, pour garder titre et photo dans les favoris
   function retenir(o) { if (o && o.id) objetsVus.set(o.id, o); }
 
-  async function basculer(id) {
+  async function basculerEtoile(id) {
     const o = objetsVus.get(id) || await api('/objets/' + id).catch(() => null);
     const ajout = !est(id);
     if (moi) {
       try {
-        if (ajout) {
-          const r = await api('/match/avis', {method: 'POST', body: {objet_id: id, aime: true}});
-          favorisMembre.set(id, o);
-          toast(r.match ? `C'est un match avec ${r.match.avec.pseudo} ! Concluez-le dans Match.` : 'Ajouté à vos favoris');
-          document.dispatchEvent(new Event('tt:match'));
-        } else { await api('/match/avis/' + id, {method: 'DELETE'}); favorisMembre.delete(id); toast('Retiré de vos favoris'); }
+        if (ajout) { await api('/moi/favoris', {method: 'POST', body: {objet_id: id}}); favorisMembre.set(id, o); toast('Ajouté à vos favoris'); }
+        else { await api('/moi/favoris/' + id, {method: 'DELETE'}); favorisMembre.delete(id); toast('Retiré de vos favoris'); }
       } catch (err) { toast(err.message); return; }
     } else {
       let liste = favorisLocaux().filter(f => f.objet_id !== id);
@@ -57,23 +66,41 @@ const Visiteur = (() => {
     }
     rafraichir();
   }
+  async function basculerCoeur(id) {
+    if (!moi) return;
+    try {
+      if (!aime(id)) {
+        const r = await api('/match/avis', {method: 'POST', body: {objet_id: id, aime: true}});
+        aimes.add(id);
+        toast(r.match ? `C'est un match avec ${r.match.avec.pseudo} ! Concluez-le dans Match.` : 'Noté ! Si l\'intérêt est réciproque, c\'est un match.');
+      } else { await api('/match/avis/' + id, {method: 'DELETE'}); aimes.delete(id); toast('J\'aime retiré'); }
+      document.dispatchEvent(new Event('tt:match'));
+    } catch (err) { toast(err.message); return; }
+    rafraichir();
+  }
 
-  // Les cœurs affichés suivent l'état, le compteur de l'en-tête aussi.
+  // Les étoiles et les cœurs affichés suivent l'état, le compteur de l'en-tête aussi.
   function rafraichir() {
-    $$('[data-coeur]').forEach(b => {
-      const oui = est(+b.dataset.coeur);
+    $$('[data-etoile]').forEach(b => {
+      const oui = est(+b.dataset.etoile);
       b.classList.toggle('oui', oui); b.setAttribute('aria-pressed', oui);
-      const texte = oui ? 'Retirer des favoris' : 'Ajouter aux favoris';
-      if (b.classList.contains('coeur')) { b.setAttribute('aria-label', texte); b.title = texte; }
+      if (b.classList.contains('pastille')) { b.setAttribute('aria-label', texteEtoile(oui)); b.title = texteEtoile(oui); }
       else b.querySelector('span').textContent = oui ? 'Dans vos favoris' : 'Ajouter aux favoris';
+    });
+    $$('[data-jaime]').forEach(b => {
+      const oui = aime(+b.dataset.jaime);
+      b.classList.toggle('oui', oui); b.setAttribute('aria-pressed', oui);
+      if (b.classList.contains('pastille')) { b.setAttribute('aria-label', texteCoeur(oui)); b.title = texteCoeur(oui); }
+      else b.querySelector('span').textContent = oui ? 'Vous aimez' : 'J\'aime';
     });
     TT.favoris(nombre());
     // La page Favoris suit (compte à rebours compris), sauf pendant une saisie dans le formulaire de suivi.
     if (vueActuelle === 'favoris' && !$('#favoris-contenu')?.contains(document.activeElement)) afficher();
   }
   document.addEventListener('click', e => {
-    const b = e.target.closest('[data-coeur]');
-    if (b) { e.preventDefault(); e.stopPropagation(); basculer(+b.dataset.coeur); }
+    const etoile = e.target.closest('[data-etoile]'), coeur = e.target.closest('[data-jaime]');
+    if (etoile) { e.preventDefault(); e.stopPropagation(); basculerEtoile(+etoile.dataset.etoile); }
+    else if (coeur) { e.preventDefault(); e.stopPropagation(); basculerCoeur(+coeur.dataset.jaime); }
   }, true);
 
   /* La fenêtre des 24 h : au premier favori, puis au plus une fois par jour. Elle dit l'heure où ils s'effacent
@@ -85,7 +112,7 @@ const Visiteur = (() => {
     const d = fenetre('d-favoris', `<span class="sablier" aria-hidden="true">⏳</span>
       <h2>Vos favoris s'effacent dans 24 h</h2>
       <p>Sans compte, ils restent sur cet appareil jusqu'à <b>${esc(fin)}</b>, puis disparaissent.</p>
-      <p class="muted">Avec un compte gratuit, ils sont gardés pour toujours, sur tous vos appareils, et TopTroc cherche l'échange qui vous les apporte.</p>
+      <p class="muted">Avec un compte gratuit, ils sont gardés pour toujours, sur tous vos appareils, et vous pouvez proposer l'échange.</p>
       <div class="btns colonne"><button class="acc-btn y" type="button" data-creer-compte>Créer mon compte gratuit</button>
         <button class="acc-btn g" type="button" data-vers-suivi>Me prévenir par e-mail ou SMS</button>
         <button class="linkbtn" type="button" value="non" data-fermer>Plus tard</button></div>`);
@@ -194,10 +221,10 @@ const Visiteur = (() => {
     const zone = $('#favoris-contenu'); if (!zone) return;
     let cartes, entete;
     if (moi) {
-      try { favorisMembre = new Map((await api('/match/favoris')).map(o => [o.id, o])); TT.favoris(favorisMembre.size); } catch (err) { toast(err.message); }
+      try { favorisMembre = new Map((await api('/moi/favoris')).map(o => [o.id, o])); TT.favoris(favorisMembre.size); } catch (err) { toast(err.message); }
       const liste = [...favorisMembre.values()]; liste.forEach(retenir);
       cartes = liste.map(carteObjet).join('');
-      entete = `<p class="muted">Vos favoris restent tant que l'objet est proposé. Ils comptent comme des « J'aime » : si son propriétaire aime un de vos objets, c'est un match.</p>`;
+      entete = `<p class="muted">Vos favoris restent tant que l'objet est proposé. Pour un match, touchez aussi le cœur « J'aime » : si son propriétaire aime un de vos objets, vous échangez à deux.</p>`;
     } else {
       const liste = favorisLocaux().sort((a, b) => resteMs(a) - resteMs(b));
       cartes = liste.map(carteFavori).join('');
@@ -208,7 +235,7 @@ const Visiteur = (() => {
     }
     const historique = recherches();
     zone.innerHTML = entete
-      + (cartes ? `<div class="results">${cartes}</div>` : `<p class="empty">Aucun favori pour l'instant. Touchez le cœur d'un objet pour le retrouver ici. <a href="/#objets">Voir les objets</a></p>`)
+      + (cartes ? `<div class="results">${cartes}</div>` : `<p class="empty">Aucun favori pour l'instant. Touchez l'étoile d'un objet pour le retrouver ici. <a href="/#objets">Voir les objets</a></p>`)
       + `<section class="favoris-historique"><div class="list-head"><h3>Vos recherches récentes</h3>${historique.length ? '<button class="linkbtn" type="button" data-effacer-historique>Effacer l\'historique</button>' : ''}</div>
         ${historique.length ? `<div class="puces-recherches">${puces(historique)}</div>` : '<p class="muted">Vos recherches apparaîtront ici, sur cet appareil seulement.</p>'}</section>`
       + (moi ? '' : blocSuivi());
@@ -284,16 +311,19 @@ const Visiteur = (() => {
     return true;
   }
 
-  // --- Après la connexion : les favoris du visiteur deviennent des « J'aime » du compte -------------------------------
+  // --- Après la connexion : les favoris du visiteur passent dans son compte ------------------------------------------
   async function apresConnexion() {
     const locaux = favorisLocaux();
     if (locaux.length) {
-      const resultats = await Promise.allSettled(locaux.map(f => api('/match/avis', {method: 'POST', body: {objet_id: f.objet_id, aime: true}})));
+      const resultats = await Promise.allSettled(locaux.map(f => api('/moi/favoris', {method: 'POST', body: {objet_id: f.objet_id}})));
       ecrire('troc.favoris', []);
       const gardes = resultats.filter(r => r.status === 'fulfilled').length;
       if (gardes) toast(gardes === 1 ? 'Votre favori est gardé dans votre compte' : `Vos ${gardes} favoris sont gardés dans votre compte`);
     }
-    try { favorisMembre = new Map((await api('/match/favoris')).map(o => [o.id, o])); } catch { /* le compteur attendra */ }
+    try {
+      const [favoris, jaime] = await Promise.all([api('/moi/favoris'), api('/match/avis')]);
+      favorisMembre = new Map(favoris.map(o => [o.id, o])); aimes = new Set(jaime);
+    } catch { /* étoiles et cœurs se rempliront à la prochaine lecture */ }
     rafraichir();
     return reprendre();
   }
@@ -308,5 +338,5 @@ const Visiteur = (() => {
   setInterval(() => { if (!moi) rafraichir(); }, 60e3); // les favoris de 24 h s'effacent pendant la visite aussi
   afficherHistorique();
 
-  return {coeur, retenir, est, basculer, noter, afficher, afficherHistorique, publierSansCompte, apresConnexion, reprendre, demarrer, rafraichir};
+  return {boutons, boutonsFiche, retenir, est, noter, afficher, afficherHistorique, publierSansCompte, apresConnexion, reprendre, demarrer, rafraichir};
 })();

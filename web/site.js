@@ -5,7 +5,7 @@
   const VERSION='6.200'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
   const LOGO='<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#F2F3F6" d="M3 4h18v5h-6.5v11h-5V9H3z"/><path fill="#E6C23A" d="M29 28H11v-5h6.5V12h5v11H29z"/></svg>'; // deux T tête-bêche : deux membres, un échange
   const GRILLE='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="5" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="19" r="1.6"/><circle cx="12" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/></svg>'; // « Voir tout »
-  const COEUR='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
+  const ETOILE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>'; // Favoris (le cœur est le « J'aime » du Match)
   const PERSO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
 
   const haut=document.querySelector('header.site');
@@ -39,7 +39,7 @@
       <li><a href="/grand-troc/">Le Grand Troc</a></li>
     </ul>
   </nav>
-  <a class="favoris" href="/#favoris" aria-label="Favoris" title="Favoris">${COEUR}<span class="favoris-nb" hidden></span></a>
+  <a class="favoris" href="/#favoris" aria-label="Favoris" title="Favoris">${ETOILE}<span class="favoris-nb" hidden></span></a>
   <div class="compte-zone">
     <a class="compte" id="compte" href="/#se-connecter" aria-controls="pop-cnx">${PERSO}<span>Se connecter / S'inscrire</span></a>
     <form class="pop-cnx" id="pop-cnx" hidden aria-label="Connexion à Mon espace">
@@ -289,7 +289,7 @@
   document.addEventListener('click',e=>{if(!pop.hidden&&e.timeStamp>ouvertLe&&!pop.contains(e.target)&&!c.contains(e.target))ouvrirConnexion(false)});
   pop.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();ouvrirConnexion(false);c.focus()}});
 
-  /* Compteur du cœur « Favoris ». Sur les pages sans le script du mode visiteur (visiteur.js), celui des favoris
+  /* Compteur de l'étoile « Favoris ». Sur les pages sans le script du mode visiteur (visiteur.js), celui des favoris
      de 24 h gardés dans le navigateur ; un membre voit le sien une fois sur l'accueil. */
   const nbFavoris=haut.querySelector('.favoris-nb');
   function favoris(n){nbFavoris.textContent=n>99?'99+':n;nbFavoris.hidden=!n;haut.querySelector('.favoris').setAttribute('aria-label',n?`Favoris (${n})`:'Favoris')}
