@@ -126,13 +126,14 @@ def _oublier(session: Session) -> None:
 # Les textes : un seul endroit pour les relire et les corriger.
 
 
-def lien_magique(email: str, lien: str) -> None:
+def lien_magique(email: str, lien: str, code: str) -> None:
     envoyer(
         email,
-        "Votre lien de connexion à TopTroc",
-        "Bonjour,\n\nPour vous connecter à TopTroc, ouvrez ce lien (valable 20 minutes, une seule fois) :"
-        f"\n\n{lien}\n\n"
-        "Si vous n'avez rien demandé, ignorez simplement cet e-mail : personne ne peut se connecter sans ce lien.",
+        "Votre code de connexion à TopTroc",
+        f"Bonjour,\n\nVotre code TopTroc : {code}\n\n"
+        "Tapez-le dans la fenêtre ouverte sur le site (valable 20 minutes, une seule fois). "
+        f"Vous pouvez aussi ouvrir ce lien, depuis n'importe quel appareil :\n\n{lien}\n\n"
+        "Si vous n'avez rien demandé, ignorez simplement cet e-mail : personne ne peut se connecter sans ce code.",
     )
 
 

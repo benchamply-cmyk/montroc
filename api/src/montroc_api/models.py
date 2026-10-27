@@ -459,7 +459,8 @@ class Avis(Horodatage, Base):
 
 
 class JetonConnexion(Base):
-    """Lien magique envoyé par e-mail : à usage unique, valable 20 minutes. Seule l'empreinte est stockée."""
+    """Lien magique envoyé par e-mail, avec son code à 6 chiffres : à usage unique, valable 20 minutes.
+    Seules les empreintes sont stockées."""
 
     __tablename__ = "jetons_connexion"
 
@@ -469,6 +470,9 @@ class JetonConnexion(Base):
     cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     expire_le: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     utilise_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Le code à taper dans la fenêtre de connexion, sans quitter la page. 5 essais faux, et il ne sert plus.
+    code_empreinte: Mapped[str | None] = mapped_column(String(64))
+    essais_code: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
 
 class SessionUtilisateur(Base):

@@ -276,7 +276,7 @@ def test_grand_troc_du_dimanche(client, creer, monkeypatch):
     assert {x["grand_troc_jour"] for x in r["echanges"]} == {"2026-10-18"}
     assert all(t["code_retrait"] is None for x in r["echanges"] for t in x["transferts"])
     assert client.get("/objets").json() == []
-    assert sujets(e.email) == ["Votre lien de connexion à TopTroc", "Grand Troc : une boucle vous attend"]
+    assert sujets(e.email) == ["Votre code de connexion à TopTroc", "Grand Troc : une boucle vous attend"]
     assert "Le Grand Troc du dimanche a trouvé" in courriels.ENVOYES[-1].texte
 
     # Une seule fois par dimanche, même si la tâche est relancée.
