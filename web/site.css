@@ -259,3 +259,21 @@ html{scroll-padding-top:calc(var(--haut) + var(--haut-categories) + 12px)}
 .categories-defile a:hover,.categories-defile a:focus-visible{color:var(--ink);text-decoration:underline;text-decoration-color:var(--mark);text-underline-offset:6px}
 @media(min-width:1200px){.site-in>.recherche-entete{max-width:420px;width:100%;justify-self:start}}
 @media(max-width:1199px){.categories-defile{gap:20px}.categories-defile a{font-size:13px}}
+
+
+/* Détails de chaque catégorie : survol à la souris, clic et clavier. */
+.categories-barre{position:relative}
+.categories-defile button{flex:none;border:0;background:none;color:var(--muted);font:600 14px var(--body);white-space:nowrap;padding:12px 0}
+.categories-defile button:hover,.categories-defile button[aria-expanded="true"]{color:var(--ink);text-decoration:underline;text-decoration-color:var(--mark);text-underline-offset:6px}
+.categories-panneau{position:absolute;left:50%;top:100%;transform:translateX(-50%);width:min(1100px,calc(100vw - 32px));max-height:calc(100dvh - var(--haut) - var(--haut-categories) - 16px);overflow:auto;padding:20px 24px;background:var(--surface);border:1px solid var(--line);border-radius:0 0 var(--r) var(--r);box-shadow:0 18px 40px #0009;color:var(--ink)}
+.categorie-panneau-tete{display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.categorie-panneau-tete strong{font-family:var(--display);font-size:16px}
+.categorie-panneau-tete a{color:var(--mark);white-space:nowrap}
+.categorie-colonnes{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.categorie-colonnes h3{font:700 14px var(--body);margin:18px 0 10px}
+.categorie-colonnes ul{list-style:none;padding:0;margin:0;display:grid;gap:7px;color:var(--ink);font-size:14px}
+.categorie-colonnes dl{margin:0;font-size:14px}
+.categorie-colonnes dt{font-weight:600;margin-top:10px}
+.categorie-colonnes dd{margin:2px 0 0;color:var(--muted);line-height:1.45}
+.categorie-portee{display:block;font-size:12px;margin-top:3px}
+@media(max-width:700px){.categorie-colonnes{grid-template-columns:1fr;gap:2px}.categories-panneau{padding:16px}.categories-defile button{font-size:13px}.categorie-panneau-tete strong{font-size:14px}}
