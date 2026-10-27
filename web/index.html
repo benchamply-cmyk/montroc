@@ -549,6 +549,17 @@ details.plus summary::-webkit-details-marker{display:none}
 
   </section>
 
+  <!-- Recherche globale dans les objets et les pages publiques. -->
+  <section class="view" id="v-global" hidden>
+    <div class="hero"><span class="label">Rechercher</span><h2>Que cherchez-vous ?</h2></div>
+    <form class="search" id="f-global" role="search">
+      <input type="search" name="q" maxlength="100" placeholder="Rechercher sur TopTroc" aria-label="Rechercher sur TopTroc"><button type="submit">Chercher</button>
+    </form>
+    <p class="muted" id="global-status" aria-live="polite">Recherchez parmi les objets et les pages du site.</p>
+    <div id="global-pages"></div>
+    <div id="global-objets" class="results"></div>
+  </section>
+
   <!-- RECHERCHE (sans compte) -->
   <section class="view" id="v-search" hidden>
     <div class="hero"><span class="label">Recherche</span><h2 id="search-title">Ce qui est proposé</h2></div>
@@ -852,6 +863,8 @@ function suivre(h){
   if(h==='#mon-espace'){h='#monespace';history.replaceState(history.state,'',h)} // ancienne adresse
   if(h.startsWith('#objet-'))return ouvrirObjet(+h.slice(7));
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} return chercher(q)}
+  if(h==='#recherche-site')return ouvrirRechercheSite();
+  if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
   if(h==='#objets')return chercher('');
   if(h.startsWith('#echange-')){go('trades',{adresse:h});document.getElementById(h.slice(1))?.scrollIntoView();return}
   const v=Object.keys(ADRESSES).find(k=>ADRESSES[k]===h);
@@ -862,12 +875,12 @@ addEventListener('popstate',()=>{TT.fermer();TT.ouvrirConnexion(false);suivre(lo
 
 const ESPACE=['lists','trades','drop','mod'];
 function go(v,{adresse,remplacer=false}={}){
-  if(!moi&&!['home','signup','search','objet'].includes(v)){v='home';remplacer=true}
+  if(!moi&&!['home','signup','search','objet','global'].includes(v)){v='home';remplacer=true}
   if(adresse===undefined)adresse=ADRESSES[v];
   if(adresse!==undefined)marquer(adresse,remplacer);
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
   vueActuelle=v;
-  document.body.classList.toggle('large',['home','search','objet'].includes(v));
+  document.body.classList.toggle('large',['home','search','objet','global'].includes(v));
   const onglet=ESPACE.includes(v)?'lists':v;
   $$('nav.tabs button').forEach(b=>{b.dataset.tab===onglet?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   marquerOnglets();
@@ -887,6 +900,8 @@ $('#tabs').addEventListener('click',e=>{
 /* Menu du haut : sur l'accueil, les liens « /#… » changent de vue sans recharger la page. */
 const calmeDefil=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
 async function naviguer(h){
+  if(h==='#recherche-site')return ouvrirRechercheSite();
+  if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
   if(h==='#objets')return chercher('');
   if(h==='#monespace'){
     // Session gardée sur cet appareil mais pas encore relue (serveur qui se réveille) : on l'attend.
@@ -1552,6 +1567,47 @@ $('#f-search-home').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value,e.
 $('#f-search').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value)};
 $('#search-signup').onclick=versCompte;
 
+/* Recherche globale : pages publiques et objets disponibles. */
+const pagesRecherche=['concept','comment-ca-marche','grand-troc','particuliers','pros','collectivites','faq','mentions-legales','cgu','confidentialite','regles'];
+let rechercheSequence=0;
+function ouvrirRechercheSite(){
+  rechercheSequence++;
+  go('global',{adresse:'#recherche-site'});
+  $('#f-global').q.value='';
+  $('#global-pages').innerHTML=''; $('#global-objets').innerHTML='';
+  $('#global-status').textContent='Recherchez parmi les objets et les pages du site.';
+  $('#f-global').q.focus();
+}
+const normaliserRecherche=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase();
+async function rechercherSite(terme){
+  const q=terme.trim(); if(!q)return ouvrirRechercheSite();
+  const seq=++rechercheSequence;
+  go('global',{adresse:'#site='+encodeURIComponent(q)});
+  $('#f-global').q.value=q; $('#global-pages').innerHTML=''; $('#global-objets').innerHTML='';
+  $('#global-status').textContent='Recherche…';
+  const mots=normaliserRecherche(q).split(/\s+/).filter(Boolean);
+  const [pages,objets]=await Promise.all([
+    Promise.allSettled(pagesRecherche.map(async slug=>{
+      const url=TT_I18N.localPath('/'+slug+'/');
+      const r=await fetch(url);if(!r.ok)throw Error('page');
+      const doc=new DOMParser().parseFromString(await r.text(),'text/html');
+      const main=doc.querySelector('main');if(!main)return null;
+      const titre=main.querySelector('h1')?.textContent.trim()||slug;
+      const contenu=main.textContent.replace(/\s+/g,' ').trim();
+      if(!mots.every(m=>normaliserRecherche(titre+' '+contenu).includes(m)))return null;
+      return {url,titre};
+    })),
+    api('/objets?'+new URLSearchParams({q})).then(value=>({value})).catch(()=>({erreur:true}))
+  ]);
+  if(seq!==rechercheSequence||vueActuelle!=='global')return;
+  const matches=pages.filter(x=>x.status==='fulfilled'&&x.value).map(x=>x.value);
+  const pagesErreur=pages.some(x=>x.status==='rejected');
+  $('#global-pages').innerHTML='<h3>Pages du site</h3>'+(matches.length?'<ul>'+matches.map(p=>'<li><a href="'+esc(p.url)+'">'+esc(p.titre)+'</a></li>').join('')+'</ul>':'<p class="muted">Aucune page trouvée.</p>');
+  $('#global-objets').innerHTML='<h3>Objets</h3>'+(objets.erreur?'<p class="muted">Objets temporairement indisponibles.</p>':objets.value.length?objets.value.map(carteObjet).join(''):'<p class="muted">Aucun objet trouvé.</p>');
+  $('#global-status').textContent=pagesErreur?'Certaines pages sont temporairement indisponibles.':'';
+}
+$('#f-global').onsubmit=e=>{e.preventDefault();rechercherSite(e.target.q.value)};
+
 /* Démarrage */
 async function toutCharger(){
   try{await Promise.all([chargerListes(),chargerEchanges()])}catch(err){toast(err.message)}
@@ -1571,6 +1627,7 @@ async function demarrer(){
   await session;
   if(h.startsWith('#objet-')){if(moi)toutCharger(); ouvrirObjet(+h.slice(7)); return}
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
+  if(h==='#recherche-site'||h.startsWith('#site=')){if(moi)toutCharger();suivre(h);return}
   if(['#objets','#se-connecter'].includes(h)||(h==='#monespace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
   if(!moi)return;
   await gt; await toutCharger();
