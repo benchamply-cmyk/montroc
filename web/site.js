@@ -74,7 +74,7 @@
     <li><a href="/confidentialite/">Confidentialité</a></li>
     <li><a href="/regles/">Règles et signalements</a></li>
   </ul></nav>
-  <p class="pilote" style="margin:0">Pilote : <b>Département (13) Bouches-du-Rhône</b> · <a class="version" href="https://github.com/benchamply-cmyk/montroc/blob/prod/CHANGELOG.md">V${VERSION}</a></p>
+  <p class="pied-version" style="margin:0"><a class="version" href="https://github.com/benchamply-cmyk/montroc/blob/prod/CHANGELOG.md">V${VERSION}</a></p>
 </div>`;
   // En pré-production, la version (V5.2000, V5.3000…) est la dernière étiquette preprod-V… posée par le workflow Versions.
   const lienVersion=document.querySelector('a.version');

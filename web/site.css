@@ -101,9 +101,8 @@ footer.site .in{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1
 footer.site nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 20px}
 footer.site a{color:var(--ink);text-decoration:none}
 footer.site a:hover{text-decoration:underline;text-decoration-color:var(--mark);text-underline-offset:3px}
-footer.site .pilote{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
-footer.site .pilote b{color:var(--mark);font-weight:500}
-footer.site .pilote .version{color:inherit;text-transform:none;text-decoration:none;opacity:.7}
+footer.site .pied-version{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+footer.site .pied-version .version{color:inherit;text-transform:none;text-decoration:none;opacity:.7}
 
 /* Pages d'information (pros, collectivités, FAQ, pages légales) */
 .page main{max-width:720px;margin:0 auto;padding:40px 16px 0}
