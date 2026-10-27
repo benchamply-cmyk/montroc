@@ -9,6 +9,12 @@
   const haut=document.querySelector('header.site');
   if(haut)haut.innerHTML=`<div class="site-in">
   <a class="logo" href="/" aria-label="TopTroc, retour à l'accueil">${LOGO}<span>Top<span class="logo-2">Troc</span></span></a>
+  <form class="recherche-entete" id="recherche-entete" role="search">
+    <label class="sr-only" for="recherche-entete-champ">Rechercher sur TopTroc</label>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
+    <input id="recherche-entete-champ" type="search" name="q" maxlength="100" placeholder="Rechercher sur TopTroc">
+    <button type="submit">Rechercher</button>
+  </form>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
       <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-catalogue">Le catalogue<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -84,6 +90,16 @@
 
   const $=s=>haut.querySelector(s);
   const menu=$('#menu'), burger=$('.burger'), sous=[...haut.querySelectorAll('.sous')];
+  $('#recherche-entete').addEventListener('submit',e=>{
+    e.preventDefault();
+    const q=$('#recherche-entete-champ').value.trim();
+    const destination=TT_I18N.localPath('/')+(q?'#site='+encodeURIComponent(q):'#recherche-site');
+    fermer();
+    if(location.pathname===TT_I18N.localPath('/')){
+      history.pushState({tt:1},'',destination);
+      dispatchEvent(new PopStateEvent('popstate'));
+    }else location.href=destination;
+  });
   const mobile=matchMedia('(max-width:1199px)');
   function ouvrirSous(item,oui){
     item.querySelector('button').setAttribute('aria-expanded',oui);
