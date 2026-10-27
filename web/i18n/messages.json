@@ -4614,5 +4614,41 @@
   "Divers": {
     "en": "Other",
     "es": "Varios"
+  },
+  "Effacer les filtres": {
+    "en": "Clear filters",
+    "es": "Borrar filtros"
+  },
+  "Fil d'Ariane": {
+    "en": "Breadcrumb",
+    "es": "Ruta de navegación"
+  },
+  "Toutes": {
+    "en": "All",
+    "es": "Todas"
+  },
+  "Classer par": {
+    "en": "Sort by",
+    "es": "Ordenar por"
+  },
+  "Plus récents": {
+    "en": "Newest first",
+    "es": "Más recientes"
+  },
+  "Plus anciens": {
+    "en": "Oldest first",
+    "es": "Más antiguos"
+  },
+  "Aucun objet ne correspond à ces filtres pour l'instant.": {
+    "en": "No items match these filters yet.",
+    "es": "Ningún artículo coincide con estos filtros por ahora."
+  },
+  "Aucun objet proposé dans cette catégorie pour l'instant.": {
+    "en": "No items offered in this category yet.",
+    "es": "Todavía no hay artículos en esta categoría."
+  },
+  "Retirer le filtre": {
+    "en": "Remove filter",
+    "es": "Quitar el filtro"
   }
 }

@@ -1,1 +1,1 @@
-- Menu du haut réorganisé : barre de recherche sur tout le site, rubriques Le catalogue et Les offres, bande des catégories avec « Voir tout » et les sous-catégories au survol (#76).
+- Menu du haut réorganisé : barre de recherche sur tout le site, rubriques Le catalogue et Les offres, bande des catégories avec sous-catégories, et page de chaque catégorie avec filtres (sous-catégorie, caractéristiques, état, tri) (#76).

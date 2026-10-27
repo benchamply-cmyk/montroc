@@ -436,6 +436,34 @@ details.plus summary::-webkit-details-marker{display:none}
 @media (prefers-reduced-motion:reduce){.pile-match .carte{transition:none}}
 .ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .puces .ico{width:16px;height:16px}
+/* Page d'une catégorie */
+.fil{font-size:14px;color:var(--muted)}
+.fil a{color:var(--muted)}
+.fil span span,.fil>span>span{color:var(--ink)}
+#v-categorie h2{margin:6px 0 18px}
+.filtres{display:flex;flex-wrap:wrap;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.filtre{position:relative}
+.filtre summary{list-style:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border:1px solid var(--line);border-radius:999px;background:var(--surface);cursor:pointer;font-weight:600;font-size:15px;white-space:nowrap}
+.filtre summary::-webkit-details-marker{display:none}
+.filtre summary svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .2s}
+.filtre[open] summary{border-color:var(--mark)}
+.filtre[open] summary svg{transform:rotate(180deg)}
+.filtre-choix{position:absolute;z-index:5;top:calc(100% + 6px);left:0;min-width:220px;max-height:320px;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.filtre-choix label{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:15px}
+.filtre-choix label:hover{background:var(--bg)}
+.filtre-choix input{accent-color:var(--mark);width:18px;height:18px;margin:0}
+.filtres-actifs{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+#cat-puces{display:flex;flex-wrap:wrap;gap:8px}
+.puce{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg-2);font-size:14px}
+.puce span{font-size:18px;line-height:1;color:var(--muted)}
+.puce:hover span{color:var(--mark)}
+.filtres-actifs .lien{border:0;background:none;color:var(--mark);font-weight:600;padding:6px 0}
+.cat-sous{list-style:none;margin:0;padding:14px 0;columns:2 240px;column-gap:32px;border-bottom:1px solid var(--line)}
+.cat-sous:empty{display:none}
+.cat-sous a{display:block;padding:7px 0;color:var(--ink);text-decoration:none}
+.cat-sous a:hover{color:var(--mark)}
+#cat-count{margin:16px 0}
+@media(max-width:600px){.filtres{position:relative}.filtre{position:static}.filtre-choix{top:100%;left:0;right:0;min-width:0}}
 </style>
 <link rel="canonical" href="https://toptroc.com/">
 <link rel="alternate" hreflang="fr" href="https://toptroc.com/">
@@ -558,6 +586,17 @@ details.plus summary::-webkit-details-marker{display:none}
     <p class="muted" id="global-status" aria-live="polite">Recherchez parmi les objets et les pages du site.</p>
     <div id="global-pages"></div>
     <div id="global-objets" class="results"></div>
+  </section>
+
+  <!-- PAGE D'UNE CATÉGORIE (« Voir tout » de la bande des catégories) : sous-catégories et filtres, comme Vinted. -->
+  <section class="view" id="v-categorie" hidden>
+    <nav class="fil" aria-label="Fil d'Ariane"><a href="/#objets">Objets</a><span id="cat-fil"></span></nav>
+    <h2 id="cat-titre"></h2>
+    <div class="filtres" id="cat-filtres"></div>
+    <div class="filtres-actifs" id="cat-actifs" hidden><span id="cat-puces"></span><button type="button" class="lien" id="cat-effacer">Effacer les filtres</button></div>
+    <ul class="cat-sous" id="cat-sous"></ul>
+    <p class="muted" id="cat-count" aria-live="polite"></p>
+    <div class="results" id="cat-results"></div>
   </section>
 
   <!-- RECHERCHE (sans compte) -->
@@ -865,7 +904,7 @@ function suivre(h){
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} return chercher(q)}
   if(h==='#recherche-site')return ouvrirRechercheSite();
   if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
-  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return chercher('',c,sous)}
+  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return pageCategorie(c,sous)}
   if(h==='#objets')return chercher('');
   if(h.startsWith('#echange-')){go('trades',{adresse:h});document.getElementById(h.slice(1))?.scrollIntoView();return}
   const v=Object.keys(ADRESSES).find(k=>ADRESSES[k]===h);
@@ -876,12 +915,12 @@ addEventListener('popstate',()=>{TT.fermer();TT.ouvrirConnexion(false);suivre(lo
 
 const ESPACE=['lists','trades','drop','mod'];
 function go(v,{adresse,remplacer=false}={}){
-  if(!moi&&!['home','signup','search','objet','global'].includes(v)){v='home';remplacer=true}
+  if(!moi&&!['home','signup','search','objet','global','categorie'].includes(v)){v='home';remplacer=true}
   if(adresse===undefined)adresse=ADRESSES[v];
   if(adresse!==undefined)marquer(adresse,remplacer);
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
   vueActuelle=v;
-  document.body.classList.toggle('large',['home','search','objet','global'].includes(v));
+  document.body.classList.toggle('large',['home','search','objet','global','categorie'].includes(v));
   const onglet=ESPACE.includes(v)?'lists':v;
   $$('nav.tabs button').forEach(b=>{b.dataset.tab===onglet?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   marquerOnglets();
@@ -903,7 +942,7 @@ const calmeDefil=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'
 async function naviguer(h){
   if(h==='#recherche-site')return ouvrirRechercheSite();
   if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
-  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return chercher('',c,sous)}
+  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return pageCategorie(c,sous)}
   if(h==='#objets')return chercher('');
   if(h==='#monespace'){
     // Session gardée sur cet appareil mais pas encore relue (serveur qui se réveille) : on l'attend.
@@ -1183,7 +1222,7 @@ const Detail=(()=>{
     return {caracteristiques:o,preferences:p};
   }
   const modes=f=>[...f.querySelectorAll('input[name=mode]:checked')].map(x=>x.value);
-  return {charger,nom,sousNom,caracs,remplir,remplirCaracs,remplirAlternatives,alternatives,valeurs,criteres,modes};
+  return {charger,nom,caracs,remplir,remplirCaracs,remplirAlternatives,alternatives,valeurs,criteres,modes};
 })();
 $('#cat-obj').addEventListener('change',()=>Detail.remplir($('#f-obj'),false));
 $('#cat-wish').addEventListener('change',()=>Detail.remplir($('#f-wish'),true));
@@ -1550,23 +1589,86 @@ async function chargerGrandTroc(){try{grandTroc=await api('/grand-troc');affiche
 setInterval(afficherGrandTroc,30e3);
 
 /* Recherche libre : aucun compte nécessaire, l'API ne renvoie que les objets en ligne. */
-async function chercher(q,cat='',sous=''){ // sous : sous-catégorie choisie dans la bande des catégories
+async function chercher(q,cat=''){
   q=q.trim(); // vide : tout ce qui est proposé en ce moment (« Voir les objets » du menu)
-  const ancre=q?'#recherche='+encodeURIComponent(q):cat?'#categorie='+encodeURIComponent(cat+(sous?'/'+sous:'')):'#objets';
+  const ancre=q?'#recherche='+encodeURIComponent(q):cat?'#categorie='+encodeURIComponent(cat):'#objets';
   $('#f-search').q.value=q; $('#search-title').textContent=q?`« ${q} »`:cat?(categories[cat]||'Ce qui est proposé'):'Ce qui est proposé';
-  if(sous)Detail.charger().then(()=>{const n=Detail.sousNom(cat,sous);if(n&&vueActuelle==='search')$('#search-title').textContent=(categories[cat]||cat)+' › '+n}).catch(()=>{});
   $('#search-count').textContent='Recherche…'; $('#results').innerHTML='';
   go('search',{adresse:ancre});
   try{
     const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat);
-    let objets=await api('/objets'+(p.size?'?'+p:''));
-    if(sous)objets=objets.filter(o=>o.sous_categorie_slug===sous);
+    const objets=await api('/objets'+(p.size?'?'+p:''));
     $('#search-count').textContent=objets.length?TT_I18N.available(objets.length):'';
     $('#results').innerHTML=objets.length?objets.map(carteObjet).join('')
       :!q?`<p class="empty">Aucun objet proposé pour l'instant. Soyez le premier : créez un compte et ajoutez ce qui dort chez vous.</p>`
       :`<p class="empty">Rien pour « ${esc(q)} » pour l'instant. Essayez un mot plus large (« vélo » plutôt qu'un modèle), ou créez un compte : votre souhait sera servi dès qu'un objet arrive.</p>`;
   }catch(err){$('#search-count').textContent='';toast(err.message)}
 }
+/* Page d'une catégorie : objets de la catégorie, affinés sur le site par sous-catégorie, caractéristiques à choix
+   (celles du document des catégories ; les champs libres comme la marque ne filtrent pas), état et tri. */
+const Cat={slug:'',sous:'',caracs:{},etats:[],tri:'recent',objets:[],detail:null};
+const ETATS_FILTRE=['neuf','comme_neuf','tres_bon','bon','correct'];
+async function pageCategorie(slug,sous=''){
+  const nouvelle=slug!==Cat.slug;
+  Object.assign(Cat,{slug,sous},nouvelle?{caracs:{},etats:[],tri:'recent',objets:[]}:{});
+  if(!nouvelle)Cat.caracs={}; // une autre sous-catégorie n'a pas les mêmes caractéristiques
+  go('categorie',{adresse:'#categorie='+encodeURIComponent(slug+(sous?'/'+sous:''))});
+  $('#cat-titre').textContent=categories[slug]||slug; $('#cat-count').textContent='Recherche…';
+  $('#cat-results').innerHTML=''; $('#cat-filtres').innerHTML=''; $('#cat-sous').innerHTML='';
+  try{
+    const [cats,objets]=await Promise.all([api('/categories'),nouvelle||!Cat.objets.length?api('/objets?'+new URLSearchParams({categorie:slug})):Cat.objets]);
+    if(Cat.slug!==slug||vueActuelle!=='categorie')return;
+    Cat.detail=cats.find(c=>c.slug===slug)||{slug,libelle:slug,sous_categories:[],caracteristiques:[]}; Cat.objets=objets;
+    afficherCategorie();
+  }catch(err){$('#cat-count').textContent='';toast(err.message)}
+}
+function afficherCategorie(){
+  const d=Cat.detail, t=x=>TT_I18N.t(String(x)), sous=(d.sous_categories||[]).find(x=>x.slug===Cat.sous);
+  const lien=s=>'#categorie='+encodeURIComponent(d.slug+(s?'/'+s:''));
+  $('#cat-titre').textContent=t(sous?sous.libelle:d.libelle);
+  $('#cat-fil').innerHTML=' › '+(sous?`<a href="${lien('')}">${esc(t(d.libelle))}</a> › <span>${esc(t(sous.libelle))}</span>`:`<span>${esc(t(d.libelle))}</span>`);
+  // Sous-catégories à parcourir, tant qu'aucune n'est choisie
+  $('#cat-sous').innerHTML=sous?'':(d.sous_categories||[]).map(x=>`<li><a href="${lien(x.slug)}">${esc(t(x.libelle))}</a></li>`).join('');
+  const caracs=(d.caracteristiques||[]).filter(c=>c.options&&c.options.length&&(!c.pour||(Cat.sous&&c.pour.includes(Cat.sous))));
+  const menu=(cle,titre,choix,type='checkbox')=>`<details class="filtre" data-filtre="${cle}"><summary>${esc(titre)}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><div class="filtre-choix">${
+    choix.map(([v,l,coche])=>`<label><input type="${type}" name="${cle}" value="${esc(v)}"${coche?' checked':''}><span>${esc(l)}</span></label>`).join('')}</div></details>`;
+  $('#cat-filtres').innerHTML=
+    menu('sous','Catégorie',[['','Toutes',!Cat.sous],...(d.sous_categories||[]).map(x=>[x.slug,t(x.libelle),x.slug===Cat.sous])],'radio')
+    +caracs.map(c=>menu('c:'+c.cle,t(c.libelle),c.options.map(o=>[o,t(o),(Cat.caracs[c.cle]||[]).includes(o)]))).join('')
+    +menu('etat','État',ETATS_FILTRE.map(e=>[e,ETATS[e],Cat.etats.includes(e)]))
+    +menu('tri','Classer par',[['recent','Plus récents',Cat.tri==='recent'],['ancien','Plus anciens',Cat.tri==='ancien']],'radio');
+  // Filtres actifs, chacun avec sa croix
+  const puces=[];
+  for(const [cle,vals] of Object.entries(Cat.caracs))vals.forEach(v=>puces.push([`c:${cle}`,v,t(v)]));
+  Cat.etats.forEach(e=>puces.push(['etat',e,ETATS[e]]));
+  $('#cat-puces').innerHTML=puces.map(([f,v,l])=>`<button type="button" class="puce" data-f="${esc(f)}" data-v="${esc(v)}" aria-label="Retirer le filtre ${esc(l)}">${esc(l)}<span aria-hidden="true">×</span></button>`).join('');
+  $('#cat-actifs').hidden=!puces.length;
+  let liste=Cat.objets.filter(o=>(!Cat.sous||o.sous_categorie_slug===Cat.sous)&&(!Cat.etats.length||Cat.etats.includes(o.etat))
+    &&Object.entries(Cat.caracs).every(([cle,vals])=>!vals.length||vals.includes((o.caracteristiques||{})[cle])));
+  liste=[...liste].sort((a,b)=>(Cat.tri==='ancien'?1:-1)*(new Date(a.cree_le)-new Date(b.cree_le)));
+  $('#cat-count').textContent=liste.length?TT_I18N.available(liste.length):'';
+  $('#cat-results').innerHTML=liste.length?liste.map(carteObjet).join('')
+    :`<p class="empty">${Cat.objets.length?'Aucun objet ne correspond à ces filtres pour l\'instant.':'Aucun objet proposé dans cette catégorie pour l\'instant.'}</p>`;
+}
+$('#cat-filtres').addEventListener('change',e=>{
+  const i=e.target, f=i.name;
+  if(f==='sous'){pageCategorie(Cat.slug,i.value);return}
+  if(f==='tri')Cat.tri=i.value;
+  else{const vals=[...$('#cat-filtres').querySelectorAll(`input[name="${CSS.escape(f)}"]:checked`)].map(x=>x.value);
+    if(f==='etat')Cat.etats=vals;else Cat.caracs[f.slice(2)]=vals}
+  const ouvert=i.closest('details').dataset.filtre; afficherCategorie();
+  $('#cat-filtres').querySelector(`details[data-filtre="${CSS.escape(ouvert)}"]`).open=true; // le menu reste ouvert pour cocher plusieurs choix
+});
+$('#cat-filtres').addEventListener('toggle',e=>{if(e.target.open)$$('#cat-filtres details').forEach(x=>{if(x!==e.target)x.open=false})},true);
+document.addEventListener('click',e=>{if(!e.target.closest('#cat-filtres'))$$('#cat-filtres details[open]').forEach(x=>x.open=false)});
+$('#cat-puces').addEventListener('click',e=>{
+  const b=e.target.closest('.puce'); if(!b)return;
+  if(b.dataset.f==='etat')Cat.etats=Cat.etats.filter(x=>x!==b.dataset.v);
+  else{const cle=b.dataset.f.slice(2);Cat.caracs[cle]=(Cat.caracs[cle]||[]).filter(x=>x!==b.dataset.v)}
+  afficherCategorie();
+});
+$('#cat-effacer').onclick=()=>{Cat.caracs={};Cat.etats=[];afficherCategorie()};
+
 $('#f-search-home').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value,e.target.cat.value)};
 $('#f-search').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value)};
 $('#search-signup').onclick=versCompte;
