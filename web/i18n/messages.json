@@ -4578,5 +4578,9 @@
   "Voir tout": {
     "en": "See all",
     "es": "Ver todo"
+  },
+  "Se connecter / S'inscrire": {
+    "en": "Log in / Sign up",
+    "es": "Iniciar sesión / Registrarse"
   }
 }

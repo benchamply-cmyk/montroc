@@ -16,12 +16,7 @@
     <input id="recherche-entete-champ" type="search" name="q" maxlength="100" placeholder="Rechercher sur TopTroc">
     <button type="submit">Rechercher</button>
   </form>
-  <nav class="menu menu-actions" aria-label="Langue">
-    <ul>
-      ${TT_I18N.menu()}
-      <li><button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 7h16"/><path class="b2" d="M4 12h16"/><path class="b3" d="M4 17h16"/></svg></button></li>
-    </ul>
-  </nav>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 7h16"/><path class="b2" d="M4 12h16"/><path class="b3" d="M4 17h16"/></svg></button>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
       <li><a href="/concept/">Le concept</a></li>
@@ -41,11 +36,10 @@
         </ul>
       </li>
       <li><a href="/grand-troc/">Le Grand Troc</a></li>
-      <li><a href="/faq/">FAQ</a></li>
     </ul>
   </nav>
   <div class="compte-zone">
-    <a class="compte" id="compte" href="/#se-connecter" aria-controls="pop-cnx">${PERSO}<span>Mon espace</span></a>
+    <a class="compte" id="compte" href="/#se-connecter" aria-controls="pop-cnx">${PERSO}<span>Se connecter / S'inscrire</span></a>
     <form class="pop-cnx" id="pop-cnx" hidden aria-label="Connexion à Mon espace">
       <b class="pop-titre">Connexion à Mon espace</b>
       <p class="pop-aide" hidden>Indiquez votre e-mail : un lien valable 20 minutes y arrive et ouvre votre compte.</p>
@@ -59,6 +53,12 @@
       <button class="pop-lien" type="button" data-retour hidden>Déjà un compte ? Se connecter avec un mot de passe</button>
     </form>
   </div>
+  <nav class="menu menu-actions" aria-label="Langue et aide">
+    <ul>
+      ${TT_I18N.menu()}
+      <li><a class="aide" href="/faq/" aria-label="FAQ" title="FAQ">?</a></li>
+    </ul>
+  </nav>
 </div>
   <nav class="categories-barre" aria-label="Catégories d'objets"><div class="categories-defile" id="categories-entete"></div><div class="categories-panneau" id="categories-panneau" hidden></div></nav>`;
 
@@ -136,7 +136,7 @@
   /* « Mon espace » : connecté, le bouton mène à l'espace. Sinon, il ouvre juste en dessous la connexion par
      mot de passe (sans e-mail à attendre), avec le lien magique en secours. C'est la seule entrée du site :
      « Créer un compte » passe la même fenêtre en mode e-mail seul (le lien reçu ouvre l'inscription). Le bouton s'appelle « Mon espace »
-     dès qu'un compte a déjà servi sur cet appareil, « Se connecter » sinon. */
+     une fois connecté, « Se connecter / S'inscrire » sinon. */
   // Pré-production (déploiement de la branche preprod sur Netlify) : son API à elle, sur une copie de la base.
   const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001'
     :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.toptroc.com';
@@ -182,7 +182,7 @@
   let connecte=!!memo.get('troc.jeton'), ouvertLe=-1;
   function compte(oui){
     connecte=oui;
-    c.querySelector('span').textContent='Mon espace';
+    c.querySelector('span').textContent=oui?'Mon espace':"Se connecter / S'inscrire";
     haut.querySelectorAll('[data-membre]').forEach(el=>el.hidden=!oui);
     haut.querySelectorAll('[data-visiteur]').forEach(el=>el.hidden=oui);
     c.setAttribute('href',TT_I18N.localPath(oui?'/#monespace':'/#se-connecter'));

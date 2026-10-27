@@ -273,3 +273,26 @@ html{scroll-padding-top:calc(var(--haut) + var(--haut-categories) + 12px)}
 .categorie-tout a{font-weight:600}
 .categorie-tout svg{width:18px;height:18px;fill:currentColor;flex:none}
 @media(max-width:700px){.categorie-liste{columns:2 140px;column-gap:20px}.categorie-liste a{font-size:14px}.categories-panneau{padding:12px 16px}.categories-defile button{font-size:13px}}
+
+
+/* Ordre de l'en-tête (Ben, 27/10) : logo, recherche, ☰, Se connecter / S'inscrire, langue, « ? » (FAQ).
+   Une seule ligne qui se resserre ; sous 700 px, la recherche passe sur une deuxième ligne pleine largeur. */
+:root{--haut:64px}
+.site-in{display:flex;align-items:center;gap:10px;height:var(--haut);z-index:2} /* au-dessus de la bande des catégories : le menu ☰ s'ouvre par-dessus */
+.site-in>.logo{margin-right:6px}
+.site-in>.recherche-entete{flex:1 1 auto;min-width:140px;max-width:560px;width:auto;margin-right:auto;align-self:center}
+.site-in>.menu-actions{flex:none;align-self:center}
+.site-in>.burger,.menu-actions .aide{display:grid;place-items:center;justify-content:center;flex:none;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:none;padding:0}
+.menu-actions .aide{color:var(--ink);text-decoration:none;font:700 18px/1 var(--body);background-image:none}
+.menu-actions .aide:hover{border-color:var(--mark);color:var(--mark);background:none}
+.site-in>.compte-zone{order:0}
+.site-in>.menu-actions>ul{gap:8px}
+@media(max-width:1199px){.site-in{column-gap:8px}.compte{padding:8px 12px}.menu-actions .langue-bouton span,.menu-actions .langue-chevron{display:none}}
+@media(max-width:860px){.compte span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.compte{padding:0;width:42px;height:42px;justify-content:center}.compte svg{display:block;width:18px;height:18px}}
+@media(max-width:699px){
+  :root{--haut:116px}
+  .site-in{flex-wrap:wrap;align-content:center;row-gap:8px}
+  .site-in>.logo{margin-right:auto}
+  .site-in>.recherche-entete{order:9;flex:1 0 100%;max-width:none;margin:0}
+}
+@media(max-width:360px){.site-in{gap:6px}.site-in>.burger,.menu-actions .aide,.compte{width:38px;height:38px}.compte svg{display:block}}
