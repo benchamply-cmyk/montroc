@@ -39,7 +39,7 @@
       <li><a href="/grand-troc/">Le Grand Troc</a></li>
     </ul>
   </nav>
-  <a class="favoris" href="/#favoris" aria-label="Favoris" title="Favoris">${COEUR}</a>
+  <a class="favoris" href="/#favoris" aria-label="Favoris" title="Favoris">${COEUR}<span class="favoris-nb" hidden></span></a>
   <div class="compte-zone">
     <a class="compte" id="compte" href="/#se-connecter" aria-controls="pop-cnx">${PERSO}<span>Se connecter / S'inscrire</span></a>
     <form class="pop-cnx" id="pop-cnx" hidden aria-label="Connexion à Mon espace">
@@ -289,6 +289,12 @@
   document.addEventListener('click',e=>{if(!pop.hidden&&e.timeStamp>ouvertLe&&!pop.contains(e.target)&&!c.contains(e.target))ouvrirConnexion(false)});
   pop.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();ouvrirConnexion(false);c.focus()}});
 
+  /* Compteur du cœur « Favoris ». Sur les pages sans le script du mode visiteur (visiteur.js), celui des favoris
+     de 24 h gardés dans le navigateur ; un membre voit le sien une fois sur l'accueil. */
+  const nbFavoris=haut.querySelector('.favoris-nb');
+  function favoris(n){nbFavoris.textContent=n>99?'99+':n;nbFavoris.hidden=!n;haut.querySelector('.favoris').setAttribute('aria-label',n?`Favoris (${n})`:'Favoris')}
+  try{favoris(JSON.parse(memo.get('troc.favoris')||'[]').filter(f=>Date.now()-new Date(f.ajoute_le)<864e5).length)}catch{}
+
   compte(connecte);
-  window.TT={compte,fermer,ouvrirConnexion};
+  window.TT={compte,fermer,ouvrirConnexion,favoris};
 })();

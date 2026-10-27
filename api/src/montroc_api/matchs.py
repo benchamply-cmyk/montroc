@@ -374,13 +374,31 @@ def conclure_boucle(session: Session, moi: m.Utilisateur, objet_ids: list[int]) 
 
 
 def retour_arriere(session: Session, moi: m.Utilisateur, objet_id: int) -> None:
-    """Annule un « Non merci » (Troc Premium) : l'objet revient dans le carrousel."""
-    if not premium.a(moi, premium.RETOUR_ARRIERE):
-        raise ErreurMetier("Le retour arrière fait partie de Troc Premium.")
+    """Annule un avis. Retirer un « J'aime » (le cœur des favoris) est libre ; annuler un « Non merci », pour que
+    l'objet revienne dans le carrousel, est le retour arrière de Troc Premium."""
     avis = session.get(m.Avis, (moi.id, objet_id))
-    if avis is None or avis.aime:
-        raise ErreurMetier("Seul un « Non merci » peut être annulé.")
+    if avis is None:
+        raise ErreurMetier("Aucun avis à annuler sur cet objet.")
+    if not avis.aime and not premium.a(moi, premium.RETOUR_ARRIERE):
+        raise ErreurMetier("Le retour arrière fait partie de Troc Premium.")
     session.delete(avis)
+
+
+def favoris(session: Session, moi: m.Utilisateur) -> list[m.Objet]:
+    """Mes favoris : les objets que j'aime (cœur ou carrousel), encore en ligne, les derniers aimés d'abord.
+    Contrairement aux favoris d'un visiteur (24 h dans son navigateur), ils restent tant que l'objet est proposé."""
+    return list(
+        session.scalars(
+            select(m.Objet)
+            .join(m.Avis, m.Avis.objet_id == m.Objet.id)
+            .where(
+                m.Avis.utilisateur_id == moi.id,
+                m.Avis.aime.is_(True),
+                m.Objet.statut.in_([m.StatutObjet.disponible, m.StatutObjet.reserve]),
+            )
+            .order_by(m.Avis.cree_le.desc())
+        )
+    )
 
 
 # --- ShortList des objets convoités ---

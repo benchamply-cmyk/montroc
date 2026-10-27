@@ -320,3 +320,6 @@ header.site.reduit .langue-bouton{min-height:34px;height:34px}
 @media(max-width:860px){header.site.reduit .compte{width:34px;height:34px;padding:0}}
 @media(max-width:699px){header.site.reduit{--haut:52px}header.site.reduit .site-in>.recherche-entete{display:none}}
 @media (prefers-reduced-motion:reduce){.site-in,.categories-barre,.site-in>.burger,.site-in>.favoris,.menu-actions .aide,.compte,.logo{transition:none}}
+/* Compteur du cœur « Favoris » de l'en-tête (mode visiteur) */
+.site-in>.favoris{position:relative}
+.favoris-nb{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--mark);color:#111318;font-size:11px;font-weight:700;line-height:18px;text-align:center}

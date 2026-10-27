@@ -12,6 +12,7 @@ from ..schemas import (
     EchangeCreation,
     EchangeLecture,
     MatchLecture,
+    ObjetLecture,
     ResultatAvis,
 )
 from .echanges import metier
@@ -34,8 +35,14 @@ def donner_avis(donnees: AvisCreation, utilisateur: UtilisateurConnecte, session
 
 @router.delete("/avis/{objet_id}", status_code=204)
 def retour_arriere(objet_id: int, utilisateur: UtilisateurConnecte, session: SessionDep):
-    """Retour arrière (Troc Premium) : annule un « Non merci », l'objet revient dans le carrousel."""
+    """Retire un « J'aime » (le cœur des favoris), ou annule un « Non merci » (retour arrière, Troc Premium)."""
     metier(matchs.retour_arriere, session, utilisateur, objet_id)
+
+
+@router.get("/favoris", response_model=list[ObjetLecture])
+def mes_favoris(utilisateur: UtilisateurConnecte, session: SessionDep):
+    """Les objets que j'aime : la page « Favoris » d'un membre (le cœur pose un « J'aime »)."""
+    return matchs.favoris(session, utilisateur)
 
 
 @router.get("", response_model=list[MatchLecture])

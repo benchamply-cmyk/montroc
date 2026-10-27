@@ -464,6 +464,33 @@ details.plus summary::-webkit-details-marker{display:none}
 .cat-sous a:hover{color:var(--mark)}
 #cat-count{margin:16px 0}
 @media(max-width:600px){.filtres{position:relative}.filtre{position:static}.filtre-choix{top:100%;left:0;right:0;min-width:0}}
+/* Mode visiteur (visiteur.js) : cœur sur les cartes, favoris de 24 h, recherches récentes, suivi sans compte. */
+.carte-objet{position:relative;min-width:0;display:flex;flex-direction:column}
+.coeur{position:absolute;top:8px;right:8px;width:38px;height:38px;border-radius:50%;border:0;display:grid;place-items:center;background:rgba(17,19,24,.78);color:var(--ink);cursor:pointer;transition:transform .15s}
+.coeur svg,.coeur-fiche svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linejoin:round}
+.coeur:hover{transform:scale(1.08)}.coeur:active{transform:scale(.92)}
+.coeur.oui,.coeur-fiche.oui{color:var(--mark)}.coeur.oui svg,.coeur-fiche.oui svg{fill:currentColor}
+.coeur-fiche{gap:8px;width:100%}.coeur-fiche.oui{border-color:var(--mark)}
+@media (prefers-reduced-motion:no-preference){.coeur.oui svg{animation:battre .35s ease-out}}
+@keyframes battre{50%{transform:scale(1.3)}}
+.result .ph .expire{position:absolute;left:8px;top:8px;font-size:11.5px;font-weight:600;background:rgba(17,19,24,.82);color:var(--ink);border-radius:6px;padding:3px 7px}
+.result .ph .expire.bientot{color:#111318;background:var(--mark)}
+.historique,.puces-recherches{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.historique>.muted{font-size:13px;margin-right:4px}
+.puce[data-recherche]{cursor:pointer;color:var(--ink)}.puce[data-recherche]:hover{border-color:var(--mark)}
+.plus-objets{align-self:center;margin-top:8px}
+.favoris-contenu{display:flex;flex-direction:column;gap:22px}
+.avertissement-24h{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:16px 18px;border-radius:var(--r);border:1.5px solid var(--mark);background:color-mix(in srgb,var(--mark) 10%,var(--surface))}
+.avertissement-24h>div{display:flex;flex-direction:column;gap:4px;flex:1 1 260px}.avertissement-24h span:not(.sablier){color:var(--muted);font-size:14px}
+.sablier{font-size:28px;line-height:1}
+.favoris-historique h3{font-size:17px;margin:0}
+.petit{font-size:12.5px}
+dialog.visiteur{text-align:center;width:min(460px,calc(100% - 32px))}
+dialog.visiteur h2{font-size:24px;margin:4px 0}
+dialog.visiteur p{margin:0}
+dialog.visiteur .sablier{font-size:40px}
+.btns.colonne{flex-direction:column;align-items:stretch;margin-top:6px}
+.etapes-compte{text-align:left;margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:14px}
 </style>
 <link rel="canonical" href="https://toptroc.com/">
 <link rel="alternate" hreflang="fr" href="https://toptroc.com/">
@@ -588,10 +615,10 @@ details.plus summary::-webkit-details-marker{display:none}
     <div id="global-objets" class="results"></div>
   </section>
 
-  <!-- FAVORIS (bouton cœur de l'en-tête) : page vide pour l'instant. -->
+  <!-- FAVORIS (bouton cœur de l'en-tête) : favoris, recherches récentes et suivi sans compte (visiteur.js). -->
   <section class="view" id="v-favoris" hidden>
     <div class="hero"><span class="label">Favoris</span><h2>Vos favoris</h2></div>
-    <p class="empty">Les objets que vous aimez apparaîtront ici.</p>
+    <div id="favoris-contenu" class="favoris-contenu"></div>
   </section>
 
   <!-- PAGE D'UNE CATÉGORIE (« Voir tout » de la bande des catégories) : sous-catégories et filtres, comme Vinted. -->
@@ -611,8 +638,10 @@ details.plus summary::-webkit-details-marker{display:none}
     <form class="search" id="f-search" role="search">
       <input type="search" name="q" maxlength="100" placeholder="Chercher un objet" aria-label="Chercher un objet"><button type="submit">Chercher</button>
     </form>
+    <div class="historique" id="search-historique" hidden></div>
     <p class="muted" id="search-count" aria-live="polite"></p>
     <div class="results" id="results"></div>
+    <button class="acc-btn g plus-objets" type="button" id="search-plus" hidden>Voir plus d'objets</button>
     <div class="card stack" data-anon>
       <b>Un objet vous plaît ?</b>
       <span class="muted">Créez un compte gratuit, ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.</span>
@@ -728,6 +757,7 @@ details.plus summary::-webkit-details-marker{display:none}
   <section class="view" id="v-proposer" hidden>
     <form class="stack proposer" id="f-obj">
       <h2>Proposer un objet</h2>
+      <p class="notice" data-anon>Pas besoin de compte pour remplir l'annonce : il vous sera demandé à la dernière étape, pour la publier.</p>
       <label class="photo-pick" id="photo-pick">
         <input type="file" name="photo" accept="image/*" required>
         <span id="photo-txt"><span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><b>Ajouter une photo</b><span class="muted" style="font-size:13px">L'objet en entier, en lumière du jour.</span></span>
@@ -921,7 +951,7 @@ addEventListener('popstate',()=>{TT.fermer();TT.ouvrirConnexion(false);suivre(lo
 
 const ESPACE=['lists','trades','drop','mod'];
 function go(v,{adresse,remplacer=false}={}){
-  if(!moi&&!['home','signup','search','objet','global','categorie','favoris'].includes(v)){v='home';remplacer=true}
+  if(!moi&&!['home','signup','search','objet','global','categorie','favoris','proposer'].includes(v)){v='home';remplacer=true}
   if(adresse===undefined)adresse=ADRESSES[v];
   if(adresse!==undefined)marquer(adresse,remplacer);
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
@@ -932,6 +962,7 @@ function go(v,{adresse,remplacer=false}={}){
   marquerOnglets();
   window.scrollTo(0,0);
   if(v==='mod')chargerSignalements();
+  if(v==='favoris')Visiteur.afficher();
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
 $('#tabs').addEventListener('click',e=>{
@@ -1002,13 +1033,14 @@ const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
     requestAnimationFrame(image)})(performance.now());
 })();
 
-/* Boutons de l'accueil : « Proposer un objet » (et « Je participe ») mène au formulaire d'objet une fois connecté,
-   sinon à la création de compte ; « Objets disponibles » et « Tout voir » ouvrent tout ce qui est proposé. */
+/* Boutons de l'accueil : « Proposer un objet » (et « Je participe ») mène au formulaire d'objet, même sans compte
+   (mode visiteur : le compte est demandé à la dernière étape, « Publier ») ; « Objets disponibles » et « Tout voir »
+   ouvrent tout ce qui est proposé. */
 // Se connecter ou créer un compte : uniquement par la fenêtre du bouton en haut de page (site.js).
 function versCompte(){scrollTo({top:0,behavior:calmeDefil});TT.ouvrirConnexion(true,undefined,!store.get('troc.email'))}
 function versProposer(){
-  if(!moi)return versCompte();
   go('proposer');
+  if(!moi)Detail.charger().catch(()=>{}); // sous-catégories et caractéristiques, chargées avec les listes pour un membre
 }
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-proposer]'))versProposer();
@@ -1025,9 +1057,11 @@ const picto=slug=>`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${PIC
 function afficherCategories(cats){
   $('#f-search-home').cat.innerHTML='<option value="">Tout</option>'+cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
 }
+// Une carte d'objet, avec son cœur « Favoris » (mode visiteur : visiteur.js) posé sur la photo, hors du lien.
 function carteObjet(o){
-  return `<a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}</div>
-    <b>${esc(o.titre)}</b><span>${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></a>`;
+  if(typeof Visiteur!=='undefined')Visiteur.retenir(o);
+  return `<div class="carte-objet"><a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}</div>
+    <b>${esc(o.titre)}</b><span>${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></a>${typeof Visiteur!=='undefined'?Visiteur.coeur(o):''}</div>`;
 }
 async function chargerFil(){
   try{
@@ -1063,7 +1097,8 @@ async function ouvrirSession(r,vue){
   jeton=r.jeton; store.set('troc.jeton',jeton); moi=r.utilisateur;
   afficherSession(); await toutCharger(); go(vue);
   if(!moi.a_un_mot_de_passe&&store.get('troc.mdp-plus-tard')!==moi.email)$('#f-mdp-rappel').hidden=false;
-  reprendreAnnonce();
+  // Mode visiteur : ses favoris passent dans le compte, et l'annonce remplie sans compte part maintenant.
+  if(!(await Visiteur.apresConnexion()))reprendreAnnonce();
 }
 // Connexion par mot de passe depuis la pop-up « Mon espace » (site.js).
 TT.surConnexion=async r=>{await ouvrirSession(r,'lists');toast('Bon retour '+moi.pseudo+' !')};
@@ -1125,6 +1160,7 @@ $('#f-obj').onsubmit=async e=>{
   e.preventDefault(); const f=e.target, b=f.querySelector('button[type=submit]'); $('#obj-err').hidden=true;
   const annonce=AnnonceAilleurs.lire(f.annonce_origine.value);
   if(f.annonce_origine.value.trim()&&!annonce){$('#obj-err').textContent="Ce lien n'est pas une annonce Vinted ou Leboncoin. Corrigez-le ou videz le champ.";$('#obj-err').hidden=false;return}
+  if(!moi)return Visiteur.publierSansCompte(f); // dernière étape : le compte, puis la publication
   b.disabled=true; b.textContent='Envoi de la photo…';
   try{
     const photo=await envoyerPhoto(f.photo.files[0]); b.textContent='Publication…';
@@ -1440,12 +1476,15 @@ async function ouvrirObjet(id){
     const nomCat=o.sous_categorie_slug?Detail.nom(o.categorie_slug,o.sous_categorie_slug):esc(categories[o.categorie_slug]||o.categorie_slug);
     const mien=moi&&o.proprietaire_id===moi.id, dispo=o.statut==='disponible';
     let actions;
+    // Le cœur : un « J'aime » pour un membre, un favori de 24 h pour un visiteur (visiteur.js).
+    Visiteur.retenir(o);
+    const coeur=`<button class="acc-btn g coeur-fiche${Visiteur.est(o.id)?' oui':''}" type="button" data-coeur="${o.id}" aria-pressed="${Visiteur.est(o.id)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>${Visiteur.est(o.id)?'Dans vos favoris':'Ajouter aux favoris'}</span></button>`;
     if(!dispo)actions='<p class="status">Cet objet a déjà trouvé preneur.</p>';
     else if(mien)actions=`<p class="muted">C'est votre objet.</p><button class="acc-btn g" type="button" data-onglet="ai">Voir mes objets</button>`;
-    else if(moi)actions=`<button class="acc-btn a" type="button" id="fiche-aime">♥ J'aime</button>
+    else if(moi)actions=`${coeur}
       <button class="acc-btn g" type="button" id="fiche-souhait">Ajouter « ${nomCat} » à mes souhaits</button>
       <p class="muted note">Si ${esc(pseudo)} aime un de vos objets, c'est un match : vous échangez à deux, tout de suite.</p>`;
-    else actions=`<button class="acc-btn y" type="button" data-vers-compte>Créer mon compte pour l'échanger</button>
+    else actions=`${coeur}<button class="acc-btn y" type="button" data-vers-compte>Créer mon compte pour l'échanger</button>
       <p class="muted note">C'est gratuit. Ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.</p>`;
     $('#fiche').innerHTML=`<div class="fiche-photo">${o.photo_url?`<img src="${esc(grande(o.photo_url))}" alt="${esc(o.titre)}">`:''}</div>
       <div class="fiche-panneau">
@@ -1471,11 +1510,6 @@ $('#objet-retour').onclick=()=>{
 };
 $('#fiche').addEventListener('click',async e=>{
   const o=ficheObjet; if(!o)return;
-  if(e.target.closest('#fiche-aime')){const b=e.target.closest('#fiche-aime'); b.disabled=true;
-    try{const r=await api('/match/avis',{method:'POST',body:{objet_id:o.id,aime:true}});
-      b.textContent='♥ Vous aimez'; document.dispatchEvent(new Event('tt:match'));
-      toast(r.match?`C'est un match avec ${r.match.avec.pseudo} ! Concluez-le dans Match.`:'Noté ! Si l\'intérêt est réciproque, c\'est un match.')}
-    catch(err){toast(err.message);b.disabled=false}}
   if(e.target.closest('#fiche-souhait')){const b=e.target.closest('#fiche-souhait'); b.disabled=true;
     try{await api('/moi/souhaits',{method:'POST',body:{categorie_slug:o.categorie_slug,sous_categorie_slug:o.sous_categorie_slug}});
       b.textContent='Ajouté à vos souhaits'; toast('Ajouté à vos souhaits'); chargerListes(); chargerEchanges()}
@@ -1600,17 +1634,28 @@ async function chercher(q,cat=''){
   q=q.trim(); // vide : tout ce qui est proposé en ce moment (« Voir les objets » du menu)
   const ancre=q?'#recherche='+encodeURIComponent(q):cat?'#categorie='+encodeURIComponent(cat):'#objets';
   $('#f-search').q.value=q; $('#search-title').textContent=q?`« ${q} »`:cat?(categories[cat]||'Ce qui est proposé'):'Ce qui est proposé';
-  $('#search-count').textContent='Recherche…'; $('#results').innerHTML='';
-  go('search',{adresse:ancre});
+  $('#search-count').textContent='Recherche…'; $('#results').innerHTML=''; $('#search-plus').hidden=true;
+  go('search',{adresse:ancre}); Visiteur.noter(q,cat);
   try{
     const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat);
     const objets=await api('/objets'+(p.size?'?'+p:''));
+    Suite={p,vus:objets.length}; $('#search-plus').hidden=objets.length<PAGE_OBJETS;
     $('#search-count').textContent=objets.length?TT_I18N.available(objets.length):'';
     $('#results').innerHTML=objets.length?objets.map(carteObjet).join('')
       :!q?`<p class="empty">Aucun objet proposé pour l'instant. Soyez le premier : créez un compte et ajoutez ce qui dort chez vous.</p>`
       :`<p class="empty">Rien pour « ${esc(q)} » pour l'instant. Essayez un mot plus large (« vélo » plutôt qu'un modèle), ou créez un compte : votre souhait sera servi dès qu'un objet arrive.</p>`;
   }catch(err){$('#search-count').textContent='';toast(err.message)}
 }
+/* Tout le catalogue, sans compte : l'API répond par pages de 200 objets, « Voir plus d'objets » charge la suivante. */
+const PAGE_OBJETS=200; let Suite=null;
+$('#search-plus').onclick=async e=>{
+  if(!Suite)return; const b=e.currentTarget; b.disabled=true;
+  try{const p=new URLSearchParams(Suite.p); p.set('decalage',Suite.vus);
+    const objets=await api('/objets?'+p); Suite.vus+=objets.length;
+    $('#results').insertAdjacentHTML('beforeend',objets.map(carteObjet).join(''));
+    $('#search-count').textContent=TT_I18N.count(Suite.vus,'objet'); b.hidden=objets.length<PAGE_OBJETS}
+  catch(err){toast(err.message)} finally{b.disabled=false}
+};
 /* Page d'une catégorie : objets de la catégorie, affinés sur le site par sous-catégorie, caractéristiques à choix
    (celles du document des catégories ; les champs libres comme la marque ne filtrent pas), état et tri. */
 const Cat={slug:'',sous:'',caracs:{},etats:[],tri:'recent',objets:[],detail:null};
@@ -1738,6 +1783,8 @@ async function demarrer(){
     try{await verifierLien()}catch(err){toast(err.message)} return;
   }
   await session;
+  if(moi)Visiteur.apresConnexion(); else Visiteur.rafraichir();
+  if(Visiteur.demarrer(h))return; // liens de confirmation ou d'arrêt du suivi sans compte
   if(h.startsWith('#objet-')){if(moi)toutCharger(); ouvrirObjet(+h.slice(7)); return}
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(h.startsWith('#categorie=')){if(moi)toutCharger();suivre(h);return}
@@ -1753,5 +1800,6 @@ demarrer();
 </script>
 <script src="match.js"></script>
 <script src="premium.js"></script>
+<script src="visiteur.js"></script>
 </body>
 </html>
