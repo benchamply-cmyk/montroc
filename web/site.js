@@ -11,7 +11,22 @@
   <a class="logo" href="/" aria-label="TopTroc, retour à l'accueil">${LOGO}<span>Top<span class="logo-2">Troc</span></span></a>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
-      <li><a href="/#objets">Voir les objets</a></li>
+      <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-catalogue">Le catalogue<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <ul id="nav-catalogue" hidden>
+          <li><a href="/#objets">Voir les objets</a></li>
+          <li data-membre hidden><a href="/#monespace">Recherches personnalisées</a></li>
+          <li data-membre hidden><a href="/#monespace">Mes listes</a></li>
+          <li data-visiteur><a href="/#se-connecter" data-devenir>Devenir membre</a></li>
+        </ul>
+      </li>
+      <li><a href="/#recherche-site">Rechercher</a></li>
+      <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Les offres<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <ul id="pour-qui" hidden>
+          <li><a href="/particuliers/">Particuliers <small>Gratuit</small></a></li>
+          <li><a href="/pros/">Professionnels</a></li>
+          <li><a href="/collectivites/">Collectivités</a></li>
+        </ul>
+      </li>
       <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-decouvrir">Le concept<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <ul id="nav-decouvrir" hidden>
           <li><a href="/concept/">Le concept</a></li>
@@ -19,19 +34,11 @@
           <li><a href="/grand-troc/">Le Grand Troc</a></li>
         </ul>
       </li>
-      <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Pour qui ?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <ul id="pour-qui" hidden>
-          <li><a href="/particuliers/">Particuliers <small>Gratuit</small></a></li>
-          <li><a href="/pros/">Professionnels</a></li>
-          <li><a href="/collectivites/">Collectivités</a></li>
-        </ul>
-      </li>
-      <li><a href="/faq/">FAQ</a></li>
       ${TT_I18N.menu()}
     </ul>
   </nav>
   <div class="compte-zone">
-    <a class="compte" id="compte" href="/#se-connecter" aria-controls="pop-cnx">${PERSO}<span>Se connecter</span></a>
+    <a class="compte" id="compte" href="/#se-connecter" aria-controls="pop-cnx">${PERSO}<span>Mon espace</span></a>
     <form class="pop-cnx" id="pop-cnx" hidden aria-label="Connexion à Mon espace">
       <b class="pop-titre">Connexion à Mon espace</b>
       <p class="pop-aide" hidden>Indiquez votre e-mail : un lien valable 20 minutes y arrive et ouvre votre compte.</p>
@@ -122,7 +129,9 @@
   let connecte=!!memo.get('troc.jeton'), ouvertLe=-1;
   function compte(oui){
     connecte=oui;
-    c.querySelector('span').textContent=oui||memo.get('troc.email')?'Mon espace':'Se connecter';
+    c.querySelector('span').textContent='Mon espace';
+    haut.querySelectorAll('[data-membre]').forEach(el=>el.hidden=!oui);
+    haut.querySelectorAll('[data-visiteur]').forEach(el=>el.hidden=oui);
     c.setAttribute('href',TT_I18N.localPath(oui?'/#monespace':'/#se-connecter'));
     if(oui)ouvrirConnexion(false);
   }
@@ -157,6 +166,7 @@
     if(!r.ok){const x=d&&d.detail;throw new Error(typeof x==='string'?TT_I18N.error(x):'Vérifiez votre e-mail et votre mot de passe.')}
     return d;
   }
+  haut.querySelector('[data-devenir]').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();ouvrirConnexion(true,undefined,true)});
   c.addEventListener('click',e=>{
     if(connecte||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
     e.preventDefault(); e.stopImmediatePropagation(); ouvrirConnexion(pop.hidden);
