@@ -13,6 +13,7 @@ from ..deps import SessionDep, UtilisateurConnecte, obtenir_ou_404
 from ..schemas import (
     BoucleProposee,
     EchangeLecture,
+    FavoriCreation,
     ListeInteresses,
     Moi,
     MoiModification,
@@ -204,6 +205,44 @@ def supprimer_souhait(souhait_id: int, utilisateur: UtilisateurConnecte, session
         raise HTTPException(404, f"Souhait {souhait_id} introuvable.")
     session.delete(souhait)
     session.commit()
+
+
+# --- Favoris (l'étoile) ---
+
+
+@router.get("/favoris", response_model=list[ObjetLecture])
+def lister_favoris(utilisateur: UtilisateurConnecte, session: SessionDep):
+    """Mes favoris encore en ligne (disponibles ou réservés), les derniers ajoutés d'abord."""
+    return session.scalars(
+        select(m.Objet)
+        .join(m.Favori, m.Favori.objet_id == m.Objet.id)
+        .where(
+            m.Favori.utilisateur_id == utilisateur.id,
+            m.Objet.statut.in_([m.StatutObjet.disponible, m.StatutObjet.reserve]),
+        )
+        .order_by(m.Favori.cree_le.desc())
+    ).all()
+
+
+@router.post("/favoris", status_code=204)
+def ajouter_favori(donnees: FavoriCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
+    """Met un objet en favori (sans effet s'il y est déjà). Un favori n'est pas un « J'aime » : il n'engage à rien."""
+    objet = session.get(m.Objet, donnees.objet_id)
+    if objet is None or objet.statut != m.StatutObjet.disponible:
+        raise HTTPException(409, "Cet objet n'est plus proposé.")
+    if objet.proprietaire_id == utilisateur.id:
+        raise HTTPException(409, "C'est votre objet.")
+    if session.get(m.Favori, (utilisateur.id, objet.id)) is None:
+        session.add(m.Favori(utilisateur_id=utilisateur.id, objet_id=objet.id))
+        session.commit()
+
+
+@router.delete("/favoris/{objet_id}", status_code=204)
+def retirer_favori(objet_id: int, utilisateur: UtilisateurConnecte, session: SessionDep):
+    favori = session.get(m.Favori, (utilisateur.id, objet_id))
+    if favori is not None:
+        session.delete(favori)
+        session.commit()
 
 
 # --- Échanges ---

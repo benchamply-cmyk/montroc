@@ -25,24 +25,14 @@ def _mots(q: str) -> list[str]:
     return [mot.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") for mot in mots][:8]
 
 
-@router.get("", response_model=list[ObjetLecture])
-def lister(
-    session: SessionDep,
-    categorie: str | None = None,
-    zone: str | None = None,
-    q: str | None = Query(
-        default=None, max_length=100, description="Mots cherchés dans le titre, la description et la catégorie."
-    ),
-):
-    """Objets disponibles, filtrables par catégorie, par ville et par mots-clés.
-
-    Public : seuls les objets en ligne de comptes non suspendus sont renvoyés, sans données personnelles.
-    """
+def requete_objets(categorie: str | None = None, zone: str | None = None, q: str | None = None):
+    """Objets disponibles de comptes non suspendus, filtrés par catégorie, ville et mots-clés, les plus récents
+    d'abord. Sert aussi aux alertes du mode visiteur (suivis.py)."""
     requete = (
         select(m.Objet)
         .join(m.Objet.proprietaire)
         .where(m.Objet.statut == m.StatutObjet.disponible, m.Utilisateur.suspendu_le.is_(None))
-        .order_by(m.Objet.cree_le.desc())
+        .order_by(m.Objet.cree_le.desc(), m.Objet.id.desc())
     )
     if categorie:
         requete = requete.where(m.Objet.categorie_slug == categorie)
@@ -59,7 +49,26 @@ def lister(
                     _normaliser(m.Categorie.libelle).like(motif, escape="\\"),
                 )
             )
-    return session.scalars(requete.limit(200)).all()
+    return requete
+
+
+@router.get("", response_model=list[ObjetLecture])
+def lister(
+    session: SessionDep,
+    categorie: str | None = None,
+    zone: str | None = None,
+    q: str | None = Query(
+        default=None, max_length=100, description="Mots cherchés dans le titre, la description et la catégorie."
+    ),
+    decalage: int = Query(default=0, ge=0, description="Objets à sauter : la page suivante commence après eux."),
+    limite: int = Query(default=200, ge=1, le=200),
+):
+    """Objets disponibles, filtrables par catégorie, par ville et par mots-clés, par pages de ``limite``.
+
+    Public : seuls les objets en ligne de comptes non suspendus sont renvoyés, sans données personnelles.
+    Le mode visiteur parcourt ainsi tout le catalogue, page après page (« Voir plus »).
+    """
+    return session.scalars(requete_objets(categorie, zone, q).offset(decalage).limit(limite)).all()
 
 
 @router.get("/{objet_id}", response_model=ObjetLecture)

@@ -518,3 +518,42 @@ class Signalement(Horodatage, Base):
     # La cible et l'auteur sont vérifiés par l'API, pas par la base : un signalement survit (pour
     # l'historique de modération) à la suppression de l'objet ou du compte, qui met ces liens à NULL.
     __table_args__ = (CheckConstraint("length(trim(explication)) >= 10", name="explication_utile"),)
+
+
+class Favori(Horodatage, Base):
+    """L'étoile « Favoris » d'un membre : un objet mis de côté pour le retrouver. Distinct du « J'aime » du Match
+    (le cœur), qui pèse dans les matchs et le Grand Troc ; un favori n'engage à rien."""
+
+    __tablename__ = "favoris"
+
+    utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), primary_key=True)
+    objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), primary_key=True, index=True)
+
+    objet: Mapped[Objet] = relationship()
+
+
+class SuiviVisiteur(Horodatage, Base):
+    """Mode visiteur : une personne sans compte laisse un e-mail ou un téléphone pour suivre ses recherches et ses
+    favoris (alertes « nouvel objet » et rappel avant que ses favoris de 24 h s'effacent).
+
+    Double confirmation : rien ne part avant le clic sur le lien reçu. Le navigateur garde le jeton d'accès, la base
+    son empreinte ; ``jeton_arret`` sert seulement au lien « ne plus recevoir » de chaque alerte.
+    """
+
+    __tablename__ = "suivis_visiteurs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    email: Mapped[str | None] = mapped_column(String(254), index=True)
+    telephone: Mapped[str | None] = mapped_column(String(20), index=True)
+    empreinte: Mapped[str] = mapped_column(String(64), unique=True)
+    jeton_arret: Mapped[str] = mapped_column(String(64), unique=True)
+    # [{"q": "vélo", "categorie": "sport"}…], les plus récentes d'abord
+    recherches: Mapped[list] = mapped_column(JSONB, default=list, server_default="[]")
+    # [{"objet_id": 12, "ajoute_le": "2026-10-27T08:00:00+00:00"}…]
+    favoris: Mapped[list] = mapped_column(JSONB, default=list, server_default="[]")
+    confirme_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    mis_a_jour_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    derniere_alerte_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    rappel_favoris_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    __table_args__ = (CheckConstraint("email IS NOT NULL OR telephone IS NOT NULL", name="un_contact"),)

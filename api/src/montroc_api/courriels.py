@@ -265,3 +265,39 @@ def echange_annule(email: str, pseudo: str, raison: str, lien: str) -> None:
 
 def decision_moderation(email: str, sujet: str, texte: str) -> None:
     envoyer(email, sujet, texte)
+
+
+# Mode visiteur : suivi sans compte (suivis.py).
+
+
+def suivi_a_confirmer(email: str, lien: str) -> None:
+    envoyer(
+        email,
+        "Confirmez le suivi de vos recherches TopTroc",
+        "Bonjour,\n\nVous avez demandé à être prévenu des nouveaux objets qui correspondent à vos recherches, et "
+        f"avant que vos favoris s'effacent. Confirmez en ouvrant ce lien :\n\n{lien}\n\n"
+        "Sans clic, nous ne vous écrirons plus. Si vous n'avez rien demandé, ignorez cet e-mail.",
+    )
+
+
+def alerte_visiteur(email: str, nouveautes: list[str], favoris_bientot_effaces: int, lien: str, arret: str) -> None:
+    parties = []
+    if nouveautes:
+        liste = "\n".join(f"- {x}" for x in nouveautes)
+        parties.append(f"Nouveaux objets pour vos recherches :\n\n{liste}")
+    if favoris_bientot_effaces:
+        quoi = (
+            "Votre favori s'efface" if favoris_bientot_effaces == 1 else f"{favoris_bientot_effaces} favoris s'effacent"
+        )
+        parties.append(
+            f"{quoi} dans quelques heures. Créez votre compte gratuit pour les garder : TopTroc cherchera aussi "
+            "l'échange qui vous les apporte."
+        )
+    sujet = "De nouveaux objets pour vous sur TopTroc" if nouveautes else "Vos favoris TopTroc vont s'effacer"
+    envoyer(
+        email,
+        sujet,
+        "Bonjour,\n\n"
+        + "\n\n".join(parties)
+        + f"\n\nVoir sur TopTroc : {lien}\n\nNe plus recevoir ces alertes : {arret}",
+    )
