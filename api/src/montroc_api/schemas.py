@@ -88,6 +88,25 @@ class Verification(AvecTelephone):
     mot_de_passe: str | None = Field(default=None, min_length=8, max_length=200)
 
 
+class DemandeInscription(BaseModel):
+    """Inscription depuis la fenêtre du haut de page : vérifie e-mail et pseudo, puis envoie le code."""
+
+    email: EmailStr
+    pseudo: str = Field(min_length=2, max_length=40)
+    langue: Literal["fr", "en", "es"] = "fr"
+
+
+class VerificationCode(AvecTelephone):
+    """Le code à 6 chiffres reçu par e-mail. Pseudo, ville et mot de passe : à la création du compte seulement."""
+
+    email: EmailStr
+    code: str = Field(pattern=r"^\d{6}$")
+    pseudo: str | None = Field(default=None, min_length=2, max_length=40)
+    zone: str | None = Field(default=None, max_length=80, examples=["Marseille"])
+    telephone: str | None = Field(default=None, max_length=30, examples=["06 12 34 56 78"])
+    mot_de_passe: str | None = Field(default=None, min_length=8, max_length=200)
+
+
 class ConnexionMotDePasse(BaseModel):
     email: EmailStr
     mot_de_passe: str = Field(min_length=1, max_length=200)

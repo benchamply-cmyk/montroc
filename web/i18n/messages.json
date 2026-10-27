@@ -4910,5 +4910,297 @@
   "Votre favori est gardé dans votre compte": {
     "en": "Your favourite is saved in your account",
     "es": "Tu favorito se guarda en tu cuenta"
+  },
+  "Connexion": {
+    "en": "Sign in",
+    "es": "Iniciar sesión"
+  },
+  "Vérification de votre session": {
+    "en": "Checking your session",
+    "es": "Comprobando tu sesión"
+  },
+  "Mon compte :": {
+    "en": "My account:",
+    "es": "Mi cuenta:"
+  },
+  "Connexion ou création de compte": {
+    "en": "Sign in or create an account",
+    "es": "Iniciar sesión o crear una cuenta"
+  },
+  "TopTroc se réveille après une pause, jusqu'à une minute. Remplissez le formulaire : votre demande partira dès qu'il répond.": {
+    "en": "TopTroc is waking up after a break, up to a minute. Fill in the form: your request will go as soon as it answers.",
+    "es": "TopTroc se está despertando tras una pausa, hasta un minuto. Rellena el formulario: tu solicitud saldrá en cuanto responda."
+  },
+  "Fermer": {
+    "en": "Close",
+    "es": "Cerrar"
+  },
+  "Connexion ou inscription": {
+    "en": "Sign in or sign up",
+    "es": "Iniciar sesión o registrarse"
+  },
+  "8 caractères minimum.": {
+    "en": "At least 8 characters.",
+    "es": "Mínimo 8 caracteres."
+  },
+  "Bon retour sur TopTroc": {
+    "en": "Welcome back to TopTroc",
+    "es": "Bienvenido de nuevo a TopTroc"
+  },
+  "Mot de passe oublié ?": {
+    "en": "Forgot your password?",
+    "es": "¿Olvidaste tu contraseña?"
+  },
+  "Recevoir un code de connexion par e-mail": {
+    "en": "Get a sign-in code by email",
+    "es": "Recibir un código de acceso por correo"
+  },
+  "Rejoindre TopTroc": {
+    "en": "Join TopTroc",
+    "es": "Únete a TopTroc"
+  },
+  "Gratuit, sans engagement. Votre compte est prêt dès que votre e-mail est confirmé.": {
+    "en": "Free, no commitment. Your account is ready as soon as your email is confirmed.",
+    "es": "Gratis y sin compromiso. Tu cuenta está lista en cuanto confirmes tu correo."
+  },
+  "Visible des autres membres": {
+    "en": "Visible to other members",
+    "es": "Visible para otros miembros"
+  },
+  "2 à 40 caractères. C'est le seul nom que voient les autres membres.": {
+    "en": "2 to 40 characters. It's the only name other members see.",
+    "es": "De 2 a 40 caracteres. Es el único nombre que ven los demás miembros."
+  },
+  "facultatif, pour les échanges en main propre": {
+    "en": "optional, for in-person swaps",
+    "es": "opcional, para intercambios en mano"
+  },
+  "J'accepte les": {
+    "en": "I accept the",
+    "es": "Acepto las"
+  },
+  "conditions d'utilisation": {
+    "en": "terms of use",
+    "es": "condiciones de uso"
+  },
+  "Confirmez votre e-mail": {
+    "en": "Confirm your email",
+    "es": "Confirma tu correo"
+  },
+  "Votre code de connexion": {
+    "en": "Your sign-in code",
+    "es": "Tu código de acceso"
+  },
+  "Un code à 6 chiffres vient de partir à": {
+    "en": "A 6-digit code has just been sent to",
+    "es": "Acabamos de enviar un código de 6 cifras a"
+  },
+  "Tapez-le ici : pas besoin de quitter cette page.": {
+    "en": "Type it here: no need to leave this page.",
+    "es": "Escríbelo aquí: no hace falta salir de esta página."
+  },
+  "Code à 6 chiffres": {
+    "en": "6-digit code",
+    "es": "Código de 6 cifras"
+  },
+  "Chiffre": {
+    "en": "Digit",
+    "es": "Cifra"
+  },
+  "Confirmer et entrer": {
+    "en": "Confirm and enter",
+    "es": "Confirmar y entrar"
+  },
+  "Me connecter": {
+    "en": "Sign me in",
+    "es": "Iniciar sesión"
+  },
+  "Changer d'e-mail": {
+    "en": "Change email",
+    "es": "Cambiar de correo"
+  },
+  "Le code marche 20 minutes. Vous pouvez aussi cliquer sur le lien de l'e-mail, depuis n'importe quel appareil. Rien reçu ? Regardez dans les spams ou l'onglet Promotions.": {
+    "en": "The code works for 20 minutes. You can also click the link in the email, from any device. Nothing received? Check your spam or Promotions tab.",
+    "es": "El código vale 20 minutos. También puedes hacer clic en el enlace del correo, desde cualquier dispositivo. ¿No te ha llegado? Mira en spam o en la pestaña Promociones."
+  },
+  "Choisissez un mot de passe": {
+    "en": "Choose a password",
+    "es": "Elige una contraseña"
+  },
+  "Vous êtes connecté. La prochaine fois, entrez en deux secondes avec votre e-mail et ce mot de passe, sans attendre d'e-mail.": {
+    "en": "You're signed in. Next time, get in within seconds with your email and this password, without waiting for an email.",
+    "es": "Has iniciado sesión. La próxima vez, entra en dos segundos con tu correo y esta contraseña, sin esperar ningún correo."
+  },
+  "Nouveau mot de passe": {
+    "en": "New password",
+    "es": "Nueva contraseña"
+  },
+  "Votre compte est prêt. Proposez votre premier objet : c'est lui qui vous fera entrer dans les échanges.": {
+    "en": "Your account is ready. Offer your first item: it's what gets you into swaps.",
+    "es": "Tu cuenta está lista. Ofrece tu primer objeto: es lo que te hará entrar en los intercambios."
+  },
+  "Voir les objets d'abord": {
+    "en": "See the items first",
+    "es": "Ver los objetos primero"
+  },
+  "Au moins 8 caractères": {
+    "en": "At least 8 characters",
+    "es": "Al menos 8 caracteres"
+  },
+  "Solide.": {
+    "en": "Strong.",
+    "es": "Segura."
+  },
+  "Correct. Plus long, c'est encore mieux.": {
+    "en": "Fine. Longer is even better.",
+    "es": "Correcta. Más larga, aún mejor."
+  },
+  "Pseudo libre :": {
+    "en": "Username available:",
+    "es": "Seudónimo libre:"
+  },
+  "Pseudo déjà pris :": {
+    "en": "Username already taken:",
+    "es": "Seudónimo ya en uso:"
+  },
+  ". Essayez une variante.": {
+    "en": ". Try a variation.",
+    "es": ". Prueba una variante."
+  },
+  "Indiquez votre e-mail, par exemple vous@exemple.fr.": {
+    "en": "Enter your email, for example you@example.com.",
+    "es": "Indica tu correo, por ejemplo tu@ejemplo.es."
+  },
+  "Indiquez votre mot de passe, ou recevez un code par e-mail.": {
+    "en": "Enter your password, or get a code by email.",
+    "es": "Indica tu contraseña o recibe un código por correo."
+  },
+  "Connexion…": {
+    "en": "Signing in…",
+    "es": "Iniciando sesión…"
+  },
+  "Créer un compte avec cet e-mail": {
+    "en": "Create an account with this email",
+    "es": "Crear una cuenta con este correo"
+  },
+  "Recevoir un code": {
+    "en": "Get a code",
+    "es": "Recibir un código"
+  },
+  "Recevoir un code par e-mail à la place": {
+    "en": "Get a code by email instead",
+    "es": "Recibir un código por correo en su lugar"
+  },
+  "Indiquez un e-mail valide : le code de confirmation y sera envoyé.": {
+    "en": "Enter a valid email: the confirmation code will be sent there.",
+    "es": "Indica un correo válido: allí se enviará el código de confirmación."
+  },
+  "Choisissez un pseudo d'au moins 2 caractères.": {
+    "en": "Choose a username of at least 2 characters.",
+    "es": "Elige un seudónimo de al menos 2 caracteres."
+  },
+  "Le mot de passe doit faire au moins 8 caractères.": {
+    "en": "The password must be at least 8 characters long.",
+    "es": "La contraseña debe tener al menos 8 caracteres."
+  },
+  "Cochez la case pour accepter les conditions d'utilisation.": {
+    "en": "Tick the box to accept the terms of use.",
+    "es": "Marca la casilla para aceptar las condiciones de uso."
+  },
+  "Envoi du code…": {
+    "en": "Sending the code…",
+    "es": "Enviando el código…"
+  },
+  "Tapez les 6 chiffres reçus par e-mail.": {
+    "en": "Type the 6 digits you received by email.",
+    "es": "Escribe las 6 cifras recibidas por correo."
+  },
+  "Vérification…": {
+    "en": "Checking…",
+    "es": "Comprobando…"
+  },
+  "Pas encore de compte avec cet e-mail : choisissez un pseudo et un mot de passe.": {
+    "en": "No account with this email yet: choose a username and a password.",
+    "es": "Aún no hay cuenta con este correo: elige un seudónimo y una contraseña."
+  },
+  "Enregistrement…": {
+    "en": "Saving…",
+    "es": "Guardando…"
+  },
+  "Indiquez d'abord votre e-mail : le code y sera envoyé.": {
+    "en": "Enter your email first: the code will be sent there.",
+    "es": "Indica primero tu correo: allí se enviará el código."
+  },
+  "Renvoyer le code dans": {
+    "en": "Resend the code in",
+    "es": "Reenviar el código en"
+  },
+  "Renvoyer le code": {
+    "en": "Resend the code",
+    "es": "Reenviar el código"
+  },
+  "Nouveau code envoyé. Seul le dernier reçu marche.": {
+    "en": "New code sent. Only the latest one works.",
+    "es": "Nuevo código enviado. Solo vale el último recibido."
+  },
+  "Mot de passe enregistré": {
+    "en": "Password saved",
+    "es": "Contraseña guardada"
+  },
+  "Aucun compte avec cet e-mail.": {
+    "en": "No account with this email.",
+    "es": "No hay ninguna cuenta con este correo."
+  },
+  "Ce compte n'a pas encore de mot de passe : recevez un code par e-mail.": {
+    "en": "This account has no password yet: get a code by email.",
+    "es": "Esta cuenta aún no tiene contraseña: recibe un código por correo."
+  },
+  "Mot de passe incorrect.": {
+    "en": "Incorrect password.",
+    "es": "Contraseña incorrecta."
+  },
+  "Trop d'essais : réessayez dans 15 minutes, ou recevez un code par e-mail.": {
+    "en": "Too many attempts: try again in 15 minutes, or get a code by email.",
+    "es": "Demasiados intentos: inténtalo de nuevo en 15 minutos o recibe un código por correo."
+  },
+  "Un compte existe déjà avec cet e-mail : connectez-vous.": {
+    "en": "An account already exists with this email: sign in.",
+    "es": "Ya existe una cuenta con este correo: inicia sesión."
+  },
+  "Ce code a expiré : demandez-en un nouveau.": {
+    "en": "This code has expired: request a new one.",
+    "es": "Este código ha caducado: pide uno nuevo."
+  },
+  "Trop d'essais : ce code ne marche plus, demandez-en un nouveau.": {
+    "en": "Too many attempts: this code no longer works, request a new one.",
+    "es": "Demasiados intentos: este código ya no vale, pide uno nuevo."
+  },
+  "Ce code ne correspond pas : vérifiez le dernier e-mail reçu.": {
+    "en": "This code doesn't match: check the latest email you received.",
+    "es": "Este código no coincide: revisa el último correo recibido."
+  },
+  "Trop de codes demandés pour cette adresse : réessayez dans une heure.": {
+    "en": "Too many codes requested for this address: try again in an hour.",
+    "es": "Demasiados códigos pedidos para esta dirección: inténtalo de nuevo en una hora."
+  },
+  "8 caractères minimum. La prochaine fois, connectez-vous avec « Connexion » en haut de page, sans attendre d'e-mail.": {
+    "en": "At least 8 characters. Next time, sign in with “Sign in” at the top of the page, without waiting for an email.",
+    "es": "Mínimo 8 caracteres. La próxima vez, entra con «Iniciar sesión» arriba de la página, sin esperar ningún correo."
+  },
+  "Choisissez un mot de passe : la prochaine fois, « Connexion » en haut de page vous connecte tout de suite.": {
+    "en": "Choose a password: next time, “Sign in” at the top of the page signs you in right away.",
+    "es": "Elige una contraseña: la próxima vez, «Iniciar sesión» arriba de la página te conecta al instante."
+  },
+  "Mot de passe enregistré : connectez-vous avec « Connexion », sans e-mail": {
+    "en": "Password saved: sign in with “Sign in”, no email needed",
+    "es": "Contraseña guardada: entra con «Iniciar sesión», sin correo"
+  },
+  "Oui, vous le choisissez en créant votre compte. Ensuite, « Connexion » en haut de page : votre e-mail, votre mot de passe, et c'est tout. Oublié ? Recevez un code à 6 chiffres par e-mail.": {
+    "en": "Yes, you choose it when you create your account. Then use “Sign in” at the top of the page: your email, your password, and that's it. Forgot it? Get a 6-digit code by email.",
+    "es": "Sí, la eliges al crear tu cuenta. Después, «Iniciar sesión» arriba de la página: tu correo, tu contraseña y listo. ¿La olvidaste? Recibe un código de 6 cifras por correo."
+  },
+  "Le compte est gratuit. On se connecte avec son e-mail et un mot de passe, ou avec un code envoyé par e-mail.": {
+    "en": "The account is free. Sign in with your email and a password, or with a code sent by email.",
+    "es": "La cuenta es gratuita. Se accede con el correo y una contraseña, o con un código enviado por correo."
   }
 }
