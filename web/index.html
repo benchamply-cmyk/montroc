@@ -436,6 +436,62 @@ details.plus summary::-webkit-details-marker{display:none}
 @media (prefers-reduced-motion:reduce){.pile-match .carte{transition:none}}
 .ico{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .puces .ico{width:16px;height:16px}
+/* Page d'une catégorie */
+.fil{font-size:14px;color:var(--muted)}
+.fil a{color:var(--muted)}
+.fil span span,.fil>span>span{color:var(--ink)}
+#v-categorie h2{margin:6px 0 18px}
+.filtres{display:flex;flex-wrap:wrap;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.filtre{position:relative}
+.filtre summary{list-style:none;display:flex;align-items:center;gap:8px;padding:9px 16px;border:1px solid var(--line);border-radius:999px;background:var(--surface);cursor:pointer;font-weight:600;font-size:15px;white-space:nowrap}
+.filtre summary::-webkit-details-marker{display:none}
+.filtre summary svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .2s}
+.filtre[open] summary{border-color:var(--mark)}
+.filtre[open] summary svg{transform:rotate(180deg)}
+.filtre-choix{position:absolute;z-index:5;top:calc(100% + 6px);left:0;min-width:220px;max-height:320px;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.filtre-choix label{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:15px}
+.filtre-choix label:hover{background:var(--bg)}
+.filtre-choix input{accent-color:var(--mark);width:18px;height:18px;margin:0}
+.filtres-actifs{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+#cat-puces{display:flex;flex-wrap:wrap;gap:8px}
+.puce{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg-2);font-size:14px}
+.puce span{font-size:18px;line-height:1;color:var(--muted)}
+.puce:hover span{color:var(--mark)}
+.filtres-actifs .lien{border:0;background:none;color:var(--mark);font-weight:600;padding:6px 0}
+.cat-sous{list-style:none;margin:0;padding:14px 0;columns:2 240px;column-gap:32px;border-bottom:1px solid var(--line)}
+.cat-sous:empty{display:none}
+.cat-sous a{display:block;padding:7px 0;color:var(--ink);text-decoration:none}
+.cat-sous a:hover{color:var(--mark)}
+#cat-count{margin:16px 0}
+@media(max-width:600px){.filtres{position:relative}.filtre{position:static}.filtre-choix{top:100%;left:0;right:0;min-width:0}}
+/* Mode visiteur (visiteur.js) : étoile « Favoris » et cœur « J'aime » sur les cartes, favoris de 24 h, recherches récentes, suivi sans compte. */
+.carte-objet{position:relative;min-width:0;display:flex;flex-direction:column}
+.pastilles{position:absolute;top:8px;right:8px;display:flex;gap:6px}
+.pastille{width:38px;height:38px;border-radius:50%;border:0;display:grid;place-items:center;background:rgba(17,19,24,.78);color:var(--ink);cursor:pointer;transition:transform .15s}
+.pastille svg,.etoile-fiche svg,.jaime-fiche svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linejoin:round}
+.pastille:hover{transform:scale(1.08)}.pastille:active{transform:scale(.92)}
+.pastille.oui,.etoile-fiche.oui{color:var(--mark)}.pastille.oui svg,.etoile-fiche.oui svg,.jaime-fiche.oui svg{fill:currentColor}
+.etoile-fiche,.jaime-fiche{gap:8px;width:100%}.etoile-fiche.oui{border-color:var(--mark)}
+@media (prefers-reduced-motion:no-preference){.pastille.oui svg{animation:battre .35s ease-out}}
+@keyframes battre{50%{transform:scale(1.3)}}
+.result .ph .expire{position:absolute;left:8px;top:8px;font-size:11.5px;font-weight:600;background:rgba(17,19,24,.82);color:var(--ink);border-radius:6px;padding:3px 7px}
+.result .ph .expire.bientot{color:#111318;background:var(--mark)}
+.historique,.puces-recherches{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.historique>.muted{font-size:13px;margin-right:4px}
+.puce[data-recherche]{cursor:pointer;color:var(--ink)}.puce[data-recherche]:hover{border-color:var(--mark)}
+.plus-objets{align-self:center;margin-top:8px}
+.favoris-contenu{display:flex;flex-direction:column;gap:22px}
+.avertissement-24h{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:16px 18px;border-radius:var(--r);border:1.5px solid var(--mark);background:color-mix(in srgb,var(--mark) 10%,var(--surface))}
+.avertissement-24h>div{display:flex;flex-direction:column;gap:4px;flex:1 1 260px}.avertissement-24h span:not(.sablier){color:var(--muted);font-size:14px}
+.sablier{font-size:28px;line-height:1}
+.favoris-historique h3{font-size:17px;margin:0}
+.petit{font-size:12.5px}
+dialog.visiteur{text-align:center;width:min(460px,calc(100% - 32px))}
+dialog.visiteur h2{font-size:24px;margin:4px 0}
+dialog.visiteur p{margin:0}
+dialog.visiteur .sablier{font-size:40px}
+.btns.colonne{flex-direction:column;align-items:stretch;margin-top:6px}
+.etapes-compte{text-align:left;margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:14px}
 </style>
 <link rel="canonical" href="https://toptroc.com/">
 <link rel="alternate" hreflang="fr" href="https://toptroc.com/">
@@ -460,7 +516,7 @@ details.plus summary::-webkit-details-marker{display:none}
         <p class="acc-fort">Vous proposez. Vous choisissez. TopTroc s'occupe du reste.</p>
         <div class="acc-btns">
           <button class="acc-btn y" type="button" data-proposer>Proposer un objet</button>
-          <button class="acc-btn g" type="button" data-objets>Objets disponibles</button>
+          <button class="acc-btn g" type="button" data-objets>Demander un objet</button>
         </div>
         <form class="acc-search" id="f-search-home" role="search">
           <select name="cat" aria-label="Catégorie"><option value="">Tout</option></select>
@@ -549,14 +605,44 @@ details.plus summary::-webkit-details-marker{display:none}
 
   </section>
 
+  <!-- Recherche globale dans les objets et les pages publiques. -->
+  <section class="view" id="v-global" hidden>
+    <div class="hero"><span class="label">Rechercher</span><h2>Que cherchez-vous ?</h2></div>
+    <form class="search" id="f-global" role="search">
+      <input type="search" name="q" maxlength="100" placeholder="Rechercher sur TopTroc" aria-label="Rechercher sur TopTroc"><button type="submit">Chercher</button>
+    </form>
+    <p class="muted" id="global-status" aria-live="polite">Recherchez parmi les objets et les pages du site.</p>
+    <div id="global-pages"></div>
+    <div id="global-objets" class="results"></div>
+  </section>
+
+  <!-- FAVORIS (bouton étoile de l'en-tête) : favoris, recherches récentes et suivi sans compte (visiteur.js). -->
+  <section class="view" id="v-favoris" hidden>
+    <div class="hero"><span class="label">Favoris</span><h2>Vos favoris</h2></div>
+    <div id="favoris-contenu" class="favoris-contenu"></div>
+  </section>
+
+  <!-- PAGE D'UNE CATÉGORIE (« Voir tout » de la bande des catégories) : sous-catégories et filtres, comme Vinted. -->
+  <section class="view" id="v-categorie" hidden>
+    <nav class="fil" aria-label="Fil d'Ariane"><a href="/#objets">Objets</a><span id="cat-fil"></span></nav>
+    <h2 id="cat-titre"></h2>
+    <div class="filtres" id="cat-filtres"></div>
+    <div class="filtres-actifs" id="cat-actifs" hidden><span id="cat-puces"></span><button type="button" class="lien" id="cat-effacer">Effacer les filtres</button></div>
+    <ul class="cat-sous" id="cat-sous"></ul>
+    <p class="muted" id="cat-count" aria-live="polite"></p>
+    <div class="results" id="cat-results"></div>
+  </section>
+
   <!-- RECHERCHE (sans compte) -->
   <section class="view" id="v-search" hidden>
     <div class="hero"><span class="label">Recherche</span><h2 id="search-title">Ce qui est proposé</h2></div>
     <form class="search" id="f-search" role="search">
       <input type="search" name="q" maxlength="100" placeholder="Chercher un objet" aria-label="Chercher un objet"><button type="submit">Chercher</button>
     </form>
+    <div class="historique" id="search-historique" hidden></div>
     <p class="muted" id="search-count" aria-live="polite"></p>
     <div class="results" id="results"></div>
+    <button class="acc-btn g plus-objets" type="button" id="search-plus" hidden>Voir plus d'objets</button>
     <div class="card stack" data-anon>
       <b>Un objet vous plaît ?</b>
       <span class="muted">Créez un compte gratuit, ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.</span>
@@ -578,7 +664,7 @@ details.plus summary::-webkit-details-marker{display:none}
       <label class="field"><span>Pseudo</span><input class="input" name="pseudo" required minlength="2" maxlength="40" autocomplete="nickname"></label>
       <label class="field"><span>Ville</span><input class="input" name="zone" maxlength="80" placeholder="Marseille" autocomplete="address-level2"></label>
       <label class="field"><span>Mot de passe</span><input class="input" type="password" name="mot_de_passe" required minlength="8" maxlength="200" autocomplete="new-password">
-        <span class="muted" style="font-size:13px;font-weight:400">8 caractères minimum. La prochaine fois, connectez-vous avec « Mon espace » en haut de page, sans attendre d'e-mail.</span></label>
+        <span class="muted" style="font-size:13px;font-weight:400">8 caractères minimum. La prochaine fois, connectez-vous avec « Connexion » en haut de page, sans attendre d'e-mail.</span></label>
       <label class="field"><span>Téléphone portable (facultatif)</span><input class="input" type="tel" name="telephone" maxlength="30" placeholder="06 12 34 56 78" autocomplete="tel"></label>
       <p class="muted" style="font-size:14px">Avec votre portable, vous recevez un SMS en plus de l'e-mail quand le Grand Troc vous propose un échange : rien d'autre. Votre pseudo et votre ville sont visibles des personnes avec qui vous échangez. Votre e-mail et votre téléphone ne le sont jamais.</p>
       <button class="cta" type="submit">Créer mon compte</button>
@@ -591,7 +677,7 @@ details.plus summary::-webkit-details-marker{display:none}
       <div><h2 id="esp-nom">Mon espace</h2><span class="muted" id="esp-zone"></span></div></div>
     <form class="card stack" id="f-mdp-rappel" hidden>
       <span class="label">Plus besoin d'e-mail pour vous connecter</span>
-      <p class="muted" style="font-size:15px;margin:0">Choisissez un mot de passe : la prochaine fois, « Mon espace » en haut de page vous connecte tout de suite.</p>
+      <p class="muted" style="font-size:15px;margin:0">Choisissez un mot de passe : la prochaine fois, « Connexion » en haut de page vous connecte tout de suite.</p>
       <input class="input" type="email" name="email" autocomplete="username" hidden>
       <label class="field"><span>Mot de passe</span><input class="input" type="password" name="mot_de_passe" required minlength="8" maxlength="200" autocomplete="new-password"></label>
       <div class="btns"><button class="btn primary" type="submit">Enregistrer mon mot de passe</button><button class="btn" type="button" id="mdp-plus-tard">Plus tard</button></div>
@@ -672,6 +758,7 @@ details.plus summary::-webkit-details-marker{display:none}
   <section class="view" id="v-proposer" hidden>
     <form class="stack proposer" id="f-obj">
       <h2>Proposer un objet</h2>
+      <p class="notice" data-anon>Pas besoin de compte pour remplir l'annonce : il vous sera demandé à la dernière étape, pour la publier.</p>
       <label class="photo-pick" id="photo-pick">
         <input type="file" name="photo" accept="image/*" required>
         <span id="photo-txt"><span class="rond" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><b>Ajouter une photo</b><span class="muted" style="font-size:13px">L'objet en entier, en lumière du jour.</span></span>
@@ -842,7 +929,7 @@ async function api(chemin,{method='GET',body}={}){
 
 /* Historique : chaque vue ouverte a son adresse (#monespace, #echanges, #objet-12…) et sa propre entrée,
    pour revenir à la vue précédente avec le bouton Précédent du navigateur ou le geste du trackpad. */
-const ADRESSES={home:'',lists:'#monespace',trades:'#echanges',drop:'#depot',mod:'#moderation',match:'#match',proposer:'#proposer'};
+const ADRESSES={home:'',favoris:'#favoris',lists:'#monespace',trades:'#echanges',drop:'#depot',mod:'#moderation',match:'#match',proposer:'#proposer'};
 function marquer(h,remplacer){
   if(location.hash===h)return;
   const url=h||location.pathname+location.search;
@@ -852,6 +939,9 @@ function suivre(h){
   if(h==='#mon-espace'){h='#monespace';history.replaceState(history.state,'',h)} // ancienne adresse
   if(h.startsWith('#objet-'))return ouvrirObjet(+h.slice(7));
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} return chercher(q)}
+  if(h==='#recherche-site')return ouvrirRechercheSite();
+  if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
+  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return pageCategorie(c,sous)}
   if(h==='#objets')return chercher('');
   if(h.startsWith('#echange-')){go('trades',{adresse:h});document.getElementById(h.slice(1))?.scrollIntoView();return}
   const v=Object.keys(ADRESSES).find(k=>ADRESSES[k]===h);
@@ -862,17 +952,18 @@ addEventListener('popstate',()=>{TT.fermer();TT.ouvrirConnexion(false);suivre(lo
 
 const ESPACE=['lists','trades','drop','mod'];
 function go(v,{adresse,remplacer=false}={}){
-  if(!moi&&!['home','signup','search','objet'].includes(v)){v='home';remplacer=true}
+  if(!moi&&!['home','signup','search','objet','global','categorie','favoris','proposer'].includes(v)){v='home';remplacer=true}
   if(adresse===undefined)adresse=ADRESSES[v];
   if(adresse!==undefined)marquer(adresse,remplacer);
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
   vueActuelle=v;
-  document.body.classList.toggle('large',['home','search','objet'].includes(v));
+  document.body.classList.toggle('large',['home','search','objet','global','categorie'].includes(v));
   const onglet=ESPACE.includes(v)?'lists':v;
   $$('nav.tabs button').forEach(b=>{b.dataset.tab===onglet?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   marquerOnglets();
   window.scrollTo(0,0);
   if(v==='mod')chargerSignalements();
+  if(v==='favoris')Visiteur.afficher();
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
 $('#tabs').addEventListener('click',e=>{
@@ -887,7 +978,11 @@ $('#tabs').addEventListener('click',e=>{
 /* Menu du haut : sur l'accueil, les liens « /#… » changent de vue sans recharger la page. */
 const calmeDefil=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
 async function naviguer(h){
+  if(h==='#recherche-site')return ouvrirRechercheSite();
+  if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
+  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return pageCategorie(c,sous)}
   if(h==='#objets')return chercher('');
+  if(h==='#favoris')return go('favoris');
   if(h==='#monespace'){
     // Session gardée sur cet appareil mais pas encore relue (serveur qui se réveille) : on l'attend.
     if(jeton&&!moi){toast('Ouverture de votre espace…'); await chargerSession()}
@@ -896,6 +991,9 @@ async function naviguer(h){
     go('home'); return TT.ouvrirConnexion();
   }
   if(h==='#se-connecter'){go('home',{remplacer:true});return versCompte()}
+  // Menu du compte (Mes échanges, Le Match) : la vue du membre, sans recharger.
+  const vue=moi&&h&&Object.keys(ADRESSES).find(k=>k!=='home'&&ADRESSES[k]===h);
+  if(vue)return go(vue);
   go('home',{adresse:h||''});
   const cible=h&&document.getElementById(h.slice(1)); if(cible)cible.scrollIntoView({behavior:calmeDefil});
 }
@@ -939,13 +1037,14 @@ const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
     requestAnimationFrame(image)})(performance.now());
 })();
 
-/* Boutons de l'accueil : « Proposer un objet » (et « Je participe ») mène au formulaire d'objet une fois connecté,
-   sinon à la création de compte ; « Objets disponibles » et « Tout voir » ouvrent tout ce qui est proposé. */
+/* Boutons de l'accueil : « Proposer un objet » (et « Je participe ») mène au formulaire d'objet, même sans compte
+   (mode visiteur : le compte est demandé à la dernière étape, « Publier ») ; « Demander un objet » et « Tout voir »
+   ouvrent tout ce qui est proposé. */
 // Se connecter ou créer un compte : uniquement par la fenêtre du bouton en haut de page (site.js).
 function versCompte(){scrollTo({top:0,behavior:calmeDefil});TT.ouvrirConnexion(true,undefined,!store.get('troc.email'))}
 function versProposer(){
-  if(!moi)return versCompte();
   go('proposer');
+  if(!moi)Detail.charger().catch(()=>{}); // sous-catégories et caractéristiques, chargées avec les listes pour un membre
 }
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-proposer]'))versProposer();
@@ -962,9 +1061,11 @@ const picto=slug=>`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${PIC
 function afficherCategories(cats){
   $('#f-search-home').cat.innerHTML='<option value="">Tout</option>'+cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
 }
+// Une carte d'objet, avec l'étoile « Favoris » et, pour un membre, le cœur « J'aime » (visiteur.js), sur la photo, hors du lien.
 function carteObjet(o){
-  return `<a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}</div>
-    <b>${esc(o.titre)}</b><span>${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></a>`;
+  if(typeof Visiteur!=='undefined')Visiteur.retenir(o);
+  return `<div class="carte-objet"><a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}</div>
+    <b>${esc(o.titre)}</b><span>${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></a>${typeof Visiteur!=='undefined'?Visiteur.boutons(o):''}</div>`;
 }
 async function chargerFil(){
   try{
@@ -977,7 +1078,7 @@ async function chargerFil(){
 function afficherSession(){
   $$('[data-anon]').forEach(x=>x.hidden=!!moi); $$('[data-auth]').forEach(x=>x.hidden=!moi);
   document.body.classList.toggle('membre',!!moi);
-  TT.compte(!!moi); $('#compte').title=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
+  TT.compte(moi||(jeton?undefined:null)); $('#compte').title=moi?[moi.pseudo,moi.zone].filter(Boolean).join(' · '):'';
   if(moi){$('#esp-avatar').textContent=(moi.pseudo||'?')[0].toUpperCase(); $('#esp-nom').textContent=moi.pseudo; $('#esp-zone').innerHTML=[esc(moi.zone||''),reputation(moi)].filter(Boolean).join(' · ');
     $('#account-txt').innerHTML=`<b>${esc(moi.pseudo)}</b> · ${esc(moi.email)}`; $('#f-phone').telephone.value=moi.telephone||'';
     store.set('troc.email',moi.email); $$('#f-mdp [name=email],#f-mdp-rappel [name=email]').forEach(x=>x.value=moi.email);
@@ -986,7 +1087,7 @@ function afficherSession(){
   else $('#f-mdp-rappel').hidden=true;
   if(typeof Premium!=='undefined')Premium.afficher();
 }
-function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);afficherSession();go('home')}
+function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);store.set('troc.pseudo',null);afficherSession();go('home')}
 
 /* Relit le compte de la session gardée dans le navigateur. Une seule lecture à la fois ; sans réponse du
    serveur, la session est gardée (pas de retour à la connexion). */
@@ -1000,17 +1101,20 @@ async function ouvrirSession(r,vue){
   jeton=r.jeton; store.set('troc.jeton',jeton); moi=r.utilisateur;
   afficherSession(); await toutCharger(); go(vue);
   if(!moi.a_un_mot_de_passe&&store.get('troc.mdp-plus-tard')!==moi.email)$('#f-mdp-rappel').hidden=false;
-  reprendreAnnonce();
+  // Mode visiteur : ses favoris passent dans le compte, et l'annonce remplie sans compte part maintenant.
+  if(!(await Visiteur.apresConnexion()))reprendreAnnonce();
 }
-// Connexion par mot de passe depuis la pop-up « Mon espace » (site.js).
-TT.surConnexion=async r=>{await ouvrirSession(r,'lists');toast('Bon retour '+moi.pseudo+' !')};
+// Fenêtre « Connexion » du haut de page (site.js) : mot de passe, code reçu par e-mail ou nouveau compte.
+TT.surConnexion=async(r,nouveau)=>{await ouvrirSession(r,'lists');if(!nouveau&&r.utilisateur.a_un_mot_de_passe)toast('Bon retour '+moi.pseudo+' !')};
+TT.apresMotDePasse=m=>{moi=m;$('#f-mdp-rappel').hidden=true;afficherSession();toast('Mot de passe enregistré')};
+TT.surDeconnexion=deconnecte;
 
 /* Mot de passe : à choisir après une connexion par e-mail, ou à changer dans « Mon compte ». */
 async function enregistrerMdp(e){
   e.preventDefault(); const f=e.target, b=f.querySelector('button[type=submit]'); b.disabled=true;
   try{moi=await api('/auth/mot-de-passe',{method:'PUT',body:{mot_de_passe:f.mot_de_passe.value}});
     f.reset(); $('#f-mdp-rappel').hidden=true; afficherSession();
-    toast('Mot de passe enregistré : connectez-vous avec « Mon espace », sans e-mail')}
+    toast('Mot de passe enregistré : connectez-vous avec « Connexion », sans e-mail')}
   catch(err){toast(err.message)} finally{b.disabled=false}
 }
 $('#f-mdp').onsubmit=enregistrerMdp; $('#f-mdp-rappel').onsubmit=enregistrerMdp;
@@ -1062,6 +1166,7 @@ $('#f-obj').onsubmit=async e=>{
   e.preventDefault(); const f=e.target, b=f.querySelector('button[type=submit]'); $('#obj-err').hidden=true;
   const annonce=AnnonceAilleurs.lire(f.annonce_origine.value);
   if(f.annonce_origine.value.trim()&&!annonce){$('#obj-err').textContent="Ce lien n'est pas une annonce Vinted ou Leboncoin. Corrigez-le ou videz le champ.";$('#obj-err').hidden=false;return}
+  if(!moi)return Visiteur.publierSansCompte(f); // dernière étape : le compte, puis la publication
   b.disabled=true; b.textContent='Envoi de la photo…';
   try{
     const photo=await envoyerPhoto(f.photo.files[0]); b.textContent='Publication…';
@@ -1377,12 +1482,15 @@ async function ouvrirObjet(id){
     const nomCat=o.sous_categorie_slug?Detail.nom(o.categorie_slug,o.sous_categorie_slug):esc(categories[o.categorie_slug]||o.categorie_slug);
     const mien=moi&&o.proprietaire_id===moi.id, dispo=o.statut==='disponible';
     let actions;
+    // L'étoile « Favoris » pour tous, le cœur « J'aime » du Match pour un membre (visiteur.js).
+    Visiteur.retenir(o);
+    const pastilles=Visiteur.boutonsFiche(o);
     if(!dispo)actions='<p class="status">Cet objet a déjà trouvé preneur.</p>';
     else if(mien)actions=`<p class="muted">C'est votre objet.</p><button class="acc-btn g" type="button" data-onglet="ai">Voir mes objets</button>`;
-    else if(moi)actions=`<button class="acc-btn a" type="button" id="fiche-aime">♥ J'aime</button>
+    else if(moi)actions=`${pastilles}
       <button class="acc-btn g" type="button" id="fiche-souhait">Ajouter « ${nomCat} » à mes souhaits</button>
       <p class="muted note">Si ${esc(pseudo)} aime un de vos objets, c'est un match : vous échangez à deux, tout de suite.</p>`;
-    else actions=`<button class="acc-btn y" type="button" data-vers-compte>Créer mon compte pour l'échanger</button>
+    else actions=`${pastilles}<button class="acc-btn y" type="button" data-vers-compte>Créer mon compte pour l'échanger</button>
       <p class="muted note">C'est gratuit. Ajoutez ce que vous pouvez donner : TopTroc vous propose l'échange, même à trois.</p>`;
     $('#fiche').innerHTML=`<div class="fiche-photo">${o.photo_url?`<img src="${esc(grande(o.photo_url))}" alt="${esc(o.titre)}">`:''}</div>
       <div class="fiche-panneau">
@@ -1408,11 +1516,6 @@ $('#objet-retour').onclick=()=>{
 };
 $('#fiche').addEventListener('click',async e=>{
   const o=ficheObjet; if(!o)return;
-  if(e.target.closest('#fiche-aime')){const b=e.target.closest('#fiche-aime'); b.disabled=true;
-    try{const r=await api('/match/avis',{method:'POST',body:{objet_id:o.id,aime:true}});
-      b.textContent='♥ Vous aimez'; document.dispatchEvent(new Event('tt:match'));
-      toast(r.match?`C'est un match avec ${r.match.avec.pseudo} ! Concluez-le dans Match.`:'Noté ! Si l\'intérêt est réciproque, c\'est un match.')}
-    catch(err){toast(err.message);b.disabled=false}}
   if(e.target.closest('#fiche-souhait')){const b=e.target.closest('#fiche-souhait'); b.disabled=true;
     try{await api('/moi/souhaits',{method:'POST',body:{categorie_slug:o.categorie_slug,sous_categorie_slug:o.sous_categorie_slug}});
       b.textContent='Ajouté à vos souhaits'; toast('Ajouté à vos souhaits'); chargerListes(); chargerEchanges()}
@@ -1535,22 +1638,139 @@ setInterval(afficherGrandTroc,30e3);
 /* Recherche libre : aucun compte nécessaire, l'API ne renvoie que les objets en ligne. */
 async function chercher(q,cat=''){
   q=q.trim(); // vide : tout ce qui est proposé en ce moment (« Voir les objets » du menu)
-  const ancre=q?'#recherche='+encodeURIComponent(q):'#objets';
+  const ancre=q?'#recherche='+encodeURIComponent(q):cat?'#categorie='+encodeURIComponent(cat):'#objets';
   $('#f-search').q.value=q; $('#search-title').textContent=q?`« ${q} »`:cat?(categories[cat]||'Ce qui est proposé'):'Ce qui est proposé';
-  $('#search-count').textContent='Recherche…'; $('#results').innerHTML='';
-  go('search',{adresse:ancre});
+  $('#search-count').textContent='Recherche…'; $('#results').innerHTML=''; $('#search-plus').hidden=true;
+  go('search',{adresse:ancre}); Visiteur.noter(q,cat);
   try{
     const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat);
     const objets=await api('/objets'+(p.size?'?'+p:''));
+    Suite={p,vus:objets.length}; $('#search-plus').hidden=objets.length<PAGE_OBJETS;
     $('#search-count').textContent=objets.length?TT_I18N.available(objets.length):'';
     $('#results').innerHTML=objets.length?objets.map(carteObjet).join('')
       :!q?`<p class="empty">Aucun objet proposé pour l'instant. Soyez le premier : créez un compte et ajoutez ce qui dort chez vous.</p>`
       :`<p class="empty">Rien pour « ${esc(q)} » pour l'instant. Essayez un mot plus large (« vélo » plutôt qu'un modèle), ou créez un compte : votre souhait sera servi dès qu'un objet arrive.</p>`;
   }catch(err){$('#search-count').textContent='';toast(err.message)}
 }
+/* Tout le catalogue, sans compte : l'API répond par pages de 200 objets, « Voir plus d'objets » charge la suivante. */
+const PAGE_OBJETS=200; let Suite=null;
+$('#search-plus').onclick=async e=>{
+  if(!Suite)return; const b=e.currentTarget; b.disabled=true;
+  try{const p=new URLSearchParams(Suite.p); p.set('decalage',Suite.vus);
+    const objets=await api('/objets?'+p); Suite.vus+=objets.length;
+    $('#results').insertAdjacentHTML('beforeend',objets.map(carteObjet).join(''));
+    $('#search-count').textContent=TT_I18N.count(Suite.vus,'objet'); b.hidden=objets.length<PAGE_OBJETS}
+  catch(err){toast(err.message)} finally{b.disabled=false}
+};
+/* Page d'une catégorie : objets de la catégorie, affinés sur le site par sous-catégorie, caractéristiques à choix
+   (celles du document des catégories ; les champs libres comme la marque ne filtrent pas), état et tri. */
+const Cat={slug:'',sous:'',caracs:{},etats:[],tri:'recent',objets:[],detail:null};
+const ETATS_FILTRE=['neuf','comme_neuf','tres_bon','bon','correct'];
+async function pageCategorie(slug,sous=''){
+  const nouvelle=slug!==Cat.slug;
+  Object.assign(Cat,{slug,sous},nouvelle?{caracs:{},etats:[],tri:'recent',objets:[]}:{});
+  if(!nouvelle)Cat.caracs={}; // une autre sous-catégorie n'a pas les mêmes caractéristiques
+  go('categorie',{adresse:'#categorie='+encodeURIComponent(slug+(sous?'/'+sous:''))});
+  $('#cat-titre').textContent=categories[slug]||slug; $('#cat-count').textContent='Recherche…';
+  $('#cat-results').innerHTML=''; $('#cat-filtres').innerHTML=''; $('#cat-sous').innerHTML='';
+  try{
+    const [cats,objets]=await Promise.all([api('/categories'),nouvelle||!Cat.objets.length?api('/objets?'+new URLSearchParams({categorie:slug})):Cat.objets]);
+    if(Cat.slug!==slug||vueActuelle!=='categorie')return;
+    Cat.detail=cats.find(c=>c.slug===slug)||{slug,libelle:slug,sous_categories:[],caracteristiques:[]}; Cat.objets=objets;
+    afficherCategorie();
+  }catch(err){$('#cat-count').textContent='';toast(err.message)}
+}
+function afficherCategorie(){
+  const d=Cat.detail, t=x=>TT_I18N.t(String(x)), sous=(d.sous_categories||[]).find(x=>x.slug===Cat.sous);
+  const lien=s=>'#categorie='+encodeURIComponent(d.slug+(s?'/'+s:''));
+  $('#cat-titre').textContent=t(sous?sous.libelle:d.libelle);
+  $('#cat-fil').innerHTML=' › '+(sous?`<a href="${lien('')}">${esc(t(d.libelle))}</a> › <span>${esc(t(sous.libelle))}</span>`:`<span>${esc(t(d.libelle))}</span>`);
+  // Sous-catégories à parcourir, tant qu'aucune n'est choisie
+  $('#cat-sous').innerHTML=sous?'':(d.sous_categories||[]).map(x=>`<li><a href="${lien(x.slug)}">${esc(t(x.libelle))}</a></li>`).join('');
+  const caracs=(d.caracteristiques||[]).filter(c=>c.options&&c.options.length&&(!c.pour||(Cat.sous&&c.pour.includes(Cat.sous))));
+  const menu=(cle,titre,choix,type='checkbox')=>`<details class="filtre" data-filtre="${cle}"><summary>${esc(titre)}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary><div class="filtre-choix">${
+    choix.map(([v,l,coche])=>`<label><input type="${type}" name="${cle}" value="${esc(v)}"${coche?' checked':''}><span>${esc(l)}</span></label>`).join('')}</div></details>`;
+  $('#cat-filtres').innerHTML=
+    menu('sous','Catégorie',[['','Toutes',!Cat.sous],...(d.sous_categories||[]).map(x=>[x.slug,t(x.libelle),x.slug===Cat.sous])],'radio')
+    +caracs.map(c=>menu('c:'+c.cle,t(c.libelle),c.options.map(o=>[o,t(o),(Cat.caracs[c.cle]||[]).includes(o)]))).join('')
+    +menu('etat','État',ETATS_FILTRE.map(e=>[e,ETATS[e],Cat.etats.includes(e)]))
+    +menu('tri','Classer par',[['recent','Plus récents',Cat.tri==='recent'],['ancien','Plus anciens',Cat.tri==='ancien']],'radio');
+  // Filtres actifs, chacun avec sa croix
+  const puces=[];
+  for(const [cle,vals] of Object.entries(Cat.caracs))vals.forEach(v=>puces.push([`c:${cle}`,v,t(v)]));
+  Cat.etats.forEach(e=>puces.push(['etat',e,ETATS[e]]));
+  $('#cat-puces').innerHTML=puces.map(([f,v,l])=>`<button type="button" class="puce" data-f="${esc(f)}" data-v="${esc(v)}" aria-label="Retirer le filtre ${esc(l)}">${esc(l)}<span aria-hidden="true">×</span></button>`).join('');
+  $('#cat-actifs').hidden=!puces.length;
+  let liste=Cat.objets.filter(o=>(!Cat.sous||o.sous_categorie_slug===Cat.sous)&&(!Cat.etats.length||Cat.etats.includes(o.etat))
+    &&Object.entries(Cat.caracs).every(([cle,vals])=>!vals.length||vals.includes((o.caracteristiques||{})[cle])));
+  liste=[...liste].sort((a,b)=>(Cat.tri==='ancien'?1:-1)*(new Date(a.cree_le)-new Date(b.cree_le)));
+  $('#cat-count').textContent=liste.length?TT_I18N.available(liste.length):'';
+  $('#cat-results').innerHTML=liste.length?liste.map(carteObjet).join('')
+    :`<p class="empty">${Cat.objets.length?'Aucun objet ne correspond à ces filtres pour l\'instant.':'Aucun objet proposé dans cette catégorie pour l\'instant.'}</p>`;
+}
+$('#cat-filtres').addEventListener('change',e=>{
+  const i=e.target, f=i.name;
+  if(f==='sous'){pageCategorie(Cat.slug,i.value);return}
+  if(f==='tri')Cat.tri=i.value;
+  else{const vals=[...$('#cat-filtres').querySelectorAll(`input[name="${CSS.escape(f)}"]:checked`)].map(x=>x.value);
+    if(f==='etat')Cat.etats=vals;else Cat.caracs[f.slice(2)]=vals}
+  const ouvert=i.closest('details').dataset.filtre; afficherCategorie();
+  $('#cat-filtres').querySelector(`details[data-filtre="${CSS.escape(ouvert)}"]`).open=true; // le menu reste ouvert pour cocher plusieurs choix
+});
+$('#cat-filtres').addEventListener('toggle',e=>{if(e.target.open)$$('#cat-filtres details').forEach(x=>{if(x!==e.target)x.open=false})},true);
+document.addEventListener('click',e=>{if(!e.target.closest('#cat-filtres'))$$('#cat-filtres details[open]').forEach(x=>x.open=false)});
+$('#cat-puces').addEventListener('click',e=>{
+  const b=e.target.closest('.puce'); if(!b)return;
+  if(b.dataset.f==='etat')Cat.etats=Cat.etats.filter(x=>x!==b.dataset.v);
+  else{const cle=b.dataset.f.slice(2);Cat.caracs[cle]=(Cat.caracs[cle]||[]).filter(x=>x!==b.dataset.v)}
+  afficherCategorie();
+});
+$('#cat-effacer').onclick=()=>{Cat.caracs={};Cat.etats=[];afficherCategorie()};
+
 $('#f-search-home').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value,e.target.cat.value)};
 $('#f-search').onsubmit=e=>{e.preventDefault();chercher(e.target.q.value)};
 $('#search-signup').onclick=versCompte;
+
+/* Recherche globale : pages publiques et objets disponibles. */
+const pagesRecherche=['concept','comment-ca-marche','grand-troc','particuliers','pros','collectivites','faq','mentions-legales','cgu','confidentialite','regles'];
+let rechercheSequence=0;
+function ouvrirRechercheSite(){
+  rechercheSequence++;
+  go('global',{adresse:'#recherche-site'});
+  $('#f-global').q.value='';
+  $('#global-pages').innerHTML=''; $('#global-objets').innerHTML='';
+  $('#global-status').textContent='Recherchez parmi les objets et les pages du site.';
+  $('#f-global').q.focus();
+}
+const normaliserRecherche=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase();
+async function rechercherSite(terme){
+  const q=terme.trim(); if(!q)return ouvrirRechercheSite();
+  const seq=++rechercheSequence;
+  go('global',{adresse:'#site='+encodeURIComponent(q)});
+  $('#f-global').q.value=q; $('#global-pages').innerHTML=''; $('#global-objets').innerHTML='';
+  $('#global-status').textContent='Recherche…';
+  const mots=normaliserRecherche(q).split(/\s+/).filter(Boolean);
+  const [pages,objets]=await Promise.all([
+    Promise.allSettled(pagesRecherche.map(async slug=>{
+      const url=TT_I18N.localPath('/'+slug+'/');
+      const r=await fetch(url);if(!r.ok)throw Error('page');
+      const doc=new DOMParser().parseFromString(await r.text(),'text/html');
+      const main=doc.querySelector('main');if(!main)return null;
+      const titre=main.querySelector('h1')?.textContent.trim()||slug;
+      const contenu=main.textContent.replace(/\s+/g,' ').trim();
+      if(!mots.every(m=>normaliserRecherche(titre+' '+contenu).includes(m)))return null;
+      return {url,titre};
+    })),
+    api('/objets?'+new URLSearchParams({q})).then(value=>({value})).catch(()=>({erreur:true}))
+  ]);
+  if(seq!==rechercheSequence||vueActuelle!=='global')return;
+  const matches=pages.filter(x=>x.status==='fulfilled'&&x.value).map(x=>x.value);
+  const pagesErreur=pages.some(x=>x.status==='rejected');
+  $('#global-pages').innerHTML='<h3>Pages du site</h3>'+(matches.length?'<ul>'+matches.map(p=>'<li><a href="'+esc(p.url)+'">'+esc(p.titre)+'</a></li>').join('')+'</ul>':'<p class="muted">Aucune page trouvée.</p>');
+  $('#global-objets').innerHTML='<h3>Objets</h3>'+(objets.erreur?'<p class="muted">Objets temporairement indisponibles.</p>':objets.value.length?objets.value.map(carteObjet).join(''):'<p class="muted">Aucun objet trouvé.</p>');
+  $('#global-status').textContent=pagesErreur?'Certaines pages sont temporairement indisponibles.':'';
+}
+$('#f-global').onsubmit=e=>{e.preventDefault();rechercherSite(e.target.q.value)};
 
 /* Démarrage */
 async function toutCharger(){
@@ -1569,9 +1789,13 @@ async function demarrer(){
     try{await verifierLien()}catch(err){toast(err.message)} return;
   }
   await session;
+  if(moi)Visiteur.apresConnexion(); else Visiteur.rafraichir();
+  if(Visiteur.demarrer(h))return; // liens de confirmation ou d'arrêt du suivi sans compte
   if(h.startsWith('#objet-')){if(moi)toutCharger(); ouvrirObjet(+h.slice(7)); return}
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
-  if(['#objets','#se-connecter'].includes(h)||(h==='#monespace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
+  if(h.startsWith('#categorie=')){if(moi)toutCharger();suivre(h);return}
+  if(h==='#recherche-site'||h.startsWith('#site=')){if(moi)toutCharger();suivre(h);return}
+  if(['#objets','#se-connecter','#favoris'].includes(h)||(h==='#monespace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
   if(!moi)return;
   await gt; await toutCharger();
   if(store.get('troc.annonce'))reprendreAnnonce();
@@ -1582,5 +1806,6 @@ demarrer();
 </script>
 <script src="match.js"></script>
 <script src="premium.js"></script>
+<script src="visiteur.js"></script>
 </body>
 </html>

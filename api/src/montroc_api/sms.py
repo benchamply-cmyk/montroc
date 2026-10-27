@@ -60,3 +60,15 @@ def boucle_proposee(numero: str, nb_echanges: int, lien: str, grand_troc: bool) 
     qui = "Le Grand Troc" if grand_troc else "TopTroc"
     quoi = "un échange" if nb_echanges == 1 else f"{nb_echanges} échanges"
     envoyer(numero, f"{qui} vous propose {quoi}. Vous avez 48 h pour répondre : {lien}")
+
+
+def suivi_a_confirmer(numero: str, lien: str) -> None:
+    envoyer(numero, f"TopTroc : confirmez le suivi de vos recherches : {lien}")
+
+
+def alerte_visiteur(numero: str, nb_nouveautes: int, favoris_bientot_effaces: int, lien: str) -> None:
+    if nb_nouveautes:
+        quoi = "1 nouvel objet" if nb_nouveautes == 1 else f"{nb_nouveautes} nouveaux objets"
+        envoyer(numero, f"TopTroc : {quoi} pour vos recherches. {lien}")
+    else:
+        envoyer(numero, f"TopTroc : vos favoris s'effacent bientôt. Créez un compte pour les garder : {lien}")

@@ -24,6 +24,13 @@ from sqlalchemy.orm import Session
 from .config import get_settings
 
 journal = logging.getLogger("montroc.courriels")
+# Sans réglage, Python n'écrit que les avertissements : on veut aussi voir chaque e-mail accepté par Brevo
+# dans le journal Render, pour savoir si un e-mail manquant est parti ou non.
+if not journal.handlers:
+    _sortie = logging.StreamHandler()
+    _sortie.setFormatter(logging.Formatter("%(levelname)s:     %(name)s - %(message)s"))
+    journal.addHandler(_sortie)
+    journal.setLevel(logging.INFO)
 
 
 @dataclass
@@ -84,7 +91,14 @@ def _par_brevo(courriel: Courriel) -> None:
     )
     try:
         with urlopen(requete, timeout=20) as reponse:
-            reponse.read()
+            message_id = json.loads(reponse.read() or b"{}").get("messageId", "?")
+        journal.info(
+            "E-mail « %s » accepté par Brevo pour %s (expéditeur %s, messageId %s)",
+            courriel.sujet,
+            courriel.destinataire,
+            adresse,
+            message_id,
+        )
     except HTTPError as e:
         # Brevo explique son refus (clé invalide, expéditeur non validé…) : le garder dans le journal.
         journal.error("Brevo refuse l'e-mail « %s » (%s) : %s", courriel.sujet, e.code, e.read()[:500])
@@ -113,9 +127,15 @@ def apres_validation(session: Session, fonction: Callable[..., None], *args) -> 
 def _expedier(session: Session) -> None:
     for fonction, args in session.info.pop("courriels", []):
         if get_settings().envoi_configure:
-            _envois.submit(fonction, *args)
+            _envois.submit(fonction, *args).add_done_callback(_signaler_panne)
         else:
             fonction(*args)
+
+
+def _signaler_panne(envoi) -> None:
+    """Une erreur imprévue dans le fil d'envoi serait perdue sans bruit : la garder dans le journal."""
+    if (erreur := envoi.exception()) is not None:
+        journal.error("Échec d'envoi d'un e-mail : %r", erreur)
 
 
 @event.listens_for(Session, "after_rollback")
@@ -126,13 +146,14 @@ def _oublier(session: Session) -> None:
 # Les textes : un seul endroit pour les relire et les corriger.
 
 
-def lien_magique(email: str, lien: str) -> None:
+def lien_magique(email: str, lien: str, code: str) -> None:
     envoyer(
         email,
-        "Votre lien de connexion à TopTroc",
-        "Bonjour,\n\nPour vous connecter à TopTroc, ouvrez ce lien (valable 20 minutes, une seule fois) :"
-        f"\n\n{lien}\n\n"
-        "Si vous n'avez rien demandé, ignorez simplement cet e-mail : personne ne peut se connecter sans ce lien.",
+        "Votre code de connexion à TopTroc",
+        f"Bonjour,\n\nVotre code TopTroc : {code}\n\n"
+        "Tapez-le dans la fenêtre ouverte sur le site (valable 20 minutes, une seule fois). "
+        f"Vous pouvez aussi ouvrir ce lien, depuis n'importe quel appareil :\n\n{lien}\n\n"
+        "Si vous n'avez rien demandé, ignorez simplement cet e-mail : personne ne peut se connecter sans ce code.",
     )
 
 
@@ -264,3 +285,39 @@ def echange_annule(email: str, pseudo: str, raison: str, lien: str) -> None:
 
 def decision_moderation(email: str, sujet: str, texte: str) -> None:
     envoyer(email, sujet, texte)
+
+
+# Mode visiteur : suivi sans compte (suivis.py).
+
+
+def suivi_a_confirmer(email: str, lien: str) -> None:
+    envoyer(
+        email,
+        "Confirmez le suivi de vos recherches TopTroc",
+        "Bonjour,\n\nVous avez demandé à être prévenu des nouveaux objets qui correspondent à vos recherches, et "
+        f"avant que vos favoris s'effacent. Confirmez en ouvrant ce lien :\n\n{lien}\n\n"
+        "Sans clic, nous ne vous écrirons plus. Si vous n'avez rien demandé, ignorez cet e-mail.",
+    )
+
+
+def alerte_visiteur(email: str, nouveautes: list[str], favoris_bientot_effaces: int, lien: str, arret: str) -> None:
+    parties = []
+    if nouveautes:
+        liste = "\n".join(f"- {x}" for x in nouveautes)
+        parties.append(f"Nouveaux objets pour vos recherches :\n\n{liste}")
+    if favoris_bientot_effaces:
+        quoi = (
+            "Votre favori s'efface" if favoris_bientot_effaces == 1 else f"{favoris_bientot_effaces} favoris s'effacent"
+        )
+        parties.append(
+            f"{quoi} dans quelques heures. Créez votre compte gratuit pour les garder : TopTroc cherchera aussi "
+            "l'échange qui vous les apporte."
+        )
+    sujet = "De nouveaux objets pour vous sur TopTroc" if nouveautes else "Vos favoris TopTroc vont s'effacer"
+    envoyer(
+        email,
+        sujet,
+        "Bonjour,\n\n"
+        + "\n\n".join(parties)
+        + f"\n\nVoir sur TopTroc : {lien}\n\nNe plus recevoir ces alertes : {arret}",
+    )

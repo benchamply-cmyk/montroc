@@ -1,10 +1,9 @@
 /* La langue dépend uniquement de l'URL : aucun stockage ni service de traduction tiers. */
 (()=>{
-  const flag=(body)=>`<svg class="langue-drapeau" viewBox="0 0 30 20" aria-hidden="true" focusable="false">${body}</svg>`;
   const languages={
-    fr:{prefix:'',label:'Français',flag:flag('<path fill="#fff" d="M0 0h30v20H0z"/><path fill="#002395" d="M0 0h10v20H0z"/><path fill="#ed2939" d="M20 0h10v20H20z"/>')},
-    en:{prefix:'/english',label:'English',flag:flag('<path fill="#fff" d="M0 0h30v20H0z"/><path fill="#ce1124" d="M12 0h6v20h-6z"/><path fill="#ce1124" d="M0 7h30v6H0z"/>')},
-    es:{prefix:'/espanol',label:'Español',flag:flag('<path fill="#aa151b" d="M0 0h30v20H0z"/><path fill="#f1bf00" d="M0 5h30v10H0z"/><path fill="#aa151b" d="M7 8h4v5H7z"/><path fill="#f1bf00" d="M8 9h2v2H8z"/>')}
+    fr:{prefix:'',label:'Français'},
+    en:{prefix:'/english',label:'English'},
+    es:{prefix:'/espanol',label:'Español'}
   };
   const lang=document.documentElement.lang in languages?document.documentElement.lang:'fr';
   const prefix=languages[lang].prefix;
@@ -44,8 +43,8 @@
     const label=lang==='es'?'Idioma':lang==='en'?'Language':'Langue';
     const current=languages[lang];
     return `<li class="langue" id="langue-site">
-      <button type="button" class="langue-bouton" aria-label="${label} : ${current.label}" aria-expanded="false" aria-controls="langue-choix">${current.flag}<span>${lang.toUpperCase()}</span><svg class="langue-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-      <ul id="langue-choix" hidden>${Object.entries(languages).filter(([code])=>code!==lang).map(([code,l])=>`<li><a href="${switchUrl(code)}" data-language="${code}" lang="${code}" hreflang="${code}" aria-label="${l.label}">${l.flag}<span>${code.toUpperCase()}</span></a></li>`).join('')}</ul>
+      <button type="button" class="langue-bouton" aria-label="${label} : ${current.label}" aria-expanded="false" aria-controls="langue-choix"><span>${lang.toUpperCase()}</span><svg class="langue-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+      <ul id="langue-choix" hidden>${Object.entries(languages).filter(([code])=>code!==lang).map(([code,l])=>`<li><a href="${switchUrl(code)}" data-language="${code}" lang="${code}" hreflang="${code}" aria-label="${l.label}"><span>${code.toUpperCase()}</span></a></li>`).join('')}</ul>
     </li>`;
   }
   function bindMenu(root){

@@ -48,7 +48,7 @@ for(const [lang,prefix] of [['en','english'],['es','espanol']]){
    }
    for(const js of scripts(html))parse(js,{ecmaVersion:'latest'});
   }
-  for(const js of ['site','match','premium','messages'])parse(read(`web/${prefix}/${js}.js`),{ecmaVersion:'latest'});
+  for(const js of ['site','match','premium','visiteur','messages'])parse(read(`web/${prefix}/${js}.js`),{ecmaVersion:'latest'});
  });
  test(`${lang}: le code, les routes API et les identifiants gardent leur sens`,()=>{
   const t=translator(lang);
@@ -80,15 +80,15 @@ test('changer de langue conserve page, recherche et ancre',()=>{
  }
  for(const pathname of ['/','/english','/espanol/'])assert.equal(runtime('fr',pathname).i.switchUrl('en'),'/english/');
 });
-test('drapeau et code actifs, seulement les deux autres langues dans le menu',()=>{
+test('code de la langue active sans drapeau, seulement les deux autres langues dans le menu',()=>{
  for(const lang of ['fr','en','es']){
   const {i}=runtime(lang,'/english/pros/');const html=i.menu();
   for(const name of ['Français','English','Español'])assert.ok(html.includes(name));
   assert.match(html,/<button[^>]+aria-expanded="false"/);
-  assert.match(html,new RegExp(`</svg><span>${lang.toUpperCase()}</span>`));
+  assert.match(html,new RegExp(`aria-controls="langue-choix"><span>${lang.toUpperCase()}</span>`));
   assert.equal((html.match(/data-language=/g)||[]).length,2);
   assert.ok(!html.includes(`data-language="${lang}"`));
-  assert.equal((html.match(/class="langue-drapeau"/g)||[]).length,3);
+  assert.ok(!html.includes('langue-drapeau'));
  }
 });
 test('ouverture au survol, clic tactile, fermeture extérieure et clavier',()=>{
@@ -134,6 +134,6 @@ test('les attributs métier du HTML et des gabarits JavaScript ne sont pas tradu
    assert.deepEqual(attrs(withoutCode(translated)),attrs(withoutCode(source)),`${lang}: ${page}`);
    for(const script of scripts(source)){const before=tokens(script),after=tokens(t.js(script));assert.equal(before.length,after.length);for(let j=0;j<before.length;j++)assert.deepEqual(attrs(after[j]),attrs(before[j]),`${lang}: ${page} token ${j}`);}
   }
-  for(const file of ['site','match']){const source=read(`web/${file}.js`),before=tokens(source),after=tokens(t.js(source));assert.equal(before.length,after.length);for(let j=0;j<before.length;j++)assert.deepEqual(attrs(after[j]),attrs(before[j]),`${lang}: ${file} token ${j}`);}
+  for(const file of ['site','match','visiteur']){const source=read(`web/${file}.js`),before=tokens(source),after=tokens(t.js(source));assert.equal(before.length,after.length);for(let j=0;j<before.length;j++)assert.deepEqual(attrs(after[j]),attrs(before[j]),`${lang}: ${file} token ${j}`);}
  }
 });

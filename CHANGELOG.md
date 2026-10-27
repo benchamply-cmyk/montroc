@@ -13,6 +13,13 @@ Avant le 26/10/2026, les versions étaient numérotées `v0.x.y` (sections plus 
 
 Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici à la préparation de la livraison (`python3 scripts/version.py livraison`).
 
+## [V6.300] – 2026-10-27 · Menu, mode visiteur et nouvelle connexion
+
+- Connexion et inscription refondues : bouton « Connexion » ouvert au clic, onglets Se connecter / Créer un compte, inscription en un formulaire puis un code à 6 chiffres tapé dans la même fenêtre (le lien de l'e-mail marche toujours), mot de passe oublié par code, pseudo vérifié pendant la saisie, messages clairs (aucun compte, pas encore de mot de passe, mot de passe incorrect), réveil du serveur affiché, initiale et pseudo une fois connecté avec un menu du compte, panneau plein écran sur téléphone.
+- Journal des e-mails : chaque e-mail accepté par Brevo est écrit dans le journal Render (destinataire, expéditeur, messageId) et une erreur imprévue d'envoi n'est plus perdue, pour diagnostiquer un e-mail qui n'arrive pas.
+- Mode visiteur : tout le catalogue sans compte (« Voir plus d'objets »), étoile « Favoris » sur chaque objet et page Favoris (gardés 24 h sans compte, avec une fenêtre d'avertissement ; gardés dans le compte d'un membre, qui a aussi le cœur « J'aime » du Match sur chaque objet), recherches récentes, alertes par e-mail ou SMS sans compte, et annonce remplie sans compte, publiée dès l'inscription (#77).
+- Menu du haut réorganisé : recherche sur tout le site, ☰ (Le concept, Les offres, Le catalogue, Le Grand Troc), Favoris, « Se connecter / S'inscrire », langue sans drapeau et « ? » vers la FAQ, ouverture au survol, en-tête réduit en mini barre au défilement et logo animé ; bande des catégories (noms courts, « Voir tout » et sous-catégories) et page de chaque catégorie avec filtres (sous-catégorie, caractéristiques, état, tri) ; bouton d'accueil « Demander un objet » ; mention « Pilote » retirée du pied de page (#76).
+
 ## [V6.200] – 2026-10-27 · Design et UX
 
 - Design : fond Acier bleuté avec reliefs et ombres, nouveau logo (deux T emboîtés), titre de l'accueil retravaillé, et une page dédiée pour Le concept, Comment ça marche, Le Grand Troc et Particuliers.
@@ -98,7 +105,8 @@ Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.200...preprod
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.300...preprod
+[V6.300]: https://github.com/benchamply-cmyk/montroc/compare/V6.200...V6.300
 [V6.200]: https://github.com/benchamply-cmyk/montroc/compare/V6.100...V6.200
 [V6.100]: https://github.com/benchamply-cmyk/montroc/compare/V5.200...V6.100
 [V5.200]: https://github.com/benchamply-cmyk/montroc/compare/V5.100...V5.200

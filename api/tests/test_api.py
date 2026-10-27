@@ -276,7 +276,7 @@ def test_grand_troc_du_dimanche(client, creer, monkeypatch):
     assert {x["grand_troc_jour"] for x in r["echanges"]} == {"2026-10-18"}
     assert all(t["code_retrait"] is None for x in r["echanges"] for t in x["transferts"])
     assert client.get("/objets").json() == []
-    assert sujets(e.email) == ["Votre lien de connexion à TopTroc", "Grand Troc : une boucle vous attend"]
+    assert sujets(e.email) == ["Votre code de connexion à TopTroc", "Grand Troc : une boucle vous attend"]
     assert "Le Grand Troc du dimanche a trouvé" in courriels.ENVOYES[-1].texte
 
     # Une seule fois par dimanche, même si la tâche est relancée.
@@ -371,6 +371,7 @@ def test_rappel_puis_expiration(client, creer):
     client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": True}, headers=b.headers)
 
     rien = {"rappels_envoyes": 0, "echanges_expires": 0, "objets_remplaces": None, "objets_repeches": None}
+    rien["alertes_visiteurs"] = 0
     assert client.post("/taches/horaires", headers=TACHES).json() == rien
     _decaler(echange["id"], 11)
     assert client.post("/taches/horaires", headers=TACHES).json() == {**rien, "rappels_envoyes": 1}
