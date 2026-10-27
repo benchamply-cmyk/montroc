@@ -143,6 +143,8 @@
   // Au survol ou au clic d'une catégorie : « Voir tout », puis ses sous-catégories, chacune menant à ses objets (comme Vinted).
   const categoriesEntete=$('#categories-entete'), panneau=$('#categories-panneau'), barre=haut.querySelector('.categories-barre');
   let actif=null, fermetureCategorie, ouvertureSurvol=false;
+  // Bande seulement : noms courts, dans cet ordre (Ben, 27/10). Partout ailleurs, le nom complet de la catégorie.
+  const COURTS={mode:'Mode',enfant:'Enfant',maison:'Maison','high-tech':'Multimédia',sport:'Loisirs',culture:'Culture',electromenager:'Électroménager',bricolage:'Bricolage','auto-moto':'Auto, Moto',divers:'Divers'};
   const traduire=texte=>TT_I18N.t(String(texte));
   const element=(tag,texte,classe)=>{const e=document.createElement(tag);if(texte)e.textContent=texte;if(classe)e.className=classe;return e};
   function fermerCategorie(){
@@ -162,8 +164,10 @@
   }
   fetch(API+'/categories').then(r=>{if(!r.ok)throw Error();return r.json()}).then(categories=>{
     categoriesEntete.replaceChildren();
-    categories.forEach(c=>{
-      const bouton=element('button',traduire(c.libelle));
+    const rang=c=>{const i=Object.keys(COURTS).indexOf(c.slug);return i<0?99:i};
+    [...categories].sort((a,b)=>rang(a)-rang(b)).forEach(c=>{
+      const bouton=element('button',traduire(COURTS[c.slug]||c.libelle));
+      bouton.title=traduire(c.libelle);
       bouton.type='button';bouton.setAttribute('aria-expanded','false');bouton.setAttribute('aria-controls','categories-panneau');
       bouton.addEventListener('click',()=>{if(actif===bouton&&!panneau.hidden&&!ouvertureSurvol)fermerCategorie();else ouvrirCategorie(c,bouton);ouvertureSurvol=false});
       bouton.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&actif!==bouton){ouvrirCategorie(c,bouton);ouvertureSurvol=true}});
