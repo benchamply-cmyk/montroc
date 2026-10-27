@@ -271,14 +271,6 @@ body.large .wrap{max-width:1120px}
 .acc-search button{border:0;background:none;color:var(--ink);width:48px;height:100%;display:grid;place-items:center;cursor:pointer}
 .acc-search button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
 .acc-search:focus-within{border-color:var(--accent)}
-.acc-cats{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;scroll-snap-type:x proximity}
-.acc-cats::-webkit-scrollbar{display:none}
-.acc-cat{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;width:84px;background:none;border:0;padding:0;font:inherit;font-size:13px;color:var(--muted);line-height:1.2;text-align:center;scroll-snap-align:start;cursor:pointer}
-.acc-cat .pastille{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--ink);transition:transform .2s,border-color .2s,color .2s}
-.acc-cat .ico{width:28px;height:28px}
-.acc-cat:hover .pastille{border-color:var(--mark);color:var(--mark)}
-.acc-cat:hover{color:var(--ink)}
-.acc-cat:hover .pastille{transform:scale(1.06)}
 .acc-etapes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .acc-etape{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
 .acc-etape .rond{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--mark) 14%,var(--surface));color:var(--mark)}
@@ -310,7 +302,7 @@ body.large .wrap{max-width:1120px}
 .acc-duo{display:grid;gap:14px}
 .acc-duo>*,.acc-tuiles>*{min-width:0}
 .acc-hero h1 mark.mot{background:linear-gradient(transparent 24%,var(--mark-doux) 24%,var(--mark-doux) 90%,transparent 90%);color:inherit;padding:0 .06em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
-:is(.card,.acc-etape,.stat,.liste,.node,.acc-search,.acc-cat .pastille,dialog,.afaire,.slot,.notice,details.plus,.fiche-membre,.result .ph,.acc-btn.g,.lock,.meter,nav.tabs){background-image:linear-gradient(180deg,var(--surface),var(--surface-2));box-shadow:var(--reflet),var(--ombre)}
+:is(.card,.acc-etape,.stat,.liste,.node,.acc-search,dialog,.afaire,.slot,.notice,details.plus,.fiche-membre,.result .ph,.acc-btn.g,.lock,.meter,nav.tabs){background-image:linear-gradient(180deg,var(--surface),var(--surface-2));box-shadow:var(--reflet),var(--ombre)}
 .acc-btn.y{background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 55%,rgba(0,0,0,.08));box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 18px -10px rgba(230,194,58,.55)}
 .ambient i{opacity:.05}
 @media (max-width:420px){.loop{max-width:300px}.node{padding:6px 9px}.node small{font-size:10.5px}}
@@ -492,7 +484,6 @@ details.plus summary::-webkit-details-marker{display:none}
       <button class="cta ghost" data-go="trades">Mes échanges</button>
     </div>
 
-    <nav class="acc-cats" id="acc-cats" aria-label="Catégories"></nav>
 
     <div class="bloc" id="comment-ca-marche">
       <h2>Comment ça marche</h2>
@@ -964,12 +955,11 @@ document.addEventListener('click',e=>{
   else{const c=e.target.closest('[data-cat]'); if(c)chercher('',c.dataset.cat)}
 });
 
-/* Catégories en vignettes et fil de photos de l'accueil */
+/* Catégories de la recherche et fil de photos de l'accueil */
 /* Pictogrammes au trait, d'une seule couleur (currentColor) : catégories de l'accueil et de « Proposer ». */
 const PICTOS={'mode':'<path d="M8.5 4 4 7l2 3.2 2-1V20h8V9.2l2 1L20 7l-4.5-3c0 1.9-1.6 3-3.5 3s-3.5-1.1-3.5-3z"/>','high-tech':'<path d="M4 16v-4a8 8 0 0 1 16 0v4"/><rect x="3.5" y="14" width="4" height="6" rx="1.5"/><rect x="16.5" y="14" width="4" height="6" rx="1.5"/>','enfant':'<circle cx="12" cy="11" r="5"/><circle cx="7.3" cy="6.3" r="2"/><circle cx="16.7" cy="6.3" r="2"/><path d="M7.5 20a4.5 4.5 0 0 1 9 0"/>','maison':'<path d="M7 14h10l-1.5 6h-7zM12 14V8"/><path d="M12 10.5C9 10.5 7 8.5 7 5.5c3 0 5 2 5 5zM12 9.5c0-3 2-5 5-5 0 3-2 5-5 5z"/>','sport':'<circle cx="12" cy="12" r="8"/><path d="m12 8.5 3.3 2.4-1.3 3.9h-4l-1.3-3.9zM12 4v4.5M15.3 10.9l4.2-1.4M14 14.8l2.6 3.6M10 14.8l-2.6 3.6M8.7 10.9 4.5 9.5"/>','culture':'<path d="M4 5h5.5A2.5 2.5 0 0 1 12 7.5V20a2 2 0 0 0-2-2H4zM20 5h-5.5A2.5 2.5 0 0 0 12 7.5V20a2 2 0 0 1 2-2h6z"/>','bricolage':'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a6 6 0 0 1-7.9 7.9l-6.4 6.4a2.1 2.1 0 0 1-3-3l6.4-6.4a6 6 0 0 1 7.9-7.9z"/>','electromenager':'<path d="M5 9h11v5.5a4.5 4.5 0 0 1-4.5 4.5h-2A4.5 4.5 0 0 1 5 14.5zM16 11h1.5a2.5 2.5 0 0 1 0 5H16M8.5 3.5v2.5M12.5 3.5v2.5"/>','auto-moto':'<path d="M3.5 16v-3l2.5-6h12l2.5 6v3zM6 16v2.5M18 16v2.5M7.5 12.5h.01M16.5 12.5h.01"/>','divers':'<path d="M4.5 11h15v9h-15zM3.5 7.5h17V11h-17zM12 7.5V20M12 7.5C10 3.5 6 4.5 7.5 7.5M12 7.5c2-4 6-3 4.5 0"/>'};
 const picto=slug=>`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${PICTOS[slug]||PICTOS.divers}</svg>`;
 function afficherCategories(cats){
-  $('#acc-cats').innerHTML=cats.map(c=>`<button type="button" class="acc-cat" data-cat="${esc(c.slug)}"><span class="pastille">${picto(c.slug)}</span>${esc(c.libelle)}</button>`).join('');
   $('#f-search-home').cat.innerHTML='<option value="">Tout</option>'+cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
 }
 function carteObjet(o){
