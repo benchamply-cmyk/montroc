@@ -15,6 +15,18 @@
     <input id="recherche-entete-champ" type="search" name="q" maxlength="100" placeholder="Rechercher sur TopTroc">
     <button type="submit">Rechercher</button>
   </form>
+  <nav class="menu menu-actions" aria-label="Les offres">
+    <ul>
+      <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Les offres<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <ul id="pour-qui" hidden>
+          <li><a href="/particuliers/">Particuliers <small>Gratuit</small></a></li>
+          <li><a href="/pros/">Professionnels</a></li>
+          <li><a href="/collectivites/">Collectivités</a></li>
+        </ul>
+      </li>
+      ${TT_I18N.menu()}
+    </ul>
+  </nav>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
       <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-catalogue">Le catalogue<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -26,13 +38,6 @@
         </ul>
       </li>
       <li><a href="/#recherche-site">Rechercher</a></li>
-      <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Les offres<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <ul id="pour-qui" hidden>
-          <li><a href="/particuliers/">Particuliers <small>Gratuit</small></a></li>
-          <li><a href="/pros/">Professionnels</a></li>
-          <li><a href="/collectivites/">Collectivités</a></li>
-        </ul>
-      </li>
       <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-decouvrir">Le concept<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <ul id="nav-decouvrir" hidden>
           <li><a href="/concept/">Le concept</a></li>
@@ -40,7 +45,6 @@
           <li><a href="/grand-troc/">Le Grand Troc</a></li>
         </ul>
       </li>
-      ${TT_I18N.menu()}
     </ul>
   </nav>
   <div class="compte-zone">
@@ -109,17 +113,17 @@
     menu.classList.toggle('ouvert',oui); burger.setAttribute('aria-expanded',oui);
     burger.setAttribute('aria-label',oui?'Fermer le menu':'Ouvrir le menu');
     document.body.classList.toggle('menu-ouvert',oui);
-    if(mobile.matches)sous.forEach(item=>ouvrirSous(item,oui));
+    if(mobile.matches)sous.filter(item=>menu.contains(item)).forEach(item=>ouvrirSous(item,oui));
   }
   function fermer(){ouvrirMenu(false);sous.forEach(item=>ouvrirSous(item,false))}
   burger.onclick=()=>ouvrirMenu(!menu.classList.contains('ouvert'));
   sous.forEach(item=>item.querySelector('button').onclick=()=>{
     const ouvrir=item.querySelector('button').getAttribute('aria-expanded')!=='true';
-    if(!mobile.matches)sous.forEach(other=>ouvrirSous(other,false));
+    sous.forEach(other=>ouvrirSous(other,false));
     ouvrirSous(item,ouvrir);
   });
   menu.addEventListener('click',e=>{if(e.target.closest('a'))fermer()});
-  document.addEventListener('click',e=>{if(!mobile.matches)sous.forEach(item=>{if(!item.contains(e.target))ouvrirSous(item,false)})});
+  document.addEventListener('click',e=>{sous.forEach(item=>{if((!mobile.matches||!menu.contains(item))&&!item.contains(e.target))ouvrirSous(item,false)})});
   document.addEventListener('keydown',e=>{
     if(e.key!=='Escape')return;
     const ouvert=sous.find(item=>item.querySelector('button').getAttribute('aria-expanded')==='true');
