@@ -58,7 +58,8 @@
       <button class="pop-lien" type="button" data-retour hidden>Déjà un compte ? Se connecter avec un mot de passe</button>
     </form>
   </div>
-</div>`;
+</div>
+  <nav class="categories-barre" aria-label="Catégories d'objets"><div class="categories-defile" id="categories-entete"></div></nav>`;
 
   const pied=document.querySelector('footer.site');
   if(pied)pied.innerHTML=`<div class="in">
@@ -138,6 +139,19 @@
   // Pré-production (déploiement de la branche preprod sur Netlify) : son API à elle, sur une copie de la base.
   const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001'
     :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.toptroc.com';
+  // Catégories servies par la même API que le catalogue.
+  const categoriesEntete=$('#categories-entete');
+  fetch(API+'/categories').then(r=>{if(!r.ok)throw Error();return r.json()}).then(categories=>{
+    categoriesEntete.replaceChildren();
+    categories.forEach(c=>{
+      const a=document.createElement('a');
+      a.href=TT_I18N.localPath('/')+'#categorie='+encodeURIComponent(c.slug);
+      a.textContent=TT_I18N.t(c.libelle);
+      categoriesEntete.append(a);
+    });
+  }).catch(()=>{
+    const a=document.createElement('a');a.href=TT_I18N.localPath('/#objets');a.textContent=TT_I18N.t('Voir les objets');categoriesEntete.replaceChildren(a);
+  });
   const memo={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch{}}};
   const c=$('#compte'), pop=$('#pop-cnx'), msg=pop.querySelector('.pop-msg');
   let connecte=!!memo.get('troc.jeton'), ouvertLe=-1;
