@@ -80,15 +80,15 @@ test('changer de langue conserve page, recherche et ancre',()=>{
  }
  for(const pathname of ['/','/english','/espanol/'])assert.equal(runtime('fr',pathname).i.switchUrl('en'),'/english/');
 });
-test('drapeau et code actifs, seulement les deux autres langues dans le menu',()=>{
+test('code de la langue active sans drapeau, seulement les deux autres langues dans le menu',()=>{
  for(const lang of ['fr','en','es']){
   const {i}=runtime(lang,'/english/pros/');const html=i.menu();
   for(const name of ['Français','English','Español'])assert.ok(html.includes(name));
   assert.match(html,/<button[^>]+aria-expanded="false"/);
-  assert.match(html,new RegExp(`</svg><span>${lang.toUpperCase()}</span>`));
+  assert.match(html,new RegExp(`aria-controls="langue-choix"><span>${lang.toUpperCase()}</span>`));
   assert.equal((html.match(/data-language=/g)||[]).length,2);
   assert.ok(!html.includes(`data-language="${lang}"`));
-  assert.equal((html.match(/class="langue-drapeau"/g)||[]).length,3);
+  assert.ok(!html.includes('langue-drapeau'));
  }
 });
 test('ouverture au survol, clic tactile, fermeture extérieure et clavier',()=>{

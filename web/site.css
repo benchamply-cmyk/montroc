@@ -139,11 +139,10 @@ footer.site .pilote .version{color:inherit;text-transform:none;text-decoration:n
   .menu,.menu.ouvert,.burger path,.logo svg,.menu a,.menu .sous>button{transition:none}
 }
 
-/* Drapeaux identiques sur tous les systèmes, y compris le drapeau anglais. */
+/* Choix de la langue : son code (FR, EN, ES), sans drapeau. */
 .langue{position:relative}
 .langue-bouton,.menu .langue a{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap}
 .langue-bouton:focus-visible,.menu .langue a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.langue-drapeau{width:27px;height:18px;flex:none;border-radius:2px;box-shadow:0 0 0 1px #ffffff20}
 .langue-chevron{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2}
 .langue-bouton[aria-expanded="true"] .langue-chevron{transform:rotate(180deg)}
 .menu .langue>ul{position:absolute;top:100%;right:0;min-width:110px;padding:7px;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 28px #0006;z-index:2}
@@ -213,7 +212,6 @@ header.site::before{background:linear-gradient(180deg,color-mix(in srgb,var(--bg
  .recherche-entete button{font-size:0;padding:8px}
  .recherche-entete button::after{content:"→";font-size:18px;line-height:1}
  .menu-actions .langue-bouton{gap:4px;padding:8px 6px}
- .menu-actions .langue-drapeau{width:22px;height:15px}
 }
 
 
@@ -290,7 +288,7 @@ html{scroll-padding-top:calc(var(--haut) + var(--haut-categories) + 12px)}
 .menu-actions .aide:hover{border-color:var(--mark);color:var(--mark);background:none}
 .site-in>.compte-zone{order:0}
 .site-in>.menu-actions>ul{gap:8px}
-@media(max-width:1199px){.site-in{column-gap:8px}.compte{padding:8px 12px}.menu-actions .langue-bouton span,.menu-actions .langue-chevron{display:none}}
+@media(max-width:1199px){.site-in{column-gap:8px}.compte{padding:8px 12px}.menu-actions .langue-chevron{display:none}}
 @media(max-width:860px){.compte span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.compte{padding:0;width:42px;height:42px;justify-content:center}.compte svg{display:block;width:18px;height:18px}}
 @media(max-width:699px){
   :root{--haut:116px}
