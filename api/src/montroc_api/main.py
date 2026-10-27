@@ -11,6 +11,7 @@ from . import __version__
 from .config import get_settings
 from .deps import SessionDep
 from .routers import (
+    assistant,
     auth,
     catalogue,
     echanges,
@@ -55,6 +56,7 @@ for module in (
     signalements,
     suivis,
     taches,
+    assistant,
 ):
     app.include_router(module.router)
 

@@ -1,0 +1,1 @@
+- Assistant du site : une bulle en bas à droite répond aux questions sur TopTroc (Match, Grand Troc, Premium, catégories, règles) en français, anglais et espagnol, sans accès aux comptes ; s'allume avec la clé ANTHROPIC_API_KEY sur Render.

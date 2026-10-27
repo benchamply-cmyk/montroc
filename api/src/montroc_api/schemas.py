@@ -768,3 +768,30 @@ class SuiviLecture(ListesSuivies):
     email: str | None
     telephone: str | None
     confirme_le: datetime | None
+
+
+class MessageAssistant(BaseModel):
+    role: Literal["user", "assistant"]
+    contenu: str = Field(min_length=1, max_length=1000)
+
+
+class QuestionAssistant(BaseModel):
+    """La conversation telle que la bulle la garde (rien n'est stocké côté serveur)."""
+
+    messages: list[MessageAssistant] = Field(min_length=1, max_length=20)
+    langue: Literal["fr", "en", "es"] = "fr"
+    page: str = Field(default="/", max_length=120)
+
+    @model_validator(mode="after")
+    def alternance(self):
+        if self.messages[0].role != "user" or self.messages[-1].role != "user":
+            raise ValueError("La conversation commence et se termine par une question.")
+        return self
+
+
+class ReponseAssistant(BaseModel):
+    reponse: str
+
+
+class EtatAssistant(BaseModel):
+    actif: bool
