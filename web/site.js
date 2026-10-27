@@ -59,7 +59,7 @@
     </form>
   </div>
 </div>
-  <nav class="categories-barre" aria-label="Catégories d'objets"><div class="categories-defile" id="categories-entete"></div></nav>`;
+  <nav class="categories-barre" aria-label="Catégories d'objets"><div class="categories-defile" id="categories-entete"></div><div class="categories-panneau" id="categories-panneau" hidden></div></nav>`;
 
   const pied=document.querySelector('footer.site');
   if(pied)pied.innerHTML=`<div class="in">
@@ -139,19 +139,62 @@
   // Pré-production (déploiement de la branche preprod sur Netlify) : son API à elle, sur une copie de la base.
   const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001'
     :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.toptroc.com';
-  // Catégories servies par la même API que le catalogue.
-  const categoriesEntete=$('#categories-entete');
+  // Le panneau affiche la nomenclature réelle, sans présenter les descriptions comme des filtres actifs.
+  const categoriesEntete=$('#categories-entete'), panneau=$('#categories-panneau'), barre=haut.querySelector('.categories-barre');
+  let actif=null, fermetureCategorie, ouvertureSurvol=false;
+  const traduire=texte=>TT_I18N.t(String(texte));
+  const element=(tag,texte,classe)=>{const e=document.createElement(tag);if(texte)e.textContent=texte;if(classe)e.className=classe;return e};
+  function fermerCategorie(){
+    clearTimeout(fermetureCategorie);
+    if(actif)actif.setAttribute('aria-expanded','false');
+    actif=null;ouvertureSurvol=false;panneau.hidden=true;panneau.replaceChildren();
+  }
+  function ouvrirCategorie(c,bouton){
+    clearTimeout(fermetureCategorie);
+    if(actif&&actif!==bouton)actif.setAttribute('aria-expanded','false');
+    actif=bouton;bouton.setAttribute('aria-expanded','true');panneau.replaceChildren();
+    const entete=element('div',null,'categorie-panneau-tete');
+    entete.append(element('strong',traduire(c.libelle)));
+    const voir=element('a',traduire('Voir les objets'));
+    voir.href=TT_I18N.localPath('/')+'#categorie='+encodeURIComponent(c.slug);
+    entete.append(voir);panneau.append(entete);
+    const colonnes=element('div',null,'categorie-colonnes');
+    const sous=element('section'), caracs=element('section');
+    sous.append(element('h3',traduire('Sous-catégories')));
+    const ul=element('ul');
+    (c.sous_categories||[]).forEach(x=>ul.append(element('li',traduire(x.libelle))));
+    sous.append(ul);
+    caracs.append(element('h3',traduire('Caractéristiques')));
+    const dl=element('dl');
+    (c.caracteristiques||[]).forEach(x=>{
+      dl.append(element('dt',traduire(x.libelle)));
+      const valeur=x.options&&x.options.length?x.options.map(traduire).join(' · '):traduire('Saisie libre');
+      const dd=element('dd',valeur);
+      if(x.pour&&x.pour.length){
+        const noms=x.pour.map(slug=>(c.sous_categories||[]).find(y=>y.slug===slug)?.libelle||slug).map(traduire);
+        dd.append(element('span',traduire('Selon la sous-catégorie')+' : '+noms.join(' · '),'categorie-portee'));
+      }
+      dl.append(dd);
+    });
+    caracs.append(dl);colonnes.append(sous,caracs);panneau.append(colonnes);panneau.hidden=false;
+  }
   fetch(API+'/categories').then(r=>{if(!r.ok)throw Error();return r.json()}).then(categories=>{
     categoriesEntete.replaceChildren();
     categories.forEach(c=>{
-      const a=document.createElement('a');
-      a.href=TT_I18N.localPath('/')+'#categorie='+encodeURIComponent(c.slug);
-      a.textContent=TT_I18N.t(c.libelle);
-      categoriesEntete.append(a);
+      const bouton=element('button',traduire(c.libelle));
+      bouton.type='button';bouton.setAttribute('aria-expanded','false');bouton.setAttribute('aria-controls','categories-panneau');
+      bouton.addEventListener('click',()=>{if(actif===bouton&&!panneau.hidden&&!ouvertureSurvol)fermerCategorie();else ouvrirCategorie(c,bouton);ouvertureSurvol=false});
+      bouton.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&actif!==bouton){ouvrirCategorie(c,bouton);ouvertureSurvol=true}});
+      categoriesEntete.append(bouton);
     });
   }).catch(()=>{
-    const a=document.createElement('a');a.href=TT_I18N.localPath('/#objets');a.textContent=TT_I18N.t('Voir les objets');categoriesEntete.replaceChildren(a);
+    const a=element('a',traduire('Voir les objets'));a.href=TT_I18N.localPath('/#objets');categoriesEntete.replaceChildren(a);
   });
+  barre.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')fermetureCategorie=setTimeout(fermerCategorie,180)});
+  barre.addEventListener('pointerenter',()=>clearTimeout(fermetureCategorie));
+  panneau.addEventListener('click',e=>{if(e.target.closest('a'))fermerCategorie()});
+  document.addEventListener('click',e=>{if(!barre.contains(e.target))fermerCategorie()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panneau.hidden){const cible=actif;fermerCategorie();cible?.focus()}});
   const memo={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch{}}};
   const c=$('#compte'), pop=$('#pop-cnx'), msg=pop.querySelector('.pop-msg');
   let connecte=!!memo.get('troc.jeton'), ouvertLe=-1;
