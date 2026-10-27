@@ -4522,5 +4522,57 @@
   "il sert seulement à départager, jamais au prix d'un échange perdu pour un autre membre.": {
     "en": "it only breaks ties, never at the cost of a swap lost for another member.",
     "es": "solo sirve para desempatar, nunca a costa de un intercambio perdido para otro miembro."
+  },
+  "Le catalogue": {
+    "en": "The catalogue",
+    "es": "El catálogo"
+  },
+  "Les offres": {
+    "en": "Our offers",
+    "es": "Las ofertas"
+  },
+  "Recherches personnalisées": {
+    "en": "Personalised searches",
+    "es": "Búsquedas personalizadas"
+  },
+  "Devenir membre": {
+    "en": "Become a member",
+    "es": "Hazte miembro"
+  },
+  "Que cherchez-vous ?": {
+    "en": "What are you looking for?",
+    "es": "¿Qué buscas?"
+  },
+  "Rechercher sur TopTroc": {
+    "en": "Search TopTroc",
+    "es": "Buscar en TopTroc"
+  },
+  "Recherchez parmi les objets et les pages du site.": {
+    "en": "Search items and pages on the site.",
+    "es": "Busca entre los artículos y las páginas del sitio."
+  },
+  "Pages du site": {
+    "en": "Site pages",
+    "es": "Páginas del sitio"
+  },
+  "Objets": {
+    "en": "Items",
+    "es": "Artículos"
+  },
+  "Aucune page trouvée.": {
+    "en": "No pages found.",
+    "es": "No se encontraron páginas."
+  },
+  "Aucun objet trouvé.": {
+    "en": "No items found.",
+    "es": "No se encontraron artículos."
+  },
+  "Objets temporairement indisponibles.": {
+    "en": "Items temporarily unavailable.",
+    "es": "Artículos temporalmente no disponibles."
+  },
+  "Certaines pages sont temporairement indisponibles.": {
+    "en": "Some pages are temporarily unavailable.",
+    "es": "Algunas páginas no están disponibles temporalmente."
   }
 }
