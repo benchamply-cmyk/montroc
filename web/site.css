@@ -2,8 +2,10 @@
    Le menu et le pied sont écrits par site.js, pour n'avoir qu'une seule version. */
 :root{
   /* Thème sombre unique, quel que soit le réglage de l'appareil. */
-  --bg:#111318; --surface:#1A1D24; --ink:#F2F3F6; --muted:#A3A9B6; --line:#2C303A;
-  --accent:#F2F3F6; --accent-ink:#111318; /* une seule couleur vive sur le site : le jaune (--mark) */ --mark:#E6C23A; --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
+  /* Acier bleuté : gris métal froid, avec un dégradé (reflet en haut) sur les surfaces et des ombres portées. */
+  --bg:#15191E; --bg-2:#232A33; --surface:#252C35; --surface-2:#1D232A; --ink:#F2F3F6; --muted:#A3A9B6; --line:#37414D;
+  --reflet:inset 0 1px 0 rgba(200,220,255,.10),inset 0 -1px 0 rgba(0,0,0,.35); --ombre:0 10px 24px -14px rgba(0,0,0,.8),0 2px 6px -2px rgba(0,0,0,.5);
+  --accent:#F2F3F6; --accent-ink:#111318; /* une seule couleur vive sur le site : le jaune (--mark) */ --mark:#E6C23A; --mark-doux:rgba(230,194,58,.55); --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
   --display:"Unbounded", "Arial Black", system-ui, sans-serif;
   --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"DM Mono", ui-monospace, Menlo, monospace;
@@ -13,12 +15,12 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-padding-top:calc(var(--haut) + 12px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
+body{margin:0;background:radial-gradient(1200px 520px at 50% -180px,var(--bg-2),transparent 70%),linear-gradient(180deg,var(--bg-2) 0,var(--bg) 420px) fixed,var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
 button{font:inherit;color:inherit;cursor:pointer}
 a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.logo{border:0;background:none;padding:0;color:var(--ink);text-decoration:none;font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px;flex:none}
-.logo svg{width:24px;height:24px;transition:transform .6s cubic-bezier(.6,0,.2,1)}
-.logo:hover svg{transform:rotate(120deg)}
+.logo{border:0;background:none;padding:0;color:var(--ink);text-decoration:none;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:8px;flex:none}
+.logo svg{width:26px;height:26px;transition:transform .6s cubic-bezier(.6,0,.2,1)}
+.logo:hover svg{transform:rotate(180deg)}
 .logo-2{color:var(--mark)}
 
 /* Menu du haut : collé en haut de l'écran, liens en typo blanche, « Se connecter » toujours visible à droite. */
@@ -109,8 +111,8 @@ footer.site .pilote .version{color:inherit;text-transform:none;text-decoration:n
 .page h3{font-size:16px;line-height:1.3;margin:24px 0 6px}
 .page p,.page li{color:#D6D9E0}
 .page p{margin:0 0 12px}
-.page ul,.page ol{padding-left:20px;margin:0 0 12px}
-.page li{margin-bottom:6px}
+.page main ul,.page main ol{padding-left:20px;margin:0 0 12px}
+.page main li{margin-bottom:6px}
 .page main a{color:var(--ink);text-decoration-color:var(--mark);text-underline-offset:3px}
 .page .label{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .page .chapo{font-size:19px;line-height:1.5;color:var(--muted)}
@@ -149,3 +151,7 @@ footer.site .pilote .version{color:inherit;text-transform:none;text-decoration:n
 .menu .langue a:hover{background:var(--bg)}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media (max-width:1199px){.langue{padding:18px 0}.langue-bouton{min-height:44px;font-size:17px}.menu .langue>ul{position:static;width:max-content;margin-top:6px}.menu .langue a{min-height:44px;font-size:17px}}
+
+/* Relief des surfaces (thème Acier bleuté) : dégradé vertical, reflet sur le bord haut, ombre portée. */
+.carte,.appel,.pop-cnx,.menu .sous>ul,.menu .langue>ul,.langue-bouton{background-image:linear-gradient(180deg,var(--surface),var(--surface-2));box-shadow:var(--reflet),var(--ombre)}
+header.site::before{background:linear-gradient(180deg,color-mix(in srgb,var(--bg-2) 90%,transparent),color-mix(in srgb,var(--bg) 86%,transparent));box-shadow:inset 0 -1px 0 rgba(200,220,255,.10)}

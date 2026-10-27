@@ -8,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 export const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const catalogue=JSON.parse(fs.readFileSync(path.join(root,'web/i18n/messages.json'),'utf8'));
 const escapeRegex=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-export const pages=['index.html',...['pros','collectivites','faq','mentions-legales','cgu','confidentialite','regles'].map(p=>`${p}/index.html`)];
+export const pages=['index.html',...['concept','comment-ca-marche','grand-troc','particuliers','pros','collectivites','faq','mentions-legales','cgu','confidentialite','regles'].map(p=>`${p}/index.html`)];
 export function translator(lang){
  const dictionary=Object.fromEntries(Object.entries(catalogue).map(([k,v])=>[k,v[lang]]));
  const words=new RegExp(`(?<![\\p{L}\\p{N}_-])(?:${Object.keys(dictionary).sort((a,b)=>b.length-a.length).map(escapeRegex).join('|')})(?![\\p{L}\\p{N}_-])`,'gu');
@@ -53,7 +53,7 @@ export function build(){
    // Scripts communs aux pages de la même langue, assets visuels inchangés.
    s=s.replace(/src="(?:\/)?(site|match|premium)\.js"/g,`src="/${prefix}/$1.js"`).replace('src="annonce.js"','src="/annonce.js"');
    s=s.replace('<script src="/langue.js">',`<script src="/${prefix}/messages.js"></script>\n<script src="/langue.js">`);
-   s=s.replace(/href="(\/(?:#|$|pros\/|collectivites\/|faq\/|mentions-legales\/|cgu\/|confidentialite\/|regles\/)[^"]*)"/g,`href="/${prefix}$1"`);
+   s=s.replace(/href="(\/(?:#|$|concept\/|comment-ca-marche\/|grand-troc\/|particuliers\/|pros\/|collectivites\/|faq\/|mentions-legales\/|cgu\/|confidentialite\/|regles\/)[^"]*)"/g,`href="/${prefix}$1"`);
    const canonical='/'+p.replace(/index\.html$/,'');
    const alternates=[['fr',''],['en','/english'],['es','/espanol'],['x-default','']].map(([code,base])=>`<link rel="alternate" hreflang="${code}" href="https://toptroc.com${base}${canonical}">`).join('\n');
    s=s.replace('</head>',`<link rel="canonical" href="https://toptroc.com/${prefix}${canonical}">\n${alternates}\n</head>`);

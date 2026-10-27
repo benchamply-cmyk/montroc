@@ -4114,5 +4114,413 @@
   "Remise enregistrée": {
     "en": "Handover recorded",
     "es": "Entrega registrada"
+  },
+  "Le concept · TopTroc": {
+    "en": "The concept · TopTroc",
+    "es": "El concepto · TopTroc"
+  },
+  "Un objet contre un objet.": {
+    "en": "One item for another.",
+    "es": "Un objeto por otro."
+  },
+  "Sans prix.": {
+    "en": "No prices.",
+    "es": "Sin precios."
+  },
+  "TopTroc fait circuler les objets qui dorment chez vous vers les personnes à qui ils serviront, et vous apporte en échange ce dont vous avez besoin. Pas de prix, pas de monnaie, pas de points.": {
+    "en": "TopTroc passes the things gathering dust at home on to the people who will use them, and brings you what you need in return. No prices, no currency, no points.",
+    "es": "TopTroc hace circular los objetos que duermen en tu casa hacia las personas a las que les servirán, y te trae a cambio lo que necesitas. Sin precios, sin moneda, sin puntos."
+  },
+  "Nos principes": {
+    "en": "Our principles",
+    "es": "Nuestros principios"
+  },
+  "Jamais de prix": {
+    "en": "Never a price",
+    "es": "Nunca un precio"
+  },
+  "Un objet ne vaut ni plus ni moins qu'un autre : il vaut ce qu'il vous apporte. Personne ne vend, personne n'achète.": {
+    "en": "No item is worth more or less than another: it is worth what it brings you. Nobody sells, nobody buys.",
+    "es": "Ningún objeto vale más ni menos que otro: vale lo que te aporta. Nadie vende, nadie compra."
+  },
+  "Gratuit pour échanger": {
+    "en": "Free to swap",
+    "es": "Intercambiar es gratis"
+  },
+  "Publier sans limite, chercher, le Match, le Grand Troc et la remise en main propre ne coûtent rien.": {
+    "en": "Unlimited listings, search, the Match, the Grand Troc and in-person handovers cost nothing.",
+    "es": "Publicar sin límite, buscar, el Match, el Grand Troc y la entrega en mano no cuestan nada."
+  },
+  "Près de chez vous": {
+    "en": "Close to home",
+    "es": "Cerca de ti"
+  },
+  "Les objets s'échangent d'abord en main propre, dans la zone que vous choisissez. Le colis reste possible avec les membres éloignés.": {
+    "en": "Items are swapped in person first, in the area you choose. Parcels are still possible with members further away.",
+    "es": "Los objetos se intercambian primero en mano, en la zona que elijas. El envío por paquete sigue siendo posible con los miembros lejanos."
+  },
+  "Il donne une seconde vie aux objets": {
+    "en": "It gives items a second life",
+    "es": "Da una segunda vida a los objetos"
+  },
+  "qui ne se vendent pas : jouets, puériculture, outils, livres, petit électroménager.": {
+    "en": "that don't sell: toys, baby gear, tools, books, small appliances.",
+    "es": "que no se venden: juguetes, artículos de bebé, herramientas, libros, pequeños electrodomésticos."
+  },
+  "Il crée du lien": {
+    "en": "It brings people together",
+    "es": "Crea vínculos"
+  },
+  "entre voisins, autour d'un rendez-vous simple.": {
+    "en": "between neighbours, around a simple meet-up.",
+    "es": "entre vecinos, en torno a una cita sencilla."
+  },
+  "Deux façons d'échanger": {
+    "en": "Two ways to swap",
+    "es": "Dos formas de intercambiar"
+  },
+  "Tout le détail est dans": {
+    "en": "All the details are in",
+    "es": "Todos los detalles están en"
+  },
+  "Ce qui fait vivre TopTroc": {
+    "en": "How TopTroc is funded",
+    "es": "Cómo se financia TopTroc"
+  },
+  "Échanger reste gratuit. TopTroc vit de l'abonnement facultatif Troc Premium, d'annonces locales sans pistage et de ses offres pour les professionnels et les collectivités. Vos données ne sont jamais vendues.": {
+    "en": "Swapping stays free. TopTroc is funded by the optional Troc Premium subscription, local ads without tracking, and its offers for businesses and local authorities. Your data is never sold.",
+    "es": "Intercambiar sigue siendo gratis. TopTroc se financia con la suscripción opcional Troc Premium, anuncios locales sin rastreo y sus ofertas para profesionales y administraciones. Tus datos nunca se venden."
+  },
+  "Prêt à troquer ?": {
+    "en": "Ready to swap?",
+    "es": "¿Listo para intercambiar?"
+  },
+  "Créez votre compte en une minute, avec votre seul e-mail.": {
+    "en": "Create your account in a minute, with just your email.",
+    "es": "Crea tu cuenta en un minuto, solo con tu correo."
+  },
+  "Le concept de TopTroc : un objet contre un objet, sans prix ni monnaie, près de chez vous.": {
+    "en": "The TopTroc concept: one item for another, with no price or currency, close to home.",
+    "es": "El concepto de TopTroc: un objeto por otro, sin precio ni moneda, cerca de ti."
+  },
+  "Comment ça marche · TopTroc": {
+    "en": "How it works · TopTroc",
+    "es": "Cómo funciona · TopTroc"
+  },
+  "Quatre étapes,": {
+    "en": "Four steps,",
+    "es": "Cuatro pasos,"
+  },
+  "zéro euro": {
+    "en": "zero euros",
+    "es": "cero euros"
+  },
+  "Vous dites ce que vous donnez et ce que vous cherchez. TopTroc s'occupe de trouver l'échange.": {
+    "en": "You say what you give and what you're looking for. TopTroc finds the swap.",
+    "es": "Dices lo que das y lo que buscas. TopTroc se encarga de encontrar el intercambio."
+  },
+  "Les étapes": {
+    "en": "The steps",
+    "es": "Los pasos"
+  },
+  "Ma zone": {
+    "en": "My area",
+    "es": "Mi zona"
+  },
+  "Dans Mon espace, vous choisissez où vous troquez : autour de vous dans un rayon, ou dans une ville. Chaque objet indique où il se trouve. Vous pouvez aussi accepter toute la France pour les objets lointains, envoyés par colis.": {
+    "en": "In My space, you choose where you swap: around you within a radius, or in a city. Each item shows where it is. You can also accept all of France for distant items, sent by parcel.",
+    "es": "En Mi espacio, eliges dónde intercambias: a tu alrededor en un radio, o en una ciudad. Cada objeto indica dónde está. También puedes aceptar toda Francia para objetos lejanos, enviados por paquete."
+  },
+  "La remise des objets": {
+    "en": "Handing items over",
+    "es": "La entrega de los objetos"
+  },
+  "Le mode par défaut, gratuit. Vous convenez d'un rendez-vous, de préférence dans un lieu public, à deux ou à trois pour une boucle.": {
+    "en": "The default, and free. You arrange a meet-up, preferably in a public place, with two people or three for a loop.",
+    "es": "El modo por defecto, gratuito. Acordáis una cita, mejor en un lugar público, entre dos o entre tres para una cadena."
+  },
+  "Avec les membres éloignés, ou si les deux l'acceptent. Chacun paie l'envoi de son propre objet, jusqu'à 30 kg, et indique le numéro de suivi.": {
+    "en": "With members further away, or if both agree. Each person pays to send their own item, up to 30 kg, and enters the tracking number.",
+    "es": "Con miembros lejanos, o si ambos lo aceptan. Cada uno paga el envío de su propio objeto, hasta 30 kg, e indica el número de seguimiento."
+  },
+  "La confiance": {
+    "en": "Trust",
+    "es": "La confianza"
+  },
+  "Un objet ou un membre pose problème ?": {
+    "en": "A problem with an item or a member?",
+    "es": "¿Un objeto o un miembro da problemas?"
+  },
+  "Le bouton « Signaler » est là pour ça, et chaque signalement est examiné par une personne. Voir les": {
+    "en": "That's what the “Report” button is for, and every report is reviewed by a person. See the",
+    "es": "Para eso está el botón «Denunciar», y cada denuncia la revisa una persona. Consulta las"
+  },
+  "Une question ?": {
+    "en": "A question?",
+    "es": "¿Una pregunta?"
+  },
+  "Les réponses aux questions les plus fréquentes sont dans la FAQ.": {
+    "en": "Answers to the most common questions are in the FAQ.",
+    "es": "Las respuestas a las preguntas más frecuentes están en las preguntas frecuentes."
+  },
+  "Lire la FAQ": {
+    "en": "Read the FAQ",
+    "es": "Leer las preguntas frecuentes"
+  },
+  "Comment marche TopTroc : proposer, demander, le Match, le Grand Troc, votre zone et la remise des objets.": {
+    "en": "How TopTroc works: offering, requesting, the Match, the Grand Troc, your area and handing items over.",
+    "es": "Cómo funciona TopTroc: ofrecer, pedir, el Match, el Grand Troc, tu zona y la entrega de los objetos."
+  },
+  "Le Grand Troc · TopTroc": {
+    "en": "The Grand Troc · TopTroc",
+    "es": "El Grand Troc · TopTroc"
+  },
+  "Chaque dimanche,": {
+    "en": "Every Sunday,",
+    "es": "Cada domingo,"
+  },
+  "les échanges que personne n'a vus": {
+    "en": "the swaps nobody spotted",
+    "es": "los intercambios que nadie vio"
+  },
+  "Vous voulez un vélo, mais celui qui en a un ne veut aucun de vos objets ? Le Grand Troc trouve une troisième personne pour fermer la boucle.": {
+    "en": "You want a bike, but the person who has one doesn't want any of your items? The Grand Troc finds a third person to close the loop.",
+    "es": "¿Quieres una bici, pero quien tiene una no quiere ninguno de tus objetos? El Grand Troc encuentra a una tercera persona para cerrar la cadena."
+  },
+  "Un exemple": {
+    "en": "An example",
+    "es": "Un ejemplo"
+  },
+  "Vous donnez une poussette à Sophie, Sophie donne un kit de jardinage à Loïc, et Loïc donne un vélo enfant… à vous. Chacun donne une fois et reçoit une fois.": {
+    "en": "You give a pushchair to Sophie, Sophie gives a gardening kit to Loïc, and Loïc gives a child's bike… to you. Everyone gives once and receives once.",
+    "es": "Tú das un carrito a Sophie, Sophie da un kit de jardinería a Loïc, y Loïc da una bici infantil… a ti. Cada uno da una vez y recibe una vez."
+  },
+  "Le déroulé": {
+    "en": "How it goes",
+    "es": "Cómo funciona"
+  },
+  "Chaque dimanche à 18 h, TopTroc calcule d'un coup toutes les boucles possibles, sur tous les objets disponibles.": {
+    "en": "Every Sunday at 6 pm, TopTroc works out all possible loops at once, across all available items.",
+    "es": "Cada domingo a las 18 h, TopTroc calcula de una vez todas las cadenas posibles, con todos los objetos disponibles."
+  },
+  "Vous recevez un e-mail si un échange vous attend, et vous avez 48 h pour dire oui.": {
+    "en": "You get an email if a swap is waiting for you, and you have 48 hours to say yes.",
+    "es": "Recibes un correo si te espera un intercambio, y tienes 48 h para decir que sí."
+  },
+  "Quand tout le monde a accepté, chacun remet son objet, en main propre ou par colis.": {
+    "en": "Once everyone has accepted, each person hands over their item, in person or by parcel.",
+    "es": "Cuando todos han aceptado, cada uno entrega su objeto, en mano o por paquete."
+  },
+  "Si quelqu'un refuse ou ne répond pas, la boucle tombe et les objets repartent au Grand Troc suivant. Personne ne perd son objet.": {
+    "en": "If someone declines or doesn't reply, the loop falls through and the items go into the next Grand Troc. Nobody loses their item.",
+    "es": "Si alguien rechaza o no responde, la cadena se cae y los objetos vuelven al siguiente Grand Troc. Nadie pierde su objeto."
+  },
+  "Des règles justes": {
+    "en": "Fair rules",
+    "es": "Reglas justas"
+  },
+  "Avec Troc Premium": {
+    "en": "With Troc Premium",
+    "es": "Con Troc Premium"
+  },
+  "Toutes les formules donnent un aperçu du stock du dimanche. Avec Plus, Famille ou Pro, ou avec le Pass Dimanche à 1,99 €, vous découvrez vos propositions dès 17 h.": {
+    "en": "Every plan gives a preview of Sunday's stock. With Plus, Family or Pro, or with the €1.99 Sunday Pass, you see your offers from 5 pm.",
+    "es": "Todas las fórmulas dan un adelanto del stock del domingo. Con Plus, Familia o Pro, o con el Pase Domingo a 1,99 €, descubres tus propuestas desde las 17 h."
+  },
+  "Participer": {
+    "en": "Take part",
+    "es": "Participar"
+  },
+  "Proposez au moins un objet et dites ce qui vous serait utile : vous êtes dans le prochain Grand Troc.": {
+    "en": "List at least one item and say what would be useful to you: you're in the next Grand Troc.",
+    "es": "Ofrece al menos un objeto y di lo que te sería útil: estás en el próximo Grand Troc."
+  },
+  "Le Grand Troc du dimanche : TopTroc trouve les boucles d'échange à plusieurs, et chacun a 48 h pour dire oui.": {
+    "en": "The Sunday Grand Troc: TopTroc finds multi-person swap loops, and everyone has 48 hours to say yes.",
+    "es": "El Grand Troc del domingo: TopTroc encuentra las cadenas de intercambio entre varios, y cada uno tiene 48 h para decir que sí."
+  },
+  "Particuliers · TopTroc": {
+    "en": "Individuals · TopTroc",
+    "es": "Particulares · TopTroc"
+  },
+  "Pour qui ? · Particuliers": {
+    "en": "Who is it for? · Individuals",
+    "es": "¿Para quién? · Particulares"
+  },
+  "Échanger est": {
+    "en": "Swapping is",
+    "es": "Intercambiar es"
+  },
+  ", et le restera.": {
+    "en": ", and always will be.",
+    "es": ", y lo seguirá siendo."
+  },
+  "Publier, chercher, le Match, le Grand Troc et la remise en main propre ne coûtent rien. Troc Premium ajoute du confort, si vous le souhaitez.": {
+    "en": "Listing, searching, the Match, the Grand Troc and in-person handovers cost nothing. Troc Premium adds extra comfort, if you want it.",
+    "es": "Publicar, buscar, el Match, el Grand Troc y la entrega en mano no cuestan nada. Troc Premium añade comodidad, si lo deseas."
+  },
+  "Toujours gratuit": {
+    "en": "Always free",
+    "es": "Siempre gratis"
+  },
+  "Publier vos objets, sans limite": {
+    "en": "Listing your items, with no limit",
+    "es": "Publicar tus objetos, sin límite"
+  },
+  "Dire ce qui vous serait utile": {
+    "en": "Saying what would be useful to you",
+    "es": "Decir lo que te sería útil"
+  },
+  "La remise en main propre": {
+    "en": "Handing over in person",
+    "es": "La entrega en mano"
+  },
+  "Troc Premium, en option": {
+    "en": "Troc Premium, optional",
+    "es": "Troc Premium, opcional"
+  },
+  "Premium vous fait passer en premier quand plusieurs membres veulent le même objet, sans jamais faire perdre un échange à personne. Un essai gratuit de Premium Plus est offert.": {
+    "en": "Premium puts you first when several members want the same item, without ever costing anyone a swap. A free trial of Premium Plus is included.",
+    "es": "Premium te pone primero cuando varios miembros quieren el mismo objeto, sin hacer perder nunca un intercambio a nadie. Se ofrece una prueba gratuita de Premium Plus."
+  },
+  "Essentiel": {
+    "en": "Essential",
+    "es": "Esencial"
+  },
+  "2,99 € par mois ou 24 € par an. Sans publicité, voir qui aime vos objets, retour arrière dans le Match, aperçu du stock du dimanche, 1 Super J'aime par semaine.": {
+    "en": "€2.99 a month or €24 a year. No ads, see who likes your items, undo in the Match, preview of Sunday's stock, 1 Super Like a week.",
+    "es": "2,99 € al mes o 24 € al año. Sin publicidad, ver a quién le gustan tus objetos, deshacer en el Match, adelanto del stock del domingo, 1 Súper Me gusta por semana."
+  },
+  "Plus": {
+    "en": "Plus",
+    "es": "Plus"
+  },
+  "5,99 € par mois ou 49 € par an. Tout Essentiel, avec l'avant-première du Grand Troc à 17 h, la priorité à égalité, jusqu'à 3 zones, la garantie sur vos colis et 3 Super J'aime par semaine.": {
+    "en": "€5.99 a month or €49 a year. Everything in Essential, plus Grand Troc early access at 5 pm, priority on ties, up to 3 areas, parcel protection and 3 Super Likes a week.",
+    "es": "5,99 € al mes o 49 € al año. Todo Esencial, con el preestreno del Grand Troc a las 17 h, prioridad en caso de empate, hasta 3 zonas, la garantía de tus paquetes y 3 Súper Me gusta por semana."
+  },
+  "Famille": {
+    "en": "Family",
+    "es": "Familia"
+  },
+  "8,99 € par mois ou 79 € par an. Tout Plus, partagé avec 3 proches.": {
+    "en": "€8.99 a month or €79 a year. Everything in Plus, shared with 3 loved ones.",
+    "es": "8,99 € al mes o 79 € al año. Todo Plus, compartido con 3 personas cercanas."
+  },
+  "Pass Dimanche": {
+    "en": "Sunday Pass",
+    "es": "Pase Domingo"
+  },
+  "1,99 € pour un dimanche : l'aperçu du stock et l'avant-première du Grand Troc.": {
+    "en": "€1.99 for one Sunday: the stock preview and Grand Troc early access.",
+    "es": "1,99 € por un domingo: el adelanto del stock y el preestreno del Grand Troc."
+  },
+  "Associations, ressourceries et commerçants ont une formule Pro : voir la page": {
+    "en": "Charities, reuse centres and shops have a Pro plan: see the page",
+    "es": "Asociaciones, centros de reutilización y comercios tienen una fórmula Pro: consulta la página"
+  },
+  "Sans engagement": {
+    "en": "No commitment",
+    "es": "Sin compromiso"
+  },
+  "Le paiement est sécurisé par Stripe, et vous résiliez en quelques clics depuis Mon espace.": {
+    "en": "Payment is secured by Stripe, and you can cancel in a few clicks from My space.",
+    "es": "El pago está protegido por Stripe, y cancelas en unos clics desde Mi espacio."
+  },
+  "Commencer": {
+    "en": "Get started",
+    "es": "Empezar"
+  },
+  "TopTroc pour les particuliers : échanger est gratuit, Troc Premium ajoute du confort en option.": {
+    "en": "TopTroc for individuals: swapping is free, Troc Premium adds optional extras.",
+    "es": "TopTroc para particulares: intercambiar es gratis, Troc Premium añade comodidad opcional."
+  },
+  "Il ne coûte rien :": {
+    "en": "It costs nothing:",
+    "es": "No cuesta nada:"
+  },
+  "ce que vous n'utilisez plus vous apporte ce dont vous avez besoin.": {
+    "en": "what you no longer use gets you what you need.",
+    "es": "lo que ya no usas te trae lo que necesitas."
+  },
+  "Le Match, à tout moment :": {
+    "en": "Match, at any time:",
+    "es": "Match, en cualquier momento:"
+  },
+  "vous aimez un objet, son propriétaire aime un des vôtres, et c'est un échange direct.": {
+    "en": "you like an item, its owner likes one of yours, and it's a direct swap.",
+    "es": "te gusta un objeto, a su dueño le gusta uno de los tuyos, y es un intercambio directo."
+  },
+  "Le Grand Troc, chaque dimanche :": {
+    "en": "The Grand Troc, every Sunday:",
+    "es": "El Grand Troc, cada domingo:"
+  },
+  "TopTroc trouve les boucles d'échange à plusieurs que personne n'aurait vues.": {
+    "en": "TopTroc finds the multi-person swap loops nobody would have spotted.",
+    "es": "TopTroc encuentra las cadenas de intercambio entre varios que nadie habría visto."
+  },
+  "Je propose :": {
+    "en": "I offer:",
+    "es": "Ofrezco:"
+  },
+  "je publie mes objets avec une photo et leur état, sans limite.": {
+    "en": "I list my items with a photo and their condition, with no limit.",
+    "es": "publico mis objetos con una foto y su estado, sin límite."
+  },
+  "Je demande :": {
+    "en": "I want:",
+    "es": "Busco:"
+  },
+  "je liste ce qui me serait utile, un objet précis ou toute une catégorie.": {
+    "en": "I list what would be useful to me, a specific item or a whole category.",
+    "es": "apunto lo que me sería útil, un objeto concreto o toda una categoría."
+  },
+  "Le Match :": {
+    "en": "Match:",
+    "es": "Match:"
+  },
+  "je parcours les objets de ma zone. Un cœur de chaque côté, et c'est un échange direct entre deux membres.": {
+    "en": "I browse items in my area. A heart on each side, and it's a direct swap between two members.",
+    "es": "recorro los objetos de mi zona. Un corazón por cada lado, y es un intercambio directo entre dos miembros."
+  },
+  "Le Grand Troc :": {
+    "en": "The Grand Troc:",
+    "es": "El Grand Troc:"
+  },
+  "chaque dimanche, TopTroc propose des boucles à trois ou plus à ceux qui n'ont pas trouvé de match.": {
+    "en": "every Sunday, TopTroc offers loops of three or more to those who haven't found a match.",
+    "es": "cada domingo, TopTroc propone cadenas de tres o más a quienes no han encontrado match."
+  },
+  "Chaque membre a une fiabilité :": {
+    "en": "Every member has a reliability score:",
+    "es": "Cada miembro tiene una fiabilidad:"
+  },
+  "un rendez-vous manqué ou un objet promis et jamais remis la fait baisser. Refuser un échange, non.": {
+    "en": "a missed meet-up or a promised item never handed over lowers it. Declining a swap doesn't.",
+    "es": "una cita a la que no se acude o un objeto prometido y nunca entregado la hace bajar. Rechazar un intercambio, no."
+  },
+  "Le plus d'échanges possible :": {
+    "en": "As many swaps as possible:",
+    "es": "El mayor número de intercambios:"
+  },
+  "le calcul cherche d'abord à servir le plus de monde.": {
+    "en": "the calculation first tries to serve as many people as possible.",
+    "es": "el cálculo busca primero servir al mayor número de personas."
+  },
+  "Vos critères sont respectés :": {
+    "en": "Your criteria are respected:",
+    "es": "Se respetan tus criterios:"
+  },
+  "on ne vous propose un objet que s'il correspond à ce que vous avez demandé.": {
+    "en": "you're only offered an item if it matches what you asked for.",
+    "es": "solo se te propone un objeto si corresponde a lo que has pedido."
+  },
+  "Premium ne prend la place de personne :": {
+    "en": "Premium never takes anyone's place:",
+    "es": "Premium no quita el sitio a nadie:"
+  },
+  "il sert seulement à départager, jamais au prix d'un échange perdu pour un autre membre.": {
+    "en": "it only breaks ties, never at the cost of a swap lost for another member.",
+    "es": "solo sirve para desempatar, nunca a costa de un intercambio perdido para otro miembro."
   }
 }

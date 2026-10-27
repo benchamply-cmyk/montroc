@@ -37,7 +37,7 @@
     root.querySelectorAll('a[href]').forEach(a=>{
       if(a.dataset.language)return;
       const href=a.getAttribute('href');
-      if(/^\/(?:#|$|pros\/|collectivites\/|faq\/|mentions-legales\/|cgu\/|confidentialite\/|regles\/)/.test(href))a.setAttribute('href',localPath(href));
+      if(/^\/(?:#|$|concept\/|comment-ca-marche\/|grand-troc\/|particuliers\/|pros\/|collectivites\/|faq\/|mentions-legales\/|cgu\/|confidentialite\/|regles\/)/.test(href))a.setAttribute('href',localPath(href));
     });
   }
   function menu(){
