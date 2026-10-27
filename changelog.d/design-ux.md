@@ -1,1 +1,0 @@
-- Design : fond Acier bleuté avec reliefs et ombres, nouveau logo (deux T emboîtés), titre de l'accueil retravaillé, et une page dédiée pour Le concept, Comment ça marche, Le Grand Troc et Particuliers.

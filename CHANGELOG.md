@@ -13,6 +13,10 @@ Avant le 26/10/2026, les versions étaient numérotées `v0.x.y` (sections plus 
 
 Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici à la préparation de la livraison (`python3 scripts/version.py livraison`).
 
+## [V6.200] – 2026-10-27 · Design et UX
+
+- Design : fond Acier bleuté avec reliefs et ombres, nouveau logo (deux T emboîtés), titre de l'accueil retravaillé, et une page dédiée pour Le concept, Comment ça marche, Le Grand Troc et Particuliers.
+
 ## [V6.100] – 2026-10-26 · TopTroc et business model V2
 
 - Site : le bouton de langue affiche le drapeau et le code FR, EN ou ES ; les deux autres versions apparaissent au survol ou au clic, avec navigation au clavier.
@@ -94,7 +98,8 @@ Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.100...preprod
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.200...preprod
+[V6.200]: https://github.com/benchamply-cmyk/montroc/compare/V6.100...V6.200
 [V6.100]: https://github.com/benchamply-cmyk/montroc/compare/V5.200...V6.100
 [V5.200]: https://github.com/benchamply-cmyk/montroc/compare/V5.100...V5.200
 [V5.100]: https://github.com/benchamply-cmyk/montroc/compare/v0.5.0...V5.100
