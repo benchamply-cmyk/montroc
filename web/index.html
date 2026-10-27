@@ -865,7 +865,7 @@ function suivre(h){
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} return chercher(q)}
   if(h==='#recherche-site')return ouvrirRechercheSite();
   if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
-  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} return chercher('',cat)}
+  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return chercher('',c,sous)}
   if(h==='#objets')return chercher('');
   if(h.startsWith('#echange-')){go('trades',{adresse:h});document.getElementById(h.slice(1))?.scrollIntoView();return}
   const v=Object.keys(ADRESSES).find(k=>ADRESSES[k]===h);
@@ -903,7 +903,7 @@ const calmeDefil=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'
 async function naviguer(h){
   if(h==='#recherche-site')return ouvrirRechercheSite();
   if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
-  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} return chercher('',cat)}
+  if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return chercher('',c,sous)}
   if(h==='#objets')return chercher('');
   if(h==='#monespace'){
     // Session gardée sur cet appareil mais pas encore relue (serveur qui se réveille) : on l'attend.
@@ -1183,7 +1183,7 @@ const Detail=(()=>{
     return {caracteristiques:o,preferences:p};
   }
   const modes=f=>[...f.querySelectorAll('input[name=mode]:checked')].map(x=>x.value);
-  return {charger,nom,caracs,remplir,remplirCaracs,remplirAlternatives,alternatives,valeurs,criteres,modes};
+  return {charger,nom,sousNom,caracs,remplir,remplirCaracs,remplirAlternatives,alternatives,valeurs,criteres,modes};
 })();
 $('#cat-obj').addEventListener('change',()=>Detail.remplir($('#f-obj'),false));
 $('#cat-wish').addEventListener('change',()=>Detail.remplir($('#f-wish'),true));
@@ -1550,15 +1550,17 @@ async function chargerGrandTroc(){try{grandTroc=await api('/grand-troc');affiche
 setInterval(afficherGrandTroc,30e3);
 
 /* Recherche libre : aucun compte nécessaire, l'API ne renvoie que les objets en ligne. */
-async function chercher(q,cat=''){
+async function chercher(q,cat='',sous=''){ // sous : sous-catégorie choisie dans la bande des catégories
   q=q.trim(); // vide : tout ce qui est proposé en ce moment (« Voir les objets » du menu)
-  const ancre=q?'#recherche='+encodeURIComponent(q):cat?'#categorie='+encodeURIComponent(cat):'#objets';
+  const ancre=q?'#recherche='+encodeURIComponent(q):cat?'#categorie='+encodeURIComponent(cat+(sous?'/'+sous:'')):'#objets';
   $('#f-search').q.value=q; $('#search-title').textContent=q?`« ${q} »`:cat?(categories[cat]||'Ce qui est proposé'):'Ce qui est proposé';
+  if(sous)Detail.charger().then(()=>{const n=Detail.sousNom(cat,sous);if(n&&vueActuelle==='search')$('#search-title').textContent=(categories[cat]||cat)+' › '+n}).catch(()=>{});
   $('#search-count').textContent='Recherche…'; $('#results').innerHTML='';
   go('search',{adresse:ancre});
   try{
     const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat);
-    const objets=await api('/objets'+(p.size?'?'+p:''));
+    let objets=await api('/objets'+(p.size?'?'+p:''));
+    if(sous)objets=objets.filter(o=>o.sous_categorie_slug===sous);
     $('#search-count').textContent=objets.length?TT_I18N.available(objets.length):'';
     $('#results').innerHTML=objets.length?objets.map(carteObjet).join('')
       :!q?`<p class="empty">Aucun objet proposé pour l'instant. Soyez le premier : créez un compte et ajoutez ce qui dort chez vous.</p>`

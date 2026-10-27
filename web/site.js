@@ -4,6 +4,7 @@
 (()=>{
   const VERSION='6.200'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
   const LOGO='<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#F2F3F6" d="M3 4h18v5h-6.5v11h-5V9H3z"/><path fill="#E6C23A" d="M29 28H11v-5h6.5V12h5v11H29z"/></svg>'; // deux T tête-bêche : deux membres, un échange
+  const GRILLE='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="5" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="19" r="1.6"/><circle cx="12" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/></svg>'; // « Voir tout »
   const PERSO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
 
   const haut=document.querySelector('header.site');
@@ -139,7 +140,7 @@
   // Pré-production (déploiement de la branche preprod sur Netlify) : son API à elle, sur une copie de la base.
   const API=['localhost','127.0.0.1'].includes(location.hostname)?'http://localhost:8001'
     :/^preprod(--|\.)/.test(location.hostname)?'https://montroc-api-preprod.onrender.com':'https://api.toptroc.com';
-  // Le panneau affiche la nomenclature réelle, sans présenter les descriptions comme des filtres actifs.
+  // Au survol ou au clic d'une catégorie : « Voir tout », puis ses sous-catégories, chacune menant à ses objets (comme Vinted).
   const categoriesEntete=$('#categories-entete'), panneau=$('#categories-panneau'), barre=haut.querySelector('.categories-barre');
   let actif=null, fermetureCategorie, ouvertureSurvol=false;
   const traduire=texte=>TT_I18N.t(String(texte));
@@ -153,30 +154,11 @@
     clearTimeout(fermetureCategorie);
     if(actif&&actif!==bouton)actif.setAttribute('aria-expanded','false');
     actif=bouton;bouton.setAttribute('aria-expanded','true');panneau.replaceChildren();
-    const entete=element('div',null,'categorie-panneau-tete');
-    entete.append(element('strong',traduire(c.libelle)));
-    const voir=element('a',traduire('Voir les objets'));
-    voir.href=TT_I18N.localPath('/')+'#categorie='+encodeURIComponent(c.slug);
-    entete.append(voir);panneau.append(entete);
-    const colonnes=element('div',null,'categorie-colonnes');
-    const sous=element('section'), caracs=element('section');
-    sous.append(element('h3',traduire('Sous-catégories')));
-    const ul=element('ul');
-    (c.sous_categories||[]).forEach(x=>ul.append(element('li',traduire(x.libelle))));
-    sous.append(ul);
-    caracs.append(element('h3',traduire('Caractéristiques')));
-    const dl=element('dl');
-    (c.caracteristiques||[]).forEach(x=>{
-      dl.append(element('dt',traduire(x.libelle)));
-      const valeur=x.options&&x.options.length?x.options.map(traduire).join(' · '):traduire('Saisie libre');
-      const dd=element('dd',valeur);
-      if(x.pour&&x.pour.length){
-        const noms=x.pour.map(slug=>(c.sous_categories||[]).find(y=>y.slug===slug)?.libelle||slug).map(traduire);
-        dd.append(element('span',traduire('Selon la sous-catégorie')+' : '+noms.join(' · '),'categorie-portee'));
-      }
-      dl.append(dd);
-    });
-    caracs.append(dl);colonnes.append(sous,caracs);panneau.append(colonnes);panneau.hidden=false;
+    const lien=(texte,slug)=>{const a=element('a',texte);a.href=TT_I18N.localPath('/')+'#categorie='+encodeURIComponent(slug);return a};
+    const ul=element('ul',null,'categorie-liste'), tout=element('li',null,'categorie-tout'), a=lien(traduire('Voir tout'),c.slug);
+    a.insertAdjacentHTML('afterbegin',GRILLE);tout.append(a);ul.append(tout);
+    (c.sous_categories||[]).forEach(x=>{const li=element('li');li.append(lien(traduire(x.libelle),c.slug+'/'+x.slug));ul.append(li)});
+    panneau.append(ul);panneau.hidden=false;
   }
   fetch(API+'/categories').then(r=>{if(!r.ok)throw Error();return r.json()}).then(categories=>{
     categoriesEntete.replaceChildren();

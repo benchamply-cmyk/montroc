@@ -4575,20 +4575,8 @@
     "en": "Some pages are temporarily unavailable.",
     "es": "Algunas páginas no están disponibles temporalmente."
   },
-  "Sous-catégories": {
-    "en": "Subcategories",
-    "es": "Subcategorías"
-  },
-  "Caractéristiques": {
-    "en": "Details",
-    "es": "Características"
-  },
-  "Saisie libre": {
-    "en": "Free text",
-    "es": "Texto libre"
-  },
-  "Selon la sous-catégorie": {
-    "en": "Depending on the subcategory",
-    "es": "Según la subcategoría"
+  "Voir tout": {
+    "en": "See all",
+    "es": "Ver todo"
   }
 }
