@@ -181,3 +181,37 @@ header.site::before{background:linear-gradient(180deg,color-mix(in srgb,var(--bg
   .site-in>.recherche-entete{grid-column:1/-1;grid-row:2;align-self:start}
   .site-in>.menu{grid-column:auto;grid-row:auto;border:0}
 }
+
+
+/* Recherche, offres et langues restent accessibles dans l'en-tête. */
+@media (min-width:1200px){
+ .site-in{grid-template-columns:auto minmax(180px,1fr) auto auto;column-gap:16px}
+ .site-in>.recherche-entete{grid-column:2}
+ .site-in>.menu-actions{grid-column:3;grid-row:1;align-self:center;border:0;justify-content:flex-end}
+ .site-in>.compte-zone{grid-column:4}
+ .site-in>#menu{grid-column:1/-1;grid-row:2}
+}
+.menu-actions>ul{list-style:none;margin:0;padding:0}
+@media(max-width:1199px){
+ .site-in{grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:64px 52px;column-gap:8px}
+ .site-in>.recherche-entete{grid-column:1;grid-row:2}
+ .site-in>.menu-actions{grid-column:2/4;grid-row:2;position:relative;inset:auto;display:flex;align-self:start;align-items:center;justify-content:flex-end;opacity:1;visibility:visible;transform:none;transition:none;overflow:visible;background:none;padding:0;border:0}
+ .menu-actions>ul{display:flex;flex-direction:row;align-items:center;gap:4px}
+ .menu-actions>ul>li{border:0}
+ .menu-actions>ul>li.sous>button{font-family:var(--body);font-weight:600;font-size:14px;letter-spacing:0;width:auto;min-height:43px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+ .menu-actions .sous>button svg{width:12px;height:12px}
+ .menu-actions .sous>ul{position:absolute;top:calc(100% + 6px);left:auto;right:0;transform:none;min-width:200px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:8px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+ .menu-actions .sous>ul a{font-size:15px;padding:10px 12px}
+ .menu-actions .langue{padding:0}
+ .menu-actions .langue-bouton{min-height:43px;font-size:14px}
+ .menu-actions .langue>ul{position:absolute;top:100%;right:0;min-width:110px;width:auto;margin:0;padding:7px;background:var(--surface);border:1px solid var(--line);box-shadow:0 12px 28px #0006}
+ .menu-actions .langue a{min-height:44px;font-size:14px;padding:8px 10px}
+ .recherche-entete{padding-left:9px}
+ .recherche-entete input{padding-inline:7px}
+}
+@media(max-width:600px){
+ .recherche-entete button{font-size:0;padding:8px}
+ .recherche-entete button::after{content:"→";font-size:18px;line-height:1}
+ .menu-actions .langue-bouton{gap:4px;padding:8px 6px}
+ .menu-actions .langue-drapeau{width:22px;height:15px}
+}
