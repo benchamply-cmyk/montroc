@@ -15,8 +15,15 @@
     <input id="recherche-entete-champ" type="search" name="q" maxlength="100" placeholder="Rechercher sur TopTroc">
     <button type="submit">Rechercher</button>
   </form>
-  <nav class="menu menu-actions" aria-label="Les offres">
+  <nav class="menu menu-actions" aria-label="Langue">
     <ul>
+      ${TT_I18N.menu()}
+      <li><button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 7h16"/><path class="b2" d="M4 12h16"/><path class="b3" d="M4 17h16"/></svg></button></li>
+    </ul>
+  </nav>
+  <nav class="menu" id="menu" aria-label="Menu principal">
+    <ul>
+      <li><a href="/concept/">Le concept</a></li>
       <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Les offres<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <ul id="pour-qui" hidden>
           <li><a href="/particuliers/">Particuliers <small>Gratuit</small></a></li>
@@ -24,11 +31,6 @@
           <li><a href="/collectivites/">Collectivités</a></li>
         </ul>
       </li>
-      ${TT_I18N.menu()}
-    </ul>
-  </nav>
-  <nav class="menu" id="menu" aria-label="Menu principal">
-    <ul>
       <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-catalogue">Le catalogue<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <ul id="nav-catalogue" hidden>
           <li><a href="/#objets">Voir les objets</a></li>
@@ -37,14 +39,8 @@
           <li data-visiteur><a href="/#se-connecter" data-devenir>Devenir membre</a></li>
         </ul>
       </li>
-      <li><a href="/#recherche-site">Rechercher</a></li>
-      <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-decouvrir">Le concept<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <ul id="nav-decouvrir" hidden>
-          <li><a href="/concept/">Le concept</a></li>
-          <li><a href="/comment-ca-marche/">Comment ça marche</a></li>
-          <li><a href="/grand-troc/">Le Grand Troc</a></li>
-        </ul>
-      </li>
+      <li><a href="/grand-troc/">Le Grand Troc</a></li>
+      <li><a href="/faq/">FAQ</a></li>
     </ul>
   </nav>
   <div class="compte-zone">
@@ -62,7 +58,6 @@
       <button class="pop-lien" type="button" data-retour hidden>Déjà un compte ? Se connecter avec un mot de passe</button>
     </form>
   </div>
-  <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 7h16"/><path class="b2" d="M4 12h16"/><path class="b3" d="M4 17h16"/></svg></button>
 </div>`;
 
   const pied=document.querySelector('footer.site');
@@ -112,8 +107,7 @@
   function ouvrirMenu(oui){
     menu.classList.toggle('ouvert',oui); burger.setAttribute('aria-expanded',oui);
     burger.setAttribute('aria-label',oui?'Fermer le menu':'Ouvrir le menu');
-    document.body.classList.toggle('menu-ouvert',oui);
-    if(mobile.matches)sous.filter(item=>menu.contains(item)).forEach(item=>ouvrirSous(item,oui));
+    if(!oui)sous.forEach(item=>ouvrirSous(item,false));
   }
   function fermer(){ouvrirMenu(false);sous.forEach(item=>ouvrirSous(item,false))}
   burger.onclick=()=>ouvrirMenu(!menu.classList.contains('ouvert'));
@@ -123,7 +117,7 @@
     ouvrirSous(item,ouvrir);
   });
   menu.addEventListener('click',e=>{if(e.target.closest('a'))fermer()});
-  document.addEventListener('click',e=>{sous.forEach(item=>{if((!mobile.matches||!menu.contains(item))&&!item.contains(e.target))ouvrirSous(item,false)})});
+  document.addEventListener('click',e=>{if(!menu.contains(e.target)&&!burger.contains(e.target))fermer()});
   document.addEventListener('keydown',e=>{
     if(e.key!=='Escape')return;
     const ouvert=sous.find(item=>item.querySelector('button').getAttribute('aria-expanded')==='true');
