@@ -1,1 +1,1 @@
-- Page d'une catégorie : les filtres (sous-catégorie, caractéristiques, état, tri) passent par l'API, plus de limite à 200 objets ; GET /objets accepte sous_categorie, etat, caracteristique=clé:valeur et tri.
+- Page d'une catégorie : les filtres (sous-catégorie, caractéristiques, état, tri) passent par l'API, plus de limite à 200 objets ; GET /objets accepte sous_categorie, etat, caracteristique=clé:valeur et tri (#83).
