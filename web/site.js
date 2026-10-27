@@ -11,10 +11,14 @@
   <a class="logo" href="/" aria-label="TopTroc, retour à l'accueil">${LOGO}<span>Top<span class="logo-2">Troc</span></span></a>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
-      <li><a href="/concept/">Le concept</a></li>
-      <li><a href="/comment-ca-marche/">Comment ça marche</a></li>
-      <li><a href="/grand-troc/">Le Grand Troc</a></li>
       <li><a href="/#objets">Voir les objets</a></li>
+      <li class="sous"><button type="button" aria-expanded="false" aria-controls="decouvrir">Le concept<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <ul id="decouvrir" hidden>
+          <li><a href="/concept/">Le concept</a></li>
+          <li><a href="/comment-ca-marche/">Comment ça marche</a></li>
+          <li><a href="/grand-troc/">Le Grand Troc</a></li>
+        </ul>
+      </li>
       <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Pour qui ?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <ul id="pour-qui" hidden>
           <li><a href="/particuliers/">Particuliers <small>Gratuit</small></a></li>
@@ -22,6 +26,7 @@
           <li><a href="/collectivites/">Collectivités</a></li>
         </ul>
       </li>
+      <li><a href="/faq/">FAQ</a></li>
       ${TT_I18N.menu()}
     </ul>
   </nav>
@@ -71,29 +76,39 @@
   if(!haut)return;
 
   const $=s=>haut.querySelector(s);
-  const menu=$('#menu'), burger=$('.burger'), sous=$('.sous'), bSous=sous.querySelector('button'), liste=sous.querySelector('ul');
+  const menu=$('#menu'), burger=$('.burger'), sous=[...haut.querySelectorAll('.sous')];
   const mobile=matchMedia('(max-width:1199px)');
-
-  function ouvrirSous(oui){bSous.setAttribute('aria-expanded',oui);liste.hidden=!oui}
+  function ouvrirSous(item,oui){
+    item.querySelector('button').setAttribute('aria-expanded',oui);
+    item.querySelector('ul').hidden=!oui;
+  }
   function ouvrirMenu(oui){
     menu.classList.toggle('ouvert',oui); burger.setAttribute('aria-expanded',oui);
     burger.setAttribute('aria-label',oui?'Fermer le menu':'Ouvrir le menu');
     document.body.classList.toggle('menu-ouvert',oui);
-    if(mobile.matches)ouvrirSous(oui); // sur mobile, « Pour qui ? » est déplié d'office
+    if(mobile.matches)sous.forEach(item=>ouvrirSous(item,oui));
   }
-  function fermer(){ouvrirMenu(false);ouvrirSous(false)}
+  function fermer(){ouvrirMenu(false);sous.forEach(item=>ouvrirSous(item,false))}
   burger.onclick=()=>ouvrirMenu(!menu.classList.contains('ouvert'));
-  bSous.onclick=()=>ouvrirSous(bSous.getAttribute('aria-expanded')!=='true');
+  sous.forEach(item=>item.querySelector('button').onclick=()=>{
+    const ouvrir=item.querySelector('button').getAttribute('aria-expanded')!=='true';
+    if(!mobile.matches)sous.forEach(other=>ouvrirSous(other,false));
+    ouvrirSous(item,ouvrir);
+  });
   menu.addEventListener('click',e=>{if(e.target.closest('a'))fermer()});
-  document.addEventListener('click',e=>{if(!mobile.matches&&!sous.contains(e.target))ouvrirSous(false)});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&(menu.classList.contains('ouvert')||!liste.hidden)){const etait=menu.classList.contains('ouvert');fermer();(etait?burger:bSous).focus()}});
+  document.addEventListener('click',e=>{if(!mobile.matches)sous.forEach(item=>{if(!item.contains(e.target))ouvrirSous(item,false)})});
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Escape')return;
+    const ouvert=sous.find(item=>item.querySelector('button').getAttribute('aria-expanded')==='true');
+    if(menu.classList.contains('ouvert')||ouvert){const mobileOuvert=menu.classList.contains('ouvert');fermer();(mobileOuvert?burger:ouvert.querySelector('button')).focus()}
+  });
   mobile.addEventListener('change',fermer);
   addEventListener('scroll',()=>haut.classList.toggle('colle',scrollY>4),{passive:true});
 
   // Page en cours : soulignée dans le menu.
   const ici=location.pathname;
   haut.querySelectorAll('a[href^="/"]').forEach(a=>{if(ici!=='/'&&a.getAttribute('href')===ici)a.setAttribute('aria-current','page')});
-  if(liste.querySelector('[aria-current]'))sous.classList.add('actif');
+  sous.forEach(item=>{if(item.querySelector('[aria-current]'))item.classList.add('actif')});
 
   /* « Mon espace » : connecté, le bouton mène à l'espace. Sinon, il ouvre juste en dessous la connexion par
      mot de passe (sans e-mail à attendre), avec le lien magique en secours. C'est la seule entrée du site :
