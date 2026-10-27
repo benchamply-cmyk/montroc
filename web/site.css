@@ -320,3 +320,7 @@ header.site.reduit .langue-bouton{min-height:34px;height:34px}
 @media(max-width:860px){header.site.reduit .compte{width:34px;height:34px;padding:0}}
 @media(max-width:699px){header.site.reduit{--haut:52px}header.site.reduit .site-in>.recherche-entete{display:none}}
 @media (prefers-reduced-motion:reduce){.site-in,.categories-barre,.site-in>.burger,.site-in>.favoris,.menu-actions .aide,.compte,.logo{transition:none}}
+
+/* Bouton Se connecter / S'inscrire (Ben, 27/10) : gris argenté au repos, jaune au survol ou une fois ouvert. */
+.compte{background:linear-gradient(180deg,#E4E7EB,#AFB5BE);color:var(--accent-ink);border:1px solid #CDD2D9}
+.compte:hover,.compte:focus-visible,.compte[aria-expanded="true"],.compte[aria-current="page"]{background:var(--mark);border-color:var(--mark);color:var(--accent-ink)}
