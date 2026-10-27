@@ -12,8 +12,8 @@
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
       <li><a href="/#objets">Voir les objets</a></li>
-      <li class="sous"><button type="button" aria-expanded="false" aria-controls="decouvrir">Le concept<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <ul id="decouvrir" hidden>
+      <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-decouvrir">Le concept<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <ul id="nav-decouvrir" hidden>
           <li><a href="/concept/">Le concept</a></li>
           <li><a href="/comment-ca-marche/">Comment ça marche</a></li>
           <li><a href="/grand-troc/">Le Grand Troc</a></li>
