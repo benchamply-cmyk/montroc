@@ -143,6 +143,9 @@
   });
   mobile.addEventListener('change',fermer);
   addEventListener('scroll',()=>haut.classList.toggle('colle',scrollY>4),{passive:true});
+  // Le logo suit le défilement : les deux T s'inversent en descendant, reviennent en remontant.
+  const logo=haut.querySelector('.logo');let dernierY=scrollY;
+  addEventListener('scroll',()=>{const y=scrollY,d=y-dernierY;if(Math.abs(d)<8)return;logo.classList.toggle('inverse',d>0&&y>4);dernierY=y},{passive:true});
 
   // Page en cours : soulignée dans le menu.
   const ici=location.pathname;

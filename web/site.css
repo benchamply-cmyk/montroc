@@ -21,6 +21,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-off
 .logo{border:0;background:none;padding:0;color:var(--ink);text-decoration:none;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:8px;flex:none}
 .logo svg{width:26px;height:26px;transition:transform .6s cubic-bezier(.6,0,.2,1)}
 .logo:hover svg{transform:rotate(180deg)}
+.logo.inverse svg{transform:rotate(180deg)}
+.logo.inverse:hover svg{transform:rotate(360deg)}
 .logo-2{color:var(--mark)}
 
 /* Menu du haut : collé en haut de l'écran, liens en typo blanche, « Se connecter » toujours visible à droite. */
