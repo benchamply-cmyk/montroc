@@ -5,7 +5,7 @@
   /* Acier bleuté : gris métal froid, avec un dégradé (reflet en haut) sur les surfaces et des ombres portées. */
   --bg:#15191E; --bg-2:#232A33; --surface:#252C35; --surface-2:#1D232A; --ink:#F2F3F6; --muted:#A3A9B6; --line:#37414D;
   --reflet:inset 0 1px 0 rgba(200,220,255,.10),inset 0 -1px 0 rgba(0,0,0,.35); --ombre:0 10px 24px -14px rgba(0,0,0,.8),0 2px 6px -2px rgba(0,0,0,.5);
-  --accent:#F2F3F6; --accent-ink:#111318; /* une seule couleur vive sur le site : le jaune (--mark) */ --mark:#E6C23A; --mark-doux:rgba(230,194,58,.28); --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
+  --accent:#F2F3F6; --accent-ink:#111318; /* une seule couleur vive sur le site : le jaune (--mark) */ --mark:#E6C23A; --mark-doux:rgba(230,194,58,.55); --ok:#5FD39A; --ok-bg:#16301F; --danger:#FF7A6E;
   --display:"Unbounded", "Arial Black", system-ui, sans-serif;
   --body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"DM Mono", ui-monospace, Menlo, monospace;
