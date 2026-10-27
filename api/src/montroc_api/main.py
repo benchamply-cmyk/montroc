@@ -20,6 +20,7 @@ from .routers import (
     objets,
     premium,
     signalements,
+    suivis,
     taches,
     utilisateurs,
 )
@@ -29,7 +30,8 @@ app = FastAPI(
     version=__version__,
     description=(
         "TopTroc, troc sans prix ni monnaie : le Match (accords 1 à 1 à tout moment) et le Grand Troc du "
-        "dimanche (boucles d'échange de 2 ou 3 personnes), en main propre ou par colis, et Troc Premium."
+        "dimanche (boucles d'échange de 2 ou 3 personnes), en main propre ou par colis, Troc Premium, "
+        "et le mode visiteur (favoris et suivi sans compte)."
     ),
 )
 app.add_middleware(
@@ -40,7 +42,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for module in (auth, moi, catalogue, objets, utilisateurs, matchs, echanges, grand_troc, premium, signalements, taches):
+for module in (
+    auth,
+    moi,
+    catalogue,
+    objets,
+    utilisateurs,
+    matchs,
+    echanges,
+    grand_troc,
+    premium,
+    signalements,
+    suivis,
+    taches,
+):
     app.include_router(module.router)
 
 

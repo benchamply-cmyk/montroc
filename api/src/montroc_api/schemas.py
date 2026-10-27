@@ -653,6 +653,8 @@ class ResultatTaches(BaseModel):
     objets_remplaces: int | None = None
     # Repêchage du mardi 18 h : None s'il n'a pas eu lieu à cet appel.
     objets_repeches: int | None = None
+    # Mode visiteur : alertes envoyées aux visiteurs qui suivent leurs recherches et leurs favoris.
+    alertes_visiteurs: int | None = None
 
 
 # --- Signalements et modération ---
@@ -704,3 +706,46 @@ class Decision(BaseModel):
     # Signalement retenu : l'objet visé est retiré ; avec ce choix, le compte concerné est aussi suspendu.
     suspendre_compte: bool = False
     motivation: str = Field(min_length=10, max_length=2000)
+
+
+# --- Mode visiteur : favoris et suivi sans compte ---
+
+
+class FavoriCreation(BaseModel):
+    objet_id: int
+
+
+class RechercheSuivie(BaseModel):
+    q: str = Field(default="", max_length=100)
+    categorie: str | None = Field(default=None, max_length=50)
+
+
+class FavoriSuivi(BaseModel):
+    objet_id: int
+    ajoute_le: datetime
+
+
+class ListesSuivies(BaseModel):
+    """Ce que le navigateur du visiteur garde : ses dernières recherches et ses favoris (24 h)."""
+
+    recherches: list[RechercheSuivie] = Field(default_factory=list, max_length=10)
+    favoris: list[FavoriSuivi] = Field(default_factory=list, max_length=50)
+
+
+class DemandeSuivi(AvecTelephone, ListesSuivies):
+    """E-mail ou téléphone (l'un des deux suffit) pour être prévenu sans créer de compte."""
+
+    email: EmailStr | None = None
+    telephone: str | None = Field(default=None, max_length=30, examples=["06 12 34 56 78"])
+
+    @model_validator(mode="after")
+    def _un_contact(self):
+        if not self.email and not self.telephone:
+            raise ValueError("Indiquez un e-mail ou un numéro de téléphone.")
+        return self
+
+
+class SuiviLecture(ListesSuivies):
+    email: str | None
+    telephone: str | None
+    confirme_le: datetime | None

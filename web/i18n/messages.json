@@ -4666,5 +4666,249 @@
   "Les objets que vous aimez apparaîtront ici.": {
     "en": "Items you like will appear here.",
     "es": "Los artículos que te gustan aparecerán aquí."
+  },
+  "Voir plus d'objets": {
+    "en": "See more items",
+    "es": "Ver más objetos"
+  },
+  "Pas besoin de compte pour remplir l'annonce : il vous sera demandé à la dernière étape, pour la publier.": {
+    "en": "No account needed to fill in your listing: you'll be asked to create one at the last step, to publish it.",
+    "es": "No necesitas cuenta para rellenar el anuncio: se te pedirá en el último paso, para publicarlo."
+  },
+  "Retirer des favoris": {
+    "en": "Remove from favourites",
+    "es": "Quitar de favoritos"
+  },
+  "Ajouter aux favoris": {
+    "en": "Add to favourites",
+    "es": "Añadir a favoritos"
+  },
+  "Ajouté à vos favoris": {
+    "en": "Added to your favourites",
+    "es": "Añadido a tus favoritos"
+  },
+  "Retiré de vos favoris": {
+    "en": "Removed from your favourites",
+    "es": "Quitado de tus favoritos"
+  },
+  "Dans vos favoris": {
+    "en": "In your favourites",
+    "es": "En tus favoritos"
+  },
+  "Ajouté à vos favoris, gardés 24 h": {
+    "en": "Added to your favourites, kept for 24 h",
+    "es": "Añadido a tus favoritos, guardados 24 h"
+  },
+  "Vos favoris s'effacent dans 24 h": {
+    "en": "Your favourites disappear in 24 h",
+    "es": "Tus favoritos se borran en 24 h"
+  },
+  "Sans compte, ils restent sur cet appareil jusqu'à": {
+    "en": "Without an account, they stay on this device until",
+    "es": "Sin cuenta, se quedan en este dispositivo hasta el"
+  },
+  ", puis disparaissent.": {
+    "en": ", then disappear.",
+    "es": ", y luego desaparecen."
+  },
+  "Créer mon compte gratuit": {
+    "en": "Create my free account",
+    "es": "Crear mi cuenta gratuita"
+  },
+  "Me prévenir par e-mail ou SMS": {
+    "en": "Notify me by email or text",
+    "es": "Avisarme por e-mail o SMS"
+  },
+  "Vos recherches récentes": {
+    "en": "Your recent searches",
+    "es": "Tus búsquedas recientes"
+  },
+  "Suivi activé : vous serez prévenu des nouveautés et avant que vos favoris s'effacent.": {
+    "en": "Alerts on: we'll tell you about new items and before your favourites disappear.",
+    "es": "Avisos activados: te avisaremos de las novedades y antes de que se borren tus favoritos."
+  },
+  "Suivi arrêté : nous ne vous écrirons plus.": {
+    "en": "Alerts stopped: we won't write to you again.",
+    "es": "Avisos desactivados: no te escribiremos más."
+  },
+  "s'efface dans": {
+    "en": "disappears in",
+    "es": "se borra en"
+  },
+  "Suivi activé": {
+    "en": "Alerts on",
+    "es": "Avisos activados"
+  },
+  "Nous écrivons à": {
+    "en": "We write to",
+    "es": "Escribimos a"
+  },
+  "quand un objet arrive pour vos recherches, et avant que vos favoris s'effacent. Au plus un message par jour.": {
+    "en": "when an item matches your searches, and before your favourites disappear. One message a day at most.",
+    "es": "cuando llega un objeto para tus búsquedas, y antes de que se borren tus favoritos. Como mucho un mensaje al día."
+  },
+  "Arrêter le suivi et effacer mes données": {
+    "en": "Stop alerts and delete my data",
+    "es": "Desactivar avisos y borrar mis datos"
+  },
+  "Être prévenu, sans compte": {
+    "en": "Get notified, no account needed",
+    "es": "Recibir avisos, sin cuenta"
+  },
+  "Un nouvel objet pour vos recherches, un favori qui va s'effacer : laissez un e-mail ou un portable, nous vous prévenons. Au plus un message par jour, arrêt en un clic.": {
+    "en": "A new item for your searches, a favourite about to disappear: leave an email or mobile number and we'll let you know. One message a day at most, stop in one click.",
+    "es": "Un objeto nuevo para tus búsquedas, un favorito a punto de borrarse: deja un e-mail o un móvil y te avisamos. Como mucho un mensaje al día, baja en un clic."
+  },
+  "Lien de confirmation envoyé à": {
+    "en": "Confirmation link sent to",
+    "es": "Enlace de confirmación enviado a"
+  },
+  ": ouvrez-le pour activer le suivi.": {
+    "en": ": open it to turn on alerts.",
+    "es": ": ábrelo para activar los avisos."
+  },
+  "E-mail ou 06 12 34 56 78": {
+    "en": "Email or mobile number",
+    "es": "E-mail o número de móvil"
+  },
+  "E-mail ou téléphone": {
+    "en": "Email or phone",
+    "es": "E-mail o teléfono"
+  },
+  "Me prévenir": {
+    "en": "Notify me",
+    "es": "Avisarme"
+  },
+  "Vos recherches et vos favoris sont envoyés à TopTroc pour ces alertes seulement, puis effacés après 6 mois sans visite.": {
+    "en": "Your searches and favourites are sent to TopTroc for these alerts only, then deleted after 6 months without a visit.",
+    "es": "Tus búsquedas y favoritos se envían a TopTroc solo para estos avisos, y se borran tras 6 meses sin visita."
+  },
+  "Vos favoris s'effacent 24 h après leur ajout : le prochain dans": {
+    "en": "Your favourites disappear 24 h after you add them: the next one in",
+    "es": "Tus favoritos se borran 24 h después de añadirlos: el próximo en"
+  },
+  "Sans compte, vos favoris sont gardés 24 h sur cet appareil.": {
+    "en": "Without an account, your favourites are kept for 24 h on this device.",
+    "es": "Sin cuenta, tus favoritos se guardan 24 h en este dispositivo."
+  },
+  "Créez votre compte gratuit pour les garder pour toujours et recevoir les propositions d'échange.": {
+    "en": "Create your free account to keep them forever and get swap offers.",
+    "es": "Crea tu cuenta gratuita para guardarlos para siempre y recibir propuestas de intercambio."
+  },
+  "Garder mes favoris": {
+    "en": "Keep my favourites",
+    "es": "Guardar mis favoritos"
+  },
+  "Effacer l'historique": {
+    "en": "Clear history",
+    "es": "Borrar el historial"
+  },
+  "Vos recherches apparaîtront ici, sur cet appareil seulement.": {
+    "en": "Your searches will appear here, on this device only.",
+    "es": "Tus búsquedas aparecerán aquí, solo en este dispositivo."
+  },
+  "Vérifiez l'e-mail.": {
+    "en": "Check the email address.",
+    "es": "Revisa el e-mail."
+  },
+  "Regardez vos messages : un lien de confirmation vient de partir.": {
+    "en": "Check your messages: a confirmation link is on its way.",
+    "es": "Revisa tus mensajes: acaba de salir un enlace de confirmación."
+  },
+  "Dernière étape": {
+    "en": "Last step",
+    "es": "Último paso"
+  },
+  "Votre annonce est prête": {
+    "en": "Your listing is ready",
+    "es": "Tu anuncio está listo"
+  },
+  "sera publiée dès que vous aurez votre compte TopTroc. C'est gratuit, et c'est lui qui vous prévient quand quelqu'un veut l'échanger.": {
+    "en": "will be published as soon as you have your TopTroc account. It's free, and it's how we tell you when someone wants to swap it.",
+    "es": "se publicará en cuanto tengas tu cuenta TopTroc. Es gratis, y es lo que te avisa cuando alguien quiere intercambiarlo."
+  },
+  "Indiquez votre e-mail : un lien vous arrive.": {
+    "en": "Enter your email: a link is sent to you.",
+    "es": "Indica tu e-mail: te llega un enlace."
+  },
+  "Choisissez votre pseudo et un mot de passe.": {
+    "en": "Choose your username and a password.",
+    "es": "Elige tu seudónimo y una contraseña."
+  },
+  "Votre annonce part toute seule.": {
+    "en": "Your listing goes live on its own.",
+    "es": "Tu anuncio se publica solo."
+  },
+  "Créer mon compte et publier": {
+    "en": "Create my account and publish",
+    "es": "Crear mi cuenta y publicar"
+  },
+  "J'ai déjà un compte": {
+    "en": "I already have an account",
+    "es": "Ya tengo una cuenta"
+  },
+  "Revenir à l'annonce": {
+    "en": "Back to the listing",
+    "es": "Volver al anuncio"
+  },
+  "Votre annonce attend sur cet appareil. Ouvrez le lien reçu dans ce même navigateur.": {
+    "en": "Your listing waits on this device. Open the link you receive in this same browser.",
+    "es": "Tu anuncio espera en este dispositivo. Abre el enlace recibido en este mismo navegador."
+  },
+  "Votre compte est prêt : publication de votre annonce…": {
+    "en": "Your account is ready: publishing your listing…",
+    "es": "Tu cuenta está lista: publicando tu anuncio…"
+  },
+  "Vérifiez l'annonce, puis publiez.": {
+    "en": "Check the listing, then publish.",
+    "es": "Revisa el anuncio y publícalo."
+  },
+  "Ajoutez à nouveau la photo, puis publiez.": {
+    "en": "Add the photo again, then publish.",
+    "es": "Añade de nuevo la foto y publica."
+  },
+  "Sans compte, si vous demandez à être prévenu": {
+    "en": "Without an account, if you ask to be notified",
+    "es": "Sin cuenta, si pides que te avisemos"
+  },
+  ": votre e-mail ou votre portable, vos dernières recherches et vos favoris, pour vous signaler les nouveaux objets et vous rappeler que vos favoris vont s'effacer. Rien ne part avant que vous ayez confirmé ; effacés en un clic, ou après 6 mois sans visite.": {
+    "en": ": your email or mobile number, your latest searches and your favourites, to tell you about new items and remind you that your favourites are about to disappear. Nothing is sent before you confirm; deleted in one click, or after 6 months without a visit.",
+    "es": ": tu e-mail o tu móvil, tus últimas búsquedas y tus favoritos, para avisarte de los objetos nuevos y recordarte que tus favoritos se van a borrar. No se envía nada antes de que confirmes; se borran en un clic, o tras 6 meses sin visita."
+  },
+  "Aucun cookie publicitaire ni de mesure d'audience. Votre navigateur garde seulement un jeton de connexion, pour que vous restiez connecté, et, sans compte, vos favoris (24 h) et vos dernières recherches, qui ne quittent pas votre appareil sauf si vous demandez à être prévenu.": {
+    "en": "No advertising or audience-measurement cookies. Your browser only keeps a login token, so you stay signed in, and, without an account, your favourites (24 h) and your latest searches, which never leave your device unless you ask to be notified.",
+    "es": "Ninguna cookie publicitaria ni de medición de audiencia. Tu navegador solo guarda un token de sesión, para que sigas conectado, y, sin cuenta, tus favoritos (24 h) y tus últimas búsquedas, que no salen de tu dispositivo salvo si pides que te avisemos."
+  },
+  "Vos favoris restent tant que l'objet est proposé. Pour un match, touchez aussi le cœur « J'aime » : si son propriétaire aime un de vos objets, vous échangez à deux.": {
+    "en": "Your favourites stay as long as the item is listed. For a match, also tap the Like heart: if its owner likes one of your items, you swap one-to-one.",
+    "es": "Tus favoritos se quedan mientras el objeto esté publicado. Para un match, toca también el corazón «Me gusta»: si su dueño quiere uno de tus objetos, intercambiáis entre dos."
+  },
+  "Aucun favori pour l'instant. Touchez l'étoile d'un objet pour le retrouver ici.": {
+    "en": "No favourites yet. Tap the star on an item to find it here.",
+    "es": "Aún no hay favoritos. Toca la estrella de un objeto para encontrarlo aquí."
+  },
+  "Avec un compte gratuit, ils sont gardés pour toujours, sur tous vos appareils, et vous pouvez proposer l'échange.": {
+    "en": "With a free account, they're kept forever on all your devices, and you can offer a swap.",
+    "es": "Con una cuenta gratuita, se guardan para siempre en todos tus dispositivos, y puedes proponer el intercambio."
+  },
+  "Retirer le J'aime": {
+    "en": "Remove Like",
+    "es": "Quitar el Me gusta"
+  },
+  "Vous aimez": {
+    "en": "You like this",
+    "es": "Te gusta"
+  },
+  "J'aime retiré": {
+    "en": "Like removed",
+    "es": "Me gusta quitado"
+  },
+  "favoris sont gardés dans votre compte": {
+    "en": "favourites are saved in your account",
+    "es": "favoritos se guardan en tu cuenta"
+  },
+  "Votre favori est gardé dans votre compte": {
+    "en": "Your favourite is saved in your account",
+    "es": "Tu favorito se guarda en tu cuenta"
   }
 }

@@ -371,6 +371,7 @@ def test_rappel_puis_expiration(client, creer):
     client.post(f"/echanges/{echange['id']}/reponse", json={"accepte": True}, headers=b.headers)
 
     rien = {"rappels_envoyes": 0, "echanges_expires": 0, "objets_remplaces": None, "objets_repeches": None}
+    rien["alertes_visiteurs"] = 0
     assert client.post("/taches/horaires", headers=TACHES).json() == rien
     _decaler(echange["id"], 11)
     assert client.post("/taches/horaires", headers=TACHES).json() == {**rien, "rappels_envoyes": 1}
