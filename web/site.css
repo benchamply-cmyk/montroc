@@ -270,8 +270,13 @@ html{scroll-padding-top:calc(var(--haut) + var(--haut-categories) + 12px)}
 .categorie-liste li{break-inside:avoid}
 .categorie-liste a{display:flex;align-items:center;gap:10px;padding:9px 0;color:var(--ink);font-size:15px;text-decoration:none}
 .categorie-liste a:hover,.categorie-liste a:focus-visible{color:var(--mark)}
-.categorie-tout a{font-weight:600}
-.categorie-tout svg{width:18px;height:18px;fill:currentColor;flex:none}
+.categorie-tete{border-bottom:1px solid var(--line);margin-bottom:10px;padding-bottom:10px}
+.categorie-tete a{display:inline-flex;align-items:center;gap:10px;padding:6px 0;color:var(--ink);text-decoration:none;font-size:17px}
+.categorie-tete strong{font-weight:700}
+.categorie-tete .categorie-voir{color:var(--muted);font-size:14px;font-weight:500}
+.categorie-tete a:hover,.categorie-tete a:focus-visible,.categorie-tete a:hover .categorie-voir{color:var(--mark)}
+.categorie-liste a{font-style:italic;font-weight:400}
+.categorie-tete svg{width:18px;height:18px;fill:currentColor;flex:none}
 @media(max-width:700px){.categorie-liste{columns:2 140px;column-gap:20px}.categorie-liste a{font-size:14px}.categories-panneau{padding:12px 16px}.categories-defile button{font-size:13px}}
 
 

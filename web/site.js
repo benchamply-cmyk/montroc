@@ -186,10 +186,11 @@
     if(actif&&actif!==bouton)actif.setAttribute('aria-expanded','false');
     actif=bouton;bouton.setAttribute('aria-expanded','true');panneau.replaceChildren();
     const lien=(texte,slug)=>{const a=element('a',texte);a.href=TT_I18N.localPath('/')+'#categorie='+encodeURIComponent(slug);return a};
-    const ul=element('ul',null,'categorie-liste'), tout=element('li',null,'categorie-tout'), a=lien(traduire('Voir tout'),c.slug);
-    a.insertAdjacentHTML('afterbegin',GRILLE);tout.append(a);ul.append(tout);
+    // La catégorie en gras, séparée de ses sous-catégories en italique (Ben, 27/10).
+    const tete=element('div',null,'categorie-tete'), a=lien(null,c.slug), ul=element('ul',null,'categorie-liste');
+    a.insertAdjacentHTML('afterbegin',GRILLE);a.append(element('strong',traduire(c.libelle)),element('span',traduire('Voir tout'),'categorie-voir'));tete.append(a);
     (c.sous_categories||[]).forEach(x=>{const li=element('li');li.append(lien(traduire(x.libelle),c.slug+'/'+x.slug));ul.append(li)});
-    panneau.append(ul);panneau.hidden=false;
+    panneau.append(tete,ul);panneau.hidden=false;
   }
   fetch(API+'/categories').then(r=>{if(!r.ok)throw Error();return r.json()}).then(categories=>{
     categoriesEntete.replaceChildren();
