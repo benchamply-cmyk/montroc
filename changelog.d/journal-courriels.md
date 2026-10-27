@@ -1,1 +1,0 @@
-- Journal des e-mails : chaque e-mail accepté par Brevo est écrit dans le journal Render (destinataire, expéditeur, messageId) et une erreur imprévue d'envoi n'est plus perdue, pour diagnostiquer un e-mail qui n'arrive pas.
