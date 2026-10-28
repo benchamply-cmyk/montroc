@@ -24,6 +24,7 @@ export default function Racine() {
           <Stack.Screen name="mon-objet/[id]" options={{ title: 'Mon objet' }} />
           <Stack.Screen name="proposer" options={{ title: 'Proposer un objet' }} />
           <Stack.Screen name="souhaits" options={{ title: 'Mes souhaits' }} />
+          <Stack.Screen name="grand-troc" options={{ title: 'Le Grand Troc' }} />
           <Stack.Screen name="echanges" options={{ title: 'Mes échanges' }} />
           <Stack.Screen name="echange/[id]" options={{ title: 'Échange' }} />
           <Stack.Screen name="premium" options={{ title: 'Troc Premium' }} />

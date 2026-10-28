@@ -1,0 +1,1 @@
+- App mobile : onglet Accueil inspiré de la page d'accueil du site (recherche, catégories, objets en attente d'un troc, Match, Grand Troc), Grand Troc ouvert depuis l'accueil et Mon espace.

@@ -1,202 +1,208 @@
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Linking, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native';
 
+import { Boucle3 } from '../../components/Boucle3';
 import { CarteObjet } from '../../components/CarteObjet';
-import { Bouton, Champ, EtatRequete, Puces, s } from '../../components/ui';
-import { api, ErreurApi } from '../../lib/api';
-import { CLE_RECHERCHES, ecrire, lire, type Recherche } from '../../lib/stockage';
-import { couleurs, ETATS } from '../../lib/theme';
-import type { CategorieDetaillee, Objet } from '../../lib/types';
+import { Bouton, s } from '../../components/ui';
+import { compteARebours } from '../../lib/dates';
+import { aFaire } from '../../lib/echanges';
+import { useSession } from '../../lib/session';
+import { couleurs, rayon, SITE } from '../../lib/theme';
+import type { Categorie, EchangeLecture, InfosGrandTroc, Objet } from '../../lib/types';
 import { useRequete } from '../../lib/useRequete';
 
-const PAGE = 40;
-
-interface Filtres {
-  q: string;
-  categorie: string | null;
-  sousCategorie: string | null;
-  etats: string[];
-  // clé → valeurs acceptées (taille M ou L…).
-  caracteristiques: Record<string, string[]>;
-  tri: 'recent' | 'ancien';
-}
-
-const AUCUN: Filtres = { q: '', categorie: null, sousCategorie: null, etats: [], caracteristiques: {}, tri: 'recent' };
-
-/** Même requête que la page d'une catégorie du site (#83) : l'API filtre et pagine. */
-function chemin(f: Filtres, decalage: number) {
-  const p: string[] = [`limite=${PAGE}`, `decalage=${decalage}`, `tri=${f.tri}`];
-  if (f.q) p.push(`q=${encodeURIComponent(f.q)}`);
-  if (f.categorie) p.push(`categorie=${encodeURIComponent(f.categorie)}`);
-  if (f.categorie && f.sousCategorie) p.push(`sous_categorie=${encodeURIComponent(f.sousCategorie)}`);
-  f.etats.forEach((e) => p.push(`etat=${e}`));
-  if (f.categorie)
-    Object.entries(f.caracteristiques).forEach(([cle, valeurs]) =>
-      valeurs.forEach((v) => p.push(`caracteristique=${encodeURIComponent(`${cle}:${v}`)}`)),
-    );
-  return `/objets?${p.join('&')}`;
-}
-
-/** Le catalogue public : consultable sans compte, comme sur toptroc.com/#objets. */
-export default function Catalogue() {
-  const categories = useRequete<CategorieDetaillee[]>('/categories');
+/** L'accueil du site (#88), resserré pour un téléphone : chercher, proposer, voir ce qui attend un troc, le Match et le Grand Troc. */
+export default function Accueil() {
+  const { moi } = useSession();
+  const categories = useRequete<Categorie[]>('/categories');
+  const objets = useRequete<Objet[]>('/objets?limite=10');
+  const grandTroc = useRequete<InfosGrandTroc>('/grand-troc');
+  const echanges = useRequete<EchangeLecture[]>(moi ? '/moi/echanges' : null);
   const [saisie, setSaisie] = useState('');
-  const [filtres, setFiltres] = useState<Filtres>(AUCUN);
-  const [panneau, setPanneau] = useState(false);
-  const [objets, setObjets] = useState<Objet[]>([]);
-  const [fin, setFin] = useState(false);
-  const [chargement, setChargement] = useState(false);
-  const [erreur, setErreur] = useState<string | null>(null);
-  const [recherches, setRecherches] = useState<Recherche[]>([]);
-  const demande = useRef(0);
+  const [maintenant, setMaintenant] = useState(Date.now());
 
   useEffect(() => {
-    lire<Recherche[]>(CLE_RECHERCHES, []).then(setRecherches);
+    const minuterie = setInterval(() => setMaintenant(Date.now()), 30_000);
+    return () => clearInterval(minuterie);
   }, []);
 
-  const charger = useCallback(
-    async (depuis: number) => {
-      const numero = ++demande.current;
-      setChargement(true);
-      setErreur(null);
-      try {
-        const page = await api<Objet[]>(chemin(filtres, depuis));
-        // Une réponse arrivée après un changement de filtre est ignorée.
-        if (numero !== demande.current) return;
-        setObjets((avant) => (depuis === 0 ? page : [...avant, ...page]));
-        setFin(page.length < PAGE);
-      } catch (e) {
-        if (numero === demande.current) setErreur(e instanceof ErreurApi ? e.message : String(e));
-      } finally {
-        if (numero === demande.current) setChargement(false);
+  // Au retour sur l'accueil, le fil et les échanges ont pu changer. Le premier affichage charge déjà.
+  const dejaVu = useRef(false);
+  const { recharger: rechargerObjets } = objets;
+  const { recharger: rechargerEchanges } = echanges;
+  useFocusEffect(
+    useCallback(() => {
+      if (dejaVu.current) {
+        rechargerObjets();
+        rechargerEchanges();
       }
-    },
-    [filtres],
+      dejaVu.current = true;
+    }, [rechargerObjets, rechargerEchanges]),
   );
 
-  useEffect(() => {
-    charger(0);
-  }, [charger]);
-
-  const categorie = categories.donnees?.find((c) => c.slug === filtres.categorie);
-  const caracteristiques = (categorie?.caracteristiques ?? []).filter(
-    (c) => c.options && (!c.pour || (filtres.sousCategorie !== null && c.pour.includes(filtres.sousCategorie))),
-  );
-  const nbFiltres = filtres.etats.length + (filtres.sousCategorie ? 1 : 0) + Object.values(filtres.caracteristiques).flat().length + (filtres.tri === 'ancien' ? 1 : 0);
-
-  async function chercher(q: string, cat: string | null = filtres.categorie) {
-    setSaisie(q);
-    setFiltres((f) => ({ ...f, q, categorie: cat, sousCategorie: cat === f.categorie ? f.sousCategorie : null, caracteristiques: cat === f.categorie ? f.caracteristiques : {} }));
-    if (!q && !cat) return;
-    const liste = [{ q, categorie: cat }, ...recherches.filter((r) => r.q !== q || r.categorie !== cat)].slice(0, 10);
-    setRecherches(liste);
-    await ecrire(CLE_RECHERCHES, liste);
-  }
-
-  const libelleCategorie = (slug: string | null) => categories.donnees?.find((c) => c.slug === slug)?.libelle;
+  const voirObjets = (params: { q?: string; categorie?: string } = {}) => router.push({ pathname: '/objets', params });
+  const nbAFaire = moi ? (echanges.donnees ?? []).filter((e) => aFaire(e, moi.id)).length : 0;
+  const prochain = grandTroc.donnees ? new Date(grandTroc.donnees.prochain) : null;
+  const dernier = grandTroc.donnees?.dernier;
 
   return (
-    <View style={s.ecran}>
-      <FlatList
-        data={objets}
-        keyExtractor={(o) => String(o.id)}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 12 }}
-        contentContainerStyle={{ padding: 16, gap: 12 }}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={() => charger(0)} tintColor={couleurs.accent} />}
-        onEndReachedThreshold={0.5}
-        onEndReached={() => !fin && !chargement && objets.length > 0 && charger(objets.length)}
-        ListHeaderComponent={
-          <View style={{ gap: 12, marginBottom: 4 }}>
-            <Champ
-              libelle="Chercher un objet"
-              placeholder="vélo, Epiphone, poussette…"
-              value={saisie}
-              onChangeText={setSaisie}
-              onSubmitEditing={() => chercher(saisie.trim())}
-              returnKeyType="search"
-            />
-            {!filtres.q && !saisie && recherches.length > 0 && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-                {recherches.map((r) => (
-                  <Pressable key={`${r.q}|${r.categorie}`} style={s.puce} onPress={() => chercher(r.q, r.categorie)}>
-                    <Text style={s.puceTexte}>↺ {[r.q, libelleCategorie(r.categorie)].filter(Boolean).join(' · ')}</Text>
-                  </Pressable>
-                ))}
-              </ScrollView>
-            )}
-            {categories.donnees && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-                {[{ slug: null as string | null, libelle: 'Tout' }, ...categories.donnees].map((c) => {
-                  const active = filtres.categorie === c.slug;
-                  return (
-                    <Pressable key={c.slug ?? 'tout'} style={[s.puce, active && s.puceActive]} onPress={() => chercher(filtres.q, c.slug)}>
-                      <Text style={[s.puceTexte, active && { color: couleurs.accentEncre }]}>{c.libelle}</Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            )}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={[s.discret, { textAlign: 'left' }]}>
-                {chargement && objets.length === 0 ? '' : `${objets.length}${fin ? '' : '+'} objet${objets.length > 1 ? 's' : ''}`}
-              </Text>
-              <Pressable onPress={() => setPanneau((p) => !p)} hitSlop={8}>
-                <Text style={{ color: couleurs.accent, fontWeight: '600' }}>Filtres{nbFiltres ? ` (${nbFiltres})` : ''} {panneau ? '▲' : '▼'}</Text>
-              </Pressable>
-            </View>
-            {panneau && (
-              <View style={{ gap: 14, padding: 12, borderWidth: 1, borderColor: couleurs.trait, borderRadius: 14 }}>
-                {categorie && categorie.sous_categories.length > 0 && (
-                  <Puces
-                    libelle="Sous-catégorie"
-                    options={categorie.sous_categories.map((c) => ({ valeur: c.slug, libelle: c.libelle }))}
-                    choisies={filtres.sousCategorie ? [filtres.sousCategorie] : []}
-                    onChange={([c]) => setFiltres((f) => ({ ...f, sousCategorie: c ?? null, caracteristiques: {} }))}
-                    facultatif
-                  />
-                )}
-                <Puces
-                  libelle="État"
-                  options={Object.entries(ETATS).map(([valeur, libelle]) => ({ valeur, libelle }))}
-                  choisies={filtres.etats}
-                  onChange={(etats) => setFiltres((f) => ({ ...f, etats }))}
-                  multiple
-                />
-                {caracteristiques.map((c) => (
-                  <Puces
-                    key={c.cle}
-                    libelle={c.libelle}
-                    options={(c.options ?? []).map((o) => ({ valeur: o, libelle: o }))}
-                    choisies={filtres.caracteristiques[c.cle] ?? []}
-                    onChange={(v) => setFiltres((f) => ({ ...f, caracteristiques: { ...f.caracteristiques, [c.cle]: v } }))}
-                    multiple
-                  />
-                ))}
-                {!categorie && <Text style={[s.discret, { textAlign: 'left' }]}>Choisissez une catégorie pour filtrer par taille, marque, pointure…</Text>}
-                <Puces
-                  libelle="Trier"
-                  options={[
-                    { valeur: 'recent', libelle: 'Plus récents' },
-                    { valeur: 'ancien', libelle: 'Plus anciens' },
-                  ]}
-                  choisies={[filtres.tri]}
-                  onChange={([t]) => setFiltres((f) => ({ ...f, tri: (t as Filtres['tri']) ?? 'recent' }))}
-                />
-                {nbFiltres > 0 && (
-                  <Bouton titre="Effacer les filtres" secondaire onPress={() => setFiltres((f) => ({ ...AUCUN, q: f.q, categorie: f.categorie }))} />
-                )}
-              </View>
-            )}
-            {erreur && <EtatRequete chargement={false} reveil={false} erreur={erreur} recharger={() => charger(0)} />}
-          </View>
-        }
-        ListEmptyComponent={
-          chargement ? null : !erreur ? <Text style={s.discret}>Aucun objet ne correspond pour l'instant. Essayez d'élargir la recherche.</Text> : null
-        }
-        ListFooterComponent={chargement ? <ActivityIndicator color={couleurs.accent} style={{ padding: 16 }} /> : null}
-        renderItem={({ item }) => <CarteObjet objet={item} />}
-      />
+    <ScrollView
+      style={s.ecran}
+      contentContainerStyle={{ paddingVertical: 20, gap: 28, paddingBottom: 48 }}
+      keyboardShouldPersistTaps="handled"
+      refreshControl={<RefreshControl refreshing={false} onRefresh={() => { rechargerObjets(); grandTroc.recharger(); rechargerEchanges(); }} tintColor={couleurs.accent} />}
+    >
+      <View style={{ paddingHorizontal: 16, gap: 12 }}>
+        <Text style={[s.etiquette, { color: couleurs.marque }]}>Pas de prix. Pas de monnaie.</Text>
+        <Text style={[s.grandTitre, { fontSize: 28, lineHeight: 33 }]}>Le troc se réinvente.</Text>
+        <Text style={[s.texte, { color: couleurs.discret }]}>La boucle d'échange augmente vos chances : tout le monde y gagne.</Text>
+        <View style={[s.champ, { flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingRight: 4 }]}>
+          <TextInput
+            style={{ flex: 1, color: couleurs.encre, fontSize: 16, paddingVertical: 10 }}
+            placeholder="Vélo, poussette, perceuse…"
+            placeholderTextColor={couleurs.discret}
+            value={saisie}
+            onChangeText={setSaisie}
+            onSubmitEditing={() => voirObjets({ q: saisie.trim() })}
+            returnKeyType="search"
+            maxLength={100}
+          />
+          <Pressable accessibilityLabel="Chercher" onPress={() => voirObjets({ q: saisie.trim() })} style={{ backgroundColor: couleurs.accent, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10 }}>
+            <Text style={{ color: couleurs.accentEncre, fontWeight: '700' }}>Chercher</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {categories.donnees && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 16 }}>
+          {categories.donnees.map((c) => (
+            <Pressable key={c.slug} style={s.puce} onPress={() => voirObjets({ categorie: c.slug })}>
+              <Text style={s.puceTexte}>{c.libelle}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
+
+      <View style={{ paddingHorizontal: 16, flexDirection: 'row', gap: 10 }}>
+        <View style={{ flex: 1 }}>
+          <Pressable onPress={() => router.push('/proposer')} style={({ pressed }) => [s.bouton, { backgroundColor: couleurs.marque }, pressed && { opacity: 0.6 }]}>
+            <Text style={s.boutonTexte}>Proposer un objet</Text>
+          </Pressable>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Bouton titre="Voir les objets" secondaire onPress={() => voirObjets()} />
+        </View>
+      </View>
+
+      {moi && (
+        <View style={{ paddingHorizontal: 16, flexDirection: 'row', gap: 10 }}>
+          <Raccourci titre={nbAFaire ? `Mes échanges · ${nbAFaire}` : 'Mes échanges'} accent={nbAFaire > 0} onPress={() => router.push('/echanges')} />
+          <Raccourci titre="Mes souhaits" onPress={() => router.push('/souhaits')} />
+        </View>
+      )}
+
+      <Boucle3 />
+
+      <View style={{ gap: 12 }}>
+        <TitreBloc titre="En attente d'un troc" action="Tout voir" onPress={() => voirObjets()} />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingHorizontal: 16 }}>
+          {(objets.donnees ?? []).map((o) => (
+            <CarteObjet key={o.id} objet={o} style={{ flex: 0, width: 150, maxWidth: 150 }} />
+          ))}
+          {objets.donnees?.length === 0 && <Text style={s.discret}>Les premiers objets arrivent bientôt.</Text>}
+        </ScrollView>
+      </View>
+
+      <View style={{ gap: 12, paddingHorizontal: 16 }}>
+        <TitreBloc titre="Comment ça marche" action="En savoir plus" onPress={() => Linking.openURL(`${SITE}/comment-ca-marche/`)} marge={0} />
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <Etape icone="📷" titre="Je propose" detail="Mes objets" onPress={() => router.push('/proposer')} />
+          <Etape icone="★" titre="Je demande" detail="Mes souhaits" onPress={() => router.push(moi ? '/souhaits' : '/connexion')} />
+        </View>
+      </View>
+
+      <Tuile etiquette="Le Match, à tout moment" couleur={couleurs.danger} titre="Un cœur de chaque côté, et c'est échangé.">
+        <Bouton titre={moi ? 'Voir les objets pour moi' : 'Créer mon compte'} onPress={() => router.push(moi ? '/match' : '/connexion')} />
+      </Tuile>
+
+      <Tuile etiquette="Le Grand Troc du dimanche" couleur={couleurs.marque} titre="Pas de match ? On a une solution.">
+        <Text style={[s.texte, { color: couleurs.discret }]}>Des boucles à trois. 48 h pour dire oui.</Text>
+        {prochain && (
+          <Text style={[s.titre, { color: couleurs.marque }]}>
+            Prochain : {compteARebours(prochain, maintenant)} · dimanche 18 h
+          </Text>
+        )}
+        {dernier && (
+          <Text style={[s.discret, { textAlign: 'left' }]}>
+            Dimanche dernier : {dernier.nb_objets} objets échangés entre {dernier.nb_participants} membres.
+          </Text>
+        )}
+        <Bouton titre="Je participe" secondaire onPress={() => router.push('/grand-troc')} />
+      </Tuile>
+
+      <Tuile etiquette="Pour les particuliers" couleur={couleurs.accent} titre="Simplicité.">
+        {['Publier', 'Choisir', 'Provoquer un Match', 'Propositions chaque dimanche'].map((t) => (
+          <Text key={t} style={s.texte}>✓ {t}</Text>
+        ))}
+        <Pressable onPress={() => router.push('/proposer')}>
+          <Text style={[s.texte, { color: couleurs.discret }]}>
+            Déjà sur Vinted ou Leboncoin ? <Text style={{ color: couleurs.accent }}>Troquer son annonce</Text>
+          </Text>
+        </Pressable>
+        <Text style={[s.texte, { color: couleurs.discret }]}>
+          Entreprise ou collectivité ?{' '}
+          <Text style={{ color: couleurs.accent }} onPress={() => Linking.openURL(`${SITE}/pros/`)}>Professionnels</Text>
+          {' · '}
+          <Text style={{ color: couleurs.accent }} onPress={() => Linking.openURL(`${SITE}/collectivites/`)}>Collectivités</Text>
+        </Text>
+      </Tuile>
+    </ScrollView>
+  );
+}
+
+function TitreBloc({ titre, action, onPress, marge = 16 }: { titre: string; action: string; onPress: () => void; marge?: number }) {
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', paddingHorizontal: marge }}>
+      <Text style={[s.titre, { fontSize: 18 }]}>{titre}</Text>
+      <Pressable onPress={onPress} hitSlop={8}>
+        <Text style={{ color: couleurs.accent, fontWeight: '600' }}>{action}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function Raccourci({ titre, onPress, accent }: { titre: string; onPress: () => void; accent?: boolean }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [{ flex: 1, padding: 14, borderRadius: rayon, backgroundColor: couleurs.surface, borderWidth: 1, borderColor: accent ? couleurs.accent : couleurs.trait }, pressed && { opacity: 0.6 }]}
+    >
+      <Text style={[s.titre, accent && { color: couleurs.accent }]}>{titre} ›</Text>
+    </Pressable>
+  );
+}
+
+function Etape({ icone, titre, detail, onPress }: { icone: string; titre: string; detail: string; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={({ pressed }) => [{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderRadius: rayon, backgroundColor: couleurs.surface }, pressed && { opacity: 0.6 }]}>
+      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: couleurs.fond, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 18, color: couleurs.marque }}>{icone}</Text>
+      </View>
+      <View>
+        <Text style={s.titre}>{titre}</Text>
+        <Text style={[s.discret, { textAlign: 'left' }]}>{detail}</Text>
+      </View>
+    </Pressable>
+  );
+}
+
+function Tuile({ etiquette, titre, couleur, children }: { etiquette: string; titre: string; couleur: string; children: React.ReactNode }) {
+  return (
+    <View style={{ marginHorizontal: 16, padding: 18, gap: 10, borderRadius: rayon + 4, backgroundColor: couleurs.surface, borderLeftWidth: 4, borderLeftColor: couleur }}>
+      <Text style={[s.etiquette, { color: couleur }]}>{etiquette}</Text>
+      <Text style={[s.grandTitre, { fontSize: 21, lineHeight: 26 }]}>{titre}</Text>
+      {children}
     </View>
   );
 }
