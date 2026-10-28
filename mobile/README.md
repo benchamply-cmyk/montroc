@@ -44,6 +44,8 @@ eas device:create                                     # une fois par iPhone de t
 eas build -p ios --profile preview                    # demande le compte Apple Developer au premier build
 ```
 
+Build de développement (`expo-dev-client`, recharge le code depuis `npx expo start`) : `npx expo prebuild --clean && npx expo run:ios` sur le Mac, ou `eas build --profile development` (simulateur iOS, APK Android). `plugins/with-ios-27.js` le rend compatible Xcode 27 / iOS 27 (UIScene, cible iOS des pods).
+
 Les numéros de build montent tout seuls (`appVersionSource: remote`). Pour le Play Store et l'App Store : profil `production`.
 
 ## Prochaines étapes

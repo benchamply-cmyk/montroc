@@ -30,7 +30,8 @@
           "cameraPermission": "TopTroc a besoin de l'appareil photo pour photographier les objets que vous proposez.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "./plugins/with-ios-27"
     ],
     "experiments": {
       "typedRoutes": true
