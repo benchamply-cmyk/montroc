@@ -2,23 +2,15 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Bouton, EtatRequete, s, Vignette } from '../../components/ui';
+import { Bouton, EtatRequete, LigneMenu, s, Section, Vignette } from '../../components/ui';
 import { api, ErreurApi } from '../../lib/api';
+import { aFaire } from '../../lib/echanges';
 import { useSession } from '../../lib/session';
-import { couleurs, rayon } from '../../lib/theme';
+import { couleurs, rayon, REPUTATIONS } from '../../lib/theme';
 import type { EchangeLecture, InfosGrandTroc, MatchLecture, ObjetResume } from '../../lib/types';
 import { useRequete } from '../../lib/useRequete';
 
 const STATUTS: Record<string, string> = { disponible: 'En ligne', reserve: 'Réservé', echange: 'Échangé', retire: 'Retiré', modere: 'Modéré' };
-
-function Section({ titre, children }: { titre: string; children: React.ReactNode }) {
-  return (
-    <View style={{ gap: 10 }}>
-      <Text style={[s.titre, { color: couleurs.discret, textTransform: 'uppercase', fontSize: 12, letterSpacing: 1 }]}>{titre}</Text>
-      {children}
-    </View>
-  );
-}
 
 export default function MonEspace() {
   const { pret, moi, fermer } = useSession();
@@ -26,20 +18,25 @@ export default function MonEspace() {
   const grandTroc = useRequete<InfosGrandTroc>('/grand-troc');
   const objets = useRequete<(ObjetResume & { statut: string })[]>(connecte ? '/moi/objets' : null);
   const matchs = useRequete<MatchLecture[]>(connecte ? '/match' : null);
+  const echanges = useRequete<EchangeLecture[]>(connecte ? '/moi/echanges' : null);
 
   // Au retour de « Proposer un objet » ou d'un autre onglet : la liste a pu changer. Le premier affichage charge déjà.
   const dejaVu = useRef(false);
   const { recharger: rechargerObjets } = objets;
   const { recharger: rechargerMatchs } = matchs;
+  const { recharger: rechargerEchanges } = echanges;
   useFocusEffect(
     useCallback(() => {
       if (dejaVu.current) {
         rechargerObjets();
         rechargerMatchs();
+        rechargerEchanges();
       }
       dejaVu.current = true;
-    }, [rechargerObjets, rechargerMatchs]),
+    }, [rechargerObjets, rechargerMatchs, rechargerEchanges]),
   );
+  const nbAFaire = moi ? (echanges.donnees ?? []).filter((e) => aFaire(e, moi.id)).length : 0;
+  const enCours = (echanges.donnees ?? []).filter((e) => e.statut === 'propose' || e.statut === 'accepte').length;
 
   const prochain = grandTroc.donnees
     ? new Date(grandTroc.donnees.prochain).toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })
@@ -58,12 +55,29 @@ export default function MonEspace() {
         <View style={{ gap: 12 }}>
           <Text style={s.texte}>Connectez-vous pour proposer vos objets, dire ce qui vous serait utile et matcher.</Text>
           <Bouton titre="Se connecter" onPress={() => router.push('/connexion')} />
+          <Bouton titre="Proposer un objet" secondaire onPress={() => router.push('/proposer')} />
+          <LigneMenu titre="Infos et aide" detail="Le concept, FAQ, CGU, confidentialité" onPress={() => router.push('/infos')} />
         </View>
       ) : (
         <>
           <View>
             <Text style={s.grandTitre}>{moi.pseudo}</Text>
-            <Text style={[s.discret, { textAlign: 'left' }]}>{moi.zone ?? 'Zone non renseignée'} · {moi.email}</Text>
+            <Text style={[s.discret, { textAlign: 'left' }]}>
+              {[moi.reputation && (REPUTATIONS[moi.reputation] ?? moi.reputation), moi.zone ?? 'Zone non renseignée', moi.formule && 'Troc Premium']
+                .filter(Boolean)
+                .join(' · ')}
+            </Text>
+          </View>
+
+          <View style={{ gap: 8 }}>
+            <LigneMenu
+              titre={nbAFaire ? `Mes échanges · ${nbAFaire} à faire` : 'Mes échanges'}
+              detail={enCours ? `${enCours} en cours` : 'Réponses, remises, codes de retrait'}
+              onPress={() => router.push('/echanges')}
+            />
+            <LigneMenu titre="Troc Premium" detail={moi.formule ? 'Ma formule et ses avantages' : 'Les 5 formules, essai gratuit'} onPress={() => router.push('/premium')} />
+            <LigneMenu titre="Mon compte" detail="Profil, zones, téléphone, mot de passe" onPress={() => router.push('/compte')} />
+            <LigneMenu titre="Infos et aide" detail="Le concept, FAQ, CGU, confidentialité" onPress={() => router.push('/infos')} />
           </View>
 
           <Section titre="Mes matchs">
@@ -81,7 +95,9 @@ export default function MonEspace() {
             <EtatRequete {...objets} />
             {objets.donnees?.length === 0 && <Text style={s.discret}>Aucun objet proposé pour l'instant.</Text>}
             {objets.donnees?.map((o) => (
-              <Vignette key={o.id} objet={o} droite={<Text style={s.discret}>{STATUTS[o.statut] ?? o.statut}</Text>} />
+              <Pressable key={o.id} onPress={() => router.push(`/mon-objet/${o.id}`)}>
+                <Vignette objet={o} droite={<Text style={s.discret}>{STATUTS[o.statut] ?? o.statut}</Text>} />
+              </Pressable>
             ))}
           </Section>
 
@@ -124,10 +140,10 @@ function MonMatch({ match, onConclu }: { match: MatchLecture; onConclu: () => vo
 
   if (match.echange_id)
     return (
-      <View style={{ gap: 6 }}>
-        <Text style={s.texte}>Avec {match.avec.pseudo} · accord en cours</Text>
+      <Pressable style={{ gap: 6 }} onPress={() => router.push(`/echange/${match.echange_id}`)}>
+        <Text style={s.texte}>Avec {match.avec.pseudo} · accord en cours ›</Text>
         {match.ses_objets.map((o) => <Vignette key={o.id} objet={o} />)}
-      </View>
+      </Pressable>
     );
 
   return (

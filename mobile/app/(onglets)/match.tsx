@@ -24,6 +24,7 @@ export default function Match() {
 }
 
 function Paquet() {
+  const { moi, rafraichir } = useSession();
   const { width: largeur } = useWindowDimensions();
   const requete = useRequete<CarteMatch[]>('/match/carrousel?limite=20');
   const [index, setIndex] = useState(0);
@@ -34,26 +35,39 @@ function Paquet() {
   const cartes = requete.donnees ?? [];
   const carte = cartes[index];
 
-  async function envoyerAvis(aime: boolean) {
+  async function envoyerAvis(aime: boolean, superJaime = false) {
     const objetId = cartes[index]?.objet.id;
     setIndex((i) => i + 1);
     position.setValue({ x: 0, y: 0 });
     if (objetId === undefined) return;
     try {
-      const r = await api<{ match: MatchLecture | null }>('/match/avis', { corps: { objet_id: objetId, aime } });
+      const r = await api<{ match: MatchLecture | null }>('/match/avis', { corps: { objet_id: objetId, aime, super_jaime: superJaime } });
+      if (superJaime) rafraichir();
       if (r.match) setNouveauMatch(r.match);
     } catch (e) {
       setErreur(e instanceof ErreurApi ? e.message : String(e));
     }
   }
 
-  function lancer(decision: 'aime' | 'passe') {
+  /** Retour arrière (Troc Premium) : annule le dernier « Non merci » et remet la carte. */
+  async function revenir() {
+    const precedente = cartes[index - 1];
+    if (!precedente) return;
+    try {
+      await api(`/match/avis/${precedente.objet.id}`, { method: 'DELETE' });
+      setIndex((i) => i - 1);
+    } catch (e) {
+      setErreur(e instanceof ErreurApi ? e.message : String(e));
+    }
+  }
+
+  function lancer(decision: 'aime' | 'passe', superJaime = false) {
     Animated.timing(position, {
       toValue: { x: (decision === 'aime' ? 1 : -1) * largeur * 1.5, y: 0 },
       duration: 220,
       // Le geste pilote `position` côté JS : toutes ses animations doivent rester côté JS.
       useNativeDriver: false,
-    }).start(() => envoyerAvis(decision === 'aime'));
+    }).start(() => envoyerAvis(decision === 'aime', superJaime));
   }
 
   // Recréé à chaque rendu pour voir l'index courant ; le geste en cours n'en souffre pas.
@@ -110,7 +124,10 @@ function Paquet() {
               <Text style={[s.discret, { textAlign: 'left' }]}>
                 {carte.objet.etat ? ETATS[carte.objet.etat] + ' · ' : ''}{carte.proprietaire.pseudo}
                 {carte.proprietaire.zone ? ' · ' + carte.proprietaire.zone : ''}
+                {carte.distance_km != null ? ` · ${Math.round(carte.distance_km)} km` : ''}
+                {carte.par_colis ? ' · par colis' : ''}
               </Text>
+              {carte.sa_demande && <Text style={[s.discret, { textAlign: 'left' }]} numberOfLines={2}>Sa demande : {carte.sa_demande}</Text>}
               {carte.il_aime.length > 0 && (
                 <Text style={[s.texte, { color: couleurs.ok }]}>Il aime déjà « {carte.il_aime[0].titre} » : match direct !</Text>
               )}
@@ -124,6 +141,16 @@ function Paquet() {
           <View style={{ flexDirection: 'row', gap: 12, paddingTop: 16 }}>
             <View style={{ flex: 1 }}><Bouton titre="Non merci" secondaire onPress={() => lancer('passe')} /></View>
             <View style={{ flex: 1 }}><Bouton titre="J'aime" onPress={() => lancer('aime')} /></View>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 12, paddingTop: 10 }}>
+            {(moi?.avantages ?? []).includes('retour_arriere') && index > 0 && (
+              <View style={{ flex: 1 }}><Bouton titre="↶ Retour" secondaire onPress={revenir} /></View>
+            )}
+            {(moi?.super_jaime_restants ?? 0) > 0 && (
+              <View style={{ flex: 1 }}>
+                <Bouton titre={`★ Super J'aime (${moi?.super_jaime_restants})`} secondaire onPress={() => lancer('aime', true)} />
+              </View>
+            )}
           </View>
         </>
       )}
