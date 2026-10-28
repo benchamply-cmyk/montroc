@@ -5262,5 +5262,13 @@
   "Provoquer un Match": {
     "en": "Make a Match happen",
     "es": "Provocar un Match"
+  },
+  "Déjà sur Vinted ou Leboncoin ?": {
+    "en": "Already on Vinted or Leboncoin?",
+    "es": "¿Ya está en Vinted o Leboncoin?"
+  },
+  "Troquer son annonce": {
+    "en": "Swap your listing",
+    "es": "Intercambiar tu anuncio"
   }
 }
