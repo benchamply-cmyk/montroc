@@ -5251,12 +5251,12 @@
     "en": "Simplicity",
     "es": "Sencillez"
   },
-  "Provoquer le Match": {
-    "en": "Make the Match happen",
-    "es": "Provocar el Match"
-  },
   "Propositions chaque dimanche": {
     "en": "Swap proposals every Sunday",
     "es": "Propuestas cada domingo"
+  },
+  "Provoque un Match": {
+    "en": "Make a Match happen",
+    "es": "Provoca un Match"
   }
 }
