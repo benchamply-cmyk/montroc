@@ -23,7 +23,7 @@ export function BandeauGrandTroc() {
     >
       <Ionicons name="sync" size={20} color={couleurs.marque} />
       <View style={{ flex: 1 }}>
-        <Text style={[s.titre, { fontSize: 15 }]}>Grand Troc dans {compteARebours(new Date(grandTroc.donnees.prochain), Date.now())}</Text>
+        <Text style={[s.titre, { fontSize: 15 }]}>Grand Troc {compteARebours(new Date(grandTroc.donnees.prochain), Date.now())}</Text>
         <Text style={[s.discret, { textAlign: 'left' }]}>Dimanche 18 h · Match à trois et boucles possibles</Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color={couleurs.discret} />

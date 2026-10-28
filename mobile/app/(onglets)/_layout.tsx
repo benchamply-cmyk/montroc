@@ -22,7 +22,7 @@ const icone =
 /** Le bouton Proposer, mis en avant au centre de la barre comme « Vendre » sur Vinted. */
 function IconeProposer() {
   return (
-    <View style={{ backgroundColor: couleurs.marque, borderRadius: 12, width: 44, height: 32, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ backgroundColor: couleurs.marque, borderRadius: 10, width: 40, height: 28, alignItems: 'center', justifyContent: 'center' }}>
       <Ionicons name="add" size={26} color={couleurs.accentEncre} />
     </View>
   );

@@ -39,7 +39,7 @@ export function CarteObjet({ objet, style }: { objet: Objet; style?: ViewStyle }
     <View style={[{ flex: 1, maxWidth: '33.34%', gap: 4 }, style]}>
       <Link href={`/objet/${objet.id}`} asChild>
         <Pressable style={{ gap: 4 }} accessibilityLabel={objet.titre}>
-          <Image source={objet.photo_url} style={{ aspectRatio: 4 / 5, borderRadius: 10, backgroundColor: couleurs.surface }} contentFit="cover" />
+          <Image source={objet.photo_url} style={{ width: '100%', aspectRatio: 4 / 5, borderRadius: 10, backgroundColor: couleurs.surface }} contentFit="cover" />
           <Text style={{ color: couleurs.encre, fontSize: 13, fontWeight: '600' }} numberOfLines={1}>
             {objet.titre}
           </Text>

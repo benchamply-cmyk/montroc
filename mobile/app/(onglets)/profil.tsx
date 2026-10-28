@@ -45,7 +45,7 @@ export default function Profil() {
           <Ligne icone="star-outline" titre="Troc Premium" detail={moi.formule ? 'Ma formule' : 'Essai gratuit'} couleur={couleurs.marque} onPress={() => router.push('/premium')} />
         )}
         {connecte && <Ligne icone="settings-outline" titre="Mon compte" onPress={() => router.push('/compte')} />}
-        <Ligne icone="help-circle-outline" titre="Aide et infos" detail="FAQ, assistant, pages légales" onPress={() => router.push('/infos')} dernier />
+        <Ligne icone="help-circle-outline" titre="Aide et infos" detail="FAQ, assistant" onPress={() => router.push('/infos')} dernier />
       </View>
 
       {connecte && <Bouton titre="Se déconnecter" secondaire onPress={fermer} />}

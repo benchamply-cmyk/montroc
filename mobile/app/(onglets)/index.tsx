@@ -114,7 +114,7 @@ export default function Accueil() {
                 <TitreBloc titre="Pour vous" action="Matcher" onPress={() => router.push('/match')} />
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
                   {suggestions.map((o) => (
-                    <CarteObjet key={o.id} objet={o} style={{ flex: 0, width: 116, maxWidth: 116 }} />
+                    <CarteObjet key={o.id} objet={o} style={{ flexGrow: 0, flexShrink: 0, flexBasis: 116, width: 116, maxWidth: 116 }} />
                   ))}
                 </ScrollView>
               </View>
