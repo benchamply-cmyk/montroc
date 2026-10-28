@@ -5231,10 +5231,6 @@
     "en": "Three-way loops. 48 h to say yes.",
     "es": "Cadenas de tres. 48 h para decir sí."
   },
-  "Match et Grand Troc": {
-    "en": "Match and Grand Troc",
-    "es": "Match y Grand Troc"
-  },
   "Lien gardé. Connectez-vous pour continuer.": {
     "en": "Link saved. Log in to continue.",
     "es": "Enlace guardado. Inicia sesión para continuar."
@@ -5254,5 +5250,9 @@
   "Simplicité": {
     "en": "Simplicity",
     "es": "Sencillez"
+  },
+  "Provoquer le Match": {
+    "en": "Make the Match happen",
+    "es": "Provocar el Match"
   }
 }
