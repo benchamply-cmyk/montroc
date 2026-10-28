@@ -5,7 +5,7 @@ import secrets
 from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import object_session
 
 from .. import courriels, motdepasse, premium
@@ -242,4 +242,6 @@ def deconnexion(utilisateur: UtilisateurConnecte, session: SessionDep):
     """Ferme toutes les sessions du compte (sur tous les appareils)."""
     for s in session.scalars(select(m.SessionUtilisateur).where(m.SessionUtilisateur.utilisateur_id == utilisateur.id)):
         session.delete(s)
+    # Plus de session nulle part : plus de notifications non plus.
+    session.execute(delete(m.AppareilPush).where(m.AppareilPush.utilisateur_id == utilisateur.id))
     session.commit()

@@ -489,6 +489,23 @@ class SessionUtilisateur(Base):
     utilisateur: Mapped[Utilisateur] = relationship()
 
 
+class AppareilPush(Base):
+    """Un téléphone où l'app est installée et a reçu l'accord pour les notifications (jeton Expo).
+    Supprimé à la déconnexion (toutes les sessions ferment) ou quand Expo le dit périmé."""
+
+    __tablename__ = "appareils_push"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
+    # « ExponentPushToken[…] » : un même téléphone ne sert qu'à un compte à la fois.
+    jeton: Mapped[str] = mapped_column(String(200), unique=True)
+    plateforme: Mapped[str] = mapped_column(String(10))
+    cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    vu_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (CheckConstraint("plateforme IN ('ios', 'android')", name="plateforme_connue"),)
+
+
 class Signalement(Horodatage, Base):
     """Notification d'un contenu illicite ou contraire aux règles (DSA, art. 16), et la décision prise."""
 

@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     sms_actifs: bool = True
     # Nom affiché comme expéditeur des SMS (Brevo, 11 caractères au plus, lettres et chiffres).
     sms_expediteur: str = "TopTroc"
+    # Notifications push de l'app (service d'Expo, sans clé). false : seulement écrites dans le journal (tests).
+    # En pré-production (COURRIELS_VERS rempli), seul le compte de cette adresse les reçoit.
+    push_actifs: bool = True
 
     # Photos : la variable CLOUDINARY_URL du tableau de bord Cloudinary (cloudinary://clé:secret@nom).
     cloudinary_url: str = ""

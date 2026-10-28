@@ -4,12 +4,15 @@ import { StatusBar } from 'expo-status-bar';
 import { EcranChargement } from '../components/EcranChargement';
 import { PremiereOuverture } from '../components/PremiereOuverture';
 import { FournisseurFavoris } from '../lib/favoris';
+import { useNotifications } from '../lib/notifications';
 import { FournisseurSession, useSession } from '../lib/session';
 import { couleurs } from '../lib/theme';
 
-/** Logo et nom par-dessus l'app tant que la session n'est pas relue ; dessous, les écrans de première ouverture. */
+/** Logo et nom par-dessus l'app tant que la session n'est pas relue ; dessous, les écrans de première ouverture.
+ * Branche aussi les notifications push du membre connecté. */
 function Chargement() {
-  const { pret } = useSession();
+  const { pret, moi } = useSession();
+  useNotifications(moi);
   return (
     <>
       <PremiereOuverture pret={pret} />

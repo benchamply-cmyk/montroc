@@ -28,6 +28,8 @@ Navigation sur le modèle de Vinted : 5 onglets (Accueil · Match · Proposer + 
 | Aide et infos | Concept, comment ça marche, FAQ, CGU, confidentialité, mentions légales : pages du site ouvertes dans le navigateur | — |
 | Connexion | Code à 6 chiffres reçu par e-mail ou mot de passe, inscription | `/auth/…` |
 
+Notifications push (`expo-notifications`) : une fois connecté, l'app demande l'accord puis envoie le jeton Expo du téléphone (`POST /moi/appareils`). L'API prévient d'un match, d'une proposition d'échange et du Grand Troc ; toucher la notification ouvre Échanges ou l'échange. Il faut un vrai téléphone et un build EAS (pas Expo Go) ; au premier build, accepter de créer la clé de notifications Apple quand EAS le propose.
+
 Le jeton de session (30 jours) est rangé dans le trousseau de l'appareil (`expo-secure-store`) et envoyé en `Authorization: Bearer …`. Le CORS de l'API ne concerne pas l'app native.
 
 ## Démarrer
