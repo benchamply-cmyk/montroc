@@ -13,6 +13,10 @@ Avant le 26/10/2026, les versions étaient numérotées `v0.x.y` (sections plus 
 
 Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici à la préparation de la livraison (`python3 scripts/version.py livraison`).
 
+## [V6.500] – 2026-10-28 · Accueil allégé
+
+- Accueil allégé et réorganisé : titre « La Boucle d’échange pour augmenter ses chances. », textes courts à l’infinitif, recherche avant les boutons, « Voir les objets », fil d’objets juste sous le haut de page, 2 étapes puis les tuiles Match et Grand Troc, bloc « Simplicité. », import Vinted/Leboncoin renvoyé vers Proposer, exemple de boucle réduit aux prénoms.
+
 ## [V6.400] – 2026-10-28
 
 - Assistant du site : une bulle en bas à droite répond aux questions sur TopTroc (Match, Grand Troc, Premium, catégories, règles) en français, anglais et espagnol, sans accès aux comptes ; s'allume avec la clé ANTHROPIC_API_KEY sur Render.
@@ -110,7 +114,8 @@ Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.400...preprod
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.500...preprod
+[V6.500]: https://github.com/benchamply-cmyk/montroc/compare/V6.400...V6.500
 [V6.400]: https://github.com/benchamply-cmyk/montroc/compare/V6.300...V6.400
 [V6.300]: https://github.com/benchamply-cmyk/montroc/compare/V6.200...V6.300
 [V6.200]: https://github.com/benchamply-cmyk/montroc/compare/V6.100...V6.200
