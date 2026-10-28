@@ -5239,10 +5239,6 @@
     "en": "Come and try the concept, unlock swap opportunities.",
     "es": "Ven a probar el concepto y accede a oportunidades de intercambio."
   },
-  "Boucles d'échanges et tout le monde y gagne.": {
-    "en": "Swap loops, and everyone benefits.",
-    "es": "Cadenas de intercambio y todo el mundo gana."
-  },
   "Articles en ligne en attente d'un Troc.": {
     "en": "Items online, waiting for a swap.",
     "es": "Artículos en línea esperando un trueque."
@@ -5270,5 +5266,9 @@
   "Jusqu'à +40 % de probabilité grâce aux boucles": {
     "en": "Up to 40% more chances thanks to loops",
     "es": "Hasta un 40 % más de probabilidad gracias a las cadenas"
+  },
+  "La Boucle d'échange qui augmente tes chances.": {
+    "en": "The swap loop that boosts your chances.",
+    "es": "La cadena de intercambio que aumenta tus posibilidades."
   }
 }
