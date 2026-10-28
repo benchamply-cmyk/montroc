@@ -16,7 +16,7 @@ from troc_echanges import Boucle, boucles_autour
 from troc_echanges import Objet as ObjetMoteur
 from troc_echanges import Transfert as TransfertMoteur
 
-from . import courriels, premium
+from . import courriels, notifications, premium
 from . import models as m
 from .config import get_settings
 from .services import (
@@ -237,6 +237,13 @@ def donner_avis(
     if match is not None and avant is None:
         courriels.apres_validation(
             session, courriels.c_est_un_match, autre.email, autre.pseudo, moi.pseudo, lien_match()
+        )
+        notifications.pousser(
+            session,
+            autre,
+            "C'est un match !",
+            f"{moi.pseudo} aime aussi un de vos objets. Proposez l'échange.",
+            "/echanges",
         )
     return match
 

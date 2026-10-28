@@ -734,6 +734,13 @@ class FavoriCreation(BaseModel):
     objet_id: int
 
 
+class AppareilCreation(BaseModel):
+    """Le jeton Expo d'un téléphone, pour les notifications push."""
+
+    jeton: str = Field(min_length=10, max_length=200, pattern=r"^(Exponent|Expo)PushToken\[[^\]]+\]$")
+    plateforme: Literal["ios", "android"]
+
+
 class RechercheSuivie(BaseModel):
     q: str = Field(default="", max_length=100)
     categorie: str | None = Field(default=None, max_length=50)

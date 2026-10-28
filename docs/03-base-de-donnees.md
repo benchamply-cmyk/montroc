@@ -16,6 +16,7 @@ erDiagram
     objets ||--o{ transferts : "circule"
     utilisateurs ||--o{ transferts : "donne / reçoit"
     utilisateurs ||--o{ sessions : "connecté"
+    utilisateurs ||--o{ appareils_push : "notifié sur"
     objets ||--o{ signalements : "visé"
     utilisateurs ||--o{ signalements : "visé / auteur"
     objets ||--o{ objets_contre : "je le donne contre"
@@ -34,6 +35,7 @@ erDiagram
     transferts { int id PK  int echange_id FK  int position  int donneur_id FK  int receveur_id FK  int objet_id FK  string reponse  timestamptz depose_le  string code_retrait }
     jetons_connexion { int id PK  string email  string empreinte UK  timestamptz expire_le  timestamptz utilise_le }
     sessions { int id PK  int utilisateur_id FK  string empreinte UK  timestamptz expire_le }
+    appareils_push { int id PK  int utilisateur_id FK  string jeton UK  string plateforme  timestamptz vu_le }
     signalements { int id PK  int objet_id FK  int utilisateur_vise_id FK  int auteur_id FK  string motif  text explication  string statut  text decision }
 ```
 

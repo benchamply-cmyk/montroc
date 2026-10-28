@@ -17,6 +17,7 @@ os.environ["MODERATEURS"] = "modo@exemple.fr"
 os.environ["TACHES_SECRET"] = "secret-des-taches"
 os.environ["SMTP_MOT_DE_PASSE"] = ""
 os.environ["BREVO_API_KEY"] = ""
+os.environ["PUSH_ACTIFS"] = "false"
 # Les parcours de test proposent une boucle tout de suite plutôt que d'attendre le Grand Troc du dimanche ;
 # le réglage par défaut (désactivé) est vérifié à part.
 os.environ["ECHANGES_A_LA_DEMANDE"] = "true"
@@ -31,7 +32,7 @@ from alembic.config import Config  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import text  # noqa: E402
 
-from montroc_api import courriels, sms  # noqa: E402
+from montroc_api import courriels, notifications, sms  # noqa: E402
 from montroc_api.db import engine  # noqa: E402
 from montroc_api.main import app  # noqa: E402
 
@@ -52,11 +53,12 @@ def schema():
 def base_vide():
     courriels.ENVOYES.clear()
     sms.ENVOYES.clear()
+    notifications.ENVOYES.clear()
     yield
     with engine.begin() as conn:
         tables = (
-            "favoris, suivis_visiteurs, avis, signalements, sessions, jetons_connexion, transferts, echanges, "
-            "grands_trocs, souhaits, objets, utilisateurs"
+            "appareils_push, favoris, suivis_visiteurs, avis, signalements, sessions, jetons_connexion, transferts, "
+            "echanges, grands_trocs, souhaits, objets, utilisateurs"
         )
         conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
 

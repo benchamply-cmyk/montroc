@@ -16,6 +16,7 @@ make tests
 | `GET/POST /moi/souhaits`, `DELETE /moi/souhaits/{id}` | ce qui me serait utile |
 | `GET /moi/boucles` | « Mes échanges possibles » (boucles de 2 et 3) |
 | `GET /moi/echanges` | mes échanges en cours et passés |
+| `POST /moi/appareils` | jeton Expo du téléphone pour les notifications push de l'app (match, proposition, Grand Troc) ; oublié à la déconnexion |
 | `POST /echanges`, `GET /echanges/{id}` | proposer une de mes boucles (réserve les objets, prévient les autres) |
 | `POST /echanges/{id}/reponse` | accepter / refuser (48 h) |
 | `POST /echanges/{id}/depot` | j'ai déposé mon objet |
