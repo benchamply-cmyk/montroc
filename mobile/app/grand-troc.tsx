@@ -2,22 +2,14 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, Linking, RefreshControl, ScrollView, Text, View } from 'react-native';
 
-import { Boucle } from '../../components/Boucle';
-import { Bouton, Encart, EtatRequete, s, Section } from '../../components/ui';
-import { api, ErreurApi } from '../../lib/api';
-import { useSession } from '../../lib/session';
-import { couleurs, SITE } from '../../lib/theme';
-import type { BoucleProposee, EchangeLecture, InfosGrandTroc } from '../../lib/types';
-import { useRequete } from '../../lib/useRequete';
-
-/** « dans 2 j 5 h », « dans 3 h 12 min », « maintenant ». */
-function compteARebours(cible: Date, maintenant: number) {
-  const min = Math.max(0, Math.round((cible.getTime() - maintenant) / 60000));
-  if (min === 0) return 'maintenant';
-  const j = Math.floor(min / 1440);
-  const h = Math.floor((min % 1440) / 60);
-  return j ? `dans ${j} j ${h} h` : h ? `dans ${h} h ${min % 60} min` : `dans ${min} min`;
-}
+import { Boucle } from '../components/Boucle';
+import { Bouton, Encart, EtatRequete, s, Section } from '../components/ui';
+import { api, ErreurApi } from '../lib/api';
+import { compteARebours } from '../lib/dates';
+import { useSession } from '../lib/session';
+import { couleurs, SITE } from '../lib/theme';
+import type { BoucleProposee, EchangeLecture, InfosGrandTroc } from '../lib/types';
+import { useRequete } from '../lib/useRequete';
 
 /** Le Grand Troc du dimanche : le rendez-vous de 18 h où les boucles de 2 et 3 personnes sont proposées. */
 export default function GrandTroc() {

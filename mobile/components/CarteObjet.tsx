@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, type ViewStyle } from 'react-native';
 
 import { useFavoris } from '../lib/favoris';
 import { useSession } from '../lib/session';
@@ -40,10 +40,10 @@ export function BoutonsFavori({ objet, grand }: { objet: Pick<Objet, 'id' | 'pro
   );
 }
 
-/** Une carte du catalogue : photo, étoile et cœur, titre, état et lieu. */
-export function CarteObjet({ objet }: { objet: Objet }) {
+/** Une carte du catalogue : photo, étoile et cœur, titre, état et lieu. Par défaut, une des deux colonnes d'une grille. */
+export function CarteObjet({ objet, style }: { objet: Objet; style?: ViewStyle }) {
   return (
-    <View style={{ flex: 1, maxWidth: '50%', gap: 6 }}>
+    <View style={[{ flex: 1, maxWidth: '50%', gap: 6 }, style]}>
       <Link href={`/objet/${objet.id}`} asChild>
         <Pressable style={{ gap: 6 }}>
           <Image source={objet.photo_url} style={{ aspectRatio: 1, borderRadius: rayon, backgroundColor: couleurs.surface }} contentFit="cover" />

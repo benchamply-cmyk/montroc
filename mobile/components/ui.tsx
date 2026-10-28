@@ -132,6 +132,7 @@ export const s = StyleSheet.create({
   ecran: { flex: 1, backgroundColor: couleurs.fond },
   centre: { padding: 24, alignItems: 'center', gap: 12 },
   titre: { color: couleurs.encre, fontSize: 16, fontWeight: '600' },
+  etiquette: { fontSize: 12, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' },
   grandTitre: { color: couleurs.encre, fontSize: 24, fontWeight: '800' },
   texte: { color: couleurs.encre, fontSize: 15, lineHeight: 21 },
   discret: { color: couleurs.discret, fontSize: 13, textAlign: 'center' },

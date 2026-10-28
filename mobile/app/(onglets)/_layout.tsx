@@ -27,9 +27,9 @@ export default function Onglets() {
         sceneStyle: { backgroundColor: couleurs.fond },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Objets', tabBarIcon: icone('▦') }} />
+      <Tabs.Screen name="index" options={{ title: 'Accueil', headerTitle: 'TopTroc', tabBarIcon: icone('⌂') }} />
+      <Tabs.Screen name="objets" options={{ title: 'Objets', tabBarIcon: icone('▦') }} />
       <Tabs.Screen name="match" options={{ title: 'Match', tabBarIcon: icone('♥') }} />
-      <Tabs.Screen name="grand-troc" options={{ title: 'Grand Troc', tabBarIcon: icone('↻') }} />
       <Tabs.Screen name="favoris" options={{ title: 'Favoris', tabBarIcon: icone('★') }} />
       <Tabs.Screen name="moi" options={{ title: 'Mon espace', tabBarIcon: icone('●') }} />
     </Tabs>

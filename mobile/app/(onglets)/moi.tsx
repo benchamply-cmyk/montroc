@@ -45,10 +45,11 @@ export default function MonEspace() {
   return (
     <ScrollView style={s.ecran} contentContainerStyle={{ padding: 16, gap: 24 }}>
       {prochain && (
-        <View style={{ backgroundColor: couleurs.surface, padding: 16, borderRadius: 14, gap: 4 }}>
-          <Text style={[s.titre, { color: couleurs.marque }]}>Prochain Grand Troc</Text>
+        <Pressable onPress={() => router.push('/grand-troc')} style={{ backgroundColor: couleurs.surface, padding: 16, borderRadius: 14, gap: 4 }}>
+          <Text style={[s.titre, { color: couleurs.marque }]}>Prochain Grand Troc ›</Text>
           <Text style={s.texte}>{prochain}</Text>
-        </View>
+          <Text style={[s.discret, { textAlign: 'left' }]}>Match à trois et échanges possibles</Text>
+        </Pressable>
       )}
 
       {!connecte ? (
