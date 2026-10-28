@@ -5235,10 +5235,6 @@
     "en": "Link saved. Log in to continue.",
     "es": "Enlace guardado. Inicia sesión para continuar."
   },
-  "Viens essayer le concept, accède aux opportunités d'échanges.": {
-    "en": "Come and try the concept, unlock swap opportunities.",
-    "es": "Ven a probar el concepto y accede a oportunidades de intercambio."
-  },
   "Articles en ligne en attente d'un Troc.": {
     "en": "Items online, waiting for a swap.",
     "es": "Artículos en línea esperando un trueque."
@@ -5270,5 +5266,9 @@
   "La Boucle d'échange qui augmente tes chances.": {
     "en": "The swap loop that boosts your chances.",
     "es": "La cadena de intercambio que aumenta tus posibilidades."
+  },
+  "Accède aux opportunités d'échanges. Tout le monde y gagne.": {
+    "en": "Access swap opportunities. Everyone benefits.",
+    "es": "Accede a oportunidades de intercambio. Todo el mundo gana."
   }
 }
