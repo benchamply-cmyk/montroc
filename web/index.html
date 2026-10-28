@@ -149,13 +149,6 @@ nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--
 /* Titre : les mots montent un à un, le surligneur passe sous « utile », puis le mot change toutes les 2,4 s. */
 .h1 .w{display:inline-block;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i)*70ms)}
 @keyframes rise{from{opacity:0;transform:translateY(18px)}}
-.rot{display:inline-grid;vertical-align:bottom;overflow:hidden;padding:0 .08em;transition:width .45s cubic-bezier(.6,0,.2,1);
-  background:linear-gradient(var(--mark),var(--mark)) no-repeat 0 78%/0% 34%;animation:sweep .8s .75s cubic-bezier(.6,0,.2,1) forwards}
-.rot.again{animation:sweep .6s cubic-bezier(.6,0,.2,1) forwards}
-@keyframes sweep{to{background-size:100% 34%}}
-.rot>span{grid-area:1/1;white-space:nowrap;transition:transform .45s cubic-bezier(.6,0,.2,1),opacity .45s}
-.rot>span:not(.on){transform:translateY(105%);opacity:0}
-.rot>span.out{transform:translateY(-105%);opacity:0}
 /* Ambiance de l'accueil : deux halos qui dérivent lentement et un grain de papier. */
 .ambient{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
 .ambient i{position:absolute;border-radius:50%;filter:blur(70px);background:var(--mark);opacity:.07;width:420px;height:420px;left:calc(50% - 210px);top:-60px;animation:drift 14s ease-in-out infinite alternate}
@@ -164,7 +157,6 @@ nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--
 .ambient::after{content:"";position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 @media (prefers-reduced-motion:reduce){
   .h1 .w,.ambient i{animation:none}
-  .rot{animation:none;background-size:100% 34%}
   .bar i{transition:none}
 }
 
@@ -571,7 +563,7 @@ dialog.visiteur .sablier{font-size:40px}
 
     <div class="bloc">
       <div class="acc-titre">
-        <h2 aria-label="Ce qui dort chez vous est utile à quelqu'un."><span aria-hidden="true">Ce qui dort chez vous est <span class="rot" id="rot"><span class="on">utile</span><span>précieux</span><span>cher</span></span> à quelqu'un.</span></h2>
+        <h2>Articles en ligne en attente d'un Troc.</h2>
         <button type="button" data-objets>Tout voir</button>
       </div>
       <div class="results acc-fil" id="acc-fil"><p class="empty">Chargement des objets…</p></div>
@@ -1008,19 +1000,6 @@ const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mots={fr:['troc','Boucles'],en:['Swapping','loops'],es:['trueque','Cadenas']}[TT_I18N.lang]||[];
   const h=$('#decouvrir h1');
   h.innerHTML=h.innerHTML.replace(/[\p{L}-]+/gu,m=>mots.includes(m)?'<mark class="mot">'+m+'</mark>':m);
-})();
-(()=>{ // le mot surligné change une fois le titre apparu
-  const rot=$('#rot'), mots=[...rot.children]; let i=0;
-  const largeur=()=>{rot.style.width=(mots[i].offsetWidth/parseFloat(getComputedStyle(rot).fontSize)+.16)+'em'};
-  document.fonts.ready.then(largeur);
-  if(calme)return;
-  setTimeout(()=>setInterval(()=>{
-    if($('#v-home').hidden)return;
-    const avant=mots[i]; i=(i+1)%mots.length;
-    avant.classList.replace('on','out'); setTimeout(()=>avant.classList.remove('out'),460);
-    mots[i].classList.add('on'); largeur();
-    rot.classList.remove('again'); void rot.offsetWidth; rot.classList.add('again');
-  },2400),1600);
 })();
 (()=>{ // chaque objet part de celui qui le donne et arrive chez celui qui en a besoin : Vous → Sophie → Loïc → Vous
   const objs=$$('.loop .lobj'), angles=[-90,30,150], R=110/300*100, cycle=4200, ecart=26;

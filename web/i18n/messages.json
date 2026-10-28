@@ -5250,5 +5250,9 @@
   "Boucles d'échanges et tout le monde y gagne.": {
     "en": "Swap loops, and everyone benefits.",
     "es": "Cadenas de intercambio y todo el mundo gana."
+  },
+  "Articles en ligne en attente d'un Troc.": {
+    "en": "Items online, waiting for a swap.",
+    "es": "Artículos en línea esperando un trueque."
   }
 }
