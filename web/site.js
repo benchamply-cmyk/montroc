@@ -554,4 +554,8 @@
 
   window.TT={compte,fermer,ouvrirConnexion,favoris};
   verifierSession();
+
+  // L'assistant (bulle en bas à droite) : un script à part, avec ses propres textes dans les trois langues.
+  window.TT_API=API;
+  const assistant=document.createElement('script');assistant.src='/assistant.js';assistant.defer=true;document.body.append(assistant);
 })();

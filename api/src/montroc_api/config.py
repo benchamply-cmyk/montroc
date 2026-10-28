@@ -86,6 +86,17 @@ class Settings(BaseSettings):
     # Durée de l'essai gratuit de Premium Plus, une fois par compte (0 : pas d'essai).
     jours_essai_premium: int = Field(default=30, ge=0, le=90)
 
+    # Assistant du site (bulle en bas à droite, voir assistant.py). Sans clé Anthropic, il est éteint.
+    anthropic_api_key: str = ""
+    # Modèle Claude utilisé. Claude Haiku 5.5 (claude-haiku-5-5) coûte environ 40 fois moins cher.
+    assistant_modele: str = "claude-opus-5-5"
+    # Effort de réflexion : « low » suffit pour des questions de FAQ et répond plus vite.
+    assistant_effort: Literal["low", "medium", "high"] = "low"
+    # Questions par adresse IP sur une heure glissante, et plafond de questions par jour pour tout le site
+    # (0 : pas de limite). Le plafond borne la facture Anthropic si quelqu'un abuse de la bulle.
+    assistant_questions_par_heure: int = Field(default=30, ge=0)
+    assistant_questions_par_jour: int = Field(default=1000, ge=0)
+
     @property
     def database_url_normalisee(self) -> str:
         """Neon, Render ou Heroku donnent souvent ``postgres://`` : SQLAlchemy veut le pilote explicite."""

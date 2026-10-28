@@ -21,6 +21,8 @@ dependencies = [
     "troc-echanges",
     # Solveur exact du math trade (CP-SAT, licence Apache 2.0). Sans lui, le moteur garde son heuristique.
     "ortools>=9.12",
+    # Assistant du site (Claude, d'Anthropic).
+    "anthropic>=2.3",
 ]
 
 [project.optional-dependencies]
@@ -28,6 +30,10 @@ dev = ["pytest>=8", "httpx>=0.27", "ruff>=0.6"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+# Le texte que l'assistant connaît voyage avec le paquet (Render installe l'API sans le dépôt en mode éditable).
+[tool.setuptools.package-data]
+montroc_api = ["*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
