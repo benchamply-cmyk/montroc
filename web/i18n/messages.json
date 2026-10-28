@@ -5247,28 +5247,20 @@
     "en": "Swap proposals every Sunday",
     "es": "Propuestas cada domingo"
   },
-  "Provoque un Match": {
-    "en": "Make a Match happen",
-    "es": "Provoca un Match"
-  },
-  "Publie": {
-    "en": "Post",
-    "es": "Publica"
-  },
-  "Choisis": {
-    "en": "Choose",
-    "es": "Elige"
-  },
   "Jusqu'à +40 % de probabilité grâce aux boucles": {
     "en": "Up to 40% more chances thanks to loops",
     "es": "Hasta un 40 % más de probabilidad gracias a las cadenas"
   },
-  "La Boucle d'échange qui augmente tes chances.": {
-    "en": "The swap loop that boosts your chances.",
-    "es": "La cadena de intercambio que aumenta tus posibilidades."
+  "La Boucle d'échange pour augmenter ses chances.": {
+    "en": "The swap loop to boost your chances.",
+    "es": "La cadena de intercambio para aumentar tus posibilidades."
   },
-  "Accède aux opportunités d'échanges. Tout le monde y gagne.": {
+  "Accéder aux opportunités d'échanges. Tout le monde y gagne.": {
     "en": "Access swap opportunities. Everyone benefits.",
-    "es": "Accede a oportunidades de intercambio. Todo el mundo gana."
+    "es": "Acceder a oportunidades de intercambio. Todo el mundo gana."
+  },
+  "Provoquer un Match": {
+    "en": "Make a Match happen",
+    "es": "Provocar un Match"
   }
 }
