@@ -16,7 +16,7 @@ const CODE = /^\d{6}$/;
 
 export default function Connexion() {
   const session = useSession();
-  // troctroc://connexion?jeton=… (lien de l'e-mail ouvert dans l'app) entre directement.
+  // toptroc://connexion?jeton=… (lien de l'e-mail ouvert dans l'app) entre directement.
   const params = useLocalSearchParams<{ jeton?: string }>();
   const [onglet, setOnglet] = useState<Onglet>('connexion');
   const [etape, setEtape] = useState<Etape>('formulaire');
