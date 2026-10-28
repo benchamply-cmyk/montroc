@@ -1,35 +1,64 @@
 {
   "expo": {
     "name": "TopTroc",
-    "slug": "troctroc",
-    "scheme": "troctroc",
+    "slug": "toptroc",
+    "scheme": "toptroc",
     "version": "0.1.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#111318",
     "ios": {
-      "bundleIdentifier": "fr.troctroc.app",
-      "supportsTablet": false
+      "bundleIdentifier": "com.toptroc.app",
+      "supportsTablet": false,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
-      "package": "fr.troctroc.app"
+      "package": "com.toptroc.app",
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
       "expo-router",
       "expo-secure-store",
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "imageWidth": 120,
+          "resizeMode": "contain",
+          "backgroundColor": "#111318"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#E6C23A"
+        }
+      ],
+      [
         "expo-image-picker",
         {
           "photosPermission": "TopTroc a besoin de vos photos pour montrer les objets que vous proposez.",
-          "cameraPermission": "TopTroc a besoin de l'appareil photo pour photographier les objets que vous proposez."
+          "cameraPermission": "TopTroc a besoin de l'appareil photo pour photographier les objets que vous proposez.",
+          "microphonePermission": false
         }
-      ]
+      ],
+      "./plugins/with-ios-27"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
-      "api": "https://api.toptroc.com"
-    }
+      "api": "https://api.toptroc.com",
+      "router": {},
+      "eas": {
+        "projectId": "2292364d-6040-469d-9bb3-937356e9e816"
+      }
+    },
+    "owner": "bentester"
   }
 }

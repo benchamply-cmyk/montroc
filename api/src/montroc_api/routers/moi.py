@@ -11,6 +11,7 @@ from .. import models as m
 from ..config import get_settings
 from ..deps import SessionDep, UtilisateurConnecte, obtenir_ou_404
 from ..schemas import (
+    AppareilCreation,
     BoucleProposee,
     EchangeLecture,
     FavoriCreation,
@@ -243,6 +244,21 @@ def retirer_favori(objet_id: int, utilisateur: UtilisateurConnecte, session: Ses
     if favori is not None:
         session.delete(favori)
         session.commit()
+
+
+# --- Notifications push de l'app ---
+
+
+@router.post("/appareils", status_code=204)
+def enregistrer_appareil(donnees: AppareilCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
+    """L'app a reçu l'accord pour les notifications : on garde le jeton de ce téléphone. Un téléphone passé
+    d'un compte à l'autre ne prévient plus que le dernier."""
+    appareil = session.scalar(select(m.AppareilPush).where(m.AppareilPush.jeton == donnees.jeton))
+    if appareil is None:
+        session.add(m.AppareilPush(utilisateur_id=utilisateur.id, jeton=donnees.jeton, plateforme=donnees.plateforme))
+    else:
+        appareil.utilisateur_id, appareil.plateforme, appareil.vu_le = utilisateur.id, donnees.plateforme, func.now()
+    session.commit()
 
 
 # --- Échanges ---

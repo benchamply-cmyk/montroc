@@ -20,7 +20,7 @@ from troc_echanges import Objet as ObjetMoteur
 from troc_echanges import Souhait as SouhaitMoteur
 from troc_echanges import Utilisateur as UtilisateurMoteur
 
-from . import courriels, premium, sms
+from . import courriels, notifications, premium, sms
 from . import models as m
 from .config import get_settings
 from .nomenclature import MODES_PAR_DEFAUT
@@ -457,10 +457,19 @@ def proposer(
                         lien_echange(echange),
                         grand_troc is not None,
                     )
-                # Au Grand Troc, un seul SMS par personne pour toutes ses boucles : envoyé par lancer_grand_troc.
+                # Au Grand Troc, un seul SMS (et une seule notification) par personne pour toutes ses boucles :
+                # envoyés par lancer_grand_troc.
                 if grand_troc is None and t.receveur.telephone:
                     courriels.apres_validation(
                         session, sms.boucle_proposee, t.receveur.telephone, 1, lien_echange(echange), False
+                    )
+                if grand_troc is None:
+                    notifications.pousser(
+                        session,
+                        t.receveur,
+                        f"{t.donneur.pseudo} vous propose un échange" if par_match else "Un échange vous attend",
+                        f"Vous recevriez « {t.objet.titre} ». 48 h pour répondre.",
+                        f"/echange/{echange.id}",
                     )
     return echange
 
@@ -559,7 +568,7 @@ def lancer_grand_troc(session: Session, force: bool = False) -> tuple[m.GrandTro
     grand_troc.nb_boucles = len(echanges)
     grand_troc.nb_objets = sum(len(e.transferts) for e in echanges)
     grand_troc.nb_participants = len({t.donneur_id for e in echanges for t in e.transferts})
-    _sms_du_grand_troc(session, echanges)
+    _prevenir_du_grand_troc(session, echanges)
     message = f"{len(echanges)} boucle(s) proposée(s), {grand_troc.nb_objets} objets."
     if grand_troc.annonce_le is None:
         message += " Avant-première : annonce à tous à 18 h."
@@ -595,7 +604,7 @@ def annoncer_grand_troc(session: Session, grand_troc: m.GrandTroc | None = None)
                     lien_echange(echange),
                     True,
                 )
-    _sms_du_grand_troc(session, a_prevenir, sauf=deja_prevenus)
+    _prevenir_du_grand_troc(session, a_prevenir, sauf=deja_prevenus)
     return True
 
 
@@ -628,9 +637,9 @@ def trace_du_calcul(solution) -> dict:
     return json.loads(json.dumps(trace, default=str))  # JSON pur : nombres, textes, listes
 
 
-def _sms_du_grand_troc(session: Session, echanges: list[m.Echange], sauf: set[int] = frozenset()) -> None:
-    """Un SMS par personne qui a au moins une réponse à donner, avec le nombre d'échanges et un lien.
-    Avant l'annonce de 18 h, seulement aux Premium en avant-première."""
+def _prevenir_du_grand_troc(session: Session, echanges: list[m.Echange], sauf: set[int] = frozenset()) -> None:
+    """Un SMS (à qui a un portable) et une notification push par personne qui a au moins une réponse à donner,
+    avec le nombre d'échanges. Avant l'annonce de 18 h, seulement aux Premium en avant-première."""
     a_prevenir: dict[int, tuple[m.Utilisateur, list[m.Echange]]] = {}
     for echange in echanges:
         if echange.statut != m.StatutEchange.propose:
@@ -638,11 +647,20 @@ def _sms_du_grand_troc(session: Session, echanges: list[m.Echange], sauf: set[in
         for t in echange.transferts:
             if t.receveur_id in sauf or not visible_par(echange, t.receveur):
                 continue
-            if t.reponse == m.Reponse.en_attente and t.receveur.telephone:
+            if t.reponse == m.Reponse.en_attente:
                 a_prevenir.setdefault(t.receveur_id, (t.receveur, []))[1].append(echange)
     for utilisateur, siens in a_prevenir.values():
-        lien = lien_echange(siens[0]) if len(siens) == 1 else f"{get_settings().site_url}/#echanges"
-        courriels.apres_validation(session, sms.boucle_proposee, utilisateur.telephone, len(siens), lien, True)
+        if utilisateur.telephone:
+            lien = lien_echange(siens[0]) if len(siens) == 1 else f"{get_settings().site_url}/#echanges"
+            courriels.apres_validation(session, sms.boucle_proposee, utilisateur.telephone, len(siens), lien, True)
+        quoi = "un échange" if len(siens) == 1 else f"{len(siens)} échanges"
+        notifications.pousser(
+            session,
+            utilisateur,
+            "Le Grand Troc est tombé",
+            f"Il vous propose {quoi}. Vous avez 48 h pour répondre.",
+            f"/echange/{siens[0].id}" if len(siens) == 1 else "/echanges",
+        )
 
 
 def _transfert_du_donneur(echange: m.Echange, utilisateur_id: int) -> m.Transfert:
@@ -912,7 +930,7 @@ def repechage(session: Session) -> int | None:
         duree_max_s=DUREE_MAX_GRAND_TROC_S,
     )
     echanges = _proposer_les_boucles(session, solution.boucles, grand_troc)
-    _sms_du_grand_troc(session, echanges)
+    _prevenir_du_grand_troc(session, echanges)
     grand_troc.nb_objets_repeches = sum(len(e.transferts) for e in echanges)
     grand_troc.calcul_repechage = trace_du_calcul(solution)
     return grand_troc.nb_objets_repeches
@@ -979,7 +997,7 @@ def remplacements(session: Session) -> int | None:
     )
     boucles = [b for b in solution.boucles if liberes & set(b.objets)]
     echanges = _proposer_les_boucles(session, boucles, grand_troc, remplacement=True)
-    _sms_du_grand_troc(session, echanges)
+    _prevenir_du_grand_troc(session, echanges)
     remplaces = sum(len(e.transferts) for e in echanges)
     grand_troc.nb_objets_remplaces += remplaces
     return remplaces
