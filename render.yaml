@@ -67,6 +67,9 @@ services:
         sync: false
       - key: ENCART_PUBLICITE
         sync: false
+      # Assistant du site (bulle en bas à droite, voir docs/08-assistant.md) : sans clé, il est éteint.
+      - key: ANTHROPIC_API_KEY
+        sync: false
 
   # Pré-production : même API, déployée depuis la branche preprod, sur une branche Neon « preprod » (copie de
   # la production). Les e-mails partent tous à COURRIELS_VERS, les SMS sont coupés : aucun membre n'est
@@ -126,4 +129,7 @@ services:
       - key: STRIPE_PORTAIL
         sync: false
       - key: ENCART_PUBLICITE
+        sync: false
+      # Assistant du site (bulle en bas à droite, voir docs/08-assistant.md) : sans clé, il est éteint.
+      - key: ANTHROPIC_API_KEY
         sync: false
