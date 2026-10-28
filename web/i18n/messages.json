@@ -5202,5 +5202,73 @@
   "Le compte est gratuit. On se connecte avec son e-mail et un mot de passe, ou avec un code envoyé par e-mail.": {
     "en": "The account is free. Sign in with your email and a password, or with a code sent by email.",
     "es": "La cuenta es gratuita. Se accede con el correo y una contraseña, o con un código enviado por correo."
+  },
+  "Échangez les objets que vous n'utilisez plus contre ceux dont vous avez besoin.": {
+    "en": "Swap the things you no longer use for the ones you need.",
+    "es": "Intercambia los objetos que ya no usas por los que necesitas."
+  },
+  "En savoir plus": {
+    "en": "Learn more",
+    "es": "Saber más"
+  },
+  "Mes objets": {
+    "en": "My items",
+    "es": "Mis objetos"
+  },
+  "Mes souhaits": {
+    "en": "My wishes",
+    "es": "Mis deseos"
+  },
+  "Échange à deux": {
+    "en": "Two-way swap",
+    "es": "Intercambio entre dos"
+  },
+  "Échange en boucle": {
+    "en": "Loop swap",
+    "es": "Intercambio en cadena"
+  },
+  "Des boucles à trois. 48 h pour dire oui.": {
+    "en": "Three-way loops. 48 h to say yes.",
+    "es": "Cadenas de tres. 48 h para decir sí."
+  },
+  "Lien gardé. Connectez-vous pour continuer.": {
+    "en": "Link saved. Log in to continue.",
+    "es": "Enlace guardado. Inicia sesión para continuar."
+  },
+  "Articles en ligne en attente d'un Troc.": {
+    "en": "Items online, waiting for a swap.",
+    "es": "Artículos en línea esperando un trueque."
+  },
+  "Simplicité": {
+    "en": "Simplicity",
+    "es": "Sencillez"
+  },
+  "Propositions chaque dimanche": {
+    "en": "Swap proposals every Sunday",
+    "es": "Propuestas cada domingo"
+  },
+  "Jusqu'à +40 % de probabilité grâce aux boucles": {
+    "en": "Up to 40% more chances thanks to loops",
+    "es": "Hasta un 40 % más de probabilidad gracias a las cadenas"
+  },
+  "La Boucle d'échange pour augmenter ses chances.": {
+    "en": "The swap loop to boost your chances.",
+    "es": "La cadena de intercambio para aumentar tus posibilidades."
+  },
+  "Accéder aux opportunités d'échanges. Tout le monde y gagne.": {
+    "en": "Access swap opportunities. Everyone benefits.",
+    "es": "Acceder a oportunidades de intercambio. Todo el mundo gana."
+  },
+  "Provoquer un Match": {
+    "en": "Make a Match happen",
+    "es": "Provocar un Match"
+  },
+  "Déjà sur Vinted ou Leboncoin ?": {
+    "en": "Already on Vinted or Leboncoin?",
+    "es": "¿Ya está en Vinted o Leboncoin?"
+  },
+  "Troquer son annonce": {
+    "en": "Swap your listing",
+    "es": "Intercambiar tu anuncio"
   }
 }

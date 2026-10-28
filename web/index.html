@@ -39,11 +39,9 @@ section.view[hidden]{display:none}
 .lobj .ico{width:22px;height:22px}
 .node{position:absolute;z-index:4;transform:translate(-50%,-50%);background:var(--surface);border:1.5px solid var(--ink);border-radius:14px;padding:7px 12px;font-size:13px;font-weight:600;white-space:nowrap;text-align:center;line-height:1.25}
 .node b{display:block;font-size:14px}
-.node small{display:block;font-weight:500;font-size:11.5px;line-height:1.35}
-.node small.b{color:var(--muted)}
-.node small.d{color:var(--mark)}
 .loop .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;pointer-events:none}
 .loop .center b{font-family:var(--display);font-size:13px;letter-spacing:.02em}
+.loop .center .plus{display:block;max-width:150px;margin:6px auto 0;font-size:11px;line-height:1.35;color:var(--mark)}
 .cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px 22px;font-weight:600;font-size:16px}
 .cta.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 .row{display:flex;gap:10px;flex-wrap:wrap}
@@ -149,13 +147,6 @@ nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--
 /* Titre : les mots montent un à un, le surligneur passe sous « utile », puis le mot change toutes les 2,4 s. */
 .h1 .w{display:inline-block;animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i)*70ms)}
 @keyframes rise{from{opacity:0;transform:translateY(18px)}}
-.rot{display:inline-grid;vertical-align:bottom;overflow:hidden;padding:0 .08em;transition:width .45s cubic-bezier(.6,0,.2,1);
-  background:linear-gradient(var(--mark),var(--mark)) no-repeat 0 78%/0% 34%;animation:sweep .8s .75s cubic-bezier(.6,0,.2,1) forwards}
-.rot.again{animation:sweep .6s cubic-bezier(.6,0,.2,1) forwards}
-@keyframes sweep{to{background-size:100% 34%}}
-.rot>span{grid-area:1/1;white-space:nowrap;transition:transform .45s cubic-bezier(.6,0,.2,1),opacity .45s}
-.rot>span:not(.on){transform:translateY(105%);opacity:0}
-.rot>span.out{transform:translateY(-105%);opacity:0}
 /* Ambiance de l'accueil : deux halos qui dérivent lentement et un grain de papier. */
 .ambient{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
 .ambient i{position:absolute;border-radius:50%;filter:blur(70px);background:var(--mark);opacity:.07;width:420px;height:420px;left:calc(50% - 210px);top:-60px;animation:drift 14s ease-in-out infinite alternate}
@@ -164,7 +155,6 @@ nav.tabs .badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--
 .ambient::after{content:"";position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 @media (prefers-reduced-motion:reduce){
   .h1 .w,.ambient i{animation:none}
-  .rot{animation:none;background-size:100% 34%}
   .bar i{transition:none}
 }
 
@@ -217,9 +207,6 @@ dialog.its-a-match h2{font-size:28px}
 .gt-reste{font-family:var(--mono);font-size:14px;color:var(--mark);white-space:nowrap}
 .gt p{font-size:14px;line-height:1.45}
 /* Annonce recopiée de Vinted ou Leboncoin */
-.troquez h2{font-size:26px}
-.troquez h2 em{font-style:normal;color:var(--mark)}
-.troquez p a{color:var(--ink);text-underline-offset:2px}
 .import{border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
 .import ol{margin:0;padding-left:20px;font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 .import ol b{color:var(--ink);font-weight:600}
@@ -249,15 +236,14 @@ nav.tabs .in.n5{grid-template-columns:repeat(5,1fr)}
 .bloc{display:flex;flex-direction:column;gap:12px}
 .gratuit{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
 .gratuit li::before{content:"✓";color:var(--ok);margin-right:10px}
-#particuliers a{color:var(--ink);text-underline-offset:2px}
+#particuliers a,#particuliers .lien{color:var(--ink);text-underline-offset:2px}
+#particuliers .lien{background:none;border:0;padding:0;font:inherit;text-decoration:underline;cursor:pointer}
 /* Accueil inspiré de Vinted : recherche et deux boutons dès le premier écran, catégories en vignettes,
    tuiles Match / Grand Troc, fil de photos. L'accueil et la recherche s'élargissent sur grand écran. */
 body.large .wrap{max-width:1120px}
 .acc-hero{display:grid;gap:20px;align-items:center}
 .acc-hero-txt{display:flex;flex-direction:column;gap:14px;align-items:flex-start;min-width:0}
 .acc-chapo{font-size:17px;color:#D6D9E0;line-height:1.5;max-width:52ch}
-.acc-fort{font-family:var(--display);font-weight:700;font-size:17px;line-height:1.3}
-.acc-verbes{font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mark);display:flex;flex-wrap:wrap;gap:4px 14px}
 .acc-btns{display:flex;gap:10px;flex-wrap:wrap;width:100%}
 .acc-btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:14px 20px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s}
 .acc-btn:active{transform:scale(.97)}
@@ -296,7 +282,7 @@ body.large .wrap{max-width:1120px}
 .acc-gt b{font-family:var(--display);font-size:15px;line-height:1.2}
 .acc-gt span{font-family:var(--mono);font-size:13px;color:var(--mark)}
 .acc-titre{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
-.acc-titre button{flex:none;background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:4px 0}
+.acc-titre :is(button,a){flex:none;text-decoration:none;background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:4px 0}
 .result .ph{position:relative}
 .result .ph .etat{position:absolute;left:8px;bottom:8px;font-size:11.5px;font-weight:600;background:rgba(17,19,24,.82);color:var(--ink);border-radius:6px;padding:3px 7px}
 .acc-duo{display:grid;gap:14px}
@@ -305,13 +291,13 @@ body.large .wrap{max-width:1120px}
 :is(.card,.acc-etape,.stat,.liste,.node,.acc-search,dialog,.afaire,.slot,.notice,details.plus,.fiche-membre,.result .ph,.acc-btn.g,.lock,.meter,nav.tabs){background-image:linear-gradient(180deg,var(--surface),var(--surface-2));box-shadow:var(--reflet),var(--ombre)}
 .acc-btn.y{background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 55%,rgba(0,0,0,.08));box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 18px -10px rgba(230,194,58,.55)}
 .ambient i{opacity:.05}
-@media (max-width:420px){.loop{max-width:300px}.node{padding:6px 9px}.node small{font-size:10.5px}}
+@media (max-width:420px){.loop{max-width:300px}.node{padding:6px 9px}}
 @media (min-width:760px){
   .acc-hero{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;padding-block:20px}
   .acc-hero h1{font-size:clamp(34px,4.4vw,48px)}
   .acc-btns .acc-btn{flex:0 1 auto}
-  .acc-etapes{grid-template-columns:repeat(4,1fr)}
-  .acc-tuiles,.acc-duo{grid-template-columns:1fr 1fr}
+  .acc-etapes{grid-template-columns:1fr 1fr}
+  .acc-tuiles{grid-template-columns:1fr 1fr}
   .acc-tuile{padding:22px;min-height:190px}
 }
 /* Barre d'onglets en bas pour tout le monde sur téléphone (Accueil, Rechercher, Proposer, Match, Mon espace) ;
@@ -511,27 +497,25 @@ dialog.visiteur .sablier{font-size:40px}
     <div class="acc-hero" id="decouvrir">
       <div class="acc-hero-txt">
         <span class="label">Pas de prix. Pas de monnaie.</span>
-        <h1>Le troc se réinvente.<br>Tout le monde y gagne.</h1>
-        <p class="acc-chapo">Donnez une nouvelle vie aux objets que vous n'utilisez plus. Échangez-les contre ceux dont vous avez besoin, sans dépenser d'argent.</p>
-        <p class="acc-fort">Vous proposez. Vous choisissez. TopTroc s'occupe du reste.</p>
-        <div class="acc-btns">
-          <button class="acc-btn y" type="button" data-proposer>Proposer un objet</button>
-          <button class="acc-btn g" type="button" data-objets>Demander un objet</button>
-        </div>
+        <h1>Le troc se réinvente.<br>La Boucle d'échange pour augmenter ses chances.</h1>
+        <p class="acc-chapo">Accéder aux opportunités d'échanges. Tout le monde y gagne.</p>
         <form class="acc-search" id="f-search-home" role="search">
           <select name="cat" aria-label="Catégorie"><option value="">Tout</option></select>
           <input type="search" name="q" maxlength="100" placeholder="Vélo, poussette, perceuse…" aria-label="Chercher un objet">
           <button type="submit" aria-label="Chercher"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
         </form>
-        <p class="acc-verbes"><span>Réutiliser.</span> <span>Échanger.</span> <span>Économiser.</span> <span>Simplifier.</span></p>
+        <div class="acc-btns">
+          <button class="acc-btn y" type="button" data-proposer>Proposer un objet</button>
+          <button class="acc-btn g" type="button" data-objets>Voir les objets</button>
+        </div>
       </div>
       <div class="loop" aria-label="Exemple de boucle : vous donnez une poussette à Sophie, Sophie donne un kit de jardinage à Loïc, Loïc vous donne un vélo enfant.">
         <svg viewBox="0 0 300 300" aria-hidden="true"><circle class="ring" cx="150" cy="150" r="110"/></svg>
-        <div class="node" style="left:50%;top:13.3%"><b>Vous</b><small class="b">Besoin : un vélo enfant</small><small class="d">Donne : une poussette</small></div>
-        <div class="node" style="left:81.8%;top:68.3%"><b>Sophie</b><small class="b">Besoin : une poussette</small><small class="d">Donne : un kit de jardinage</small></div>
-        <div class="node" style="left:18.2%;top:68.3%"><b>Loïc</b><small class="b">Besoin : un kit de jardinage</small><small class="d">Donne : un vélo enfant</small></div>
+        <div class="node" style="left:50%;top:13.3%"><b>Vous</b></div>
+        <div class="node" style="left:81.8%;top:68.3%"><b>Sophie</b></div>
+        <div class="node" style="left:18.2%;top:68.3%"><b>Loïc</b></div>
         <div class="lobj" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h4.5v6.5H4M4 11.5h14a6.5 6.5 0 0 0-6.5-6.5H11"/><path d="M5 11.5l2 4.5h8l2-4.5"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="15" cy="18.5" r="1.6"/></svg></div><div class="lobj" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14h10l-1.5 6h-7zM12 14V8"/><path d="M12 10.5C9 10.5 7 8.5 7 5.5c3 0 5 2 5 5zM12 9.5c0-3 2-5 5-5 0 3-2 5-5 5z"/></svg></div><div class="lobj" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5.5L18 16M10 9l3 7h-7M14 6h2.5"/></svg></div>
-        <div class="center"><div><b>1 boucle</b><br><span class="muted" style="font-size:12px">3 personnes servies</span></div></div>
+        <div class="center"><div><b>1 boucle</b><br><span class="muted" style="font-size:12px">3 personnes servies</span><small class="plus">Jusqu'à +40 % de probabilité grâce aux boucles</small></div></div>
       </div>
     </div>
 
@@ -541,14 +525,20 @@ dialog.visiteur .sablier{font-size:40px}
     </div>
 
 
-    <div class="bloc" id="comment-ca-marche">
-      <h2>Comment ça marche</h2>
-      <div class="acc-etapes">
-        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div><b>Je propose</b><span>Ma liste d'objets.</span></div></div>
-        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg></span><div><b>Je demande</b><span>Liste d'objets souhaités.</span></div></div>
-        <div class="acc-etape"><span class="rond m"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span><div><b>Le Match</b><span>Proposition d'échange direct entre 2 utilisateurs.</span></div></div>
-        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><div><b>Le Grand Troc</b><span>Proposition d'échange via une boucle d'utilisateurs.</span></div></div>
+    <div class="bloc">
+      <div class="acc-titre">
+        <h2>Articles en ligne en attente d'un Troc.</h2>
+        <button type="button" data-objets>Tout voir</button>
       </div>
+      <div class="results acc-fil" id="acc-fil"><p class="empty">Chargement des objets…</p></div>
+    </div>
+
+    <div class="bloc" id="comment-ca-marche">
+      <div class="acc-titre"><h2>Comment ça marche</h2><a href="/comment-ca-marche/">En savoir plus</a></div>
+      <div class="acc-etapes">
+        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div><b>Je propose</b><span>Mes objets</span></div></div>
+        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg></span><div><b>Je demande</b><span>Mes souhaits</span></div></div>
+</div>
     </div>
 
     <div class="acc-tuiles">
@@ -556,7 +546,6 @@ dialog.visiteur .sablier{font-size:40px}
         <div class="txt">
           <span class="label">Le Match, à tout moment</span>
           <h2>Un cœur de chaque côté, et c'est échangé.</h2>
-          <p class="muted">Pas besoin d'attendre dimanche.</p>
           <button class="acc-btn a" type="button" data-go="match" data-auth hidden>Voir les objets pour moi</button>
           <button class="acc-btn a" type="button" data-vers-compte data-anon>Créer mon compte</button>
         </div>
@@ -566,41 +555,28 @@ dialog.visiteur .sablier{font-size:40px}
         <div class="txt">
           <span class="label">Le Grand Troc du dimanche</span>
           <h2>Pas de match ? On a une solution.</h2>
-          <p class="muted">Les boucles à trois que personne n'a vues. 48 h pour dire oui.</p>
+          <p class="muted">Des boucles à trois. 48 h pour dire oui.</p>
           <p class="muted" data-gt-bilan hidden></p>
-          <button class="acc-btn y" type="button" data-proposer>Je participe</button>
+          <button class="acc-btn g" type="button" data-proposer>Je participe</button>
         </div>
         <div class="acc-gt"><b data-gt-quand>Chaque dimanche à 18 h</b><span data-gt-reste aria-live="polite"></span></div>
       </div>
     </div>
 
-    <div class="bloc">
-      <div class="acc-titre">
-        <h2 aria-label="Ce qui dort chez vous est utile à quelqu'un."><span aria-hidden="true">Ce qui dort chez vous est <span class="rot" id="rot"><span class="on">utile</span><span>précieux</span><span>cher</span></span> à quelqu'un.</span></h2>
-        <button type="button" data-objets>Tout voir</button>
-      </div>
-      <div class="results acc-fil" id="acc-fil"><p class="empty">Chargement des objets…</p></div>
-    </div>
-
     <div class="acc-duo">
       <div class="card bloc" id="particuliers">
         <span class="label">Pour les particuliers</span>
-        <h2>Tout est <span class="hl">gratuit</span>.</h2>
+        <h2><span class="hl">Simplicité</span>.</h2>
         <ul class="gratuit">
-          <li>Publier vos objets et vos souhaits</li>
-          <li>Chercher, même sans compte</li>
-          <li>Le Match et le Grand Troc</li>
+          <li>Publier</li>
+          <li>Choisir</li>
+          <li>Provoquer un Match</li>
+          <li>Propositions chaque dimanche</li>
         </ul>
+        <p class="muted" style="font-size:14px">Déjà sur Vinted ou Leboncoin ? <button type="button" class="lien" data-annonce>Troquer son annonce</button></p>
         <p class="muted" style="font-size:14px">Entreprise ou collectivité ? <a href="/pros/">Professionnels</a> · <a href="/collectivites/">Collectivités</a></p>
       </div>
       <aside class="pub" data-pub hidden></aside>
-      <form class="card stack troquez" id="f-import-home">
-        <span class="label">Votre annonce ne part pas ?</span>
-        <h2>Troquez-<em>la.</em></h2>
-        <p class="muted" style="font-size:15px">Collez le lien <a href="https://www.vinted.fr" target="_blank" rel="noopener noreferrer">Vinted</a> ou <a href="https://www.leboncoin.fr" target="_blank" rel="noopener noreferrer">Leboncoin</a> : on la recopie ici, sans prix.</p>
-        <div class="search"><input type="url" name="lien" required inputmode="url" placeholder="Lien de votre annonce" aria-label="Lien de votre annonce Vinted ou Leboncoin"><button type="submit">Troquer</button></div>
-        <p class="status" id="import-home-ok" hidden>Votre lien est gardé. Connectez-vous ou créez votre compte avec le bouton en haut de la page : on reprend là où vous en étiez.</p>
-      </form>
     </div>
 
   </section>
@@ -1010,22 +986,9 @@ document.addEventListener('click',e=>{
 /* Animations de l'accueil (coupées si l'appareil demande moins de mouvement). */
 const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
 (()=>{ // titre de l'accueil : les mots clés surlignés en entier, dans la langue de la page
-  const mots={fr:['troc','réinvente','gagne'],en:['Swapping','reinvented','benefits'],es:['trueque','reinventa','gana']}[TT_I18N.lang]||[];
+  const mots={fr:['troc','Boucle'],en:['Swapping','loop'],es:['trueque','cadena']}[TT_I18N.lang]||[];
   const h=$('#decouvrir h1');
   h.innerHTML=h.innerHTML.replace(/[\p{L}-]+/gu,m=>mots.includes(m)?'<mark class="mot">'+m+'</mark>':m);
-})();
-(()=>{ // le mot surligné change une fois le titre apparu
-  const rot=$('#rot'), mots=[...rot.children]; let i=0;
-  const largeur=()=>{rot.style.width=(mots[i].offsetWidth/parseFloat(getComputedStyle(rot).fontSize)+.16)+'em'};
-  document.fonts.ready.then(largeur);
-  if(calme)return;
-  setTimeout(()=>setInterval(()=>{
-    if($('#v-home').hidden)return;
-    const avant=mots[i]; i=(i+1)%mots.length;
-    avant.classList.replace('on','out'); setTimeout(()=>avant.classList.remove('out'),460);
-    mots[i].classList.add('on'); largeur();
-    rot.classList.remove('again'); void rot.offsetWidth; rot.classList.add('again');
-  },2400),1600);
 })();
 (()=>{ // chaque objet part de celui qui le donne et arrive chez celui qui en a besoin : Vous → Sophie → Loïc → Vous
   const objs=$$('.loop .lobj'), angles=[-90,30,150], R=110/300*100, cycle=4200, ecart=26;
@@ -1039,7 +1002,7 @@ const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
 })();
 
 /* Boutons de l'accueil : « Proposer un objet » (et « Je participe ») mène au formulaire d'objet, même sans compte
-   (mode visiteur : le compte est demandé à la dernière étape, « Publier ») ; « Demander un objet » et « Tout voir »
+   (mode visiteur : le compte est demandé à la dernière étape, « Publier ») ; « Voir les objets » et « Tout voir »
    ouvrent tout ce qui est proposé. */
 // Se connecter ou créer un compte : uniquement par la fenêtre du bouton en haut de page (site.js).
 function versCompte(){scrollTo({top:0,behavior:calmeDefil});TT.ouvrirConnexion(true,undefined,!store.get('troc.email'))}
@@ -1052,6 +1015,7 @@ document.addEventListener('click',e=>{
   else if(e.target.closest('[data-objets]'))chercher('');
   else if(e.target.closest('[data-fiche]')){e.preventDefault();ouvrirObjet(+e.target.closest('[data-fiche]').dataset.fiche)}
   else if(e.target.closest('[data-vers-compte]'))versCompte();
+  else if(e.target.closest('[data-annonce]')){e.preventDefault();versProposer();$('#d-annonce').open=true}
   else{const c=e.target.closest('[data-cat]'); if(c)chercher('',c.dataset.cat)}
 });
 
@@ -1206,13 +1170,6 @@ function reprendreAnnonce(){
   store.set('troc.annonce',null); go('proposer');
   const f=$('#f-obj'); $('#d-annonce').open=true; f.annonce_origine.value=lien; guiderAnnonce();
 }
-$('#f-import-home').onsubmit=e=>{
-  e.preventDefault(); const a=AnnonceAilleurs.lire(e.target.lien.value);
-  if(!a){toast("Collez le lien d'une annonce Vinted ou Leboncoin.");return}
-  store.set('troc.annonce',a.lien); e.target.reset();
-  if(moi){reprendreAnnonce();return}
-  $('#import-home-ok').hidden=false; versCompte();
-};
 
 /* Mes listes : « Je propose » (mes objets) et « Je demande » (mes souhaits), chacun avec sa catégorie,
    sa sous-catégorie et ses caractéristiques (taille, âge, marque…), servis par GET /categories. */
