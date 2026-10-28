@@ -1,0 +1,1 @@
+- App mobile : correction du démarrage sur iPhone (l'app se fermait après le logo), une seule version d'expo-font, celle du SDK 54.
