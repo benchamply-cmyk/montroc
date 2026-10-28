@@ -80,6 +80,39 @@ export function Puces(p: {
   );
 }
 
+/** Un titre de section en petites capitales, puis son contenu. */
+export function Section({ titre, children }: { titre: string; children: ReactNode }) {
+  return (
+    <View style={{ gap: 10 }}>
+      <Text style={[s.titre, { color: couleurs.discret, textTransform: 'uppercase', fontSize: 12, letterSpacing: 1 }]}>{titre}</Text>
+      {children}
+    </View>
+  );
+}
+
+/** Une ligne de menu : libellé, sous-titre facultatif et chevron. */
+export function LigneMenu(p: { titre: string; detail?: string; onPress: () => void }) {
+  return (
+    <Pressable onPress={p.onPress} style={({ pressed }) => [s.vignette, { paddingVertical: 14 }, pressed && { opacity: 0.6 }]}>
+      <View style={{ flex: 1, gap: 2 }}>
+        <Text style={s.titre}>{p.titre}</Text>
+        {p.detail && <Text style={[s.discret, { textAlign: 'left' }]}>{p.detail}</Text>}
+      </View>
+      <Text style={{ color: couleurs.discret, fontSize: 20 }}>›</Text>
+    </Pressable>
+  );
+}
+
+/** Un encadré mis en avant (Grand Troc, Premium, avertissement visiteur). */
+export function Encart({ titre, children, couleur = couleurs.marque }: { titre: string; children: ReactNode; couleur?: string }) {
+  return (
+    <View style={{ backgroundColor: couleurs.surface, padding: 16, borderRadius: rayon, gap: 6 }}>
+      <Text style={[s.titre, { color: couleur }]}>{titre}</Text>
+      {children}
+    </View>
+  );
+}
+
 export function Vignette({ objet, droite }: { objet: ObjetResume; droite?: ReactNode }) {
   return (
     <View style={s.vignette}>

@@ -2,12 +2,24 @@
 
 App iOS et Android (Expo / React Native) branchée sur la même API que le site : `https://api.toptroc.com`.
 
-| Onglet | Contenu | Routes de l'API |
+| Écran | Contenu | Routes de l'API |
 |---|---|---|
-| Objets | Catalogue public et recherche, fiche objet | `GET /objets`, `GET /objets/{id}` |
-| Match | Cartes à glisser : « J'aime » / « Non merci » | `GET /match/carrousel`, `POST /match/avis` |
-| Mon espace | Prochain Grand Troc, mes matchs, mes objets, déconnexion | `GET /grand-troc`, `GET /match`, `GET /moi/objets` |
-| Connexion | Mot de passe, ou lien magique collé dans l'app, inscription | `POST /auth/connexion`, `/auth/lien`, `/auth/verifier` |
+| Objets (onglet) | Catalogue public, recherche, catégories, filtres (sous-catégorie, état, caractéristiques, tri), pages « Voir plus », dernières recherches | `GET /objets`, `GET /categories` |
+| Fiche objet | Photo, détail, propriétaire et réputation, étoile, cœur, signalement | `GET /objets/{id}`, `GET /utilisateurs/{id}` |
+| Match (onglet) | Cartes à glisser : « J'aime » / « Non merci », Super J'aime et retour arrière (Premium) | `GET /match/carrousel`, `POST /match/avis`, `DELETE /match/avis/{id}` |
+| Grand Troc (onglet) | Compte à rebours, bilan du dernier, Match à trois, mes échanges possibles | `GET /grand-troc`, `GET /match/boucles`, `POST /match/boucle`, `GET /moi/boucles`, `POST /echanges` |
+| Favoris (onglet) | L'étoile : dans le compte, ou 24 h sur le téléphone sans compte ; alertes par e-mail ou SMS sans compte | `/moi/favoris`, `POST /suivis` |
+| Mon espace (onglet) | Matchs et accords, mes objets, liens vers échanges, Premium, compte, infos | `GET /match`, `POST /match/accord`, `GET /moi/objets` |
+| Mes échanges, un échange | Répondre (48 h), adresse pour un colis, remise et suivi, codes de retrait | `GET /moi/echanges`, `/echanges/{id}/reponse`, `/adresse`, `/depot` |
+| Mon objet | Modifier, retirer ou remettre en ligne, « Qui aime ? » | `PATCH /moi/objets/{id}`, `GET /moi/objets/{id}/interesses` |
+| Proposer un objet | Photo, détail, colis, lieu, lien d'annonce Vinted / Leboncoin ; sans compte, la connexion est demandée à la publication | `POST /moi/objets`, `GET /moi/photos/signature` |
+| Mes souhaits | Ce qui me serait utile | `/moi/souhaits` |
+| Troc Premium | Les 5 formules, essai, famille, aperçu du stock ; paiement par le lien Stripe du site | `GET /premium`, `POST /premium/essai`, `/premium/famille`, `GET /moi/apercu` |
+| Mon compte | Pseudo, ville, téléphone, zones d'intérêt, mot de passe, suppression | `PATCH /moi`, `PUT /auth/mot-de-passe`, `DELETE /moi` |
+| Assistant (💬 en haut à droite) | La bulle d'aide du site | `GET /assistant`, `POST /assistant` |
+| Signaler | Objet ou compte, avec ou sans compte (DSA) | `POST /signalements` |
+| Infos et aide | Concept, comment ça marche, FAQ, CGU, confidentialité, mentions légales : pages du site ouvertes dans le navigateur | — |
+| Connexion | Code à 6 chiffres reçu par e-mail ou mot de passe, inscription | `/auth/…` |
 
 Le jeton de session (30 jours) est rangé dans le trousseau de l'appareil (`expo-secure-store`) et envoyé en `Authorization: Bearer …`. Le CORS de l'API ne concerne pas l'app native.
 
@@ -51,4 +63,5 @@ Les numéros de build montent tout seuls (`appVersionSource: remote`). Pour le P
 ## Prochaines étapes
 
 - Liens universels : ouvrir le lien magique `https://toptroc.com/#connexion=…` directement dans l'app.
-- Notifications push pour le Grand Troc du dimanche.
+- Notifications push pour le Grand Troc du dimanche et les échanges (il faut d'abord enregistrer les jetons d'appareil côté API).
+- Troc Premium sur iPhone : l'App Store peut exiger l'achat intégré pour un abonnement numérique ; aujourd'hui l'app ouvre le lien Stripe du site.
