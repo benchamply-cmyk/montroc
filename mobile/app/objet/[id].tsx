@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { BoutonsFavori } from '../../components/CarteObjet';
+import { BoutonCoeur } from '../../components/CarteObjet';
 import { Bouton, EtatRequete, s } from '../../components/ui';
 import { useSession } from '../../lib/session';
 import { couleurs, ETATS, FORMATS_COLIS, MODES_ECHANGE, rayon, REPUTATIONS } from '../../lib/theme';
@@ -32,7 +32,7 @@ export default function FicheObjet() {
           <View>
             <Image source={objet.photo_url} style={{ aspectRatio: 1, borderRadius: rayon, backgroundColor: couleurs.surface }} contentFit="cover" />
             <View style={{ position: 'absolute', top: 12, right: 12 }}>
-              <BoutonsFavori objet={objet} grand />
+              <BoutonCoeur objet={objet} grand />
             </View>
           </View>
           <Text style={s.grandTitre}>{objet.titre}</Text>

@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Alert } from 'react-native';
 
@@ -5,8 +6,8 @@ import { api, ErreurApi } from './api';
 import { useSession } from './session';
 import { ecrire, lire } from './stockage';
 
-// Comme le site (#77) : l'étoile met en favori (24 h sur l'appareil pour un visiteur, dans le compte pour un membre),
-// le cœur est le « J'aime » du Match, réservé aux membres. Deux choses distinctes.
+// Un seul cœur, comme sur Vinted (Ben, 28/10) : il met l'objet en favori ET donne le « J'aime » du Match.
+// Un visiteur garde ses cœurs 24 h sur l'appareil ; à la connexion, ils deviennent des favoris et des J'aime.
 const CLE = 'troc.favoris';
 const DUREE_VISITEUR_MS = 24 * 3600 * 1000;
 const MAX_VISITEUR = 50;
@@ -17,11 +18,9 @@ export interface FavoriLocal {
 }
 
 interface Favoris {
-  etoiles: Set<number>;
   coeurs: Set<number>;
-  // Favoris d'un visiteur, avec leur date (ils expirent au bout de 24 h).
+  // Cœurs d'un visiteur, avec leur date (ils expirent au bout de 24 h).
   locaux: FavoriLocal[];
-  basculerEtoile: (objetId: number) => Promise<void>;
   basculerCoeur: (objetId: number) => Promise<void>;
   recharger: () => Promise<void>;
 }
@@ -30,37 +29,43 @@ const Contexte = createContext<Favoris | null>(null);
 
 const frais = (liste: FavoriLocal[]) => liste.filter((f) => Date.now() - new Date(f.ajoute_le).getTime() < DUREE_VISITEUR_MS);
 
+type ResultatAvis = { match: { avec: { pseudo: string } } | null };
+
+/** Le J'aime part en même temps que le favori ; il est refusé sur certains objets (le sien, déjà échangé) sans que le favori en pâtisse. */
+const aimer = (objetId: number) => api<ResultatAvis>('/match/avis', { corps: { objet_id: objetId, aime: true } }).catch(() => ({ match: null }));
+
 export function FournisseurFavoris({ children }: { children: ReactNode }) {
   const { pret, moi } = useSession();
   const [locaux, setLocaux] = useState<FavoriLocal[]>([]);
-  const [etoilesCompte, setEtoilesCompte] = useState<Set<number>>(new Set());
-  const [coeurs, setCoeurs] = useState<Set<number>>(new Set());
+  const [coeursCompte, setCoeursCompte] = useState<Set<number>>(new Set());
   const avertiVisiteur = useRef(false);
 
   const recharger = useCallback(async () => {
     if (!moi) {
       setLocaux(frais(await lire<FavoriLocal[]>(CLE, [])));
-      setCoeurs(new Set());
+      setCoeursCompte(new Set());
       return;
     }
-    // Les favoris du visiteur rejoignent le compte à la connexion, puis l'appareil les oublie.
+    // Les cœurs du visiteur rejoignent le compte à la connexion, puis l'appareil les oublie.
     const enAttente = frais(await lire<FavoriLocal[]>(CLE, []));
-    for (const f of enAttente) await api('/moi/favoris', { corps: { objet_id: f.objet_id } }).catch(() => undefined);
+    for (const f of enAttente) {
+      await api('/moi/favoris', { corps: { objet_id: f.objet_id } }).catch(() => undefined);
+      await aimer(f.objet_id);
+    }
     if (enAttente.length) await ecrire(CLE, null);
     setLocaux([]);
     const [favoris, aimes] = await Promise.all([
       api<{ id: number }[]>('/moi/favoris').catch(() => []),
       api<number[]>('/match/avis').catch(() => []),
     ]);
-    setEtoilesCompte(new Set(favoris.map((o) => o.id)));
-    setCoeurs(new Set(aimes));
+    setCoeursCompte(new Set([...favoris.map((o) => o.id), ...aimes]));
   }, [moi]);
 
   useEffect(() => {
     if (pret) recharger();
   }, [pret, recharger]);
 
-  const basculerEtoile = useCallback(
+  const basculerCoeur = useCallback(
     async (objetId: number) => {
       if (!moi) {
         const deja = locaux.some((f) => f.objet_id === objetId);
@@ -71,52 +76,40 @@ export function FournisseurFavoris({ children }: { children: ReactNode }) {
         await ecrire(CLE, liste);
         if (!deja && !avertiVisiteur.current) {
           avertiVisiteur.current = true;
-          Alert.alert('Favori gardé 24 heures', 'Sans compte, vos favoris restent sur ce téléphone pendant 24 heures. Créez un compte pour les garder.');
+          Alert.alert('Gardé 24 heures', 'Sans compte, vos cœurs restent sur ce téléphone pendant 24 heures. Avec un compte, ils sont gardés et deviennent des « J\'aime » : si le propriétaire aime un de vos objets, c\'est un match.', [
+            { text: 'Plus tard', style: 'cancel' },
+            { text: 'Créer un compte', onPress: () => router.push('/connexion') },
+          ]);
         }
         return;
       }
-      const deja = etoilesCompte.has(objetId);
-      const suivant = new Set(etoilesCompte);
+      const deja = coeursCompte.has(objetId);
+      const suivant = new Set(coeursCompte);
       if (deja) suivant.delete(objetId);
       else suivant.add(objetId);
-      setEtoilesCompte(suivant);
+      setCoeursCompte(suivant);
       try {
-        if (deja) await api(`/moi/favoris/${objetId}`, { method: 'DELETE' });
-        else await api('/moi/favoris', { corps: { objet_id: objetId } });
+        if (deja) {
+          // L'un des deux peut manquer (cœur donné sur le site avant le 28/10) : on retire ce qui existe.
+          await Promise.all([
+            api(`/moi/favoris/${objetId}`, { method: 'DELETE' }).catch(() => undefined),
+            api(`/match/avis/${objetId}`, { method: 'DELETE' }).catch(() => undefined),
+          ]);
+        } else {
+          await api('/moi/favoris', { corps: { objet_id: objetId } });
+          const r = await aimer(objetId);
+          if (r.match) Alert.alert("C'est un match !", `${r.match.avec.pseudo} aime aussi un de vos objets. Proposez l'échange depuis l'onglet Échanges.`);
+        }
       } catch (e) {
-        setEtoilesCompte(etoilesCompte);
+        setCoeursCompte(coeursCompte);
         Alert.alert('Favori', e instanceof ErreurApi ? e.message : String(e));
       }
     },
-    [moi, locaux, etoilesCompte],
+    [moi, locaux, coeursCompte],
   );
 
-  const basculerCoeur = useCallback(
-    async (objetId: number) => {
-      if (!moi) return;
-      const deja = coeurs.has(objetId);
-      const suivant = new Set(coeurs);
-      if (deja) suivant.delete(objetId);
-      else suivant.add(objetId);
-      setCoeurs(suivant);
-      try {
-        if (deja) await api(`/match/avis/${objetId}`, { method: 'DELETE' });
-        else {
-          const r = await api<{ match: { avec: { pseudo: string } } | null }>('/match/avis', { corps: { objet_id: objetId, aime: true } });
-          if (r.match) Alert.alert("C'est un match !", `${r.match.avec.pseudo} aime aussi un de vos objets. Proposez l'échange depuis Mon espace.`);
-        }
-      } catch (e) {
-        setCoeurs(coeurs);
-        Alert.alert("J'aime", e instanceof ErreurApi ? e.message : String(e));
-      }
-    },
-    [moi, coeurs],
-  );
-
-  const etoiles = moi ? etoilesCompte : new Set(locaux.map((f) => f.objet_id));
-  return (
-    <Contexte.Provider value={{ etoiles, coeurs, locaux, basculerEtoile, basculerCoeur, recharger }}>{children}</Contexte.Provider>
-  );
+  const coeurs = moi ? coeursCompte : new Set(locaux.map((f) => f.objet_id));
+  return <Contexte.Provider value={{ coeurs, locaux, basculerCoeur, recharger }}>{children}</Contexte.Provider>;
 }
 
 export function useFavoris(): Favoris {

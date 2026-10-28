@@ -2,19 +2,19 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, RefreshControl, Text, View } from 'react-native';
 
-import { CarteObjet } from '../../components/CarteObjet';
-import { Bouton, Champ, Encart, EtatRequete, s } from '../../components/ui';
-import { api, ErreurApi } from '../../lib/api';
-import { useFavoris } from '../../lib/favoris';
-import { useSession } from '../../lib/session';
-import { CLE_RECHERCHES, CLE_SUIVI, ecrire, lire, type Recherche } from '../../lib/stockage';
-import { couleurs } from '../../lib/theme';
-import type { Objet } from '../../lib/types';
+import { CarteObjet } from '../components/CarteObjet';
+import { Bouton, Champ, Encart, EtatRequete, s } from '../components/ui';
+import { api, ErreurApi } from '../lib/api';
+import { useFavoris } from '../lib/favoris';
+import { useSession } from '../lib/session';
+import { CLE_RECHERCHES, CLE_SUIVI, ecrire, lire, type Recherche } from '../lib/stockage';
+import { couleurs } from '../lib/theme';
+import type { Objet } from '../lib/types';
 
-/** Mes favoris (l'étoile) : dans le compte pour un membre, 24 h sur le téléphone pour un visiteur. */
+/** Mes favoris (le cœur) : dans le compte pour un membre, 24 h sur le téléphone pour un visiteur. */
 export default function Favoris() {
   const { moi } = useSession();
-  const { etoiles, locaux } = useFavoris();
+  const { coeurs, locaux } = useFavoris();
   const [objets, setObjets] = useState<Objet[] | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [chargement, setChargement] = useState(false);
@@ -42,8 +42,8 @@ export default function Favoris() {
     }, [charger]),
   );
 
-  // Une étoile retirée sur une carte la retire aussitôt de la liste.
-  const visibles = (objets ?? []).filter((o) => etoiles.has(o.id));
+  // Un cœur retiré sur une carte la retire aussitôt de la liste.
+  const visibles = (objets ?? []).filter((o) => coeurs.has(o.id));
   const plusAncien = locaux.length ? Math.min(...locaux.map((f) => new Date(f.ajoute_le).getTime())) : null;
   const heuresRestantes = plusAncien ? Math.max(1, Math.round((plusAncien + 24 * 3600e3 - Date.now()) / 3600e3)) : null;
 
@@ -52,16 +52,16 @@ export default function Favoris() {
       <FlatList
         data={visibles}
         keyExtractor={(o) => String(o.id)}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 12 }}
-        contentContainerStyle={{ padding: 16, gap: 12 }}
+        numColumns={3}
+        columnWrapperStyle={{ gap: 8 }}
+        contentContainerStyle={{ padding: 12, gap: 14 }}
         refreshControl={<RefreshControl refreshing={false} onRefresh={charger} tintColor={couleurs.accent} />}
         ListHeaderComponent={
           <View style={{ gap: 12, marginBottom: 4 }}>
             {!moi && (
               <Encart titre="Favoris gardés 24 heures">
                 <Text style={s.texte}>
-                  Sans compte, vos favoris restent sur ce téléphone pendant 24 heures
+                  Sans compte, vos cœurs restent sur ce téléphone pendant 24 heures
                   {heuresRestantes ? ` (le premier s'efface dans environ ${heuresRestantes} h)` : ''}. Avec un compte, ils sont gardés et
                   vous pouvez matcher.
                 </Text>
@@ -72,7 +72,7 @@ export default function Favoris() {
           </View>
         }
         ListEmptyComponent={
-          objets !== null ? <Text style={s.discret}>Touchez l'étoile ☆ d'un objet pour le retrouver ici.</Text> : null
+          objets !== null ? <Text style={s.discret}>Touchez le cœur d'un objet pour le retrouver ici.</Text> : null
         }
         ListFooterComponent={!moi ? <AlertesSansCompte /> : null}
         renderItem={({ item }) => <CarteObjet objet={item} />}

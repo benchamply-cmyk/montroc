@@ -2,13 +2,13 @@ import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
-import { CarteObjet } from '../../components/CarteObjet';
-import { Bouton, Champ, EtatRequete, Puces, s } from '../../components/ui';
-import { api, ErreurApi } from '../../lib/api';
-import { CLE_RECHERCHES, ecrire, lire, type Recherche } from '../../lib/stockage';
-import { couleurs, ETATS } from '../../lib/theme';
-import type { CategorieDetaillee, Objet } from '../../lib/types';
-import { useRequete } from '../../lib/useRequete';
+import { CarteObjet } from '../components/CarteObjet';
+import { Bouton, Champ, EtatRequete, Puces, s } from '../components/ui';
+import { api, ErreurApi } from '../lib/api';
+import { CLE_RECHERCHES, ecrire, lire, type Recherche } from '../lib/stockage';
+import { couleurs, ETATS } from '../lib/theme';
+import type { CategorieDetaillee, Objet } from '../lib/types';
+import { useRequete } from '../lib/useRequete';
 
 const PAGE = 40;
 
@@ -109,15 +109,17 @@ export default function Catalogue() {
       <FlatList
         data={objets}
         keyExtractor={(o) => String(o.id)}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 12 }}
-        contentContainerStyle={{ padding: 16, gap: 12 }}
+        numColumns={3}
+        columnWrapperStyle={{ gap: 8 }}
+        contentContainerStyle={{ padding: 12, gap: 14 }}
         refreshControl={<RefreshControl refreshing={false} onRefresh={() => charger(0)} tintColor={couleurs.accent} />}
         onEndReachedThreshold={0.5}
         onEndReached={() => !fin && !chargement && objets.length > 0 && charger(objets.length)}
         ListHeaderComponent={
           <View style={{ gap: 12, marginBottom: 4 }}>
             <Champ
+              // Ouverte depuis la barre de l'accueil sans mot ni catégorie : le clavier sort tout de suite.
+              autoFocus={!params.q && !params.categorie}
               libelle="Chercher un objet"
               placeholder="vélo, Epiphone, poussette…"
               value={saisie}
