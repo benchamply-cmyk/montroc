@@ -13,6 +13,11 @@ Avant le 26/10/2026, les versions étaient numérotées `v0.x.y` (sections plus 
 
 Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici à la préparation de la livraison (`python3 scripts/version.py livraison`).
 
+## [V6.400] – 2026-10-28
+
+- Assistant du site : une bulle en bas à droite répond aux questions sur TopTroc (Match, Grand Troc, Premium, catégories, règles) en français, anglais et espagnol, sans accès aux comptes ; s'allume avec la clé ANTHROPIC_API_KEY sur Render.
+- Page d'une catégorie : les filtres (sous-catégorie, caractéristiques, état, tri) passent par l'API, plus de limite à 200 objets ; GET /objets accepte sous_categorie, etat, caracteristique=clé:valeur et tri (#83).
+
 ## [V6.300] – 2026-10-27 · Menu, mode visiteur et nouvelle connexion
 
 - Connexion et inscription refondues : bouton « Connexion » ouvert au clic, onglets Se connecter / Créer un compte, inscription en un formulaire puis un code à 6 chiffres tapé dans la même fenêtre (le lien de l'e-mail marche toujours), mot de passe oublié par code, pseudo vérifié pendant la saisie, messages clairs (aucun compte, pas encore de mot de passe, mot de passe incorrect), réveil du serveur affiché, initiale et pseudo une fois connecté avec un menu du compte, panneau plein écran sur téléphone.
@@ -105,7 +110,8 @@ Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.300...preprod
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.400...preprod
+[V6.400]: https://github.com/benchamply-cmyk/montroc/compare/V6.300...V6.400
 [V6.300]: https://github.com/benchamply-cmyk/montroc/compare/V6.200...V6.300
 [V6.200]: https://github.com/benchamply-cmyk/montroc/compare/V6.100...V6.200
 [V6.100]: https://github.com/benchamply-cmyk/montroc/compare/V5.200...V6.100
