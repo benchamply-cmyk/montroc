@@ -5254,5 +5254,9 @@
   "Provoquer le Match": {
     "en": "Make the Match happen",
     "es": "Provocar el Match"
+  },
+  "Propositions chaque dimanche": {
+    "en": "Swap proposals every Sunday",
+    "es": "Propuestas cada domingo"
   }
 }
