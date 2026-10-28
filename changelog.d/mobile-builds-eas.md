@@ -1,0 +1,1 @@
+- App mobile : nouvel identifiant com.toptroc.app et builds de test EAS, sur l'API de production (preview) ou de pré-production (preprod).

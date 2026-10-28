@@ -22,11 +22,31 @@ npx expo install --fix    # aligne les versions sur le SDK Expo installé
 npx expo start --ios      # ou : scanner le QR code avec Expo Go sur un téléphone
 ```
 
-Pour viser une API locale (`make api`), remplacer `extra.api` dans `app.json` par `http://localhost:8001`.
+Expo Go doit être de la même version que le SDK du projet (SDK 54). Celui des stores ne fait tourner que le dernier SDK : sur un vrai téléphone, utiliser un build de test (ci-dessous).
+
+Pour viser une autre API sans rien modifier : `API_URL=http://localhost:8001 npx expo start` (API locale, `make api`) ou `API_URL=https://montroc-api-preprod.onrender.com npx expo start`.
+
+## Builds de test (EAS)
+
+Projet Expo : [@bentester/toptroc](https://expo.dev/accounts/bentester/projects/toptroc). Identifiant de l'app : `com.toptroc.app`.
+
+| Profil (`eas.json`) | API | App installée | Pour qui |
+|---|---|---|---|
+| `preview` | api.toptroc.com (production) | TopTroc, `com.toptroc.app` | testeurs : vrais comptes, vrais e-mails |
+| `preprod` | montroc-api-preprod.onrender.com | TopTroc preprod, `com.toptroc.app.preprod` | recette : tous les e-mails partent à `COURRIELS_VERS` |
+
+Les deux apps s'installent côte à côte. `app.config.js` choisit l'API, le nom et l'identifiant d'après `API_URL`.
+
+```
+npm i -g eas-cli && eas login                         # une fois
+eas build -p android --profile preview                # APK à installer depuis le lien ou le QR code
+eas device:create                                     # une fois par iPhone de test (lien à ouvrir sur l'iPhone)
+eas build -p ios --profile preview                    # demande le compte Apple Developer au premier build
+```
+
+Les numéros de build montent tout seuls (`appVersionSource: remote`). Pour le Play Store et l'App Store : profil `production`.
 
 ## Prochaines étapes
 
-- Proposer un objet depuis l'app (photo avec l'appareil, envoi signé Cloudinary via `GET /moi/photos/signature`).
-- Souhaits (« Je demande ») et accord 1 à 1 depuis un match (`POST /match/accord`).
 - Liens universels : ouvrir le lien magique `https://toptroc.com/#connexion=…` directement dans l'app.
 - Notifications push pour le Grand Troc du dimanche.
