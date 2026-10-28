@@ -1,1 +1,0 @@
-- App mobile : connexion et inscription par code à 6 chiffres reçu par e-mail, comme sur le site, avec vérification du pseudo pendant la saisie.

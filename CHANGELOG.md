@@ -13,6 +13,16 @@ Avant le 26/10/2026, les versions étaient numérotées `v0.x.y` (sections plus 
 
 Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici à la préparation de la livraison (`python3 scripts/version.py livraison`).
 
+## [V6.600] – 2026-10-28
+
+- App mobile : correction du démarrage sur iPhone (l'app se fermait après le logo), une seule version d'expo-font, celle du SDK 54.
+- App mobile : filtres en feuilles du bas, barre d'action fixe et menu « … » sur la fiche objet, cartes grises pendant le chargement, états vides avec une action, vibration au cœur, au match et à la publication, 3 écrans de première ouverture.
+- App mobile : nouvel identifiant com.toptroc.app et builds de test EAS, sur l'API de production (preview) ou de pré-production (preprod), et build de développement (expo-dev-client) compatible Xcode 27 / iOS 27.
+- App mobile : connexion et inscription par code à 6 chiffres reçu par e-mail, comme sur le site, avec vérification du pseudo pendant la saisie.
+- App mobile : navigation à 5 onglets sur le modèle de Vinted (Accueil avec recherche, Match, Proposer au centre, Échanges avec pastille et segments, Profil), un seul cœur pour favori et J'aime, vraies icônes, écran de chargement et en-tête avec le logo, cartes d'objets plus petites.
+- Notifications push de l'app : jetons des téléphones dans l'API (migration 0022, POST /moi/appareils, oubliés à la déconnexion) et envois pour un match, une proposition d'échange et le Grand Troc ; l'app demande l'accord une fois connectée et ouvre le bon écran au toucher.
+- App mobile : mêmes fonctions que le site : filtres du catalogue, favoris (étoile) et J'aime (cœur), mode visiteur avec alertes, Grand Troc et Match à trois, mes échanges, gestion de mes objets, import d'annonce Vinted / Leboncoin, Troc Premium, assistant, signalement, mon compte et pages d'info.
+
 ## [V6.500] – 2026-10-28 · Accueil allégé
 
 - Accueil allégé et réorganisé : titre « La Boucle d’échange pour augmenter ses chances. », textes courts à l’infinitif, recherche avant les boutons, « Voir les objets », fil d’objets juste sous le haut de page, 2 étapes puis les tuiles Match et Grand Troc, bloc « Simplicité. », import Vinted/Leboncoin renvoyé vers Proposer, exemple de boucle réduit aux prénoms.
@@ -114,7 +124,8 @@ Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.500...preprod
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.600...preprod
+[V6.600]: https://github.com/benchamply-cmyk/montroc/compare/V6.500...V6.600
 [V6.500]: https://github.com/benchamply-cmyk/montroc/compare/V6.400...V6.500
 [V6.400]: https://github.com/benchamply-cmyk/montroc/compare/V6.300...V6.400
 [V6.300]: https://github.com/benchamply-cmyk/montroc/compare/V6.200...V6.300

@@ -1,1 +1,0 @@
-- App mobile : nouvel identifiant com.toptroc.app et builds de test EAS, sur l'API de production (preview) ou de pré-production (preprod), et build de développement (expo-dev-client) compatible Xcode 27 / iOS 27.
