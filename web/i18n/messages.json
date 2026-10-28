@@ -5258,5 +5258,13 @@
   "Provoque un Match": {
     "en": "Make a Match happen",
     "es": "Provoca un Match"
+  },
+  "Publie": {
+    "en": "Post",
+    "es": "Publica"
+  },
+  "Choisis": {
+    "en": "Choose",
+    "es": "Elige"
   }
 }
