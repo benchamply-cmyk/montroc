@@ -14,6 +14,7 @@
     "expo": "~54.0.0",
     "expo-constants": "~18.0.0",
     "expo-dev-client": "~6.0.21",
+    "expo-haptics": "~15.0.8",
     "expo-image": "~3.0.0",
     "expo-image-picker": "~17.0.11",
     "expo-linking": "~8.0.0",

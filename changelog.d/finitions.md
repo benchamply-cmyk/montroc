@@ -1,0 +1,1 @@
+- App mobile : filtres en feuilles du bas, barre d'action fixe et menu « … » sur la fiche objet, cartes grises pendant le chargement, états vides avec une action, vibration au cœur, au match et à la publication, 3 écrans de première ouverture.

@@ -13,6 +13,7 @@ import { couleurs, ETATS, FORMATS_COLIS, MODES_ECHANGE, rayon } from '../lib/the
 import type { CategorieDetaillee, Etat } from '../lib/types';
 import { useRequete } from '../lib/useRequete';
 import { chercherVilles, type Ville } from '../lib/villes';
+import { vibrer } from '../lib/vibrer';
 
 /** Proposer un objet. Comme sur le site (#77), un visiteur remplit tout ; le compte n'est demandé qu'à la publication. */
 export default function Proposer() {
@@ -112,6 +113,7 @@ export default function Proposer() {
           ...photoEnvoyee,
         },
       });
+      vibrer('succes');
       router.back();
     } catch (e) {
       setErreur(e instanceof ErreurApi ? e.message : String(e));

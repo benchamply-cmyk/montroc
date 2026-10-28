@@ -1,8 +1,11 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { CarteObjet } from '../components/CarteObjet';
+import { FeuilleBas } from '../components/FeuilleBas';
+import { GrilleSquelettes } from '../components/Squelettes';
 import { Bouton, Champ, EtatRequete, Puces, s } from '../components/ui';
 import { api, ErreurApi } from '../lib/api';
 import { CLE_RECHERCHES, ecrire, lire, type Recherche } from '../lib/stockage';
@@ -43,7 +46,8 @@ export default function Catalogue() {
   const categories = useRequete<CategorieDetaillee[]>('/categories');
   const [saisie, setSaisie] = useState('');
   const [filtres, setFiltres] = useState<Filtres>(AUCUN);
-  const [panneau, setPanneau] = useState(false);
+  const [feuille, setFeuille] = useState<string | null>(null);
+  const fermerFeuille = useCallback(() => setFeuille(null), []);
   const [objets, setObjets] = useState<Objet[]>([]);
   const [fin, setFin] = useState(false);
   const [chargement, setChargement] = useState(false);
@@ -102,6 +106,69 @@ export default function Catalogue() {
     await ecrire(CLE_RECHERCHES, liste);
   }
 
+  // Une pastille par filtre, comme sur Vinted : chacune ouvre sa feuille en bas de l'écran.
+  const pastilles: { cle: string; libelle: string; nb: number; contenu: ReactNode }[] = [
+    ...(categorie && categorie.sous_categories.length > 0
+      ? [
+          {
+            cle: 'sous',
+            libelle: 'Sous-catégorie',
+            nb: filtres.sousCategorie ? 1 : 0,
+            contenu: (
+              <Puces
+                options={categorie.sous_categories.map((c) => ({ valeur: c.slug, libelle: c.libelle }))}
+                choisies={filtres.sousCategorie ? [filtres.sousCategorie] : []}
+                onChange={([c]) => setFiltres((f) => ({ ...f, sousCategorie: c ?? null, caracteristiques: {} }))}
+                facultatif
+              />
+            ),
+          },
+        ]
+      : []),
+    {
+      cle: 'etat',
+      libelle: 'État',
+      nb: filtres.etats.length,
+      contenu: (
+        <Puces
+          options={Object.entries(ETATS).map(([valeur, libelle]) => ({ valeur, libelle }))}
+          choisies={filtres.etats}
+          onChange={(etats) => setFiltres((f) => ({ ...f, etats }))}
+          multiple
+        />
+      ),
+    },
+    ...caracteristiques.map((c) => ({
+      cle: `car:${c.cle}`,
+      libelle: c.libelle,
+      nb: (filtres.caracteristiques[c.cle] ?? []).length,
+      contenu: (
+        <Puces
+          options={(c.options ?? []).map((o) => ({ valeur: o, libelle: o }))}
+          choisies={filtres.caracteristiques[c.cle] ?? []}
+          onChange={(v) => setFiltres((f) => ({ ...f, caracteristiques: { ...f.caracteristiques, [c.cle]: v } }))}
+          multiple
+        />
+      ),
+    })),
+    {
+      cle: 'tri',
+      libelle: filtres.tri === 'ancien' ? 'Plus anciens' : 'Trier',
+      nb: filtres.tri === 'ancien' ? 1 : 0,
+      contenu: (
+        <Puces
+          options={[
+            { valeur: 'recent', libelle: 'Plus récents' },
+            { valeur: 'ancien', libelle: 'Plus anciens' },
+          ]}
+          choisies={[filtres.tri]}
+          onChange={([t]) => setFiltres((f) => ({ ...f, tri: (t as Filtres['tri']) ?? 'recent' }))}
+        />
+      ),
+    },
+  ];
+  const libelleVoir = chargement ? 'Recherche…' : `Voir ${objets.length}${fin ? '' : '+'} objet${objets.length > 1 ? 's' : ''}`;
+
   const libelleCategorie = (slug: string | null) => categories.donnees?.find((c) => c.slug === slug)?.libelle;
 
   return (
@@ -148,66 +215,58 @@ export default function Catalogue() {
                 })}
               </ScrollView>
             )}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={[s.discret, { textAlign: 'left' }]}>
-                {chargement && objets.length === 0 ? '' : `${objets.length}${fin ? '' : '+'} objet${objets.length > 1 ? 's' : ''}`}
-              </Text>
-              <Pressable onPress={() => setPanneau((p) => !p)} hitSlop={8}>
-                <Text style={{ color: couleurs.accent, fontWeight: '600' }}>Filtres{nbFiltres ? ` (${nbFiltres})` : ''} {panneau ? '▲' : '▼'}</Text>
-              </Pressable>
-            </View>
-            {panneau && (
-              <View style={{ gap: 14, padding: 12, borderWidth: 1, borderColor: couleurs.trait, borderRadius: 14 }}>
-                {categorie && categorie.sous_categories.length > 0 && (
-                  <Puces
-                    libelle="Sous-catégorie"
-                    options={categorie.sous_categories.map((c) => ({ valeur: c.slug, libelle: c.libelle }))}
-                    choisies={filtres.sousCategorie ? [filtres.sousCategorie] : []}
-                    onChange={([c]) => setFiltres((f) => ({ ...f, sousCategorie: c ?? null, caracteristiques: {} }))}
-                    facultatif
-                  />
-                )}
-                <Puces
-                  libelle="État"
-                  options={Object.entries(ETATS).map(([valeur, libelle]) => ({ valeur, libelle }))}
-                  choisies={filtres.etats}
-                  onChange={(etats) => setFiltres((f) => ({ ...f, etats }))}
-                  multiple
-                />
-                {caracteristiques.map((c) => (
-                  <Puces
-                    key={c.cle}
-                    libelle={c.libelle}
-                    options={(c.options ?? []).map((o) => ({ valeur: o, libelle: o }))}
-                    choisies={filtres.caracteristiques[c.cle] ?? []}
-                    onChange={(v) => setFiltres((f) => ({ ...f, caracteristiques: { ...f.caracteristiques, [c.cle]: v } }))}
-                    multiple
-                  />
-                ))}
-                {!categorie && <Text style={[s.discret, { textAlign: 'left' }]}>Choisissez une catégorie pour filtrer par taille, marque, pointure…</Text>}
-                <Puces
-                  libelle="Trier"
-                  options={[
-                    { valeur: 'recent', libelle: 'Plus récents' },
-                    { valeur: 'ancien', libelle: 'Plus anciens' },
-                  ]}
-                  choisies={[filtres.tri]}
-                  onChange={([t]) => setFiltres((f) => ({ ...f, tri: (t as Filtres['tri']) ?? 'recent' }))}
-                />
-                {nbFiltres > 0 && (
-                  <Bouton titre="Effacer les filtres" secondaire onPress={() => setFiltres((f) => ({ ...AUCUN, q: f.q, categorie: f.categorie }))} />
-                )}
-              </View>
-            )}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+              {pastilles.map((f) => {
+                const actif = f.nb > 0;
+                return (
+                  <Pressable
+                    key={f.cle}
+                    accessibilityRole="button"
+                    onPress={() => setFeuille(f.cle)}
+                    style={[s.puce, { flexDirection: 'row', alignItems: 'center', gap: 4 }, actif && { borderColor: couleurs.accent }]}
+                  >
+                    <Text style={[s.puceTexte, actif && { color: couleurs.accent, fontWeight: '600' }]}>
+                      {f.libelle}
+                      {f.nb > 1 ? ` · ${f.nb}` : ''}
+                    </Text>
+                    <Ionicons name="chevron-down" size={14} color={actif ? couleurs.accent : couleurs.discret} />
+                  </Pressable>
+                );
+              })}
+              {nbFiltres > 0 && (
+                <Pressable onPress={() => setFiltres((f) => ({ ...AUCUN, q: f.q, categorie: f.categorie }))} style={s.puce}>
+                  <Text style={[s.puceTexte, { color: couleurs.discret }]}>Effacer</Text>
+                </Pressable>
+              )}
+            </ScrollView>
+            <Text style={[s.discret, { textAlign: 'left' }]}>
+              {chargement && objets.length === 0 ? '' : `${objets.length}${fin ? '' : '+'} objet${objets.length > 1 ? 's' : ''}`}
+            </Text>
             {erreur && <EtatRequete chargement={false} reveil={false} erreur={erreur} recharger={() => charger(0)} />}
           </View>
         }
         ListEmptyComponent={
-          chargement ? null : !erreur ? <Text style={s.discret}>Aucun objet ne correspond pour l'instant. Essayez d'élargir la recherche.</Text> : null
+          chargement ? (
+            <GrilleSquelettes />
+          ) : !erreur ? (
+            <View style={s.centre}>
+              <Text style={s.discret}>Aucun objet ne correspond pour l'instant.</Text>
+              {nbFiltres > 0 ? (
+                <Bouton titre="Effacer les filtres" secondaire onPress={() => setFiltres((f) => ({ ...AUCUN, q: f.q, categorie: f.categorie }))} />
+              ) : (
+                <Bouton titre="Voir tous les objets" secondaire onPress={() => chercher('', null)} />
+              )}
+            </View>
+          ) : null
         }
-        ListFooterComponent={chargement ? <ActivityIndicator color={couleurs.accent} style={{ padding: 16 }} /> : null}
+        ListFooterComponent={chargement && objets.length > 0 ? <ActivityIndicator color={couleurs.accent} style={{ padding: 16 }} /> : null}
         renderItem={({ item }) => <CarteObjet objet={item} />}
       />
+      {pastilles.map((f) => (
+        <FeuilleBas key={f.cle} visible={feuille === f.cle} titre={f.libelle} onFermer={fermerFeuille} action={libelleVoir}>
+          {f.contenu}
+        </FeuilleBas>
+      ))}
     </View>
   );
 }

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, RefreshControl, Text, View } from 'react-native';
 
 import { CarteObjet } from '../components/CarteObjet';
+import { GrilleSquelettes } from '../components/Squelettes';
 import { Bouton, Champ, Encart, EtatRequete, s } from '../components/ui';
 import { api, ErreurApi } from '../lib/api';
 import { useFavoris } from '../lib/favoris';
@@ -72,7 +73,14 @@ export default function Favoris() {
           </View>
         }
         ListEmptyComponent={
-          objets !== null ? <Text style={s.discret}>Touchez le cœur d'un objet pour le retrouver ici.</Text> : null
+          objets === null ? (
+            <GrilleSquelettes nombre={6} />
+          ) : (
+            <View style={s.centre}>
+              <Text style={s.discret}>Touchez le cœur d'un objet pour le retrouver ici.</Text>
+              <Bouton titre="Voir les objets" secondaire onPress={() => router.push('/recherche')} />
+            </View>
+          )
         }
         ListFooterComponent={!moi ? <AlertesSansCompte /> : null}
         renderItem={({ item }) => <CarteObjet objet={item} />}

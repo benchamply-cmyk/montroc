@@ -2,14 +2,20 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { EcranChargement } from '../components/EcranChargement';
+import { PremiereOuverture } from '../components/PremiereOuverture';
 import { FournisseurFavoris } from '../lib/favoris';
 import { FournisseurSession, useSession } from '../lib/session';
 import { couleurs } from '../lib/theme';
 
-/** Logo et nom par-dessus l'app tant que la session n'est pas relue. */
+/** Logo et nom par-dessus l'app tant que la session n'est pas relue ; dessous, les écrans de première ouverture. */
 function Chargement() {
   const { pret } = useSession();
-  return <EcranChargement pret={pret} />;
+  return (
+    <>
+      <PremiereOuverture pret={pret} />
+      <EcranChargement pret={pret} />
+    </>
+  );
 }
 
 export default function Racine() {
