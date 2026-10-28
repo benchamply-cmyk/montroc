@@ -5243,12 +5243,12 @@
     "en": "Link saved. Log in to continue.",
     "es": "Enlace guardado. Inicia sesión para continuar."
   },
-  "Des boucles à plusieurs, tout le monde y gagne.": {
-    "en": "Swap loops with several people: everyone benefits.",
-    "es": "Cadenas entre varias personas: todo el mundo gana."
-  },
   "Viens essayer le concept, accède aux opportunités d'échanges.": {
     "en": "Come and try the concept, unlock swap opportunities.",
     "es": "Ven a probar el concepto y accede a oportunidades de intercambio."
+  },
+  "Boucles d'échanges et tout le monde y gagne.": {
+    "en": "Swap loops, and everyone benefits.",
+    "es": "Cadenas de intercambio y todo el mundo gana."
   }
 }

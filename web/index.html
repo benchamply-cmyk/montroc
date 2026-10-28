@@ -509,7 +509,7 @@ dialog.visiteur .sablier{font-size:40px}
     <div class="acc-hero" id="decouvrir">
       <div class="acc-hero-txt">
         <span class="label">Pas de prix. Pas de monnaie.</span>
-        <h1>Le troc se réinvente.<br>Des boucles à plusieurs, tout le monde y gagne.</h1>
+        <h1>Le troc se réinvente.<br>Boucles d'échanges et tout le monde y gagne.</h1>
         <p class="acc-chapo">Viens essayer le concept, accède aux opportunités d'échanges.</p>
         <div class="acc-btns">
           <button class="acc-btn y" type="button" data-proposer>Proposer un objet</button>
@@ -1005,7 +1005,7 @@ document.addEventListener('click',e=>{
 /* Animations de l'accueil (coupées si l'appareil demande moins de mouvement). */
 const calme=matchMedia('(prefers-reduced-motion: reduce)').matches;
 (()=>{ // titre de l'accueil : les mots clés surlignés en entier, dans la langue de la page
-  const mots={fr:['troc','réinvente','gagne'],en:['Swapping','reinvented','benefits'],es:['trueque','reinventa','gana']}[TT_I18N.lang]||[];
+  const mots={fr:['troc','Boucles'],en:['Swapping','loops'],es:['trueque','Cadenas']}[TT_I18N.lang]||[];
   const h=$('#decouvrir h1');
   h.innerHTML=h.innerHTML.replace(/[\p{L}-]+/gu,m=>mots.includes(m)?'<mark class="mot">'+m+'</mark>':m);
 })();

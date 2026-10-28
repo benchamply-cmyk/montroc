@@ -1,1 +1,1 @@
-- Accueil allégé : environ 20 % de texte en moins (chapô en une phrase, verbes et phrases en double retirés, étapes et tuiles raccourcies), lien « En savoir plus » vers Comment ça marche, titre « Des boucles à plusieurs, tout le monde y gagne. »
+- Accueil allégé : environ 20 % de texte en moins (chapô en une phrase, verbes et phrases en double retirés, étapes et tuiles raccourcies), lien « En savoir plus » vers Comment ça marche, titre « Boucles d’échanges et tout le monde y gagne. » (troc et Boucles surlignés)
