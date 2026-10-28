@@ -8,6 +8,7 @@ import { api, ErreurApi } from '../../lib/api';
 import { decisionGlisse } from '../../lib/glisse';
 import { useFavoris } from '../../lib/favoris';
 import { useSession } from '../../lib/session';
+import { vibrer } from '../../lib/vibrer';
 import { couleurs, ETATS, rayon } from '../../lib/theme';
 import type { CarteMatch, MatchLecture, Objet } from '../../lib/types';
 import { useRequete } from '../../lib/useRequete';
@@ -66,7 +67,10 @@ function Paquet({ visiteur }: { visiteur?: Cartes }) {
     try {
       const r = await api<{ match: MatchLecture | null }>('/match/avis', { corps: { objet_id: objetId, aime, super_jaime: superJaime } });
       if (superJaime) rafraichir();
-      if (r.match) setNouveauMatch(r.match);
+      if (r.match) {
+        vibrer('succes');
+        setNouveauMatch(r.match);
+      }
     } catch (e) {
       setErreur(e instanceof ErreurApi ? e.message : String(e));
     }
@@ -85,6 +89,7 @@ function Paquet({ visiteur }: { visiteur?: Cartes }) {
   }
 
   function lancer(decision: 'aime' | 'passe', superJaime = false) {
+    if (decision === 'aime') vibrer();
     Animated.timing(position, {
       toValue: { x: (decision === 'aime' ? 1 : -1) * largeur * 1.5, y: 0 },
       duration: 220,

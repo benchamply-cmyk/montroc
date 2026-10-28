@@ -5,6 +5,7 @@ import { Alert } from 'react-native';
 import { api, ErreurApi } from './api';
 import { useSession } from './session';
 import { ecrire, lire } from './stockage';
+import { vibrer } from './vibrer';
 
 // Un seul cœur, comme sur Vinted (Ben, 28/10) : il met l'objet en favori ET donne le « J'aime » du Match.
 // Un visiteur garde ses cœurs 24 h sur l'appareil ; à la connexion, ils deviennent des favoris et des J'aime.
@@ -69,6 +70,7 @@ export function FournisseurFavoris({ children }: { children: ReactNode }) {
     async (objetId: number) => {
       if (!moi) {
         const deja = locaux.some((f) => f.objet_id === objetId);
+        if (!deja) vibrer();
         const liste = deja
           ? locaux.filter((f) => f.objet_id !== objetId)
           : [{ objet_id: objetId, ajoute_le: new Date().toISOString() }, ...locaux].slice(0, MAX_VISITEUR);
@@ -84,6 +86,7 @@ export function FournisseurFavoris({ children }: { children: ReactNode }) {
         return;
       }
       const deja = coeursCompte.has(objetId);
+      if (!deja) vibrer();
       const suivant = new Set(coeursCompte);
       if (deja) suivant.delete(objetId);
       else suivant.add(objetId);
@@ -98,6 +101,7 @@ export function FournisseurFavoris({ children }: { children: ReactNode }) {
         } else {
           await api('/moi/favoris', { corps: { objet_id: objetId } });
           const r = await aimer(objetId);
+          if (r.match) vibrer('succes');
           if (r.match) Alert.alert("C'est un match !", `${r.match.avec.pseudo} aime aussi un de vos objets. Proposez l'échange depuis l'onglet Échanges.`);
         }
       } catch (e) {

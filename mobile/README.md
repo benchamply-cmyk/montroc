@@ -3,6 +3,7 @@
 App iOS et Android (Expo / React Native) branchée sur la même API que le site : `https://api.toptroc.com`.
 
 Navigation sur le modèle de Vinted : 5 onglets (Accueil · Match · Proposer + · Échanges · Profil), une action par onglet.
+À la première ouverture, 3 écrans à faire défiler présentent le principe (Je propose, Je demande, Ça matche ou ça boucle). Les filtres s'ouvrent dans des feuilles en bas de l'écran ; sur une fiche, l'action principale reste collée en bas et « Signaler » passe dans le menu « … ».
 
 | Écran | Contenu | Routes de l'API |
 |---|---|---|

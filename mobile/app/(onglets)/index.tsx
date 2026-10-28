@@ -5,6 +5,7 @@ import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Tex
 
 import { BandeauGrandTroc } from '../../components/BandeauGrandTroc';
 import { CarteObjet } from '../../components/CarteObjet';
+import { GrilleSquelettes } from '../../components/Squelettes';
 import { Bouton, s } from '../../components/ui';
 import { api } from '../../lib/api';
 import { useSession } from '../../lib/session';
@@ -124,14 +125,16 @@ export default function Accueil() {
           </View>
         }
         ListEmptyComponent={
-          chargement ? null : (
+          chargement ? (
+            <GrilleSquelettes />
+          ) : (
             <View style={s.centre}>
               <Text style={s.discret}>Les premiers objets arrivent bientôt.</Text>
               <Bouton titre="Proposer le premier" onPress={() => router.push('/proposer')} />
             </View>
           )
         }
-        ListFooterComponent={chargement ? <ActivityIndicator color={couleurs.accent} style={{ padding: 16 }} /> : null}
+        ListFooterComponent={chargement && objets.length > 0 ? <ActivityIndicator color={couleurs.accent} style={{ padding: 16 }} /> : null}
         renderItem={({ item }) => <CarteObjet objet={item} />}
       />
     </View>
