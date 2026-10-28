@@ -5266,5 +5266,9 @@
   "Choisis": {
     "en": "Choose",
     "es": "Elige"
+  },
+  "Jusqu'à +40 % de probabilité grâce aux boucles": {
+    "en": "Up to 40% more chances thanks to loops",
+    "es": "Hasta un 40 % más de probabilidad gracias a las cadenas"
   }
 }
