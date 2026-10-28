@@ -1,1 +1,0 @@
-- Notifications push de l'app : jetons des téléphones dans l'API (migration 0022, POST /moi/appareils, oubliés à la déconnexion) et envois pour un match, une proposition d'échange et le Grand Troc ; l'app demande l'accord une fois connectée et ouvre le bon écran au toucher.

@@ -2,7 +2,7 @@
    Sur l'accueil, index.html intercepte les liens « /#… » pour changer de vue sans recharger,
    et appelle TT.compte() quand la session change. */
 (()=>{
-  const VERSION='6.500'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
+  const VERSION='6.600'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
   const LOGO='<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#F2F3F6" d="M3 4h18v5h-6.5v11h-5V9H3z"/><path fill="#E6C23A" d="M29 28H11v-5h6.5V12h5v11H29z"/></svg>'; // deux T tête-bêche : deux membres, un échange
   const GRILLE='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="5" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="19" r="1.6"/><circle cx="12" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/></svg>'; // « Voir tout »
   const ETOILE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>'; // Favoris (le cœur est le « J'aime » du Match)

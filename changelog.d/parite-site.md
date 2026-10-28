@@ -1,1 +1,0 @@
-- App mobile : mêmes fonctions que le site : filtres du catalogue, favoris (étoile) et J'aime (cœur), mode visiteur avec alertes, Grand Troc et Match à trois, mes échanges, gestion de mes objets, import d'annonce Vinted / Leboncoin, Troc Premium, assistant, signalement, mon compte et pages d'info.
