@@ -6,27 +6,45 @@ import { Animated, PanResponder, Text, useWindowDimensions, View } from 'react-n
 import { Bouton, EtatRequete, s } from '../../components/ui';
 import { api, ErreurApi } from '../../lib/api';
 import { decisionGlisse } from '../../lib/glisse';
+import { useFavoris } from '../../lib/favoris';
 import { useSession } from '../../lib/session';
 import { couleurs, ETATS, rayon } from '../../lib/theme';
-import type { CarteMatch, MatchLecture } from '../../lib/types';
+import type { CarteMatch, MatchLecture, Objet } from '../../lib/types';
 import { useRequete } from '../../lib/useRequete';
+
+type Cartes = Omit<ReturnType<typeof useRequete<CarteMatch[]>>, 'setDonnees'>;
 
 export default function Match() {
   const { pret, moi } = useSession();
-  if (pret && !moi)
-    return (
-      <View style={[s.ecran, s.centre, { justifyContent: 'center' }]}>
-        <Text style={s.texte}>Le Match vous montre les objets qui répondent à vos souhaits.</Text>
-        <Bouton titre="Se connecter" onPress={() => router.push('/connexion')} />
-      </View>
-    );
-  return <Paquet />;
+  if (!pret) return <View style={s.ecran} />;
+  // Un visiteur voit les cartes lui aussi ; son premier cœur lui propose de créer un compte (Ben, 28/10).
+  return moi ? <Paquet /> : <PaquetVisiteur />;
 }
 
-function Paquet() {
+/** Les nouveautés du catalogue, présentées comme des cartes du Match (le carrousel personnalisé demande un compte). */
+function PaquetVisiteur() {
+  const objets = useRequete<Objet[]>('/objets?limite=20');
+  const cartes = objets.donnees?.map(
+    (objet): CarteMatch => ({
+      objet,
+      proprietaire: { id: objet.proprietaire_id, pseudo: '', zone: objet.lieu ?? null, fiabilite: 0 },
+      souhait_categorie: null,
+      souhait_sous_categorie: null,
+      correspond_a_mes_souhaits: false,
+      sa_demande: null,
+      il_aime: [],
+      il_cherche: [],
+    }),
+  );
+  return <Paquet visiteur={{ ...objets, donnees: cartes ?? null }} />;
+}
+
+function Paquet({ visiteur }: { visiteur?: Cartes }) {
   const { moi, rafraichir } = useSession();
+  const { basculerCoeur } = useFavoris();
   const { width: largeur } = useWindowDimensions();
-  const requete = useRequete<CarteMatch[]>('/match/carrousel?limite=20');
+  const carrousel = useRequete<CarteMatch[]>(visiteur ? null : '/match/carrousel?limite=20');
+  const requete: Cartes = visiteur ?? carrousel;
   const [index, setIndex] = useState(0);
   const [nouveauMatch, setNouveauMatch] = useState<MatchLecture | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -40,6 +58,11 @@ function Paquet() {
     setIndex((i) => i + 1);
     position.setValue({ x: 0, y: 0 });
     if (objetId === undefined) return;
+    // Visiteur : le cœur est gardé 24 h sur le téléphone, rien n'est envoyé pour « Non merci ».
+    if (visiteur) {
+      if (aime) basculerCoeur(objetId);
+      return;
+    }
     try {
       const r = await api<{ match: MatchLecture | null }>('/match/avis', { corps: { objet_id: objetId, aime, super_jaime: superJaime } });
       if (superJaime) rafraichir();
@@ -90,9 +113,10 @@ function Paquet() {
       <View style={[s.ecran, s.centre, { justifyContent: 'center' }]}>
         <Text style={[s.grandTitre, { color: couleurs.ok }]}>C'est un match !</Text>
         <Text style={s.texte}>
-          {nouveauMatch.avec.pseudo} aime aussi un de vos objets. Retrouvez-le dans Mon espace pour proposer l'échange.
+          {nouveauMatch.avec.pseudo} aime aussi un de vos objets. Retrouvez-le dans l'onglet Échanges pour proposer l'échange.
         </Text>
-        <Bouton titre="Continuer" onPress={() => setNouveauMatch(null)} />
+        <Bouton titre="Proposer l'échange" onPress={() => { setNouveauMatch(null); router.push('/echanges'); }} />
+        <Bouton titre="Continuer à matcher" secondaire onPress={() => setNouveauMatch(null)} />
       </View>
     );
 
@@ -122,8 +146,7 @@ function Paquet() {
             <View style={{ padding: 16, gap: 4 }}>
               <Text style={s.grandTitre} numberOfLines={2}>{carte.objet.titre}</Text>
               <Text style={[s.discret, { textAlign: 'left' }]}>
-                {carte.objet.etat ? ETATS[carte.objet.etat] + ' · ' : ''}{carte.proprietaire.pseudo}
-                {carte.proprietaire.zone ? ' · ' + carte.proprietaire.zone : ''}
+                {[carte.objet.etat && ETATS[carte.objet.etat], carte.proprietaire.pseudo, carte.proprietaire.zone].filter(Boolean).join(' · ')}
                 {carte.distance_km != null ? ` · ${Math.round(carte.distance_km)} km` : ''}
                 {carte.par_colis ? ' · par colis' : ''}
               </Text>

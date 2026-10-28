@@ -1,202 +1,172 @@
+import { Ionicons } from '@expo/vector-icons';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
+import { BandeauGrandTroc } from '../../components/BandeauGrandTroc';
 import { CarteObjet } from '../../components/CarteObjet';
-import { Bouton, Champ, EtatRequete, Puces, s } from '../../components/ui';
-import { api, ErreurApi } from '../../lib/api';
-import { CLE_RECHERCHES, ecrire, lire, type Recherche } from '../../lib/stockage';
-import { couleurs, ETATS } from '../../lib/theme';
-import type { CategorieDetaillee, Objet } from '../../lib/types';
+import { Bouton, s } from '../../components/ui';
+import { api } from '../../lib/api';
+import { useSession } from '../../lib/session';
+import { couleurs, rayon } from '../../lib/theme';
+import type { CarteMatch, Categorie, Objet } from '../../lib/types';
 import { useRequete } from '../../lib/useRequete';
 
-const PAGE = 40;
+const PAGE = 30;
 
-interface Filtres {
-  q: string;
-  categorie: string | null;
-  sousCategorie: string | null;
-  etats: string[];
-  // clé → valeurs acceptées (taille M ou L…).
-  caracteristiques: Record<string, string[]>;
-  tri: 'recent' | 'ancien';
-}
-
-const AUCUN: Filtres = { q: '', categorie: null, sousCategorie: null, etats: [], caracteristiques: {}, tri: 'recent' };
-
-/** Même requête que la page d'une catégorie du site (#83) : l'API filtre et pagine. */
-function chemin(f: Filtres, decalage: number) {
-  const p: string[] = [`limite=${PAGE}`, `decalage=${decalage}`, `tri=${f.tri}`];
-  if (f.q) p.push(`q=${encodeURIComponent(f.q)}`);
-  if (f.categorie) p.push(`categorie=${encodeURIComponent(f.categorie)}`);
-  if (f.categorie && f.sousCategorie) p.push(`sous_categorie=${encodeURIComponent(f.sousCategorie)}`);
-  f.etats.forEach((e) => p.push(`etat=${e}`));
-  if (f.categorie)
-    Object.entries(f.caracteristiques).forEach(([cle, valeurs]) =>
-      valeurs.forEach((v) => p.push(`caracteristique=${encodeURIComponent(`${cle}:${v}`)}`)),
-    );
-  return `/objets?${p.join('&')}`;
-}
-
-/** Le catalogue public : consultable sans compte, comme sur toptroc.com/#objets. */
-export default function Catalogue() {
-  const categories = useRequete<CategorieDetaillee[]>('/categories');
-  const [saisie, setSaisie] = useState('');
-  const [filtres, setFiltres] = useState<Filtres>(AUCUN);
-  const [panneau, setPanneau] = useState(false);
+/**
+ * L'accueil, sur le modèle de Vinted : la barre de recherche en haut, les catégories, « Pour vous »
+ * (les objets qui répondent à mes souhaits) puis les nouveautés en grille, sans fin.
+ */
+export default function Accueil() {
+  const { moi } = useSession();
+  const categories = useRequete<Categorie[]>('/categories');
+  const pourVous = useRequete<CarteMatch[]>(moi ? '/match/carrousel?limite=12' : null);
   const [objets, setObjets] = useState<Objet[]>([]);
   const [fin, setFin] = useState(false);
   const [chargement, setChargement] = useState(false);
-  const [erreur, setErreur] = useState<string | null>(null);
-  const [recherches, setRecherches] = useState<Recherche[]>([]);
   const demande = useRef(0);
 
-  useEffect(() => {
-    lire<Recherche[]>(CLE_RECHERCHES, []).then(setRecherches);
+  const charger = useCallback(async (depuis: number) => {
+    const numero = ++demande.current;
+    setChargement(true);
+    try {
+      const page = await api<Objet[]>(`/objets?limite=${PAGE}&decalage=${depuis}`);
+      if (numero !== demande.current) return;
+      setObjets((avant) => (depuis === 0 ? page : [...avant, ...page]));
+      setFin(page.length < PAGE);
+    } catch {
+      // Hors ligne ou serveur endormi : le fil reste tel quel, on réessaiera en tirant vers le bas.
+    } finally {
+      if (numero === demande.current) setChargement(false);
+    }
   }, []);
-
-  const charger = useCallback(
-    async (depuis: number) => {
-      const numero = ++demande.current;
-      setChargement(true);
-      setErreur(null);
-      try {
-        const page = await api<Objet[]>(chemin(filtres, depuis));
-        // Une réponse arrivée après un changement de filtre est ignorée.
-        if (numero !== demande.current) return;
-        setObjets((avant) => (depuis === 0 ? page : [...avant, ...page]));
-        setFin(page.length < PAGE);
-      } catch (e) {
-        if (numero === demande.current) setErreur(e instanceof ErreurApi ? e.message : String(e));
-      } finally {
-        if (numero === demande.current) setChargement(false);
-      }
-    },
-    [filtres],
-  );
 
   useEffect(() => {
     charger(0);
   }, [charger]);
 
-  const categorie = categories.donnees?.find((c) => c.slug === filtres.categorie);
-  const caracteristiques = (categorie?.caracteristiques ?? []).filter(
-    (c) => c.options && (!c.pour || (filtres.sousCategorie !== null && c.pour.includes(filtres.sousCategorie))),
+  // Au retour sur l'accueil, « Pour vous » a pu changer (cœurs donnés ailleurs). Le premier affichage charge déjà.
+  const dejaVu = useRef(false);
+  const { recharger: rechargerPourVous } = pourVous;
+  useFocusEffect(
+    useCallback(() => {
+      if (dejaVu.current) rechargerPourVous();
+      dejaVu.current = true;
+    }, [rechargerPourVous]),
   );
-  const nbFiltres = filtres.etats.length + (filtres.sousCategorie ? 1 : 0) + Object.values(filtres.caracteristiques).flat().length + (filtres.tri === 'ancien' ? 1 : 0);
 
-  async function chercher(q: string, cat: string | null = filtres.categorie) {
-    setSaisie(q);
-    setFiltres((f) => ({ ...f, q, categorie: cat, sousCategorie: cat === f.categorie ? f.sousCategorie : null, caracteristiques: cat === f.categorie ? f.caracteristiques : {} }));
-    if (!q && !cat) return;
-    const liste = [{ q, categorie: cat }, ...recherches.filter((r) => r.q !== q || r.categorie !== cat)].slice(0, 10);
-    setRecherches(liste);
-    await ecrire(CLE_RECHERCHES, liste);
-  }
-
-  const libelleCategorie = (slug: string | null) => categories.donnees?.find((c) => c.slug === slug)?.libelle;
+  const chercher = (params: { categorie?: string } = {}) => router.push({ pathname: '/recherche', params });
+  const suggestions = (pourVous.donnees ?? []).map((c) => c.objet);
 
   return (
     <View style={s.ecran}>
+      <Pressable
+        accessibilityRole="search"
+        accessibilityLabel="Chercher un objet"
+        onPress={() => chercher()}
+        style={({ pressed }) => [
+          { flexDirection: 'row', alignItems: 'center', gap: 10, marginHorizontal: 12, marginBottom: 8, paddingHorizontal: 14, height: 44, borderRadius: 12, backgroundColor: couleurs.surface },
+          pressed && { opacity: 0.7 },
+        ]}
+      >
+        <Ionicons name="search" size={18} color={couleurs.discret} />
+        <Text style={{ color: couleurs.discret, fontSize: 16 }}>Chercher un objet</Text>
+      </Pressable>
       <FlatList
         data={objets}
         keyExtractor={(o) => String(o.id)}
-        numColumns={2}
-        columnWrapperStyle={{ gap: 12 }}
-        contentContainerStyle={{ padding: 16, gap: 12 }}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={() => charger(0)} tintColor={couleurs.accent} />}
-        onEndReachedThreshold={0.5}
+        numColumns={3}
+        columnWrapperStyle={{ gap: 8 }}
+        contentContainerStyle={{ padding: 12, paddingTop: 4, gap: 14, paddingBottom: 32 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={() => {
+              charger(0);
+              rechargerPourVous();
+            }}
+            tintColor={couleurs.accent}
+          />
+        }
+        onEndReachedThreshold={0.6}
         onEndReached={() => !fin && !chargement && objets.length > 0 && charger(objets.length)}
         ListHeaderComponent={
-          <View style={{ gap: 12, marginBottom: 4 }}>
-            <Champ
-              libelle="Chercher un objet"
-              placeholder="vélo, Epiphone, poussette…"
-              value={saisie}
-              onChangeText={setSaisie}
-              onSubmitEditing={() => chercher(saisie.trim())}
-              returnKeyType="search"
-            />
-            {!filtres.q && !saisie && recherches.length > 0 && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-                {recherches.map((r) => (
-                  <Pressable key={`${r.q}|${r.categorie}`} style={s.puce} onPress={() => chercher(r.q, r.categorie)}>
-                    <Text style={s.puceTexte}>↺ {[r.q, libelleCategorie(r.categorie)].filter(Boolean).join(' · ')}</Text>
+          <View style={{ gap: 16, marginBottom: 2 }}>
+            {categories.donnees && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }} style={{ marginHorizontal: -12 }}>
+                <View style={{ width: 4 }} />
+                {categories.donnees.map((c) => (
+                  <Pressable key={c.slug} style={s.puce} onPress={() => chercher({ categorie: c.slug })}>
+                    <Text style={s.puceTexte}>{c.libelle}</Text>
                   </Pressable>
                 ))}
+                <View style={{ width: 4 }} />
               </ScrollView>
             )}
-            {categories.donnees && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-                {[{ slug: null as string | null, libelle: 'Tout' }, ...categories.donnees].map((c) => {
-                  const active = filtres.categorie === c.slug;
-                  return (
-                    <Pressable key={c.slug ?? 'tout'} style={[s.puce, active && s.puceActive]} onPress={() => chercher(filtres.q, c.slug)}>
-                      <Text style={[s.puceTexte, active && { color: couleurs.accentEncre }]}>{c.libelle}</Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            )}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={[s.discret, { textAlign: 'left' }]}>
-                {chargement && objets.length === 0 ? '' : `${objets.length}${fin ? '' : '+'} objet${objets.length > 1 ? 's' : ''}`}
-              </Text>
-              <Pressable onPress={() => setPanneau((p) => !p)} hitSlop={8}>
-                <Text style={{ color: couleurs.accent, fontWeight: '600' }}>Filtres{nbFiltres ? ` (${nbFiltres})` : ''} {panneau ? '▲' : '▼'}</Text>
-              </Pressable>
-            </View>
-            {panneau && (
-              <View style={{ gap: 14, padding: 12, borderWidth: 1, borderColor: couleurs.trait, borderRadius: 14 }}>
-                {categorie && categorie.sous_categories.length > 0 && (
-                  <Puces
-                    libelle="Sous-catégorie"
-                    options={categorie.sous_categories.map((c) => ({ valeur: c.slug, libelle: c.libelle }))}
-                    choisies={filtres.sousCategorie ? [filtres.sousCategorie] : []}
-                    onChange={([c]) => setFiltres((f) => ({ ...f, sousCategorie: c ?? null, caracteristiques: {} }))}
-                    facultatif
-                  />
-                )}
-                <Puces
-                  libelle="État"
-                  options={Object.entries(ETATS).map(([valeur, libelle]) => ({ valeur, libelle }))}
-                  choisies={filtres.etats}
-                  onChange={(etats) => setFiltres((f) => ({ ...f, etats }))}
-                  multiple
-                />
-                {caracteristiques.map((c) => (
-                  <Puces
-                    key={c.cle}
-                    libelle={c.libelle}
-                    options={(c.options ?? []).map((o) => ({ valeur: o, libelle: o }))}
-                    choisies={filtres.caracteristiques[c.cle] ?? []}
-                    onChange={(v) => setFiltres((f) => ({ ...f, caracteristiques: { ...f.caracteristiques, [c.cle]: v } }))}
-                    multiple
-                  />
-                ))}
-                {!categorie && <Text style={[s.discret, { textAlign: 'left' }]}>Choisissez une catégorie pour filtrer par taille, marque, pointure…</Text>}
-                <Puces
-                  libelle="Trier"
-                  options={[
-                    { valeur: 'recent', libelle: 'Plus récents' },
-                    { valeur: 'ancien', libelle: 'Plus anciens' },
-                  ]}
-                  choisies={[filtres.tri]}
-                  onChange={([t]) => setFiltres((f) => ({ ...f, tri: (t as Filtres['tri']) ?? 'recent' }))}
-                />
-                {nbFiltres > 0 && (
-                  <Bouton titre="Effacer les filtres" secondaire onPress={() => setFiltres((f) => ({ ...AUCUN, q: f.q, categorie: f.categorie }))} />
-                )}
+
+            {!moi && <Bienvenue />}
+
+            <BandeauGrandTroc />
+
+            {suggestions.length > 0 && (
+              <View style={{ gap: 10 }}>
+                <TitreBloc titre="Pour vous" action="Matcher" onPress={() => router.push('/match')} />
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                  {suggestions.map((o) => (
+                    <CarteObjet key={o.id} objet={o} style={{ flexGrow: 0, flexShrink: 0, flexBasis: 116, width: 116, maxWidth: 116 }} />
+                  ))}
+                </ScrollView>
               </View>
             )}
-            {erreur && <EtatRequete chargement={false} reveil={false} erreur={erreur} recharger={() => charger(0)} />}
+
+            <TitreBloc titre="Nouveautés" action="Filtrer" onPress={() => chercher()} />
           </View>
         }
         ListEmptyComponent={
-          chargement ? null : !erreur ? <Text style={s.discret}>Aucun objet ne correspond pour l'instant. Essayez d'élargir la recherche.</Text> : null
+          chargement ? null : (
+            <View style={s.centre}>
+              <Text style={s.discret}>Les premiers objets arrivent bientôt.</Text>
+              <Bouton titre="Proposer le premier" onPress={() => router.push('/proposer')} />
+            </View>
+          )
         }
         ListFooterComponent={chargement ? <ActivityIndicator color={couleurs.accent} style={{ padding: 16 }} /> : null}
         renderItem={({ item }) => <CarteObjet objet={item} />}
       />
+    </View>
+  );
+}
+
+/** Pour un visiteur : la promesse du site en deux lignes et les deux gestes de base. */
+function Bienvenue() {
+  return (
+    <View style={{ padding: 16, gap: 8, borderRadius: rayon, backgroundColor: couleurs.surface }}>
+      <Text style={[s.etiquette, { color: couleurs.marque }]}>Pas de prix. Pas de monnaie.</Text>
+      <Text style={[s.grandTitre, { fontSize: 22 }]}>Le troc se réinvente.</Text>
+      <Text style={[s.texte, { color: couleurs.discret }]}>
+        Proposez ce qui dort chez vous, mettez un cœur à ce qui vous serait utile. Un cœur de chaque côté et c'est échangé, sinon une boucle à
+        trois le dimanche.
+      </Text>
+      <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
+        <View style={{ flex: 1 }}>
+          <Bouton titre="Créer un compte" onPress={() => router.push('/connexion')} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Bouton titre="Comment ça marche" secondaire onPress={() => router.push('/infos')} />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function TitreBloc({ titre, action, onPress }: { titre: string; action: string; onPress: () => void }) {
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+      <Text style={[s.titre, { fontSize: 18 }]}>{titre}</Text>
+      <Pressable onPress={onPress} hitSlop={10}>
+        <Text style={{ color: couleurs.accent, fontWeight: '600' }}>{action}</Text>
+      </Pressable>
     </View>
   );
 }

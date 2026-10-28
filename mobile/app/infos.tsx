@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import { Linking, ScrollView, Text } from 'react-native';
 
 import { LigneMenu, s, Section } from '../components/ui';
@@ -42,6 +43,9 @@ const PAGES: [string, [string, string][]][] = [
 export default function Infos() {
   return (
     <ScrollView style={s.ecran} contentContainerStyle={{ padding: 16, gap: 24, paddingBottom: 48 }}>
+      <Section titre="Une question ?">
+        <LigneMenu titre="Demander à l'assistant" detail="Réponses immédiates sur le troc, le Match et le Grand Troc" onPress={() => router.push('/assistant')} />
+      </Section>
       {PAGES.map(([titre, liens]) => (
         <Section key={titre} titre={titre}>
           {liens.map(([libelle, chemin]) => (

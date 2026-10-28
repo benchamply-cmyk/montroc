@@ -1,0 +1,1 @@
+- App mobile : navigation à 5 onglets sur le modèle de Vinted (Accueil avec recherche, Match, Proposer au centre, Échanges avec pastille et segments, Profil), un seul cœur pour favori et J'aime, vraies icônes, écran de chargement et en-tête avec le logo, cartes d'objets plus petites.

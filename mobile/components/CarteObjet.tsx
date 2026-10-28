@@ -1,62 +1,55 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, type ViewStyle } from 'react-native';
 
 import { useFavoris } from '../lib/favoris';
 import { useSession } from '../lib/session';
-import { couleurs, ETATS, rayon } from '../lib/theme';
+import { couleurs, ETATS } from '../lib/theme';
 import type { Objet } from '../lib/types';
-import { s } from './ui';
 
-/** L'étoile (favori, pour tous) et le cœur (« J'aime » du Match, pour les membres), comme sur les cartes du site. */
-export function BoutonsFavori({ objet, grand }: { objet: Pick<Objet, 'id' | 'proprietaire_id'>; grand?: boolean }) {
+/** Le cœur, seul symbole « j'aime bien » de l'app : favori et J'aime du Match à la fois. */
+export function BoutonCoeur({ objet, grand }: { objet: Pick<Objet, 'id' | 'proprietaire_id'>; grand?: boolean }) {
   const { moi } = useSession();
-  const { etoiles, coeurs, basculerEtoile, basculerCoeur } = useFavoris();
-  // Pas d'étoile ni de cœur sur ses propres objets.
+  const { coeurs, basculerCoeur } = useFavoris();
+  // Pas de cœur sur ses propres objets.
   if (moi?.id === objet.proprietaire_id) return null;
-  const taille = grand ? 26 : 18;
-  const pastille = { backgroundColor: 'rgba(17,19,24,0.75)', borderRadius: 999, width: taille + 16, height: taille + 16, alignItems: 'center' as const, justifyContent: 'center' as const };
+  const aime = coeurs.has(objet.id);
+  const taille = grand ? 24 : 15;
   return (
-    <View style={{ flexDirection: 'row', gap: 6 }}>
-      <Pressable
-        accessibilityLabel={etoiles.has(objet.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-        hitSlop={6}
-        onPress={() => basculerEtoile(objet.id)}
-        style={pastille}
-      >
-        <Text style={{ fontSize: taille, color: etoiles.has(objet.id) ? couleurs.marque : couleurs.encre }}>{etoiles.has(objet.id) ? '★' : '☆'}</Text>
-      </Pressable>
-      {moi && (
-        <Pressable
-          accessibilityLabel={coeurs.has(objet.id) ? "Retirer mon J'aime" : "J'aime"}
-          hitSlop={6}
-          onPress={() => basculerCoeur(objet.id)}
-          style={pastille}
-        >
-          <Text style={{ fontSize: taille, color: coeurs.has(objet.id) ? couleurs.danger : couleurs.encre }}>{coeurs.has(objet.id) ? '♥' : '♡'}</Text>
-        </Pressable>
-      )}
-    </View>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={aime ? 'Retirer le cœur' : "J'aime, garder en favori"}
+      accessibilityState={{ selected: aime }}
+      hitSlop={10}
+      onPress={() => basculerCoeur(objet.id)}
+      style={{ backgroundColor: 'rgba(17,19,24,0.75)', borderRadius: 999, width: taille + 14, height: taille + 14, alignItems: 'center', justifyContent: 'center' }}
+    >
+      <Ionicons name={aime ? 'heart' : 'heart-outline'} size={taille} color={aime ? couleurs.danger : couleurs.encre} />
+    </Pressable>
   );
 }
 
-/** Une carte du catalogue : photo, étoile et cœur, titre, état et lieu. */
-export function CarteObjet({ objet }: { objet: Objet }) {
+/**
+ * Une carte d'objet : photo, cœur, titre, état et lieu. Par défaut, une des trois colonnes d'une grille
+ * (cartes resserrées à la demande de Ben, 28/10).
+ */
+export function CarteObjet({ objet, style }: { objet: Objet; style?: ViewStyle }) {
   return (
-    <View style={{ flex: 1, maxWidth: '50%', gap: 6 }}>
+    <View style={[{ flex: 1, maxWidth: '33.34%', gap: 4 }, style]}>
       <Link href={`/objet/${objet.id}`} asChild>
-        <Pressable style={{ gap: 6 }}>
-          <Image source={objet.photo_url} style={{ aspectRatio: 1, borderRadius: rayon, backgroundColor: couleurs.surface }} contentFit="cover" />
-          <Text style={s.titre} numberOfLines={2}>
+        <Pressable style={{ gap: 4 }} accessibilityLabel={objet.titre}>
+          <Image source={objet.photo_url} style={{ width: '100%', aspectRatio: 4 / 5, borderRadius: 10, backgroundColor: couleurs.surface }} contentFit="cover" />
+          <Text style={{ color: couleurs.encre, fontSize: 13, fontWeight: '600' }} numberOfLines={1}>
             {objet.titre}
           </Text>
-          <Text style={[s.discret, { textAlign: 'left' }]} numberOfLines={1}>
+          <Text style={{ color: couleurs.discret, fontSize: 12 }} numberOfLines={1}>
             {[objet.etat && ETATS[objet.etat], objet.lieu].filter(Boolean).join(' · ')}
           </Text>
         </Pressable>
       </Link>
-      <View style={{ position: 'absolute', top: 8, right: 8 }}>
-        <BoutonsFavori objet={objet} />
+      <View style={{ position: 'absolute', top: 6, right: 6 }}>
+        <BoutonCoeur objet={objet} />
       </View>
     </View>
   );
