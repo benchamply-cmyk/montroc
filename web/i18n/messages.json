@@ -5202,5 +5202,45 @@
   "Le compte est gratuit. On se connecte avec son e-mail et un mot de passe, ou avec un code envoyé par e-mail.": {
     "en": "The account is free. Sign in with your email and a password, or with a code sent by email.",
     "es": "La cuenta es gratuita. Se accede con el correo y una contraseña, o con un código enviado por correo."
+  },
+  "Échangez les objets que vous n'utilisez plus contre ceux dont vous avez besoin.": {
+    "en": "Swap the things you no longer use for the ones you need.",
+    "es": "Intercambia los objetos que ya no usas por los que necesitas."
+  },
+  "En savoir plus": {
+    "en": "Learn more",
+    "es": "Saber más"
+  },
+  "Mes objets": {
+    "en": "My items",
+    "es": "Mis objetos"
+  },
+  "Mes souhaits": {
+    "en": "My wishes",
+    "es": "Mis deseos"
+  },
+  "Échange à deux": {
+    "en": "Two-way swap",
+    "es": "Intercambio entre dos"
+  },
+  "Échange en boucle": {
+    "en": "Loop swap",
+    "es": "Intercambio en cadena"
+  },
+  "Des boucles à trois. 48 h pour dire oui.": {
+    "en": "Three-way loops. 48 h to say yes.",
+    "es": "Cadenas de tres. 48 h para decir sí."
+  },
+  "Chercher, sans compte": {
+    "en": "Search, no account needed",
+    "es": "Buscar, sin cuenta"
+  },
+  "Match et Grand Troc": {
+    "en": "Match and Grand Troc",
+    "es": "Match y Grand Troc"
+  },
+  "Lien gardé. Connectez-vous pour continuer.": {
+    "en": "Link saved. Log in to continue.",
+    "es": "Enlace guardado. Inicia sesión para continuar."
   }
 }

@@ -1,0 +1,1 @@
+- Accueil allégé : environ 20 % de texte en moins (chapô en une phrase, verbes et phrases en double retirés, étapes et tuiles raccourcies), lien « En savoir plus » vers Comment ça marche.

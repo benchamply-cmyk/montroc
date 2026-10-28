@@ -256,8 +256,6 @@ body.large .wrap{max-width:1120px}
 .acc-hero{display:grid;gap:20px;align-items:center}
 .acc-hero-txt{display:flex;flex-direction:column;gap:14px;align-items:flex-start;min-width:0}
 .acc-chapo{font-size:17px;color:#D6D9E0;line-height:1.5;max-width:52ch}
-.acc-fort{font-family:var(--display);font-weight:700;font-size:17px;line-height:1.3}
-.acc-verbes{font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mark);display:flex;flex-wrap:wrap;gap:4px 14px}
 .acc-btns{display:flex;gap:10px;flex-wrap:wrap;width:100%}
 .acc-btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:14px 20px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;transition:transform .15s}
 .acc-btn:active{transform:scale(.97)}
@@ -296,7 +294,7 @@ body.large .wrap{max-width:1120px}
 .acc-gt b{font-family:var(--display);font-size:15px;line-height:1.2}
 .acc-gt span{font-family:var(--mono);font-size:13px;color:var(--mark)}
 .acc-titre{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
-.acc-titre button{flex:none;background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:4px 0}
+.acc-titre :is(button,a){flex:none;text-decoration:none;background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:4px 0}
 .result .ph{position:relative}
 .result .ph .etat{position:absolute;left:8px;bottom:8px;font-size:11.5px;font-weight:600;background:rgba(17,19,24,.82);color:var(--ink);border-radius:6px;padding:3px 7px}
 .acc-duo{display:grid;gap:14px}
@@ -512,8 +510,7 @@ dialog.visiteur .sablier{font-size:40px}
       <div class="acc-hero-txt">
         <span class="label">Pas de prix. Pas de monnaie.</span>
         <h1>Le troc se réinvente.<br>Tout le monde y gagne.</h1>
-        <p class="acc-chapo">Donnez une nouvelle vie aux objets que vous n'utilisez plus. Échangez-les contre ceux dont vous avez besoin, sans dépenser d'argent.</p>
-        <p class="acc-fort">Vous proposez. Vous choisissez. TopTroc s'occupe du reste.</p>
+        <p class="acc-chapo">Échangez les objets que vous n'utilisez plus contre ceux dont vous avez besoin.</p>
         <div class="acc-btns">
           <button class="acc-btn y" type="button" data-proposer>Proposer un objet</button>
           <button class="acc-btn g" type="button" data-objets>Demander un objet</button>
@@ -523,7 +520,6 @@ dialog.visiteur .sablier{font-size:40px}
           <input type="search" name="q" maxlength="100" placeholder="Vélo, poussette, perceuse…" aria-label="Chercher un objet">
           <button type="submit" aria-label="Chercher"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
         </form>
-        <p class="acc-verbes"><span>Réutiliser.</span> <span>Échanger.</span> <span>Économiser.</span> <span>Simplifier.</span></p>
       </div>
       <div class="loop" aria-label="Exemple de boucle : vous donnez une poussette à Sophie, Sophie donne un kit de jardinage à Loïc, Loïc vous donne un vélo enfant.">
         <svg viewBox="0 0 300 300" aria-hidden="true"><circle class="ring" cx="150" cy="150" r="110"/></svg>
@@ -542,12 +538,12 @@ dialog.visiteur .sablier{font-size:40px}
 
 
     <div class="bloc" id="comment-ca-marche">
-      <h2>Comment ça marche</h2>
+      <div class="acc-titre"><h2>Comment ça marche</h2><a href="/comment-ca-marche/">En savoir plus</a></div>
       <div class="acc-etapes">
-        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div><b>Je propose</b><span>Ma liste d'objets.</span></div></div>
-        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg></span><div><b>Je demande</b><span>Liste d'objets souhaités.</span></div></div>
-        <div class="acc-etape"><span class="rond m"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span><div><b>Le Match</b><span>Proposition d'échange direct entre 2 utilisateurs.</span></div></div>
-        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><div><b>Le Grand Troc</b><span>Proposition d'échange via une boucle d'utilisateurs.</span></div></div>
+        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span><div><b>Je propose</b><span>Mes objets</span></div></div>
+        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg></span><div><b>Je demande</b><span>Mes souhaits</span></div></div>
+        <div class="acc-etape"><span class="rond m"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span><div><b>Le Match</b><span>Échange à deux</span></div></div>
+        <div class="acc-etape"><span class="rond"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><div><b>Le Grand Troc</b><span>Échange en boucle</span></div></div>
       </div>
     </div>
 
@@ -556,7 +552,6 @@ dialog.visiteur .sablier{font-size:40px}
         <div class="txt">
           <span class="label">Le Match, à tout moment</span>
           <h2>Un cœur de chaque côté, et c'est échangé.</h2>
-          <p class="muted">Pas besoin d'attendre dimanche.</p>
           <button class="acc-btn a" type="button" data-go="match" data-auth hidden>Voir les objets pour moi</button>
           <button class="acc-btn a" type="button" data-vers-compte data-anon>Créer mon compte</button>
         </div>
@@ -566,7 +561,7 @@ dialog.visiteur .sablier{font-size:40px}
         <div class="txt">
           <span class="label">Le Grand Troc du dimanche</span>
           <h2>Pas de match ? On a une solution.</h2>
-          <p class="muted">Les boucles à trois que personne n'a vues. 48 h pour dire oui.</p>
+          <p class="muted">Des boucles à trois. 48 h pour dire oui.</p>
           <p class="muted" data-gt-bilan hidden></p>
           <button class="acc-btn y" type="button" data-proposer>Je participe</button>
         </div>
@@ -587,9 +582,9 @@ dialog.visiteur .sablier{font-size:40px}
         <span class="label">Pour les particuliers</span>
         <h2>Tout est <span class="hl">gratuit</span>.</h2>
         <ul class="gratuit">
-          <li>Publier vos objets et vos souhaits</li>
-          <li>Chercher, même sans compte</li>
-          <li>Le Match et le Grand Troc</li>
+          <li>Publier</li>
+          <li>Chercher, sans compte</li>
+          <li>Match et Grand Troc</li>
         </ul>
         <p class="muted" style="font-size:14px">Entreprise ou collectivité ? <a href="/pros/">Professionnels</a> · <a href="/collectivites/">Collectivités</a></p>
       </div>
@@ -599,7 +594,7 @@ dialog.visiteur .sablier{font-size:40px}
         <h2>Troquez-<em>la.</em></h2>
         <p class="muted" style="font-size:15px">Collez le lien <a href="https://www.vinted.fr" target="_blank" rel="noopener noreferrer">Vinted</a> ou <a href="https://www.leboncoin.fr" target="_blank" rel="noopener noreferrer">Leboncoin</a> : on la recopie ici, sans prix.</p>
         <div class="search"><input type="url" name="lien" required inputmode="url" placeholder="Lien de votre annonce" aria-label="Lien de votre annonce Vinted ou Leboncoin"><button type="submit">Troquer</button></div>
-        <p class="status" id="import-home-ok" hidden>Votre lien est gardé. Connectez-vous ou créez votre compte avec le bouton en haut de la page : on reprend là où vous en étiez.</p>
+        <p class="status" id="import-home-ok" hidden>Lien gardé. Connectez-vous pour continuer.</p>
       </form>
     </div>
 
