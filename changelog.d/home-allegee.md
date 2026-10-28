@@ -1,0 +1,1 @@
+- Accueil allégé et réorganisé : titre « La Boucle d’échange pour augmenter ses chances. », textes courts à l’infinitif, recherche avant les boutons, « Voir les objets », fil d’objets juste sous le haut de page, 2 étapes puis les tuiles Match et Grand Troc, bloc « Simplicité. », import Vinted/Leboncoin renvoyé vers Proposer, exemple de boucle réduit aux prénoms.
