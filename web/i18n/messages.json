@@ -5270,5 +5270,293 @@
   "Troquer son annonce": {
     "en": "Swap your listing",
     "es": "Intercambiar tu anuncio"
+  },
+  "TopTroc Pro": {
+    "en": "TopTroc Pro",
+    "es": "TopTroc Pro"
+  },
+  "TopTroc Pro · TopTroc": {
+    "en": "TopTroc Pro · TopTroc",
+    "es": "TopTroc Pro · TopTroc"
+  },
+  "Les offres · TopTroc Pro": {
+    "en": "Offers · TopTroc Pro",
+    "es": "Ofertas · TopTroc Pro"
+  },
+  "Ce qui dort chez l'un": {
+    "en": "What sits idle at one shop",
+    "es": "Lo que duerme en un taller"
+  },
+  "manque": {
+    "en": "is missing",
+    "es": "le falta"
+  },
+  "chez l'autre.": {
+    "en": "at the next.",
+    "es": "a otro."
+  },
+  "TopTroc Pro met en relation les professionnels d'un même métier pour échanger leurs surplus : outillage, matériaux, pièces, produits. Sans payer, sans négocier un prix, entre voisins de métier.": {
+    "en": "TopTroc Pro connects professionals in the same trade to swap their surplus: tools, materials, parts, products. No payment, no price haggling, between neighbours in the trade.",
+    "es": "TopTroc Pro conecta a profesionales del mismo oficio para intercambiar sus excedentes: herramientas, materiales, piezas, productos. Sin pagar, sin negociar precios, entre vecinos de oficio."
+  },
+  "Libérer du stock": {
+    "en": "Free up stock",
+    "es": "Liberar stock"
+  },
+  "Les fins de lots, les erreurs de commande et les retours clients repartent au lieu de prendre la poussière.": {
+    "en": "End-of-line lots, ordering mistakes and customer returns move on instead of gathering dust.",
+    "es": "Los fines de serie, los errores de pedido y las devoluciones vuelven a circular en lugar de acumular polvo."
+  },
+  "Trouver vite": {
+    "en": "Find it fast",
+    "es": "Encontrar rápido"
+  },
+  "La pièce ou le matériau qui manque est souvent à quelques rues, chez un confrère.": {
+    "en": "The missing part or material is often a few streets away, at a fellow professional's.",
+    "es": "La pieza o el material que falta suele estar a pocas calles, en casa de un colega."
+  },
+  "Garder sa trésorerie": {
+    "en": "Keep your cash",
+    "es": "Conservar la tesorería"
+  },
+  "On échange objet contre objet : pas d'achat, pas de remise à négocier.": {
+    "en": "Item for item: no purchase, no discount to negotiate.",
+    "es": "Objeto por objeto: sin compra, sin descuento que negociar."
+  },
+  "Artisans du bâtiment": {
+    "en": "Building tradespeople",
+    "es": "Artesanos de la construcción"
+  },
+  "Plombiers, électriciens, menuisiers, carreleurs, maçons, peintres : chaque chantier laisse des restes, et chaque chantier manque d'un outil un jour.": {
+    "en": "Plumbers, electricians, joiners, tilers, masons, painters: every job leaves leftovers, and every job lacks a tool one day.",
+    "es": "Fontaneros, electricistas, carpinteros, soladores, albañiles, pintores: cada obra deja restos, y a cada obra le falta un día una herramienta."
+  },
+  "Matériaux en surplus": {
+    "en": "Surplus materials",
+    "es": "Materiales sobrantes"
+  },
+  ": carrelage, plaques de plâtre, isolant, tubes, câbles, quincaillerie neuve.": {
+    "en": ": tiles, plasterboard, insulation, pipes, cables, new hardware.",
+    "es": ": baldosas, placas de yeso, aislante, tubos, cables, ferretería nueva."
+  },
+  "Outillage": {
+    "en": "Tools",
+    "es": "Herramientas"
+  },
+  ": électroportatif en double, gros matériel qui ne sert qu'une fois par an.": {
+    "en": ": duplicate power tools, heavy equipment used once a year.",
+    "es": ": herramientas eléctricas duplicadas, maquinaria pesada que se usa una vez al año."
+  },
+  "Moins de déchetterie": {
+    "en": "Fewer skip runs",
+    "es": "Menos punto limpio"
+  },
+  ": un surplus échangé ne se paie pas en benne.": {
+    "en": ": swapped surplus doesn't cost a skip.",
+    "es": ": un excedente intercambiado no se paga en contenedor."
+  },
+  "Garages auto et moto": {
+    "en": "Car and motorbike garages",
+    "es": "Talleres de coches y motos"
+  },
+  "Une pièce commandée en trop, un retour client, une référence qui tourne mal : elle a sa place chez le garage d'à côté, qui attend la même pièce du fournisseur.": {
+    "en": "A part ordered twice, a customer return, a slow-moving reference: it belongs at the garage next door, which is waiting for the same part from the supplier.",
+    "es": "Una pieza pedida de más, una devolución, una referencia que no rota: tiene su sitio en el taller de al lado, que espera la misma pieza del proveedor."
+  },
+  "Pièces neuves ou jamais montées": {
+    "en": "New or never-fitted parts",
+    "es": "Piezas nuevas o nunca montadas"
+  },
+  ", recherchées par référence constructeur et par modèle.": {
+    "en": ", searchable by OE reference and by model.",
+    "es": ", buscadas por referencia de fabricante y por modelo."
+  },
+  "Dépanner un client plus tôt": {
+    "en": "Get a customer back on the road sooner",
+    "es": "Atender antes a un cliente"
+  },
+  "quand le fournisseur officiel est en rupture.": {
+    "en": "when the official supplier is out of stock.",
+    "es": "cuando el proveedor oficial no tiene stock."
+  },
+  "Stock qui tourne": {
+    "en": "Stock that moves",
+    "es": "Stock que rota"
+  },
+  ": les références lentes trouvent preneur au lieu d'être dépréciées.": {
+    "en": ": slow references find a taker instead of being written down.",
+    "es": ": las referencias lentas encuentran salida en lugar de depreciarse."
+  },
+  "Commerces alimentaires et restaurants": {
+    "en": "Food shops and restaurants",
+    "es": "Comercios de alimentación y restaurantes"
+  },
+  "Épiceries, boulangeries, primeurs, traiteurs, restaurants : un surplus de produits aujourd'hui, un manque demain.": {
+    "en": "Grocers, bakeries, greengrocers, caterers, restaurants: a surplus of products today, a shortage tomorrow.",
+    "es": "Tiendas de comestibles, panaderías, fruterías, catering, restaurantes: excedente hoy, falta mañana."
+  },
+  "Produits": {
+    "en": "Products",
+    "es": "Productos"
+  },
+  ": épicerie sèche, boissons, produits frais à date suffisante, emballages.": {
+    "en": ": dry goods, drinks, fresh products with enough shelf life, packaging.",
+    "es": ": ultramarinos, bebidas, frescos con fecha suficiente, envases."
+  },
+  "Matériel": {
+    "en": "Equipment",
+    "es": "Material"
+  },
+  ": petit matériel de cuisine, inox, équipement en double.": {
+    "en": ": small kitchen equipment, stainless steel, duplicate appliances.",
+    "es": ": pequeño material de cocina, acero inoxidable, equipos duplicados."
+  },
+  "Moins de gaspillage": {
+    "en": "Less waste",
+    "es": "Menos desperdicio"
+  },
+  ": ce qui serait perdu sert à un voisin de métier.": {
+    "en": ": what would be lost helps a neighbour in the trade.",
+    "es": ": lo que se perdería sirve a un vecino de oficio."
+  },
+  "Créer son compte TopTroc, puis activer le profil Pro avec son SIRET et son secteur.": {
+    "en": "Create a TopTroc account, then activate the Pro profile with your SIRET number and sector.",
+    "es": "Crear una cuenta TopTroc y activar el perfil Pro con el SIRET y el sector."
+  },
+  "Publier ce qu'on a en trop, dans la catégorie Pro de son secteur, et dire ce qu'on cherche.": {
+    "en": "List your surplus in your sector's Pro category, and say what you are looking for.",
+    "es": "Publicar lo que sobra en la categoría Pro del sector y decir lo que se busca."
+  },
+  "Le Match et le Grand Troc du dimanche trouvent les échanges, à deux ou en boucle à trois.": {
+    "en": "Match and the Sunday Grand Troc find the swaps, one-to-one or in a loop of three.",
+    "es": "Match y el Grand Troc del domingo encuentran los intercambios, entre dos o en cadena de tres."
+  },
+  "Se retrouver au dépôt, à l'atelier ou au comptoir pour la remise.": {
+    "en": "Meet at the depot, the workshop or the counter for the handover.",
+    "es": "Quedar en el almacén, el taller o el mostrador para la entrega."
+  },
+  "Entre professionnels, et seulement eux": {
+    "en": "Between professionals only",
+    "es": "Solo entre profesionales"
+  },
+  "Chaque catégorie Pro n'est ouverte qu'aux comptes Pro de son secteur. Le SIRET est vérifié par l'équipe TopTroc : le badge « Pro vérifié » s'affiche ensuite sur le profil.": {
+    "en": "Each Pro category is open only to Pro accounts in its sector. The TopTroc team checks the SIRET number, then the “Verified Pro” badge appears on the profile.",
+    "es": "Cada categoría Pro solo está abierta a las cuentas Pro de su sector. El equipo de TopTroc verifica el SIRET y luego aparece la insignia «Pro verificado» en el perfil."
+  },
+  "Combien ça coûte ?": {
+    "en": "How much does it cost?",
+    "es": "¿Cuánto cuesta?"
+  },
+  "Publier, chercher et échanger sont gratuits, comme pour tous les membres. La formule Troc Premium Pro reste en option.": {
+    "en": "Listing, searching and swapping are free, as for all members. The Troc Premium Pro plan is optional.",
+    "es": "Publicar, buscar e intercambiar es gratis, como para todos los miembros. La fórmula Troc Premium Pro es opcional."
+  },
+  "Et la facture ?": {
+    "en": "What about invoices?",
+    "es": "¿Y la factura?"
+  },
+  "Entre entreprises, un troc reste deux ventes : chacun facture sa part à la valeur convenue. TopTroc fournit le récapitulatif de l'échange.": {
+    "en": "Between businesses, a swap counts as two sales: each side invoices its share at the agreed value. TopTroc provides the swap summary.",
+    "es": "Entre empresas, un trueque son dos ventas: cada parte factura la suya al valor acordado. TopTroc facilita el resumen del intercambio."
+  },
+  "Quelles règles pour l'alimentaire ?": {
+    "en": "What rules apply to food?",
+    "es": "¿Qué normas para la alimentación?"
+  },
+  "Emballage d'origine fermé, étiquette conservée, date limite indiquée et chaîne du froid respectée pendant la remise.": {
+    "en": "Original sealed packaging, label kept, use-by date stated and cold chain respected during the handover.",
+    "es": "Envase original cerrado, etiqueta conservada, fecha límite indicada y cadena de frío respetada durante la entrega."
+  },
+  "Et les pièces auto d'occasion ?": {
+    "en": "What about used car parts?",
+    "es": "¿Y las piezas de coche usadas?"
+  },
+  "TopTroc Pro accueille les pièces neuves ou jamais montées. Les pièces démontées d'un véhicule passent par les centres agréés.": {
+    "en": "TopTroc Pro accepts new or never-fitted parts. Parts removed from a vehicle go through approved dismantlers.",
+    "es": "TopTroc Pro acepta piezas nuevas o nunca montadas. Las piezas desmontadas de un vehículo pasan por los centros autorizados."
+  },
+  "Ouvrir son espace Pro": {
+    "en": "Open your Pro space",
+    "es": "Abrir el espacio Pro"
+  },
+  "Une minute avec son e-mail, puis le SIRET dans Mon espace.": {
+    "en": "One minute with your email, then your SIRET in My space.",
+    "es": "Un minuto con el e-mail y luego el SIRET en Mi espacio."
+  },
+  "Créer mon compte Pro": {
+    "en": "Create my Pro account",
+    "es": "Crear mi cuenta Pro"
+  },
+  "Artisan, garage, commerce alimentaire ou restaurant ? Pour échanger vos surplus entre professionnels du même métier, voir": {
+    "en": "A tradesperson, garage, food shop or restaurant? To swap your surplus with professionals in the same trade, see",
+    "es": "¿Artesano, taller, comercio de alimentación o restaurante? Para intercambiar sus excedentes entre profesionales del mismo oficio, ver"
+  },
+  "TopTroc Pro : échanger entre professionnels du même métier ce qui dort en stock. Artisans du bâtiment, garages auto et moto, commerces alimentaires et restaurants.": {
+    "en": "TopTroc Pro: swap idle stock between professionals in the same trade. Building tradespeople, car and motorbike garages, food shops and restaurants.",
+    "es": "TopTroc Pro: intercambiar el stock dormido entre profesionales del mismo oficio. Artesanos de la construcción, talleres de coches y motos, comercios de alimentación y restaurantes."
+  },
+  "Artisans, garages, commerces": {
+    "en": "Trades, garages, shops",
+    "es": "Artesanos, talleres, comercios"
+  },
+  "Pro · Bâtiment : outillage et matériaux": {
+    "en": "Pro · Building: tools and materials",
+    "es": "Pro · Construcción: herramientas y materiales"
+  },
+  "Pro · Auto-moto : pièces et atelier": {
+    "en": "Pro · Car & moto: parts and workshop",
+    "es": "Pro · Motor: piezas y taller"
+  },
+  "Pro · Alimentaire : produits et matériel": {
+    "en": "Pro · Food: products and equipment",
+    "es": "Pro · Alimentación: productos y material"
+  },
+  "Nom de l'entreprise": {
+    "en": "Company name",
+    "es": "Nombre de la empresa"
+  },
+  "SIRET (14 chiffres)": {
+    "en": "SIRET (14 digits)",
+    "es": "SIRET (14 cifras)"
+  },
+  "Métier (facultatif)": {
+    "en": "Trade (optional)",
+    "es": "Oficio (opcional)"
+  },
+  "Activer mon profil Pro": {
+    "en": "Activate my Pro profile",
+    "es": "Activar mi perfil Pro"
+  },
+  "Repasser en compte particulier": {
+    "en": "Switch back to a personal account",
+    "es": "Volver a cuenta particular"
+  },
+  "Pro vérifié": {
+    "en": "Verified Pro",
+    "es": "Pro verificado"
+  },
+  "SIRET en cours de vérification": {
+    "en": "SIRET being verified",
+    "es": "SIRET en verificación"
+  },
+  "Modifier mon profil Pro": {
+    "en": "Edit my Pro profile",
+    "es": "Modificar mi perfil Pro"
+  },
+  "Activer TopTroc Pro": {
+    "en": "Activate TopTroc Pro",
+    "es": "Activar TopTroc Pro"
+  },
+  "Profil Pro enregistré": {
+    "en": "Pro profile saved",
+    "es": "Perfil Pro guardado"
+  },
+  "Bienvenue dans TopTroc Pro !": {
+    "en": "Welcome to TopTroc Pro!",
+    "es": "¡Bienvenido a TopTroc Pro!"
+  },
+  "Compte particulier": {
+    "en": "Personal account",
+    "es": "Cuenta particular"
   }
 }

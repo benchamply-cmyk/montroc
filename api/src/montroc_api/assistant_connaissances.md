@@ -138,7 +138,13 @@ une fois par compte.
 
 ## Pour les professionnels et les collectivités
 
-- Professionnels : un espace de troc réservé aux salariés d'un site (CSE, équipes RSE, bailleurs), dépôt à l'accueil ou
+- TopTroc Pro : les artisans du bâtiment, les garages auto et moto, les commerces alimentaires et les restaurants
+  échangent leurs surplus entre professionnels du même secteur (matériaux, outillage, pièces neuves ou jamais montées,
+  produits à date suffisante, matériel). Dans Mon espace, la carte « TopTroc Pro » active le profil Pro avec le secteur,
+  le nom de l'entreprise et le SIRET ; la catégorie Pro du secteur s'ouvre alors, réservée aux comptes Pro de ce
+  secteur. L'équipe vérifie le SIRET puis pose le badge « Pro vérifié ». Échanger reste gratuit. Entre entreprises, un
+  troc compte comme deux ventes : chacun facture sa part. Page : [TopTroc Pro](/pro/).
+- Entreprises : un espace de troc réservé aux salariés d'un site (CSE, équipes RSE, bailleurs), dépôt à l'accueil ou
   à la conciergerie, bilan RSE. Les commerçants des Bouches-du-Rhône peuvent devenir point de dépôt. Tarif sur devis.
   Page : [Professionnels](/pros/).
 - Collectivités : un Grand Troc au nom du territoire, des points de dépôt publics (mairie, médiathèque, centre social),

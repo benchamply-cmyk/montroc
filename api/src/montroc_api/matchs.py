@@ -16,7 +16,7 @@ from troc_echanges import Boucle, boucles_autour
 from troc_echanges import Objet as ObjetMoteur
 from troc_echanges import Transfert as TransfertMoteur
 
-from . import courriels, notifications, premium
+from . import courriels, nomenclature, notifications, premium
 from . import models as m
 from .config import get_settings
 from .services import (
@@ -145,6 +145,7 @@ def carrousel(session: Session, moi: m.Utilisateur, limite: int = 20) -> list[Ca
             m.Objet.proprietaire_id != moi.id,
             m.Utilisateur.suspendu_le.is_(None),
             m.Objet.id.not_in(deja_vus),
+            m.Objet.categorie_slug.not_in(nomenclature.categories_interdites(moi.pro_secteur)),
             or_(*criteres),
         )
         .options(selectinload(m.Objet.proprietaire))
@@ -213,6 +214,8 @@ def donner_avis(
     objet = session.get(m.Objet, objet_id)
     if objet is None or objet.proprietaire_id == moi.id or objet.statut != m.StatutObjet.disponible:
         raise ErreurMetier("Cet objet n'est plus proposé.")
+    if objet.categorie_slug in nomenclature.categories_interdites(moi.pro_secteur):
+        raise ErreurMetier("Cet objet s'échange entre professionnels du secteur, avec un compte TopTroc Pro.")
     autre = objet.proprietaire
     avant = match_avec(session, moi, autre)
 

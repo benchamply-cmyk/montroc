@@ -24,7 +24,8 @@
       <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Les offres<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
         <ul id="pour-qui" hidden>
           <li><a href="/particuliers/">Particuliers <small>Gratuit</small></a></li>
-          <li><a href="/pros/">Professionnels</a></li>
+          <li><a href="/pro/">TopTroc Pro <small>Artisans, garages, commerces</small></a></li>
+          <li><a href="/pros/">Entreprises</a></li>
           <li><a href="/collectivites/">Collectivités</a></li>
         </ul>
       </li>

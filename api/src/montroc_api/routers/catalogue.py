@@ -1,6 +1,6 @@
 """Catégories d'objets."""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import select
 
 from .. import models as m
@@ -12,8 +12,17 @@ router = APIRouter(prefix="/categories", tags=["catégories"])
 
 
 @router.get("", response_model=list[CategorieDetaillee])
-def lister(session: SessionDep):
-    """Les catégories, dans l'ordre de la nomenclature, avec leurs sous-catégories et caractéristiques."""
+def lister(
+    session: SessionDep,
+    pro: bool = Query(default=False, description="Ajouter les catégories réservées aux comptes TopTroc Pro."),
+):
+    """Les catégories, dans l'ordre de la nomenclature, avec leurs sous-catégories et caractéristiques.
+
+    Les catégories TopTroc Pro (``secteur_pro`` renseigné) ne viennent qu'avec ``?pro=true`` : le site des
+    particuliers ne les montre pas."""
+    requete = select(m.Categorie)
+    if not pro:
+        requete = requete.where(m.Categorie.slug.not_in(nomenclature.CATEGORIES_PRO))
     return [
         CategorieDetaillee(
             slug=c.slug,
@@ -28,9 +37,10 @@ def lister(session: SessionDep):
                 }
                 for x in nomenclature.caracteristiques(c.slug)
             ],
+            secteur_pro=nomenclature.CATEGORIES_PRO.get(c.slug),
         )
         for c in sorted(
-            session.scalars(select(m.Categorie)),
+            session.scalars(requete),
             key=lambda c: (nomenclature.ORDRE.get(c.slug, len(nomenclature.ORDRE)), c.libelle),
         )
     ]
