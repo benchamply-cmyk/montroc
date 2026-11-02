@@ -270,7 +270,8 @@ class ObjetCreation(Localisation):
     caracteristiques: Caracteristiques
     titre: str = Field(min_length=1, max_length=120)
     description: str | None = Field(default=None, max_length=2000)
-    etat: EtatObjet
+    # Obligatoire pour un objet ; un service (Troc & Services) n'en a pas.
+    etat: EtatObjet | None = None
     photo_url: str = Field(max_length=500)
     photo_id: str | None = Field(default=None, max_length=200)
     annonce_origine: str | None = Field(default=None, max_length=500)
@@ -288,6 +289,13 @@ class ObjetCreation(Localisation):
         self.caracteristiques = nomenclature.verifier(
             self.categorie_slug, self.sous_categorie_slug, self.caracteristiques, demande=False
         )
+        if self.categorie_slug == nomenclature.SERVICES:
+            # Un service se rend sur place : ni état d'usure, ni colis, ni point de dépôt.
+            if self.sous_categorie_slug is None:
+                raise ValueError("Choisissez le métier de ce service.")
+            self.etat, self.modes_echange, self.format_colis = None, ["main_propre"], None
+        elif self.etat is None:
+            raise ValueError("Indiquez l'état de l'objet.")
         return self
 
 
@@ -802,3 +810,182 @@ class ReponseAssistant(BaseModel):
 
 class EtatAssistant(BaseModel):
     actif: bool
+
+
+# --- Troc & Services ---------------------------------------------------------------------------------------------
+
+
+class MetierLecture(BaseModel):
+    """La fiche d'un métier : ce qu'on peut en attendre et les justificatifs vérifiés avant la certification."""
+
+    slug: str
+    libelle: str
+    famille: str
+    description: str
+    exemples: list[str]
+    justificatifs: list[str]
+
+
+class ProfilProCreation(BaseModel):
+    """Mon activité professionnelle pour un métier : le dossier que la modération vérifie avant de certifier."""
+
+    metier: str = Field(max_length=50, examples=["services-plomberie"])
+    nom_commercial: str = Field(min_length=2, max_length=120)
+    siret: str = Field(min_length=14, max_length=20, examples=["123 456 789 00012"])
+    description: str = Field(min_length=40, max_length=3000)
+    experience_annees: int = Field(default=0, ge=0, le=60)
+    zone_intervention: str | None = Field(default=None, max_length=120)
+    assurance: str | None = Field(default=None, max_length=200)
+    qualifications: str | None = Field(default=None, max_length=300)
+    justificatifs: list[str] = Field(min_length=1, max_length=6)
+
+    @field_validator("metier")
+    @classmethod
+    def _metier(cls, v: str) -> str:
+        if v not in nomenclature.METIERS:
+            raise ValueError("Métier inconnu.")
+        return v
+
+    @field_validator("siret")
+    @classmethod
+    def _siret(cls, v: str) -> str:
+        chiffres = "".join(v.split())
+        if len(chiffres) != 14 or not chiffres.isdigit():
+            raise ValueError("Le SIRET compte 14 chiffres.")
+        return chiffres
+
+    @field_validator("justificatifs")
+    @classmethod
+    def _justificatifs(cls, urls: list[str]) -> list[str]:
+        cloudinary = get_settings().cloudinary
+        prefixe = f"https://res.cloudinary.com/{cloudinary[0]}/" if cloudinary else None
+        if prefixe is None or any(not u.startswith(prefixe) or len(u) > 500 for u in urls):
+            raise ValueError("Les justificatifs doivent être envoyés depuis le site TopTroc.")
+        return urls
+
+
+class ProfilProPublic(Lecture):
+    """Ce que les membres voient d'un professionnel certifié : jamais son SIRET ni ses justificatifs."""
+
+    id: int
+    utilisateur_id: int
+    pseudo: str
+    reputation: str
+    echanges_menes: int
+    metier: str
+    metier_libelle: str
+    nom_commercial: str
+    description: str
+    experience_annees: int
+    zone_intervention: str | None
+    qualifications: str | None
+    certifie_le: datetime | None
+    services: list[ObjetLecture] = Field(default_factory=list)
+
+
+class ProfilProPrive(Lecture):
+    """Mon dossier pro, avec son statut de vérification."""
+
+    id: int
+    metier: str
+    nom_commercial: str
+    siret: str
+    description: str
+    experience_annees: int
+    zone_intervention: str | None
+    assurance: str | None
+    qualifications: str | None
+    justificatifs: list[str]
+    statut: str
+    motif: str | None
+    certifie_le: datetime | None
+    cree_le: datetime
+
+
+class ProfilProModeration(ProfilProPrive):
+    utilisateur_id: int
+    pseudo: str
+    email: str
+
+
+class DecisionPro(BaseModel):
+    certifier: bool
+    # Obligatoire pour un refus : ce qui manque ou ne va pas, envoyé au membre.
+    motif: str | None = Field(default=None, max_length=1000)
+
+    @model_validator(mode="after")
+    def _motif(self):
+        if not self.certifier and not (self.motif and len(self.motif.strip()) >= 10):
+            raise ValueError("Expliquez le refus en quelques mots : le membre le reçoit.")
+        return self
+
+
+class NegociationCreation(BaseModel):
+    """« Proposer des articles en échange » : sur un service (ou, pour un pro, sur un objet contre son service)."""
+
+    objet_id: int
+    contreparties: list[int] = Field(min_length=1, max_length=10)
+    message: str = Field(min_length=1, max_length=2000)
+
+
+class MessageCreation(BaseModel):
+    texte: str = Field(min_length=1, max_length=2000)
+
+
+class ConditionsAccord(BaseModel):
+    """Les conditions proposées : la prestation, quand, où, et les articles donnés en échange."""
+
+    prestation: str = Field(min_length=10, max_length=2000)
+    date_prevue: date
+    lieu: str = Field(min_length=2, max_length=200)
+    duree: str | None = Field(default=None, max_length=60)
+    # Nouvelle liste d'articles de l'initiateur ; absente : celle déjà proposée.
+    contreparties: list[int] | None = Field(default=None, min_length=1, max_length=10)
+
+
+class Partie(BaseModel):
+    id: int
+    pseudo: str
+
+
+class MessageLecture(BaseModel):
+    id: int
+    auteur_id: int | None
+    auteur: str
+    texte: str
+    cree_le: datetime
+
+
+class ContratLecture(Lecture):
+    id: int
+    numero: str
+    texte: str
+    statut: str
+    cree_le: datetime
+    confirme_initiateur_le: datetime | None
+    confirme_destinataire_le: datetime | None
+
+
+class NegociationLecture(BaseModel):
+    id: int
+    statut: str
+    initiateur: Partie
+    destinataire: Partie
+    objet: ObjetLecture
+    contreparties: list[ObjetLecture]
+    conditions: dict
+    accord_propose_par_id: int | None
+    messages: list[MessageLecture]
+    contrat: ContratLecture | None
+    cree_le: datetime
+    mis_a_jour_le: datetime
+
+
+class NegociationResume(BaseModel):
+    id: int
+    statut: str
+    avec: Partie
+    objet_titre: str
+    dernier_message: str
+    mis_a_jour_le: datetime
+    a_moi_de_repondre: bool

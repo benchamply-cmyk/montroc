@@ -6,7 +6,7 @@ import time
 from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import func, select
 
-from .. import matchs, nomenclature, premium, services, vues
+from .. import matchs, nomenclature, premium, services, services_pro, vues
 from .. import models as m
 from ..config import get_settings
 from ..deps import SessionDep, UtilisateurConnecte, obtenir_ou_404
@@ -100,6 +100,10 @@ def _mes_souhaits(session, utilisateur: m.Utilisateur, ids: list[int]) -> list[m
 @router.post("/objets", response_model=MonObjet, status_code=201)
 def ajouter_objet(donnees: ObjetCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
     obtenir_ou_404(session, m.Categorie, donnees.categorie_slug)
+    if donnees.categorie_slug == nomenclature.SERVICES and not services_pro.est_certifie(
+        session, utilisateur, donnees.sous_categorie_slug
+    ):
+        raise HTTPException(403, "Un service se propose une fois votre activité certifiée par TopTroc, pour ce métier.")
     contre = _mes_souhaits(session, utilisateur, donnees.contre_souhait_ids)
     objet = m.Objet(proprietaire_id=utilisateur.id, contre=contre, **donnees.model_dump(exclude={"contre_souhait_ids"}))
     session.add(objet)
@@ -126,7 +130,9 @@ def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: Utili
         raise HTTPException(409, "Cet objet a été retiré par la modération.")
     if "statut" in changements and objet.statut not in (m.StatutObjet.disponible, m.StatutObjet.retire):
         raise HTTPException(409, "Cet objet est engagé dans un échange.")
-    if changements.get("statut") == m.StatutObjet.disponible and not (objet.photo_url and objet.etat):
+    if changements.get("statut") == m.StatutObjet.disponible and not (
+        objet.photo_url and (objet.etat or objet.est_un_service)
+    ):
         raise HTTPException(409, "Ajoutez une photo et l'état avant de remettre cet objet en ligne.")
     if (ids := changements.pop("contre_souhait_ids", None)) is not None:
         objet.contre = _mes_souhaits(session, utilisateur, ids)

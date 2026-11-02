@@ -15,7 +15,8 @@ def _souhait(client, qui, categorie, **detail):
 def test_categories_avec_sous_categories_et_caracteristiques(client):
     cats = {c["slug"]: c for c in client.get("/categories").json()}
     assert list(cats)[:3] == ["mode", "high-tech", "enfant"]  # l'ordre de la nomenclature, pas l'alphabet
-    assert sum(len(c["sous_categories"]) for c in cats.values()) == 107
+    # 107 sous-catégories d'objets, et les 7 métiers de Troc & Services.
+    assert sum(len(c["sous_categories"]) for c in cats.values()) == 107 + 7
     assert {"slug": "enfant-poussettes", "libelle": "Poussettes et accessoires"} in cats["enfant"]["sous_categories"]
     caracs = {c["cle"]: c for c in cats["enfant"]["caracteristiques"]}
     assert "4 ans" in caracs["taille"]["options"] and caracs["marque"]["options"] is None

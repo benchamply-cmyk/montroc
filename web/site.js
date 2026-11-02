@@ -37,6 +37,7 @@
         </ul>
       </li>
       <li><a href="/grand-troc/">Le Grand Troc</a></li>
+      <li><a href="/#services">Troc &amp; Services</a></li>
     </ul>
   </nav>
   <a class="favoris" href="/#favoris" aria-label="Favoris" title="Favoris">${ETOILE}<span class="favoris-nb" hidden></span></a>
