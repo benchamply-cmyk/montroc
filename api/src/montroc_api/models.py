@@ -264,11 +264,18 @@ class Objet(Horodatage, Base):
     def contre_souhait_ids(self) -> list[int]:
         return [s.id for s in self.contre]
 
+    @property
+    def est_un_service(self) -> bool:
+        """Troc & Services : une prestation, qui ne s'use pas et reste en ligne une fois rendue."""
+        return self.categorie_slug == "services"
+
     __table_args__ = (
         CheckConstraint("length(trim(titre)) > 0", name="titre_non_vide"),
         # Pas d'objet proposé à l'échange sans photo ni état (les objets d'avant cette règle ont été retirés).
+        # Un service (Troc & Services) n'a pas d'état d'usure : seulement une photo.
         CheckConstraint(
-            "statut <> 'disponible' OR (photo_url IS NOT NULL AND etat IS NOT NULL)", name="photo_et_etat_si_disponible"
+            "statut <> 'disponible' OR (photo_url IS NOT NULL AND (etat IS NOT NULL OR categorie_slug = 'services'))",
+            name="photo_et_etat_si_disponible",
         ),
         CheckConstraint("(latitude IS NULL) = (longitude IS NULL)", name="position_complete"),
         CheckConstraint(
@@ -574,3 +581,144 @@ class SuiviVisiteur(Horodatage, Base):
     rappel_favoris_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     __table_args__ = (CheckConstraint("email IS NOT NULL OR telephone IS NOT NULL", name="un_contact"),)
+
+
+# --- Troc & Services ---------------------------------------------------------------------------------------------
+
+
+class StatutProfilPro(enum.StrEnum):
+    en_attente = "en_attente"  # dossier envoyé, à vérifier par la modération
+    certifie = "certifie"  # justificatifs vérifiés : badge « Pro certifié » et offres de service possibles
+    refuse = "refuse"  # dossier incomplet ou non conforme (le motif est envoyé au membre)
+
+
+class ProfilPro(Horodatage, Base):
+    """L'activité professionnelle qu'un membre propose en Troc & Services, pour un métier (``nomenclature.METIERS``).
+
+    Les justificatifs (SIRET, assurances, qualifications) sont vérifiés par la modération avant la certification ;
+    toute modification du dossier le remet « en attente ». Le justificatif n'est jamais montré aux autres membres."""
+
+    __tablename__ = "profils_pro"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    utilisateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
+    # Slug d'une sous-catégorie de « services » (services-plomberie…).
+    metier: Mapped[str] = mapped_column(String(50))
+    nom_commercial: Mapped[str] = mapped_column(String(120))
+    siret: Mapped[str] = mapped_column(String(14))
+    # La fiche métier : l'activité, le savoir-faire, ce qui est compris dans une prestation.
+    description: Mapped[str] = mapped_column(Text)
+    experience_annees: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    zone_intervention: Mapped[str | None] = mapped_column(String(120))
+    assurance: Mapped[str | None] = mapped_column(String(200))  # assureur et numéro de contrat
+    qualifications: Mapped[str | None] = mapped_column(String(300))
+    # Justificatifs envoyés sur Cloudinary (PDF ou photo) : visibles de la seule modération.
+    justificatifs: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    statut: Mapped[StatutProfilPro] = mapped_column(
+        _enum(StatutProfilPro, "statut_profil_pro"),
+        default=StatutProfilPro.en_attente,
+        server_default=StatutProfilPro.en_attente.value,
+        index=True,
+    )
+    motif: Mapped[str | None] = mapped_column(Text)  # motif d'un refus, envoyé au membre
+    certifie_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    certifie_par_id: Mapped[int | None] = mapped_column(ForeignKey("utilisateurs.id", ondelete="SET NULL"))
+
+    utilisateur: Mapped[Utilisateur] = relationship(foreign_keys=[utilisateur_id])
+
+    __table_args__ = (
+        UniqueConstraint("utilisateur_id", "metier", name="uq_profils_pro_utilisateur_metier"),
+        CheckConstraint("siret ~ '^[0-9]{14}$'", name="siret_14_chiffres"),
+        CheckConstraint("experience_annees >= 0 AND experience_annees <= 60", name="experience_plausible"),
+        CheckConstraint("statut <> 'certifie' OR certifie_le IS NOT NULL", name="date_de_certification"),
+    )
+
+
+class StatutNegociation(enum.StrEnum):
+    ouverte = "ouverte"  # la conversation est en cours
+    accord_propose = "accord_propose"  # une partie a proposé des conditions : l'autre les accepte ou répond
+    conclue = "conclue"  # accord trouvé : le contrat est généré
+    annulee = "annulee"
+
+
+class Negociation(Horodatage, Base):
+    """Troc & Services : une conversation entre deux membres autour d'un échange où au moins un service entre en
+    jeu (des articles contre un service, un service contre des articles, ou service contre service).
+
+    ``initiateur`` vise ``objet`` (de ``destinataire``) et propose en échange ``contreparties`` (ses objets ou
+    services). Quand l'un propose des conditions (``conditions``) et que l'autre les accepte, TopTroc génère le
+    contrat (``ContratService``)."""
+
+    __tablename__ = "negociations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    initiateur_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
+    destinataire_id: Mapped[int] = mapped_column(ForeignKey("utilisateurs.id", ondelete="CASCADE"), index=True)
+    objet_id: Mapped[int] = mapped_column(ForeignKey("objets.id", ondelete="CASCADE"), index=True)
+    # Identifiants des objets ou services de l'initiateur proposés en échange (la proposition en cours).
+    contreparties: Mapped[list[int]] = mapped_column(JSONB, default=list, server_default="[]")
+    statut: Mapped[StatutNegociation] = mapped_column(
+        _enum(StatutNegociation, "statut_negociation"),
+        default=StatutNegociation.ouverte,
+        server_default=StatutNegociation.ouverte.value,
+        index=True,
+    )
+    # Conditions proposées : {"prestation": …, "date_prevue": "2026-11-14", "lieu": …, "duree": …}.
+    conditions: Mapped[dict] = mapped_column(JSONB, default=dict, server_default="{}")
+    accord_propose_par_id: Mapped[int | None] = mapped_column(ForeignKey("utilisateurs.id", ondelete="SET NULL"))
+    mis_a_jour_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    initiateur: Mapped[Utilisateur] = relationship(foreign_keys=[initiateur_id])
+    destinataire: Mapped[Utilisateur] = relationship(foreign_keys=[destinataire_id])
+    objet: Mapped[Objet] = relationship()
+    messages: Mapped[list[MessageNegociation]] = relationship(
+        back_populates="negociation", cascade="all, delete-orphan", order_by="MessageNegociation.id"
+    )
+    contrat: Mapped[ContratService | None] = relationship(back_populates="negociation", uselist=False)
+
+    __table_args__ = (CheckConstraint("initiateur_id <> destinataire_id", name="deux_membres"),)
+
+
+class MessageNegociation(Base):
+    __tablename__ = "messages_negociation"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    negociation_id: Mapped[int] = mapped_column(ForeignKey("negociations.id", ondelete="CASCADE"), index=True)
+    # Vide : message de TopTroc (accord proposé, contrat généré…).
+    auteur_id: Mapped[int | None] = mapped_column(ForeignKey("utilisateurs.id", ondelete="SET NULL"))
+    texte: Mapped[str] = mapped_column(Text)
+    cree_le: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    negociation: Mapped[Negociation] = relationship(back_populates="messages")
+
+    __table_args__ = (CheckConstraint("length(trim(texte)) > 0", name="texte_non_vide"),)
+
+
+class StatutContrat(enum.StrEnum):
+    en_cours = "en_cours"  # signé par les deux : prestation et remise des articles à venir
+    realise = "realise"  # les deux parties ont confirmé que tout a été fait
+    annule = "annule"
+
+
+class ContratService(Horodatage, Base):
+    """Le contrat de Troc & Services que TopTroc génère quand les deux parties acceptent les mêmes conditions.
+
+    ``texte`` fige le contrat au moment de l'accord (parties, prestation, articles, date, lieu) : il ne change plus,
+    même si un objet ou un profil est modifié ensuite. Chaque partie confirme ensuite que tout a été fait."""
+
+    __tablename__ = "contrats_service"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    negociation_id: Mapped[int] = mapped_column(ForeignKey("negociations.id", ondelete="CASCADE"), unique=True)
+    numero: Mapped[str] = mapped_column(String(20), unique=True)
+    texte: Mapped[str] = mapped_column(Text)
+    statut: Mapped[StatutContrat] = mapped_column(
+        _enum(StatutContrat, "statut_contrat"),
+        default=StatutContrat.en_cours,
+        server_default=StatutContrat.en_cours.value,
+        index=True,
+    )
+    confirme_initiateur_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    confirme_destinataire_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    negociation: Mapped[Negociation] = relationship(back_populates="contrat")

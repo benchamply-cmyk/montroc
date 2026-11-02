@@ -23,6 +23,7 @@ from .routers import (
     signalements,
     suivis,
     taches,
+    troc_services,
     utilisateurs,
 )
 
@@ -32,7 +33,7 @@ app = FastAPI(
     description=(
         "TopTroc, troc sans prix ni monnaie : le Match (accords 1 à 1 à tout moment) et le Grand Troc du "
         "dimanche (boucles d'échange de 2 ou 3 personnes), en main propre ou par colis, Troc Premium, "
-        "et le mode visiteur (favoris et suivi sans compte)."
+        "Troc & Services (services de professionnels certifiés), et le mode visiteur (favoris et suivi sans compte)."
     ),
 )
 app.add_middleware(
@@ -57,6 +58,7 @@ for module in (
     suivis,
     taches,
     assistant,
+    troc_services,
 ):
     app.include_router(module.router)
 

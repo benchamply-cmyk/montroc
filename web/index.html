@@ -906,7 +906,7 @@ async function api(chemin,{method='GET',body}={}){
 
 /* Historique : chaque vue ouverte a son adresse (#monespace, #echanges, #objet-12…) et sa propre entrée,
    pour revenir à la vue précédente avec le bouton Précédent du navigateur ou le geste du trackpad. */
-const ADRESSES={home:'',favoris:'#favoris',lists:'#monespace',trades:'#echanges',drop:'#depot',mod:'#moderation',match:'#match',proposer:'#proposer'};
+const ADRESSES={home:'',favoris:'#favoris',lists:'#monespace',trades:'#echanges',drop:'#depot',mod:'#moderation',match:'#match',proposer:'#proposer',services:'#services',mespro:'#mes-services'};
 function marquer(h,remplacer){
   if(location.hash===h)return;
   const url=h||location.pathname+location.search;
@@ -915,6 +915,8 @@ function marquer(h,remplacer){
 function suivre(h){
   if(h==='#mon-espace'){h='#monespace';history.replaceState(history.state,'',h)} // ancienne adresse
   if(h.startsWith('#objet-'))return ouvrirObjet(+h.slice(7));
+  if(h.startsWith('#pro-'))return Services.ouvrirPro(+h.slice(5));
+  if(h.startsWith('#negociation-'))return Services.ouvrirNegociation(+h.slice(13));
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} return chercher(q)}
   if(h==='#recherche-site')return ouvrirRechercheSite();
   if(h.startsWith('#site=')){let q=h.slice(6);try{q=decodeURIComponent(q)}catch{} return rechercherSite(q)}
@@ -927,20 +929,22 @@ function suivre(h){
 }
 addEventListener('popstate',()=>{TT.fermer();TT.ouvrirConnexion(false);suivre(location.hash)});
 
-const ESPACE=['lists','trades','drop','mod'];
+const ESPACE=['lists','trades','drop','mod','mespro','nego'];
 function go(v,{adresse,remplacer=false}={}){
-  if(!moi&&!['home','signup','search','objet','global','categorie','favoris','proposer'].includes(v)){v='home';remplacer=true}
+  if(!moi&&!['home','signup','search','objet','global','categorie','favoris','proposer','services','pro'].includes(v)){v='home';remplacer=true}
   if(adresse===undefined)adresse=ADRESSES[v];
   if(adresse!==undefined)marquer(adresse,remplacer);
   $$('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
   vueActuelle=v;
-  document.body.classList.toggle('large',['home','search','objet','global','categorie'].includes(v));
-  const onglet=ESPACE.includes(v)?'lists':v;
+  document.body.classList.toggle('large',['home','search','objet','global','categorie','services'].includes(v));
+  const onglet=ESPACE.includes(v)?'lists':v==='pro'?'search':v;
   $$('nav.tabs button').forEach(b=>{b.dataset.tab===onglet?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   marquerOnglets();
   window.scrollTo(0,0);
   if(v==='mod')chargerSignalements();
   if(v==='favoris')Visiteur.afficher();
+  if(v==='services')Services.afficher();
+  if(v==='mespro')Services.afficherMonEspace();
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
 $('#tabs').addEventListener('click',e=>{
@@ -960,6 +964,7 @@ async function naviguer(h){
   if(h.startsWith('#categorie=')){let cat=h.slice(11);try{cat=decodeURIComponent(cat)}catch{} const [c,sous='']=cat.split('/');return pageCategorie(c,sous)}
   if(h==='#objets')return chercher('');
   if(h==='#favoris')return go('favoris');
+  if(h==='#services')return go('services');
   if(h==='#monespace'){
     // Session gardée sur cet appareil mais pas encore relue (serveur qui se réveille) : on l'attend.
     if(jeton&&!moi){toast('Ouverture de votre espace…'); await chargerSession()}
@@ -1021,7 +1026,7 @@ document.addEventListener('click',e=>{
 
 /* Catégories de la recherche et fil de photos de l'accueil */
 /* Pictogrammes au trait, d'une seule couleur (currentColor) : catégories de l'accueil et de « Proposer ». */
-const PICTOS={'mode':'<path d="M8.5 4 4 7l2 3.2 2-1V20h8V9.2l2 1L20 7l-4.5-3c0 1.9-1.6 3-3.5 3s-3.5-1.1-3.5-3z"/>','high-tech':'<path d="M4 16v-4a8 8 0 0 1 16 0v4"/><rect x="3.5" y="14" width="4" height="6" rx="1.5"/><rect x="16.5" y="14" width="4" height="6" rx="1.5"/>','enfant':'<circle cx="12" cy="11" r="5"/><circle cx="7.3" cy="6.3" r="2"/><circle cx="16.7" cy="6.3" r="2"/><path d="M7.5 20a4.5 4.5 0 0 1 9 0"/>','maison':'<path d="M7 14h10l-1.5 6h-7zM12 14V8"/><path d="M12 10.5C9 10.5 7 8.5 7 5.5c3 0 5 2 5 5zM12 9.5c0-3 2-5 5-5 0 3-2 5-5 5z"/>','sport':'<circle cx="12" cy="12" r="8"/><path d="m12 8.5 3.3 2.4-1.3 3.9h-4l-1.3-3.9zM12 4v4.5M15.3 10.9l4.2-1.4M14 14.8l2.6 3.6M10 14.8l-2.6 3.6M8.7 10.9 4.5 9.5"/>','culture':'<path d="M4 5h5.5A2.5 2.5 0 0 1 12 7.5V20a2 2 0 0 0-2-2H4zM20 5h-5.5A2.5 2.5 0 0 0 12 7.5V20a2 2 0 0 1 2-2h6z"/>','bricolage':'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a6 6 0 0 1-7.9 7.9l-6.4 6.4a2.1 2.1 0 0 1-3-3l6.4-6.4a6 6 0 0 1 7.9-7.9z"/>','electromenager':'<path d="M5 9h11v5.5a4.5 4.5 0 0 1-4.5 4.5h-2A4.5 4.5 0 0 1 5 14.5zM16 11h1.5a2.5 2.5 0 0 1 0 5H16M8.5 3.5v2.5M12.5 3.5v2.5"/>','auto-moto':'<path d="M3.5 16v-3l2.5-6h12l2.5 6v3zM6 16v2.5M18 16v2.5M7.5 12.5h.01M16.5 12.5h.01"/>','divers':'<path d="M4.5 11h15v9h-15zM3.5 7.5h17V11h-17zM12 7.5V20M12 7.5C10 3.5 6 4.5 7.5 7.5M12 7.5c2-4 6-3 4.5 0"/>'};
+const PICTOS={'mode':'<path d="M8.5 4 4 7l2 3.2 2-1V20h8V9.2l2 1L20 7l-4.5-3c0 1.9-1.6 3-3.5 3s-3.5-1.1-3.5-3z"/>','high-tech':'<path d="M4 16v-4a8 8 0 0 1 16 0v4"/><rect x="3.5" y="14" width="4" height="6" rx="1.5"/><rect x="16.5" y="14" width="4" height="6" rx="1.5"/>','enfant':'<circle cx="12" cy="11" r="5"/><circle cx="7.3" cy="6.3" r="2"/><circle cx="16.7" cy="6.3" r="2"/><path d="M7.5 20a4.5 4.5 0 0 1 9 0"/>','maison':'<path d="M7 14h10l-1.5 6h-7zM12 14V8"/><path d="M12 10.5C9 10.5 7 8.5 7 5.5c3 0 5 2 5 5zM12 9.5c0-3 2-5 5-5 0 3-2 5-5 5z"/>','sport':'<circle cx="12" cy="12" r="8"/><path d="m12 8.5 3.3 2.4-1.3 3.9h-4l-1.3-3.9zM12 4v4.5M15.3 10.9l4.2-1.4M14 14.8l2.6 3.6M10 14.8l-2.6 3.6M8.7 10.9 4.5 9.5"/>','culture':'<path d="M4 5h5.5A2.5 2.5 0 0 1 12 7.5V20a2 2 0 0 0-2-2H4zM20 5h-5.5A2.5 2.5 0 0 0 12 7.5V20a2 2 0 0 1 2-2h6z"/>','bricolage':'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a6 6 0 0 1-7.9 7.9l-6.4 6.4a2.1 2.1 0 0 1-3-3l6.4-6.4a6 6 0 0 1 7.9-7.9z"/>','electromenager':'<path d="M5 9h11v5.5a4.5 4.5 0 0 1-4.5 4.5h-2A4.5 4.5 0 0 1 5 14.5zM16 11h1.5a2.5 2.5 0 0 1 0 5H16M8.5 3.5v2.5M12.5 3.5v2.5"/>','auto-moto':'<path d="M3.5 16v-3l2.5-6h12l2.5 6v3zM6 16v2.5M18 16v2.5M7.5 12.5h.01M16.5 12.5h.01"/>','divers':'<path d="M4.5 11h15v9h-15zM3.5 7.5h17V11h-17zM12 7.5V20M12 7.5C10 3.5 6 4.5 7.5 7.5M12 7.5c2-4 6-3 4.5 0"/>','services':'<path d="M3 12.5 6.5 9l3 1.5 2.5-1 4 3.5-2 2-3-2.5M3 12.5l4.5 4.5 2-1.5M21 12l-3.5-3.5-3.5 1"/><path d="M14 15.5l1.5 1.5M12 17l1.5 1.5"/>'};
 const picto=slug=>`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${PICTOS[slug]||PICTOS.divers}</svg>`;
 function afficherCategories(cats){
   $('#f-search-home').cat.innerHTML='<option value="">Tout</option>'+cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
@@ -1267,7 +1272,7 @@ async function chargerListes(){
   $('#items').innerHTML=objets.length?objets.map(o=>{const d=Detail.caracs(o.categorie_slug,o.caracteristiques);return `
     <div class="item"><div class="thumb">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="">`:''}</div>
       <div class="t"><b>${esc(o.titre)}${STATUTS[o.statut]?`<span class="pill ${o.statut==='reserve'?'res':''}">${STATUTS[o.statut]}</span>`:''}</b>
-      <span>${esc(ETATS[o.etat]||'État à préciser')} · ${Detail.nom(o.categorie_slug,o.sous_categorie_slug)}${d?' · '+d:''}${o.annonce_origine?` · <a href="${esc(o.annonce_origine)}" target="_blank" rel="noopener noreferrer">aussi en vente ailleurs</a>`:''}</span></div>
+      <span>${esc(o.categorie_slug==='services'?'Service':ETATS[o.etat]||'État à préciser')} · ${Detail.nom(o.categorie_slug,o.sous_categorie_slug)}${d?' · '+d:''}${o.annonce_origine?` · <a href="${esc(o.annonce_origine)}" target="_blank" rel="noopener noreferrer">aussi en vente ailleurs</a>`:''}</span></div>
       ${o.statut==='disponible'?`<button class="linkbtn" data-retirer="${o.id}">Retirer</button>`:''}
       ${o.statut==='retire'&&o.photo_url?`<button class="linkbtn" data-remettre="${o.id}">Remettre</button>`:''}
       <span class="muted" style="flex-basis:100%;font-size:13px">${contreTexte(o)} · <button class="linkbtn" data-contre="${o.id}">Choisir</button>${o.lieu?' · '+esc(o.lieu):''}${o.statut==='disponible'?` · <button class="linkbtn" data-interesses="${o.id}">Qui aime ?</button>`:''}</span>
@@ -1407,9 +1412,9 @@ $('#afaire').addEventListener('click',e=>{if(e.target.closest('#afaire-btn')&&ac
 function marquerOnglets(){
   if(!moi)return;
   const enCours=echanges.filter(e=>e.statut==='propose'||e.statut==='accepte').length;
-  const ongl=[['ai','Je propose',mesObjets.length],['cherche','Je demande',mesSouhaits.length],['trades','Échanges',enCours],['drop','Remise','']];
+  const ongl=[['ai','Je propose',mesObjets.length],['cherche','Je demande',mesSouhaits.length],['trades','Échanges',enCours],['drop','Remise',''],['mespro','Troc & Services',typeof Services!=='undefined'?Services.aRepondre():'']];
   if(moi.est_moderateur)ongl.push(['mod','Modération','']);
-  const actif=vueActuelle==='lists'?panneau:vueActuelle;
+  const actif=vueActuelle==='lists'?panneau:vueActuelle==='nego'?'mespro':vueActuelle;
   const html=ongl.map(([k,l,n])=>`<button type="button" data-onglet="${k}"${k===actif?' aria-current="page"':''}>${l}${n!==''?`<small>${n}</small>`:''}</button>`).join('');
   $$('[data-espace]').forEach(x=>x.innerHTML=html);
 }
@@ -1547,6 +1552,7 @@ $('#f-report').onsubmit=async e=>{
 
 /* Modération */
 async function chargerSignalements(){
+  if(typeof Services!=='undefined')Services.moderation();
   let liste; try{liste=await api('/moderation/signalements')}catch(err){toast(err.message);return}
   $('#reports').innerHTML=liste.map(s=>`<article class="card" data-id="${s.id}">
     <span class="tag a">${esc(MOTIFS[s.motif])} · n° ${s.id}</span>
@@ -1765,7 +1771,7 @@ async function demarrer(){
   const gt=chargerGrandTroc(), session=location.hash.startsWith('#connexion=')?null:chargerSession();
   try{const cats=await api('/categories'); categories=Object.fromEntries(cats.map(c=>[c.slug,c.libelle])); afficherCategories(cats); chargerFil();
     const opts=cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
-    $('#cat-obj').innerHTML=cats.map(c=>`<label><input type="radio" name="categorie_slug" value="${esc(c.slug)}" required><span>${picto(c.slug)}${esc(c.libelle)}</span></label>`).join(''); $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
+    $('#cat-obj').innerHTML=cats.filter(c=>c.slug!=='services').map(c=>`<label><input type="radio" name="categorie_slug" value="${esc(c.slug)}" required><span>${picto(c.slug)}${esc(c.libelle)}</span></label>`).join(''); $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
   }catch(err){toast(err.message)}
   let h=location.hash;
   if(h==='#mon-espace'){h='#monespace';history.replaceState(null,'',h)} // ancienne adresse de Mon espace
@@ -1780,6 +1786,7 @@ async function demarrer(){
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(h.startsWith('#categorie=')){if(moi)toutCharger();suivre(h);return}
   if(h==='#recherche-site'||h.startsWith('#site=')){if(moi)toutCharger();suivre(h);return}
+  if(h==='#services'||h.startsWith('#pro-')){if(moi)toutCharger();suivre(h);return} // Troc & Services, public
   if(['#objets','#se-connecter','#favoris'].includes(h)||(h==='#monespace'&&!moi)){if(moi)toutCharger(); naviguer(h); return}
   if(!moi)return;
   await gt; await toutCharger();
@@ -1792,5 +1799,6 @@ demarrer();
 <script src="match.js"></script>
 <script src="premium.js"></script>
 <script src="visiteur.js"></script>
+<script src="services.js"></script>
 </body>
 </html>

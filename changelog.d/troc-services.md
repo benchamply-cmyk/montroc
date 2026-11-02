@@ -1,0 +1,1 @@
+- Troc & Services : échanger des articles contre le service d'un professionnel certifié (déménagement, bâtiment, jardinage, transport), ou service contre service, avec conversation, contrat généré par TopTroc et services intégrés aux boucles du Grand Troc.

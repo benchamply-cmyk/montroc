@@ -57,6 +57,7 @@ def base_vide():
     yield
     with engine.begin() as conn:
         tables = (
+            "contrats_service, messages_negociation, negociations, profils_pro, "
             "appareils_push, favoris, suivis_visiteurs, avis, signalements, sessions, jetons_connexion, transferts, "
             "echanges, grands_trocs, souhaits, objets, utilisateurs"
         )

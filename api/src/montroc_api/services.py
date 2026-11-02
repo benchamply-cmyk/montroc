@@ -731,7 +731,8 @@ def deposer(
 
     echange.statut = m.StatutEchange.termine
     for t in echange.transferts:
-        t.objet.statut = m.StatutObjet.echange
+        # Un service rendu reste proposé : le professionnel peut le rendre à quelqu'un d'autre.
+        t.objet.statut = m.StatutObjet.disponible if t.objet.est_un_service else m.StatutObjet.echange
         courriels.apres_validation(
             session,
             courriels.tout_est_depose,

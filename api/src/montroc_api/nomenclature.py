@@ -441,6 +441,111 @@ DETAIL: dict[str, tuple[str, tuple[tuple[str, str], ...], tuple[Caracteristique,
             Caracteristique("authenticite", "Authenticité", ("Certifiée", "Non certifiée", "Non applicable")),
         ),
     ),
+    # Troc & Services : un service professionnel s'échange comme un objet (contre des articles, ou contre un autre
+    # service), au Match, au Grand Troc et par négociation. Seul un membre certifié pour ce métier peut le proposer
+    # (voir ``METIERS`` et services_pro.py).
+    "services": (
+        "Troc & Services",
+        _sous(
+            "services",
+            ("demenagement", "Déménagement"),
+            ("maconnerie", "Maçonnerie"),
+            ("electricite", "Électricité"),
+            ("plomberie", "Plomberie"),
+            ("peinture", "Peinture"),
+            ("jardinage", "Jardinage"),
+            ("transport", "Transporteur / chauffeur"),
+        ),
+        (
+            Caracteristique(
+                "duree",
+                "Durée de la prestation",
+                ("1 heure", "Demi-journée", "1 journée", "2 jours ou plus", "Forfait"),
+            ),
+            Caracteristique("materiel", "Matériel fourni", OUI_NON),
+            Caracteristique("devis", "Visite ou devis avant accord", OUI_NON),
+            Caracteristique(
+                "vehicule",
+                "Véhicule",
+                ("Voiture", "Utilitaire jusqu'à 12 m³", "Utilitaire 20 m³", "Camion", "Sans véhicule"),
+                pour=("services-demenagement", "services-transport"),
+            ),
+        ),
+    ),
+}
+
+SERVICES = "services"
+
+
+@dataclass(frozen=True)
+class Metier:
+    """La fiche d'un métier de Troc & Services : ce qu'on peut en attendre et ce que TopTroc vérifie avant de
+    certifier un professionnel (la modération décide, pièce par pièce)."""
+
+    famille: str
+    description: str
+    exemples: tuple[str, ...]
+    justificatifs: tuple[str, ...]
+
+
+_PIECES_DE_BASE = ("Numéro SIRET (avis de situation INSEE ou extrait Kbis de moins de 3 mois)",)
+_BATIMENT = _PIECES_DE_BASE + (
+    "Attestation d'assurance responsabilité civile professionnelle en cours de validité",
+    "Attestation d'assurance décennale pour les travaux qui y sont soumis",
+)
+# Clé : slug de la sous-catégorie de ``services`` ; ordre et familles du site.
+METIERS = {
+    "services-demenagement": Metier(
+        "Déménagement",
+        "Aide au déménagement : chargement, transport, montage et démontage de meubles, protection des objets.",
+        ("Déménagement d'un studio", "Montage d'une cuisine en kit", "Débarras de cave", "Monte-meubles"),
+        _PIECES_DE_BASE
+        + (
+            "Attestation d'assurance responsabilité civile professionnelle",
+            "Inscription au registre des transporteurs si le transport se fait pour le compte d'autrui",
+        ),
+    ),
+    "services-maconnerie": Metier(
+        "Bâtiment",
+        "Petits et gros travaux de maçonnerie : murets, dalles, ouvertures, enduits, réparations.",
+        ("Monter un muret de jardin", "Couler une dalle", "Reprendre un enduit", "Poser des pavés"),
+        _BATIMENT,
+    ),
+    "services-electricite": Metier(
+        "Bâtiment",
+        "Installation et dépannage électrique : prises, éclairage, tableau, mise en sécurité.",
+        ("Ajouter des prises", "Poser des luminaires", "Changer un tableau électrique", "Diagnostic de panne"),
+        _BATIMENT + ("Qualification ou habilitation électrique (Qualifelec, habilitation B2V/BR…)",),
+    ),
+    "services-plomberie": Metier(
+        "Bâtiment",
+        "Plomberie et sanitaire : fuites, robinetterie, chauffe-eau, salle de bains.",
+        ("Réparer une fuite", "Changer un mitigeur", "Installer un chauffe-eau", "Déboucher une canalisation"),
+        _BATIMENT,
+    ),
+    "services-peinture": Metier(
+        "Bâtiment",
+        "Peinture et finitions intérieures et extérieures : murs, plafonds, boiseries, papier peint.",
+        ("Repeindre une pièce", "Poser du papier peint", "Lasurer des volets", "Enduire et poncer"),
+        _BATIMENT,
+    ),
+    "services-jardinage": Metier(
+        "Jardinage",
+        "Entretien de jardins et d'espaces verts : tonte, taille, désherbage, plantations, évacuation des déchets.",
+        ("Tondre une pelouse", "Tailler une haie", "Planter un potager", "Débroussailler un terrain"),
+        _PIECES_DE_BASE + ("Attestation d'assurance responsabilité civile professionnelle",),
+    ),
+    "services-transport": Metier(
+        "Transporteur / chauffeur",
+        "Transport de marchandises ou de personnes : livraison d'un meuble, course, conduite d'un véhicule.",
+        ("Livrer un canapé", "Aller chercher un achat volumineux", "Conduire un utilitaire", "Navette aéroport"),
+        _PIECES_DE_BASE
+        + (
+            "Permis de conduire valide pour le véhicule utilisé",
+            "Inscription au registre des transporteurs (marchandises) ou carte professionnelle VTC (personnes)",
+            "Attestation d'assurance couvrant l'activité",
+        ),
+    ),
 }
 
 ORDRE = {slug: i for i, slug in enumerate(DETAIL)}
