@@ -44,6 +44,8 @@ class CategorieDetaillee(CategorieLecture):
 
     sous_categories: list[SousCategorie]
     caracteristiques: list[CaracteristiqueLecture]
+    # TopTroc Pro : le secteur dont les comptes Pro sont seuls à publier et demander ici (None : ouverte à tous).
+    secteur_pro: str | None = None
 
 
 # --- Connexion par lien magique ---
@@ -135,6 +137,60 @@ def arrondir(coordonnee: float) -> float:
     return round(coordonnee, 2)
 
 
+# --- TopTroc Pro ---
+
+SecteurPro = Literal["batiment", "auto_moto", "alimentaire"]
+
+
+def siret_valide(valeur: str) -> str:
+    """14 chiffres (espaces tolérés) dont la clé de Luhn est juste ; renvoie les 14 chiffres."""
+    siret = re.sub(r"\s", "", valeur)
+    if not re.fullmatch(r"[0-9]{14}", siret):
+        raise ValueError("Le SIRET compte 14 chiffres.")
+    total = 0
+    for i, chiffre in enumerate(reversed(siret)):
+        n = int(chiffre) * (2 if i % 2 else 1)
+        total += n - 9 if n > 9 else n
+    # La Poste (SIREN 356 000 000) a ses propres règles : somme des chiffres multiple de 5.
+    if total % 10 and not (siret.startswith("356000000") and sum(map(int, siret)) % 5 == 0):
+        raise ValueError("Ce SIRET n'existe pas : vérifier les 14 chiffres.")
+    return siret
+
+
+class ProfilProPublic(BaseModel):
+    """Ce que les autres membres voient d'un compte Pro."""
+
+    secteur: SecteurPro
+    raison_sociale: str | None
+    metier: str | None = None
+    verifie: bool = False
+
+
+class ProfilPro(ProfilProPublic):
+    """Mon profil Pro, avec mon SIRET."""
+
+    siret: str | None = None
+    categorie_slug: str | None = None
+
+
+class ProfilProCreation(BaseModel):
+    secteur: SecteurPro
+    raison_sociale: str = Field(min_length=2, max_length=120, examples=["Menuiserie Martin"])
+    siret: str = Field(max_length=20, examples=["732 829 320 00074"])
+    metier: str | None = Field(default=None, max_length=80, examples=["Menuisier"])
+
+    @field_validator("siret")
+    @classmethod
+    def _siret(cls, v: str) -> str:
+        return siret_valide(v)
+
+
+class SecteurProLecture(BaseModel):
+    secteur: SecteurPro
+    libelle: str
+    categorie_slug: str
+
+
 class Moi(Lecture):
     id: int
     email: str
@@ -156,6 +212,8 @@ class Moi(Lecture):
     avantages: list[str] = Field(default_factory=list)
     essai_disponible: bool = False
     super_jaime_restants: int = 0
+    # TopTroc Pro : None pour un compte particulier.
+    pro: ProfilPro | None = None
     zones_max: int = 1
 
 
@@ -185,6 +243,7 @@ class UtilisateurLecture(Lecture):
     echanges_menes: int
     reputation: str
     cree_le: datetime
+    pro: ProfilProPublic | None = None
 
 
 # --- Objets et souhaits ---

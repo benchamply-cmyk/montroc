@@ -172,6 +172,13 @@ class Utilisateur(Horodatage, Base):
     stripe_client: Mapped[str | None] = mapped_column(String(100), index=True)
     # Profil vérifié par la modération (pièce d'identité ou téléphone confirmé) : badge visible des autres.
     verifie_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # TopTroc Pro : secteur (voir nomenclature.SECTEURS_PRO), entreprise et SIRET. Le secteur ouvre sa catégorie
+    # réservée ; le SIRET est contrôlé par la modération, qui pose alors le badge « Pro vérifié ».
+    pro_secteur: Mapped[str | None] = mapped_column(String(20))
+    pro_raison_sociale: Mapped[str | None] = mapped_column(String(120))
+    pro_siret: Mapped[str | None] = mapped_column(String(14))
+    pro_metier: Mapped[str | None] = mapped_column(String(80))
+    pro_verifie_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     objets: Mapped[list[Objet]] = relationship(back_populates="proprietaire", cascade="all, delete-orphan")
     souhaits: Mapped[list[Souhait]] = relationship(
@@ -187,6 +194,18 @@ class Utilisateur(Horodatage, Base):
     @property
     def verifie(self) -> bool:
         return self.verifie_le is not None
+
+    @property
+    def pro(self) -> dict | None:
+        """Le profil Pro, montré à tous (sans le SIRET, réservé au membre et à la modération)."""
+        if self.pro_secteur is None:
+            return None
+        return {
+            "secteur": self.pro_secteur,
+            "raison_sociale": self.pro_raison_sociale,
+            "metier": self.pro_metier,
+            "verifie": self.pro_verifie_le is not None,
+        }
 
     @property
     def echanges_menes(self) -> int:
@@ -214,6 +233,11 @@ class Utilisateur(Horodatage, Base):
             "formule IS NULL OR formule IN ('essentiel', 'plus', 'famille', 'pro', 'pass')", name="formule_connue"
         ),
         CheckConstraint("payeur_famille_id IS NULL OR payeur_famille_id <> id", name="pas_sa_propre_famille"),
+        CheckConstraint(
+            "pro_secteur IS NULL OR (pro_secteur IN ('batiment', 'auto_moto', 'alimentaire') "
+            "AND pro_raison_sociale IS NOT NULL AND pro_siret ~ '^[0-9]{14}$')",
+            name="profil_pro_complet",
+        ),
         # E-mail unique sans tenir compte de la casse.
         Index("uq_utilisateurs_email_lower", func.lower(email), unique=True),
     )

@@ -97,9 +97,17 @@ def _mes_souhaits(session, utilisateur: m.Utilisateur, ids: list[int]) -> list[m
     return list(souhaits)
 
 
+def verifier_categorie_pro(utilisateur: m.Utilisateur, slug: str | None) -> None:
+    """Une catégorie TopTroc Pro n'est ouverte qu'aux comptes Pro de son secteur."""
+    if slug in nomenclature.categories_interdites(utilisateur.pro_secteur):
+        secteur = nomenclature.SECTEURS_PRO[nomenclature.CATEGORIES_PRO[slug]]
+        raise HTTPException(403, f"Catégorie réservée aux comptes TopTroc Pro du secteur « {secteur} ».")
+
+
 @router.post("/objets", response_model=MonObjet, status_code=201)
 def ajouter_objet(donnees: ObjetCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
     obtenir_ou_404(session, m.Categorie, donnees.categorie_slug)
+    verifier_categorie_pro(utilisateur, donnees.categorie_slug)
     contre = _mes_souhaits(session, utilisateur, donnees.contre_souhait_ids)
     objet = m.Objet(proprietaire_id=utilisateur.id, contre=contre, **donnees.model_dump(exclude={"contre_souhait_ids"}))
     session.add(objet)
@@ -184,10 +192,12 @@ def ajouter_souhait(donnees: SouhaitCreation, utilisateur: UtilisateurConnecte, 
     for slug in {donnees.categorie_slug} | {a.categorie_slug for a in donnees.alternatives}:
         if slug is not None:
             obtenir_ou_404(session, m.Categorie, slug)
+            verifier_categorie_pro(utilisateur, slug)
     if donnees.objet_id is not None:
         objet = obtenir_ou_404(session, m.Objet, donnees.objet_id)
         if objet.proprietaire_id == utilisateur.id:
             raise HTTPException(409, "On ne peut pas souhaiter son propre objet.")
+        verifier_categorie_pro(utilisateur, objet.categorie_slug)
     souhait = m.Souhait(utilisateur_id=utilisateur.id, **donnees.model_dump())
     session.add(souhait)
     session.commit()

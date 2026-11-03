@@ -75,6 +75,9 @@ def requete_objets(
     )
     if categorie:
         requete = requete.where(m.Objet.categorie_slug == categorie)
+    else:
+        # Les objets TopTroc Pro ne se voient que sur la page de leur catégorie, pas dans le fil des particuliers.
+        requete = requete.where(m.Objet.categorie_slug.not_in(nomenclature.CATEGORIES_PRO))
     if sous_categorie:
         requete = requete.where(m.Objet.sous_categorie_slug == sous_categorie)
     if etats:

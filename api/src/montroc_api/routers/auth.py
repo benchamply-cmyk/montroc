@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy import delete, func, select
 from sqlalchemy.orm import object_session
 
-from .. import courriels, motdepasse, premium
+from .. import courriels, motdepasse, nomenclature, premium
 from .. import models as m
 from ..config import get_settings
 from ..deps import SessionDep, UtilisateurConnecte, empreinte, est_moderateur
@@ -18,6 +18,7 @@ from ..schemas import (
     DemandeInscription,
     DemandeLien,
     Moi,
+    ProfilPro,
     ResultatConnexion,
     Verification,
     VerificationCode,
@@ -49,6 +50,13 @@ def moi(utilisateur: m.Utilisateur) -> Moi:
             and formule is None,
             "super_jaime_restants": premium.super_jaime_restants(session, utilisateur) if session else 0,
             "zones_max": premium.zones_max(utilisateur),
+            "pro": ProfilPro(
+                **utilisateur.pro,
+                siret=utilisateur.pro_siret,
+                categorie_slug=nomenclature.CATEGORIE_DU_SECTEUR[utilisateur.pro_secteur],
+            )
+            if utilisateur.pro
+            else None,
         }
     )
 

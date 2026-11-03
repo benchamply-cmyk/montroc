@@ -106,4 +106,4 @@ def test_migration_des_donnees_existantes(creer):
     )
     assert s[souhait] == ("sport", "sport-velos", {"sport": "Vélo"})
     assert s[autre] == ("culture", None, {})
-    assert slugs == set(nomenclature.DETAIL)
+    assert slugs == set(nomenclature.TOUT)  # les catégories TopTroc Pro arrivent avec 0023

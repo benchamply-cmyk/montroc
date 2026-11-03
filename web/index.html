@@ -416,6 +416,10 @@ details.plus summary::-webkit-details-marker{display:none}
 .formule{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .formule.conseillee{border-color:var(--accent)}.formule .prix{color:var(--muted);font-size:14px}
 .formule ul,.c-premium ul{margin:0;padding-left:18px;font-size:14px}
+/* TopTroc Pro : badge du profil professionnel */
+.pro-badge{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;background:var(--mark);color:#15191E;vertical-align:middle}
+.pro-badge.attente{background:transparent;color:var(--muted);border:1px solid var(--line)}
+#c-pro details{margin-top:10px}#c-pro form{margin-top:12px}
 .pub{border:1px dashed var(--line);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--muted)}
 .interesses{flex-basis:100%;display:flex;flex-direction:column;gap:6px}
 .aide{font-size:14px;text-align:center}
@@ -713,6 +717,7 @@ dialog.visiteur .sablier{font-size:40px}
 
     <div class="card" id="c-zones"><span class="label">Où je troque</span><div id="zones"></div></div>
     <div class="card c-premium" id="c-premium"><span class="label">Troc Premium</span><div id="premium"></div></div>
+    <div class="card" id="c-pro"><span class="label">TopTroc Pro</span><div id="pro"></div></div>
     <aside class="pub" data-pub hidden></aside>
 
     <div class="card">
@@ -900,7 +905,7 @@ async function api(chemin,{method='GET',body}={}){
   if(r.status===204)return null;
   const data=await r.json().catch(()=>null);
   if(!r.ok){const d=data&&data.detail;throw new Error(typeof d==='string'?TT_I18N.error(d):(Array.isArray(d)?d.map(x=>TT_I18N.error(x.msg)).join(' · '):'Une erreur est survenue.'))}
-  if(chemin==='/categories')return data.map(c=>({...c,libelle:TT_I18N.t(c.libelle),sous_categories:c.sous_categories.map(x=>({...x,libelle:TT_I18N.t(x.libelle)})),caracteristiques:c.caracteristiques.map(x=>({...x,libelle:TT_I18N.t(x.libelle)}))}));
+  if(chemin.split('?')[0]==='/categories')return data.map(c=>({...c,libelle:TT_I18N.t(c.libelle),sous_categories:c.sous_categories.map(x=>({...x,libelle:TT_I18N.t(x.libelle)})),caracteristiques:c.caracteristiques.map(x=>({...x,libelle:TT_I18N.t(x.libelle)}))}));
   return data;
 }
 
@@ -1051,6 +1056,7 @@ function afficherSession(){
     $('#mdp-bouton').textContent=moi.a_un_mot_de_passe?'Changer le mot de passe':'Enregistrer le mot de passe'}
   else $('#f-mdp-rappel').hidden=true;
   if(typeof Premium!=='undefined')Premium.afficher();
+  if(typeof Pro!=='undefined')Pro.afficher();
 }
 function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);store.set('troc.pseudo',null);afficherSession();go('home')}
 
@@ -1175,7 +1181,7 @@ function reprendreAnnonce(){
    sa sous-catégorie et ses caractéristiques (taille, âge, marque…), servis par GET /categories. */
 const Detail=(()=>{
   let detail={}, charge=null;
-  const charger=()=>charge??=api('/categories').then(cats=>{detail=Object.fromEntries(cats.map(c=>[c.slug,c]))}).catch(err=>{charge=null;throw err});
+  const charger=()=>charge??=api('/categories?pro=true').then(cats=>{detail=Object.fromEntries(cats.map(c=>[c.slug,c]))}).catch(err=>{charge=null;throw err});
   const sousNom=(cat,sous)=>((detail[cat]?.sous_categories||[]).find(x=>x.slug===sous)||{}).libelle||'';
   // « Poussette › Canne », déjà échappé
   const nom=(cat,sous)=>esc(categories[cat]||cat)+(sous&&sousNom(cat,sous)?' › '+esc(sousNom(cat,sous)):'');
@@ -1632,7 +1638,7 @@ async function pageCategorie(slug,sous=''){
   $('#cat-titre').textContent=categories[slug]||slug;
   $('#cat-filtres').innerHTML=''; $('#cat-sous').innerHTML='';
   try{
-    if(!Cat.detail){const cats=await api('/categories'); if(Cat.slug!==slug)return;
+    if(!Cat.detail){const cats=await api(slug.startsWith('pro-')?'/categories?pro=true':'/categories'); if(Cat.slug!==slug)return;
       Cat.detail=cats.find(c=>c.slug===slug)||{slug,libelle:slug,sous_categories:[],caracteristiques:[]}}
     await chargerCategorie();
   }catch(err){$('#cat-count').textContent='';toast(err.message)}
@@ -1766,6 +1772,7 @@ async function demarrer(){
   try{const cats=await api('/categories'); categories=Object.fromEntries(cats.map(c=>[c.slug,c.libelle])); afficherCategories(cats); chargerFil();
     const opts=cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
     $('#cat-obj').innerHTML=cats.map(c=>`<label><input type="radio" name="categorie_slug" value="${esc(c.slug)}" required><span>${picto(c.slug)}${esc(c.libelle)}</span></label>`).join(''); $('#cat-wish').innerHTML='<option value="">Une catégorie…</option>'+opts;
+    if(moi)Pro.ajouterCategorie();
   }catch(err){toast(err.message)}
   let h=location.hash;
   if(h==='#mon-espace'){h='#monespace';history.replaceState(null,'',h)} // ancienne adresse de Mon espace
@@ -1776,6 +1783,7 @@ async function demarrer(){
   await session;
   if(moi)Visiteur.apresConnexion(); else Visiteur.rafraichir();
   if(Visiteur.demarrer(h))return; // liens de confirmation ou d'arrêt du suivi sans compte
+  if(h==='#pro'){history.replaceState(null,'',location.pathname);if(moi)toutCharger();Pro.ouvrir();return}
   if(h.startsWith('#objet-')){if(moi)toutCharger(); ouvrirObjet(+h.slice(7)); return}
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(h.startsWith('#categorie=')){if(moi)toutCharger();suivre(h);return}
@@ -1791,6 +1799,7 @@ demarrer();
 </script>
 <script src="match.js"></script>
 <script src="premium.js"></script>
+<script src="pro.js"></script>
 <script src="visiteur.js"></script>
 </body>
 </html>

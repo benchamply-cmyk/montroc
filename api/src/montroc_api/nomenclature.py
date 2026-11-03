@@ -443,15 +443,131 @@ DETAIL: dict[str, tuple[str, tuple[tuple[str, str], ...], tuple[Caracteristique,
     ),
 }
 
-ORDRE = {slug: i for i, slug in enumerate(DETAIL)}
+# --- TopTroc Pro ---
+# Trois secteurs au lancement, chacun avec sa catégorie réservée : seuls les comptes Pro du secteur y publient
+# et y demandent (artisans entre eux, garages entre eux, commerces de bouche entre eux). Ces catégories ne
+# figurent pas dans ``DETAIL`` (créé par la migration 0012) : la migration 0023 les ajoute en base.
+SECTEURS_PRO = {
+    "batiment": "Artisans du bâtiment",
+    "auto_moto": "Garages auto et moto",
+    "alimentaire": "Commerces alimentaires et restaurants",
+}
+QUANTITE = Caracteristique("quantite", "Quantité disponible")
+EMBALLAGE_PRO = Caracteristique(
+    "emballage", "Conditionnement", ("Neuf sous emballage d'origine", "Neuf sans emballage", "Fin de lot", "Chute")
+)
+DETAIL_PRO: dict[str, tuple[str, tuple[tuple[str, str], ...], tuple[Caracteristique, ...]]] = {
+    "pro-batiment": (
+        "Pro · Bâtiment : outillage et matériaux",
+        _sous(
+            "pro-batiment",
+            ("electroportatif", "Outillage électroportatif"),
+            ("outillage-main", "Outillage à main"),
+            ("gros-materiel", "Gros matériel (échafaudage, bétonnière…)"),
+            ("gros-oeuvre", "Matériaux de gros œuvre"),
+            ("isolation-platrerie", "Isolation et plâtrerie"),
+            ("carrelage-sols", "Carrelage et revêtements de sol"),
+            ("menuiserie", "Menuiserie et quincaillerie"),
+            ("plomberie", "Plomberie et sanitaire"),
+            ("electricite", "Électricité et éclairage"),
+            ("peinture", "Peinture et enduits"),
+            ("epi", "Équipements de protection (EPI)"),
+        ),
+        (
+            Caracteristique(
+                "unite", "Unité", ("Pièce", "Lot", "m²", "Mètre linéaire", "m³", "kg", "Sac", "Rouleau", "Palette")
+            ),
+            QUANTITE,
+            EMBALLAGE_PRO,
+            MARQUE,
+            Caracteristique("reference", "Référence fabricant"),
+            Caracteristique("peremption", "Date de péremption (colles, enduits…)"),
+            Caracteristique("enlevement", "Enlèvement", ("Au dépôt", "Sur chantier", "Livraison possible")),
+        ),
+    ),
+    "pro-auto-moto": (
+        "Pro · Auto-moto : pièces et atelier",
+        _sous(
+            "pro-auto-moto",
+            ("moteur", "Moteur et distribution"),
+            ("freinage", "Freinage"),
+            ("transmission", "Embrayage et transmission"),
+            ("suspension-direction", "Suspension et direction"),
+            ("electricite", "Électricité et électronique"),
+            ("carrosserie", "Carrosserie et vitrage"),
+            ("eclairage", "Éclairage"),
+            ("filtration-entretien", "Filtration et entretien"),
+            ("echappement", "Échappement"),
+            ("pneus-jantes", "Pneus et jantes"),
+            ("moto", "Pièces moto et scooter"),
+            ("atelier", "Outillage d'atelier et diagnostic"),
+            ("consommables", "Huiles, liquides et consommables"),
+        ),
+        (
+            Caracteristique(
+                "vehicule", "Type de véhicule", ("Voiture", "Utilitaire", "Moto", "Scooter", "Poids lourd", "Autre")
+            ),
+            Caracteristique("marque", "Marque du véhicule"),
+            Caracteristique("modele", "Modèle compatible"),
+            Caracteristique("annee", "Année de compatibilité"),
+            Caracteristique("reference", "Référence constructeur (OE)"),
+            Caracteristique(
+                "origine", "Origine", ("Origine constructeur", "Première monte", "Adaptable", "Échange standard")
+            ),
+            Caracteristique(
+                "emballage",
+                "État de la pièce",
+                ("Neuve sous emballage d'origine", "Neuve sans emballage", "Jamais montée"),
+            ),
+            QUANTITE,
+        ),
+    ),
+    "pro-alimentaire": (
+        "Pro · Alimentaire : produits et matériel",
+        _sous(
+            "pro-alimentaire",
+            ("epicerie", "Épicerie sèche"),
+            ("fruits-legumes", "Fruits et légumes"),
+            ("cremerie", "Crèmerie et fromages"),
+            ("boucherie-charcuterie", "Boucherie et charcuterie"),
+            ("poissonnerie", "Poissonnerie"),
+            ("boulangerie", "Boulangerie et pâtisserie"),
+            ("boissons", "Boissons"),
+            ("surgeles", "Surgelés"),
+            ("emballages", "Emballages et consommables"),
+            ("petit-materiel", "Petit matériel de cuisine"),
+            ("equipement", "Équipement (four, froid, inox…)"),
+        ),
+        (
+            Caracteristique("conservation", "Conservation", ("Ambiante", "Frais (0 à 4 °C)", "Surgelé (-18 °C)")),
+            Caracteristique("dlc", "DLC ou DDM (JJ/MM/AAAA)"),
+            Caracteristique("unite", "Unité", ("kg", "Litre", "Pièce", "Carton", "Caisse", "Palette")),
+            QUANTITE,
+            Caracteristique("emballage", "Emballage", ("Fermé d'origine", "Vrac", "Matériel")),
+            Caracteristique("bio", "Bio", OUI_NON),
+            MARQUE,
+        ),
+    ),
+}
+# Catégorie réservée -> secteur, et l'inverse.
+CATEGORIES_PRO = {"pro-batiment": "batiment", "pro-auto-moto": "auto_moto", "pro-alimentaire": "alimentaire"}
+CATEGORIE_DU_SECTEUR = {secteur: slug for slug, secteur in CATEGORIES_PRO.items()}
+TOUT = {**DETAIL, **DETAIL_PRO}
+
+ORDRE = {slug: i for i, slug in enumerate(TOUT)}
+
+
+def categories_interdites(secteur_pro: str | None) -> set[str]:
+    """Les catégories Pro où un membre ne peut ni publier ni demander : toutes, sauf celle de son secteur."""
+    return {slug for slug, secteur in CATEGORIES_PRO.items() if secteur != secteur_pro}
 
 
 def sous_categories(categorie: str) -> tuple[tuple[str, str], ...]:
-    return DETAIL[categorie][1] if categorie in DETAIL else ()
+    return TOUT[categorie][1] if categorie in TOUT else ()
 
 
 def caracteristiques(categorie: str) -> tuple[Caracteristique, ...]:
-    return DETAIL[categorie][2] if categorie in DETAIL else ()
+    return TOUT[categorie][2] if categorie in TOUT else ()
 
 
 def verifier(categorie: str | None, sous_categorie: str | None, valeurs: dict[str, str], demande: bool) -> dict:
