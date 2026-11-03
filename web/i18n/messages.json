@@ -5283,14 +5283,6 @@
     "en": "Offers · TopTroc Pro",
     "es": "Ofertas · TopTroc Pro"
   },
-  "Libérer du stock": {
-    "en": "Free up stock",
-    "es": "Liberar stock"
-  },
-  "Les fins de lots, les erreurs de commande et les retours clients repartent au lieu de prendre la poussière.": {
-    "en": "End-of-line lots, ordering mistakes and customer returns move on instead of gathering dust.",
-    "es": "Los fines de serie, los errores de pedido y las devoluciones vuelven a circular en lugar de acumular polvo."
-  },
   "Trouver vite": {
     "en": "Find it fast",
     "es": "Encontrar rápido"
@@ -5554,5 +5546,13 @@
   "TopTroc Pro met en relation les professionnels entre eux. Entre voisins de métiers, échangez en fonction de vos besoins : outillage, matériaux, pièces, produits, invendus, surplus…": {
     "en": "TopTroc Pro connects professionals with each other. Between neighbours in the trade, swap according to your needs: tools, materials, parts, products, unsold stock, surplus…",
     "es": "TopTroc Pro pone en contacto a los profesionales entre sí. Entre vecinos de oficio, intercambie según sus necesidades: herramientas, materiales, piezas, productos, invendidos, excedentes…"
+  },
+  "Optimiser votre stock": {
+    "en": "Optimise your stock",
+    "es": "Optimice su stock"
+  },
+  "Flexibilité et adaptation en fonction de la demande. Gestion du stockage des commandes en lots, des erreurs et retours clients.": {
+    "en": "Flexibility and adapting to demand. Handling stock from bulk orders, ordering mistakes and customer returns.",
+    "es": "Flexibilidad y adaptación a la demanda. Gestión del almacenaje de pedidos por lotes, de los errores y de las devoluciones de clientes."
   }
 }
