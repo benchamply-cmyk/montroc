@@ -5283,10 +5283,6 @@
     "en": "Offers · TopTroc Pro",
     "es": "Ofertas · TopTroc Pro"
   },
-  "TopTroc Pro met en relation les professionnels d'un même métier pour échanger leurs surplus : outillage, matériaux, pièces, produits. Sans payer, sans négocier un prix, entre voisins de métier.": {
-    "en": "TopTroc Pro connects professionals in the same trade to swap their surplus: tools, materials, parts, products. No payment, no price haggling, between neighbours in the trade.",
-    "es": "TopTroc Pro conecta a profesionales del mismo oficio para intercambiar sus excedentes: herramientas, materiales, piezas, productos. Sin pagar, sin negociar precios, entre vecinos de oficio."
-  },
   "Libérer du stock": {
     "en": "Free up stock",
     "es": "Liberar stock"
@@ -5554,5 +5550,9 @@
   "professionnels": {
     "en": "professionals",
     "es": "profesionales"
+  },
+  "TopTroc Pro met en relation les professionnels entre eux. Entre voisins de métiers, échangez en fonction de vos besoins : outillage, matériaux, pièces, produits, invendus, surplus…": {
+    "en": "TopTroc Pro connects professionals with each other. Between neighbours in the trade, swap according to your needs: tools, materials, parts, products, unsold stock, surplus…",
+    "es": "TopTroc Pro pone en contacto a los profesionales entre sí. Entre vecinos de oficio, intercambie según sus necesidades: herramientas, materiales, piezas, productos, invendidos, excedentes…"
   }
 }
