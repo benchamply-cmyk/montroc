@@ -5270,5 +5270,113 @@
   "Troquer son annonce": {
     "en": "Swap your listing",
     "es": "Intercambiar tu anuncio"
+  },
+  "Échanger ses objets, sans argent,": {
+    "en": "Swap your things, without money,",
+    "es": "Intercambiar tus objetos, sin dinero,"
+  },
+  "partout en France.": {
+    "en": "anywhere in France.",
+    "es": "en toda Francia."
+  },
+  "À deux avec le Match, ou en boucle à trois avec le Grand Troc : plus de chances de trouver ce qu'on cherche.": {
+    "en": "Two-way with Match, or in a three-way loop with the Grand Troc: more chances to find what you are looking for.",
+    "es": "De dos en dos con el Match, o en un círculo de tres con el Grand Troc: más posibilidades de encontrar lo que buscas."
+  },
+  "Articles en ligne en attente d'un Troc": {
+    "en": "Items online waiting for a swap",
+    "es": "Artículos en línea esperando un trueque"
+  },
+  "L'offre": {
+    "en": "The offer",
+    "es": "La oferta"
+  },
+  "Troquer est": {
+    "en": "Swapping is",
+    "es": "Intercambiar es"
+  },
+  "Publier et chercher, même sans compte": {
+    "en": "Post and search, even without an account",
+    "es": "Publicar y buscar, incluso sin cuenta"
+  },
+  "En main propre près de chez soi, ou par colis": {
+    "en": "Hand to hand near you, or by parcel",
+    "es": "En mano cerca de ti, o por paquete"
+  },
+  "Voir les offres": {
+    "en": "See the offers",
+    "es": "Ver las ofertas"
+  },
+  "· Déjà sur Vinted ou Leboncoin ?": {
+    "en": "· Already on Vinted or Leboncoin?",
+    "es": "· ¿Ya estás en Vinted o Leboncoin?"
+  },
+  "Les offres · TopTroc": {
+    "en": "Offers · TopTroc",
+    "es": "Ofertas · TopTroc"
+  },
+  "Publier, chercher, le Match, le Grand Troc, la remise en main propre : tout l'essentiel ne coûte rien, partout en France.": {
+    "en": "Posting, searching, Match, the Grand Troc, hand-to-hand handover: all the essentials are free, anywhere in France.",
+    "es": "Publicar, buscar, el Match, el Grand Troc, la entrega en mano: todo lo esencial es gratis, en toda Francia."
+  },
+  "Publier ses objets, sans limite": {
+    "en": "Post your items, without limit",
+    "es": "Publicar tus objetos, sin límite"
+  },
+  "Dire ce qui serait utile": {
+    "en": "Say what would be useful",
+    "es": "Decir lo que sería útil"
+  },
+  "Chercher, même sans compte, près de chez soi ou dans toute la France (filtre « Où ? »)": {
+    "en": "Search, even without an account, near you or across France (\"Where?\" filter)",
+    "es": "Buscar, incluso sin cuenta, cerca de ti o en toda Francia (filtro «¿Dónde?»)"
+  },
+  "Le Match, à tout moment, et le Grand Troc du dimanche": {
+    "en": "Match, at any time, and the Sunday Grand Troc",
+    "es": "El Match, en cualquier momento, y el Grand Troc del domingo"
+  },
+  "La remise en main propre, ou l'envoi par colis (chacun paie l'envoi de son objet)": {
+    "en": "Hand-to-hand handover, or shipping by parcel (each person pays to ship their own item)",
+    "es": "La entrega en mano, o el envío por paquete (cada uno paga el envío de su objeto)"
+  },
+  "Troc Premium, plus tard": {
+    "en": "Troc Premium, later",
+    "es": "Troc Premium, más adelante"
+  },
+  "Une option de confort arrivera quand la communauté sera assez grande : sans publicité, voir qui aime ses objets, retour arrière dans le Match. Les échanges, eux, restent les mêmes pour tous.": {
+    "en": "A comfort option will come once the community is big enough: no ads, see who likes your items, undo in Match. Swaps stay the same for everyone.",
+    "es": "Una opción de comodidad llegará cuando la comunidad sea lo bastante grande: sin publicidad, ver quién quiere tus objetos, deshacer en el Match. Los intercambios siguen siendo iguales para todos."
+  },
+  "Entreprises et collectivités": {
+    "en": "Companies and local authorities",
+    "es": "Empresas y administraciones locales"
+  },
+  "Journées troc, salariés, habitants : voir les pages": {
+    "en": "Swap days, employees, residents: see the pages",
+    "es": "Jornadas de trueque, empleados, vecinos: ver las páginas"
+  },
+  "Créer son compte en une minute, avec son seul e-mail.": {
+    "en": "Create your account in one minute, with just your e-mail.",
+    "es": "Crear tu cuenta en un minuto, solo con tu e-mail."
+  },
+  "Les offres TopTroc : troquer est gratuit, partout en France, en main propre ou par colis.": {
+    "en": "TopTroc offers: swapping is free, anywhere in France, hand to hand or by parcel.",
+    "es": "Ofertas de TopTroc: intercambiar es gratis, en toda Francia, en mano o por paquete."
+  },
+  "Toute la France": {
+    "en": "All of France",
+    "es": "Toda Francia"
+  },
+  "Ville introuvable : essayez le code postal.": {
+    "en": "City not found: try the postcode.",
+    "es": "Ciudad no encontrada: prueba con el código postal."
+  },
+  "Position refusée : tapez votre ville.": {
+    "en": "Location refused: type your city.",
+    "es": "Ubicación rechazada: escribe tu ciudad."
+  },
+  "Votre navigateur ne donne pas votre position : tapez votre ville.": {
+    "en": "Your browser does not share your location: type your city.",
+    "es": "Tu navegador no da tu ubicación: escribe tu ciudad."
   }
 }

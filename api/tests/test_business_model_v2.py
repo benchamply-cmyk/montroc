@@ -337,3 +337,26 @@ def test_moderation_premium_et_verification(client, creer):
     assert client.get("/moi", headers=alice.headers).json()["verifie"]
     assert client.put(f"{url}/premium", json={"formule": None}, headers=modo.headers).status_code == 200
     assert client.get("/moi", headers=alice.headers).json()["formule"] is None
+
+
+def test_recherche_par_lieu(client, creer):
+    """Filtre « Où ? » du catalogue public, à la Leboncoin : une ville ou « autour de moi » et un rayon, ou toute
+    la France."""
+    alice = creer.utilisateur("alice")
+    ici = _objet(client, alice, "maison", VIEUX_PORT)
+    loin = _objet(client, alice, "maison", LYON)
+    sans_lieu = _objet(client, alice, "maison")
+    centre = {"latitude": COURS_JULIEN["latitude"], "longitude": COURS_JULIEN["longitude"]}
+
+    def ids(**params):
+        r = client.get("/objets", params=params)
+        assert r.status_code == 200, r.text
+        return {o["id"] for o in r.json()}
+
+    assert {ici, loin, sans_lieu} <= ids()  # toute la France : tout, même sans localisation
+    assert ids(**centre, rayon_km=5) == {ici}
+    assert ids(**centre, rayon_km=200) == {ici}  # Lyon est à près de 280 km
+    assert ids(latitude=LYON[0], longitude=LYON[1], rayon_km=2) == {loin}
+    assert ids(**centre, rayon_km=5, categorie="maison", q="maison") == {ici}
+    assert client.get("/objets", params={"latitude": 43.29}).status_code == 422
+    assert client.get("/objets", params={**centre, "rayon_km": 500}).status_code == 422

@@ -251,6 +251,15 @@ body.large .wrap{max-width:1120px}
 .acc-btn.a{background:var(--accent);color:var(--accent-ink)}
 .acc-btn.g{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 .acc-btns .acc-btn{flex:1 1 160px}
+.lieu{position:relative;margin:10px 0 4px}
+.lieu-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer}
+.lieu-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex:none}
+.lieu-btn[aria-expanded=true],.lieu-btn:hover{border-color:var(--accent)}
+.lieu-panneau{margin-top:8px;display:grid;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;max-width:420px}
+.lieu-panneau .ligne{display:flex;gap:8px;flex-wrap:wrap}
+.lieu-panneau input,.lieu-panneau select{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
+.lieu-panneau button{border:1px solid var(--line);border-radius:8px;background:none;color:var(--ink);padding:9px 12px;font:inherit;font-size:14px;cursor:pointer}
+.lieu-panneau button.ok{background:var(--mark);color:#111318;border-color:var(--mark);font-weight:600}
 .acc-search{display:flex;align-items:center;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;height:48px;min-width:0}
 .acc-search select{background:none;border:0;border-right:1px solid var(--line);padding:0 10px;height:100%;color:var(--muted);font:inherit;font-size:14px;max-width:140px}
 .acc-search input{background:none;border:0;outline:0;flex:1;min-width:0;padding:0 12px;color:var(--ink);font:inherit;font-size:16px}
@@ -497,13 +506,14 @@ dialog.visiteur .sablier{font-size:40px}
     <div class="acc-hero" id="decouvrir">
       <div class="acc-hero-txt">
         <span class="label">Pas de prix. Pas de monnaie.</span>
-        <h1>Le troc se réinvente.<br>La Boucle d'échange pour augmenter ses chances.</h1>
-        <p class="acc-chapo">Accéder aux opportunités d'échanges. Tout le monde y gagne.</p>
+        <h1>Échanger ses objets, sans argent,<br>partout en France.</h1>
+        <p class="acc-chapo">À deux avec le Match, ou en boucle à trois avec le Grand Troc : plus de chances de trouver ce qu'on cherche.</p>
         <form class="acc-search" id="f-search-home" role="search">
           <select name="cat" aria-label="Catégorie"><option value="">Tout</option></select>
           <input type="search" name="q" maxlength="100" placeholder="Vélo, poussette, perceuse…" aria-label="Chercher un objet">
           <button type="submit" aria-label="Chercher"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
         </form>
+        <div class="lieu" data-lieu></div>
         <div class="acc-btns">
           <button class="acc-btn y" type="button" data-proposer>Proposer un objet</button>
           <button class="acc-btn g" type="button" data-objets>Voir les objets</button>
@@ -527,7 +537,7 @@ dialog.visiteur .sablier{font-size:40px}
 
     <div class="bloc">
       <div class="acc-titre">
-        <h2>Articles en ligne en attente d'un Troc.</h2>
+        <h2>Articles en ligne en attente d'un Troc<span id="acc-fil-lieu"></span>.</h2>
         <button type="button" data-objets>Tout voir</button>
       </div>
       <div class="results acc-fil" id="acc-fil"><p class="empty">Chargement des objets…</p></div>
@@ -565,16 +575,14 @@ dialog.visiteur .sablier{font-size:40px}
 
     <div class="acc-duo">
       <div class="card bloc" id="particuliers">
-        <span class="label">Pour les particuliers</span>
-        <h2><span class="hl">Simplicité</span>.</h2>
+        <span class="label">L'offre</span>
+        <h2>Troquer est <span class="hl">gratuit</span>.</h2>
         <ul class="gratuit">
-          <li>Publier</li>
-          <li>Choisir</li>
-          <li>Provoquer un Match</li>
-          <li>Propositions chaque dimanche</li>
+          <li>Publier et chercher, même sans compte</li>
+          <li>Le Match et le Grand Troc</li>
+          <li>En main propre près de chez soi, ou par colis</li>
         </ul>
-        <p class="muted" style="font-size:14px">Déjà sur Vinted ou Leboncoin ? <button type="button" class="lien" data-annonce>Troquer son annonce</button></p>
-        <p class="muted" style="font-size:14px">Entreprise ou collectivité ? <a href="/pros/">Professionnels</a> · <a href="/collectivites/">Collectivités</a></p>
+        <p class="muted" style="font-size:14px"><a href="/particuliers/">Voir les offres</a> · Déjà sur Vinted ou Leboncoin ? <button type="button" class="lien" data-annonce>Troquer son annonce</button></p>
       </div>
       <aside class="pub" data-pub hidden></aside>
     </div>
@@ -602,6 +610,7 @@ dialog.visiteur .sablier{font-size:40px}
   <section class="view" id="v-categorie" hidden>
     <nav class="fil" aria-label="Fil d'Ariane"><a href="/#objets">Objets</a><span id="cat-fil"></span></nav>
     <h2 id="cat-titre"></h2>
+    <div class="lieu" data-lieu></div>
     <div class="filtres" id="cat-filtres"></div>
     <div class="filtres-actifs" id="cat-actifs" hidden><span id="cat-puces"></span><button type="button" class="lien" id="cat-effacer">Effacer les filtres</button></div>
     <ul class="cat-sous" id="cat-sous"></ul>
@@ -616,6 +625,7 @@ dialog.visiteur .sablier{font-size:40px}
     <form class="search" id="f-search" role="search">
       <input type="search" name="q" maxlength="100" placeholder="Chercher un objet" aria-label="Chercher un objet"><button type="submit">Chercher</button>
     </form>
+    <div class="lieu" data-lieu></div>
     <div class="historique" id="search-historique" hidden></div>
     <p class="muted" id="search-count" aria-live="polite"></p>
     <div class="results" id="results"></div>
@@ -1034,7 +1044,8 @@ function carteObjet(o){
 }
 async function chargerFil(){
   try{
-    const objets=await api('/objets');
+    const objets=await api('/objets'+Lieu.requete());
+    $('#acc-fil-lieu').textContent=Lieu.choix()?' '+Lieu.resume(true):'';
     $('#acc-fil').innerHTML=objets.length?objets.slice(0,12).map(carteObjet).join('')
       :'<p class="empty">Aucun objet proposé pour l\'instant. Soyez le premier : proposez ce qui dort chez vous.</p>';
   }catch{$('#acc-fil').innerHTML='<p class="empty">Les objets n\'ont pas pu être chargés. Réessayez dans un instant.</p>'}
@@ -1051,6 +1062,7 @@ function afficherSession(){
     $('#mdp-bouton').textContent=moi.a_un_mot_de_passe?'Changer le mot de passe':'Enregistrer le mot de passe'}
   else $('#f-mdp-rappel').hidden=true;
   if(typeof Premium!=='undefined')Premium.afficher();
+  if(typeof Lieu!=='undefined')Lieu.dessiner();
 }
 function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);store.set('troc.pseudo',null);afficherSession();go('home')}
 
@@ -1593,6 +1605,83 @@ function afficherGrandTroc(){
 async function chargerGrandTroc(){try{grandTroc=await api('/grand-troc');afficherGrandTroc()}catch{}}
 setInterval(afficherGrandTroc,30e3);
 
+/* Filtre « Où ? » à la Leboncoin, pour tous (même sans compte) : toute la France par défaut, ou une ville
+   (Base Adresse Nationale, sans clé ni pistage) ou « autour de moi », avec un rayon. Le choix est gardé dans ce
+   navigateur ; un membre qui n'a rien choisi voit d'abord sa première zone d'intérêt (Mon espace). Il s'applique à
+   l'accueil, à la recherche, aux pages des catégories et à la recherche globale. */
+const Lieu=(()=>{
+  const BAN='https://api-adresse.data.gouv.fr', RAYONS=[2,5,10,20,50,100,200];
+  const PIN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>';
+  const arrondi=x=>Math.round(x*100)/100;
+  let garde=null; try{garde=JSON.parse(store.get('troc.lieu')||'null')}catch{}
+  const trouvees=new Map(); let ouvert=null, attente;
+  function choix(){
+    if(garde)return garde.latitude==null?null:garde; // {toute_la_france:true} : toute la France choisie exprès
+    const z=moi&&moi.zones_interet&&moi.zones_interet[0];
+    return z?{libelle:z.libelle,latitude:z.latitude,longitude:z.longitude,rayon_km:z.rayon_km||10}:null;
+  }
+  const resume=(court=false)=>{const c=choix(); return c?(court?'à '+c.rayon_km+' km de '+c.libelle:c.libelle+' · '+c.rayon_km+' km'):'Toute la France'};
+  function ajouter(p){const c=choix(); if(c){p.set('latitude',c.latitude);p.set('longitude',c.longitude);p.set('rayon_km',c.rayon_km)} return p}
+  const requete=()=>{const p=ajouter(new URLSearchParams()); return p.size?'?'+p:''};
+  function dessiner(){
+    $$('[data-lieu]').forEach((x,i)=>{
+      const c=choix(), id='lieu-'+i;
+      x.innerHTML=`<button type="button" class="lieu-btn" aria-expanded="${ouvert===i}" aria-controls="${id}">${PIN}<span>${esc(resume())}</span></button>`
+        +(ouvert===i?`<form class="lieu-panneau" id="${id}">
+          <label class="sr-only" for="${id}-ville">Ville ou code postal</label>
+          <div class="ligne"><input id="${id}-ville" name="ville" list="${id}-liste" autocomplete="off" placeholder="Ville ou code postal" value="${esc(c?c.libelle:'')}"><datalist id="${id}-liste"></datalist>
+            <button type="button" data-autour>Autour de moi</button></div>
+          <div class="ligne"><label class="sr-only" for="${id}-rayon">Rayon</label><select id="${id}-rayon" name="rayon">${RAYONS.map(r=>`<option value="${r}"${r===(c?c.rayon_km:10)?' selected':''}>Dans un rayon de ${r} km</option>`).join('')}</select></div>
+          <div class="ligne"><button type="submit" class="ok">Voir les objets</button><button type="button" data-france>Toute la France</button></div>
+        </form>`:'');
+    });
+  }
+  async function villes(q){
+    if(q.trim().length<3)return [];
+    try{const d=await(await fetch(`${BAN}/search/?type=municipality&limit=6&q=${encodeURIComponent(q)}`)).json();
+      return d.features.map(f=>({libelle:`${f.properties.city} (${f.properties.postcode})`,latitude:arrondi(f.geometry.coordinates[1]),longitude:arrondi(f.geometry.coordinates[0])}))}
+    catch{return []}
+  }
+  function rafraichir(){
+    chargerFil();
+    if(vueActuelle==='search')chercher(Derniere.q,Derniere.cat);
+    else if(vueActuelle==='categorie')chargerCategorie();
+    else if(vueActuelle==='global'&&$('#f-global').q.value.trim())rechercherSite($('#f-global').q.value);
+  }
+  function enregistrer(v){garde=v; store.set('troc.lieu',JSON.stringify(v)); ouvert=null; dessiner(); rafraichir()}
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('.lieu-btn');
+    if(b){const i=[...$$('[data-lieu]')].indexOf(b.parentElement); ouvert=ouvert===i?null:i; dessiner();
+      if(ouvert!==null){const f=$('#lieu-'+i); if(f)f.ville.focus()} return}
+    if(e.target.closest('[data-france]'))return enregistrer({toute_la_france:true});
+    if(e.target.closest('[data-autour]')){
+      const f=e.target.closest('form');
+      if(!navigator.geolocation)return toast('Votre navigateur ne donne pas votre position : tapez votre ville.');
+      navigator.geolocation.getCurrentPosition(async pos=>{
+        const v={libelle:'Autour de moi',latitude:arrondi(pos.coords.latitude),longitude:arrondi(pos.coords.longitude)};
+        try{const d=await(await fetch(`${BAN}/reverse/?lat=${v.latitude}&lon=${v.longitude}`)).json(); const pr=d.features[0]&&d.features[0].properties; if(pr)v.libelle=`${pr.city} (${pr.postcode})`}catch{}
+        trouvees.set(v.libelle,v); f.ville.value=v.libelle;
+      },()=>toast('Position refusée : tapez votre ville.'),{maximumAge:6e5,timeout:1e4});
+    }
+  });
+  document.addEventListener('input',e=>{
+    const input=e.target; if(!input.closest||!input.closest('.lieu-panneau')||input.name!=='ville')return;
+    clearTimeout(attente);
+    attente=setTimeout(async()=>{const r=await villes(input.value); r.forEach(v=>trouvees.set(v.libelle,v));
+      const liste=document.getElementById(input.getAttribute('list')); if(liste)liste.innerHTML=r.map(v=>`<option value="${esc(v.libelle)}"></option>`).join('')},250);
+  });
+  document.addEventListener('submit',async e=>{
+    const f=e.target; if(!f.classList.contains('lieu-panneau'))return; e.preventDefault();
+    const nom=f.ville.value.trim(); if(!nom)return enregistrer({toute_la_france:true});
+    let v=trouvees.get(nom); if(!v){const r=await villes(nom); v=r[0]}
+    if(!v)return toast('Ville introuvable : essayez le code postal.');
+    enregistrer({libelle:v.libelle,latitude:v.latitude,longitude:v.longitude,rayon_km:+f.rayon.value});
+  });
+  return {choix,resume,ajouter,requete,dessiner};
+})();
+let Derniere={q:'',cat:''};
+Lieu.dessiner();
+
 /* Recherche libre : aucun compte nécessaire, l'API ne renvoie que les objets en ligne. */
 async function chercher(q,cat=''){
   q=q.trim(); // vide : tout ce qui est proposé en ce moment (« Voir les objets » du menu)
@@ -1601,7 +1690,7 @@ async function chercher(q,cat=''){
   $('#search-count').textContent='Recherche…'; $('#results').innerHTML=''; $('#search-plus').hidden=true;
   go('search',{adresse:ancre}); Visiteur.noter(q,cat);
   try{
-    const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat);
+    Derniere={q,cat}; const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat); Lieu.ajouter(p);
     const objets=await api('/objets'+(p.size?'?'+p:''));
     Suite={p,vus:objets.length}; $('#search-plus').hidden=objets.length<PAGE_OBJETS;
     $('#search-count').textContent=objets.length?TT_I18N.available(objets.length):'';
@@ -1643,6 +1732,7 @@ function parametresCategorie(){
   Cat.etats.forEach(e=>p.append('etat',e));
   for(const [cle,vals] of Object.entries(Cat.caracs))vals.forEach(v=>p.append('caracteristique',cle+':'+v));
   if(Cat.tri!=='recent')p.set('tri',Cat.tri);
+  Lieu.ajouter(p);
   return p;
 }
 async function chargerCategorie(){
@@ -1746,7 +1836,7 @@ async function rechercherSite(terme){
       if(!mots.every(m=>normaliserRecherche(titre+' '+contenu).includes(m)))return null;
       return {url,titre};
     })),
-    api('/objets?'+new URLSearchParams({q})).then(value=>({value})).catch(()=>({erreur:true}))
+    api('/objets?'+Lieu.ajouter(new URLSearchParams({q}))).then(value=>({value})).catch(()=>({erreur:true}))
   ]);
   if(seq!==rechercheSequence||vueActuelle!=='global')return;
   const matches=pages.filter(x=>x.status==='fulfilled'&&x.value).map(x=>x.value);
