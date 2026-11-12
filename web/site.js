@@ -9,7 +9,14 @@
   const PERSO='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
 
   const haut=document.querySelector('header.site');
-  if(haut)haut.innerHTML=`<div class="site-in">
+  // Deux univers sous un seul en-tête (refonte V7) : A Particuliers, B Entreprises et collectivités.
+  const UNIVERS_B=/^\/(?:(?:english|espanol)\/)?(?:pros|collectivites)\//.test(location.pathname);
+  document.documentElement.classList.toggle('univers-b',UNIVERS_B);
+  if(haut)haut.innerHTML=`<div class="univers"><div class="univers-in">
+  <a href="/"${UNIVERS_B?'':' aria-current="true"'}>Particuliers</a>
+  <a href="/pros/"${UNIVERS_B?' aria-current="true"':''}>Entreprises et collectivités</a>
+</div></div>
+<div class="site-in">
   <a class="logo" href="/" aria-label="TopTroc, retour à l'accueil">${LOGO}<span>Top<span class="logo-2">Troc</span></span></a>
   <form class="recherche-entete" id="recherche-entete" role="search">
     <label class="sr-only" for="recherche-entete-champ">Rechercher sur TopTroc</label>
@@ -17,6 +24,8 @@
     <input id="recherche-entete-champ" type="search" name="q" maxlength="100" placeholder="Rechercher sur TopTroc">
     <button type="submit">Rechercher</button>
   </form>
+  <div class="lieu lieu-entete" data-lieu></div>
+  <a class="proposer-entete" href="/#proposer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Proposer un objet</span></a>
   <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 7h16"/><path class="b2" d="M4 12h16"/><path class="b3" d="M4 17h16"/></svg></button>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
@@ -50,12 +59,25 @@
 
   const pied=document.querySelector('footer.site');
   if(pied)pied.innerHTML=`<div class="in">
-  <nav aria-label="Informations"><ul>
-    <li><a href="/concept/">Le concept</a></li>
+  <div class="pied-marque">
+    <a class="logo" href="/" aria-label="TopTroc, retour à l'accueil">${LOGO}<span>Top<span class="logo-2">Troc</span></span></a>
+    <p>Le troc d'objets entre particuliers, sans argent. Né à Marseille, ouvert à toute la France.</p>
+  </div>
+  <nav aria-label="Troquer"><h2>Troquer</h2><ul>
+    <li><a href="/#objets">Voir les objets</a></li>
+    <li><a href="/comment-ca-marche/">Comment ça marche</a></li>
+    <li><a href="/grand-troc/">Le Grand Troc</a></li>
+    <li><a href="/particuliers/">Les offres</a></li>
+  </ul></nav>
+  <nav aria-label="Organisations"><h2>Organisations</h2><ul>
     <li><a href="/pros/">Entreprises</a></li>
     <li><a href="/collectivites/">Collectivités</a></li>
-    <li><a href="/faq/#contact">Contact</a></li>
+    <li><a href="/pros/#devis">Demander un devis</a></li>
+  </ul></nav>
+  <nav aria-label="Informations"><h2>TopTroc</h2><ul>
+    <li><a href="/concept/">Le concept</a></li>
     <li><a href="/faq/">FAQ</a></li>
+    <li><a href="/faq/#contact">Contact</a></li>
     <li><a href="/mentions-legales/">Mentions légales</a></li>
     <li><a href="/cgu/">CGU</a></li>
     <li><a href="/confidentialite/">Confidentialité</a></li>
