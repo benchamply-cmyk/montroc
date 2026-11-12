@@ -87,6 +87,17 @@ def test_etiquette_et_garantie_payees(client, creer, monkeypatch):
     a_preparer = [c for c in courriels.ENVOYES if c.destinataire == get_settings().contact_partenaires]
     assert "69002, Lyon" in a_preparer[-1].texte
     assert sujets(lea.email)[-1] == "Votre étiquette TopTroc arrive"
+    # Version récente de l'API Stripe : l'adresse de livraison est sous collected_information.
+    envoi_bruno = next(t for t in echange["transferts"] if t["donneur_pseudo"] == "bruno")
+    livraison = {
+        "collected_information": {
+            "shipping_details": {"address": {"line1": "8 cours Julien", "postal_code": "13006", "city": "Marseille"}}
+        },
+        "customer_details": {"address": {"postal_code": "75001", "city": "Paris"}},
+    }
+    assert paiement(bruno, f"envoi{envoi_bruno['id']}", **livraison).status_code == 200
+    a_preparer = [c for c in courriels.ENVOYES if c.destinataire == get_settings().contact_partenaires]
+    assert "13006, Marseille" in a_preparer[-1].texte
 
 
 def test_impact(client, creer, monkeypatch):

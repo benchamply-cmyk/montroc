@@ -1,0 +1,1 @@
+- Étiquettes de colis : l'adresse d'expédition saisie dans le paiement Stripe est bien lue avec la version actuelle de l'API Stripe.
