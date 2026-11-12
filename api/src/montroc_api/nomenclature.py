@@ -483,3 +483,26 @@ def verifier(categorie: str | None, sous_categorie: str | None, valeurs: dict[st
             raise ValueError(f"Valeur inconnue pour « {c.libelle} » : {valeur}.")
         propres[cle] = valeur
     return propres
+
+
+# Poids moyen d'un objet par catégorie (kg), pour estimer les déchets évités dans les rapports d'impact des
+# partenaires (/impact). Ordres de grandeur prudents : un vêtement pèse moins d'1 kg, un électroménager plusieurs.
+POIDS_MOYEN_KG = {
+    "mode": 0.6,
+    "high-tech": 1.0,
+    "enfant": 2.5,
+    "maison": 2.0,
+    "sport": 3.0,
+    "culture": 0.5,
+    "bricolage": 2.5,
+    "electromenager": 5.0,
+    "auto-moto": 4.0,
+    "divers": 1.0,
+}
+POIDS_PAR_DEFAUT_KG = 1.5
+# CO₂ évité par kg d'objet réemployé plutôt que racheté neuf : moyenne prudente tous objets confondus.
+CO2_PAR_KG_REEMPLOYE = 2.0
+
+
+def poids_moyen_kg(categorie: str | None) -> float:
+    return POIDS_MOYEN_KG.get(categorie or "", POIDS_PAR_DEFAUT_KG)

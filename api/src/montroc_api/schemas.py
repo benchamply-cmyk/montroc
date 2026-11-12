@@ -434,6 +434,7 @@ class ObjetResume(Lecture):
     categorie_slug: str
     etat: EtatObjet | None
     photo_url: str | None
+    format_colis: str | None = None
 
 
 class EtapeBoucle(BaseModel):
@@ -477,6 +478,9 @@ class TransfertLecture(BaseModel):
     transporteur: str | None = None
     numero_suivi: str | None = None
     garantie: bool = False
+    # Étiquette TopTroc payée (le donneur la reçoit par e-mail) et son format.
+    envoi_paye_le: datetime | None = None
+    envoi_format: str | None = None
     # Où envoyer le colis : visible du receveur qui l'a donnée et de son donneur seulement.
     adresse_livraison: str | None = None
 
@@ -611,9 +615,20 @@ class FormatColis(BaseModel):
     poids_max_kg: int | None
 
 
+class EnvoiTopTroc(BaseModel):
+    """Étiquette de colis vendue par TopTroc pour un format : son prix public et son lien de paiement."""
+
+    format: str
+    prix: float
+    lien: str | None
+
+
 class CataloguePremium(BaseModel):
     formules: list[FormuleLecture]
     formats_colis: list[FormatColis]
+    envois: list[EnvoiTopTroc] = []
+    garantie_prix: float | None = None
+    garantie_lien: str | None = None
     jours_essai: int
     portail: str | None
     # Encart publicitaire, montré seulement à qui n'a pas « sans publicité ».

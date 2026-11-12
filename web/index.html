@@ -1492,6 +1492,25 @@ $('#fiche').addEventListener('click',async e=>{
     catch(err){toast(err.message);b.disabled=false}}
 });
 
+/* Étiquette de colis TopTroc (tarif négocié + frais de service) et Garantie TopTroc, payées par un lien Stripe :
+   le paiement porte la référence « membre-envoi<transfert> » ; TopTroc envoie ensuite l'étiquette par e-mail. */
+let catalogueEnvois=null;
+api('/premium').then(c=>{catalogueEnvois=c}).catch(()=>{});
+const prixEuros=x=>x.toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+function lienPaiement(lien,achat){
+  const u=new URL(lien); u.searchParams.set('client_reference_id',moi.id+'-'+achat); if(moi.email)u.searchParams.set('prefilled_email',moi.email); return u.href;
+}
+function etiquetteTopTroc(don){
+  if(!catalogueEnvois||!moi)return '';
+  if(don.envoi_paye_le)return `<p class="muted" style="font-size:14px">Étiquette TopTroc payée : vous la recevez par e-mail sous 24 h ouvrées.</p>`;
+  const envoi=(catalogueEnvois.envois||[]).find(x=>x.format===don.objet.format_colis&&x.lien);
+  const garantie=!don.garantie&&catalogueEnvois.garantie_lien;
+  if(!envoi&&!garantie)return '';
+  return `<div class="card stack"><b>Pas d'étiquette ? TopTroc s'en occupe.</b>
+    <span class="muted" style="font-size:14px">Tarif négocié avec le transporteur : vous payez en ligne, vous recevez l'étiquette à imprimer et vous déposez le colis en point relais.</span>
+    <div class="btns">${envoi?`<a class="btn primary" href="${esc(lienPaiement(envoi.lien,'envoi'+don.id))}" rel="noopener">Acheter l'étiquette (${prixEuros(envoi.prix)})</a>`:''}
+    ${garantie?`<a class="btn" href="${esc(lienPaiement(catalogueEnvois.garantie_lien,'garantie'+don.id))}" rel="noopener">Ajouter la Garantie TopTroc (${prixEuros(catalogueEnvois.garantie_prix)})</a>`:''}</div></div>`;
+}
 /* Remise : en main propre (par défaut), par colis payé par l'expéditeur (avec son suivi), ou au point de dépôt. */
 const REMISES={main_propre:['remis','à remettre'],colis:['envoyé','à envoyer'],point_relais:['déposé','à déposer']};
 function afficherDepots(){
@@ -1514,7 +1533,7 @@ function afficherDepots(){
         <form class="stack" data-envoi="${e.id}"><div class="grid2">
           <label class="field"><span>Transporteur</span><input class="input" name="transporteur" required maxlength="40" placeholder="Mondial Relay, Colissimo…"></label>
           <label class="field"><span>Numéro de suivi</span><input class="input" name="numero_suivi" required maxlength="60"></label></div>
-          <div class="btns"><button class="btn primary">J'ai envoyé le colis</button></div></form>`;
+          <div class="btns"><button class="btn primary">J'ai envoyé le colis</button></div></form>${etiquetteTopTroc(don)}`;
     else if(don.mode==='point_relais')action=`<div class="place"><span class="muted">Point de dépôt</span><span>${lieu}</span></div>
         <div class="place"><span class="muted">Marquez « ${esc(don.objet.titre)} » avec le code</span><span class="code">${esc(don.code_retrait||'')}</span></div>
         <div class="btns"><button class="btn primary" data-deposer="${e.id}">J'ai déposé ${esc(don.objet.titre)}</button></div>`;

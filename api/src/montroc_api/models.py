@@ -421,6 +421,9 @@ class Transfert(Base):
     adresse_livraison: Mapped[str | None] = mapped_column(String(300))
     # Envoi couvert par la Garantie TopTroc (incluse dans Premium Plus et Famille).
     garantie: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Étiquette de colis achetée à TopTroc (Stripe) : TopTroc l'envoie au donneur par e-mail.
+    envoi_paye_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    envoi_format: Mapped[str | None] = mapped_column(String(10))
 
     echange: Mapped[Echange] = relationship(back_populates="transferts")
     objet: Mapped[Objet] = relationship()

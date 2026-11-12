@@ -442,3 +442,22 @@ header.site.reduit .langue-bouton{min-height:34px;height:34px}
 @media (max-width:520px){.assistant{right:12px}.assistant-fenetre{width:calc(100vw - 24px)}}
 @media (prefers-reduced-motion:reduce){.assistant-bulle,.assistant-fenetre,.assistant-bulle svg{animation:none;transition:none}.assistant-msg.attente p::after{animation:none;content:"…"}}
 @media print{.assistant{display:none}}
+
+/* Offres Entreprises et Collectivités : formules, demande de devis, impact */
+.formules .carte .prix{font-style:normal;font-family:var(--display);font-size:20px;color:var(--ink)}
+.formules .carte.vedette{border-color:color-mix(in srgb,var(--mark) 60%,var(--line))}
+.devis{margin:36px 0 0;padding:24px;border-radius:var(--r);border:1.5px solid color-mix(in srgb,var(--mark) 45%,var(--line));background:var(--surface);display:grid;gap:14px}
+.devis h2{margin:0}
+.devis p{margin:0}
+.devis .deux{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.devis .champ{display:grid;gap:6px;font-size:14px;color:var(--muted)}
+.devis .champ small{opacity:.8}
+.devis input,.devis select,.devis textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
+.devis textarea{resize:vertical}
+.devis .bouton{justify-self:start;border:0;cursor:pointer;font:inherit;font-weight:600}
+.devis .piege{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.devis-etat:empty{display:none}
+.impact{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:24px 0}
+.impact div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:4px}
+.impact b{font-family:var(--display);font-size:24px}
+.impact span{font-size:13px;color:var(--muted)}
