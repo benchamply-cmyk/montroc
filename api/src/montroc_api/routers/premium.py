@@ -12,6 +12,7 @@ from ..config import get_settings
 from ..deps import Moderateur, SessionDep, UtilisateurConnecte, obtenir_ou_404
 from ..schemas import (
     CataloguePremium,
+    EnvoiTopTroc,
     FormatColis,
     FormuleLecture,
     MembreFamille,
@@ -56,6 +57,13 @@ def catalogue():
             FormatColis(cle=cle, libelle=libelle, poids_max_kg=poids)
             for cle, (libelle, poids) in nomenclature.FORMATS_COLIS.items()
         ],
+        envois=[
+            EnvoiTopTroc(format=cle, prix=prix, lien=reglages.liens_stripe.get(f"envoi_{cle}"))
+            for cle, prix in reglages.prix_par_format.items()
+            if cle in nomenclature.FORMATS_COLIS and nomenclature.FORMATS_COLIS[cle][1]
+        ],
+        garantie_prix=reglages.prix_garantie,
+        garantie_lien=reglages.liens_stripe.get("garantie"),
         jours_essai=reglages.jours_essai_premium,
         portail=reglages.stripe_portail or None,
         publicite_texte=texte.strip() or None,

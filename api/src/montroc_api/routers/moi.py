@@ -101,7 +101,14 @@ def _mes_souhaits(session, utilisateur: m.Utilisateur, ids: list[int]) -> list[m
 def ajouter_objet(donnees: ObjetCreation, utilisateur: UtilisateurConnecte, session: SessionDep):
     obtenir_ou_404(session, m.Categorie, donnees.categorie_slug)
     contre = _mes_souhaits(session, utilisateur, donnees.contre_souhait_ids)
-    objet = m.Objet(proprietaire_id=utilisateur.id, contre=contre, **donnees.model_dump(exclude={"contre_souhait_ids"}))
+    if donnees.reserve_espace and utilisateur.espace_id is None:
+        raise HTTPException(409, "Vous n'êtes membre d'aucun espace réservé.")
+    objet = m.Objet(
+        proprietaire_id=utilisateur.id,
+        contre=contre,
+        espace_id=utilisateur.espace_id if donnees.reserve_espace else None,
+        **donnees.model_dump(exclude={"contre_souhait_ids", "reserve_espace"}),
+    )
     session.add(objet)
     session.commit()
     return objet
@@ -128,6 +135,10 @@ def modifier_objet(objet_id: int, donnees: ObjetModification, utilisateur: Utili
         raise HTTPException(409, "Cet objet est engagé dans un échange.")
     if changements.get("statut") == m.StatutObjet.disponible and not (objet.photo_url and objet.etat):
         raise HTTPException(409, "Ajoutez une photo et l'état avant de remettre cet objet en ligne.")
+    if (reserve := changements.pop("reserve_espace", None)) is not None:
+        if reserve and utilisateur.espace_id is None:
+            raise HTTPException(409, "Vous n'êtes membre d'aucun espace réservé.")
+        objet.espace_id = utilisateur.espace_id if reserve else None
     if (ids := changements.pop("contre_souhait_ids", None)) is not None:
         objet.contre = _mes_souhaits(session, utilisateur, ids)
     if changements.get("contre_strict", False) is None:

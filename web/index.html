@@ -251,6 +251,15 @@ body.large .wrap{max-width:1120px}
 .acc-btn.a{background:var(--accent);color:var(--accent-ink)}
 .acc-btn.g{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 .acc-btns .acc-btn{flex:1 1 160px}
+.lieu{position:relative;margin:10px 0 4px}
+.lieu-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer}
+.lieu-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;flex:none}
+.lieu-btn[aria-expanded=true],.lieu-btn:hover{border-color:var(--accent)}
+.lieu-panneau{margin-top:8px;display:grid;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;max-width:420px}
+.lieu-panneau .ligne{display:flex;gap:8px;flex-wrap:wrap}
+.lieu-panneau input,.lieu-panneau select{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
+.lieu-panneau button{border:1px solid var(--line);border-radius:8px;background:none;color:var(--ink);padding:9px 12px;font:inherit;font-size:14px;cursor:pointer}
+.lieu-panneau button.ok{background:var(--mark);color:#111318;border-color:var(--mark);font-weight:600}
 .acc-search{display:flex;align-items:center;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;height:48px;min-width:0}
 .acc-search select{background:none;border:0;border-right:1px solid var(--line);padding:0 10px;height:100%;color:var(--muted);font:inherit;font-size:14px;max-width:140px}
 .acc-search input{background:none;border:0;outline:0;flex:1;min-width:0;padding:0 12px;color:var(--ink);font:inherit;font-size:16px}
@@ -285,6 +294,8 @@ body.large .wrap{max-width:1120px}
 .acc-titre :is(button,a){flex:none;text-decoration:none;background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:4px 0}
 .result .ph{position:relative}
 .result .ph .etat{position:absolute;left:8px;bottom:8px;font-size:11.5px;font-weight:600;background:rgba(17,19,24,.82);color:var(--ink);border-radius:6px;padding:3px 7px}
+.result .ph .collegues{position:absolute;left:8px;top:8px;font-size:11.5px;font-weight:600;background:var(--acc,#3b82f6);color:#fff;border-radius:6px;padding:3px 7px}
+.proposer .reserve{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4}
 .acc-duo{display:grid;gap:14px}
 .acc-duo>*,.acc-tuiles>*{min-width:0}
 .acc-hero h1 mark.mot{background:linear-gradient(transparent 24%,var(--mark-doux) 24%,var(--mark-doux) 90%,transparent 90%);color:inherit;padding:0 .06em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
@@ -390,6 +401,8 @@ details.plus summary::-webkit-details-marker{display:none}
 @media (min-width:760px){.fiche{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start}.fiche-panneau{position:sticky;top:90px}}
 /* Le Match : une pile de cartes à glisser, deux gros boutons ronds */
 .match-entete{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.quota{font-size:14px;text-align:center;margin:8px 0 0;color:var(--muted,#9aa3ad)}
+.quota .lien{background:none;border:0;padding:0;color:inherit;text-decoration:underline;font:inherit;cursor:pointer}
 .pile-match{display:grid;max-width:400px;width:100%;margin:0 auto}
 .pile-match>*{grid-area:1/1}
 .pile-match .carte{touch-action:pan-y;user-select:none;position:relative}
@@ -497,13 +510,14 @@ dialog.visiteur .sablier{font-size:40px}
     <div class="acc-hero" id="decouvrir">
       <div class="acc-hero-txt">
         <span class="label">Pas de prix. Pas de monnaie.</span>
-        <h1>Le troc se réinvente.<br>La Boucle d'échange pour augmenter ses chances.</h1>
-        <p class="acc-chapo">Accéder aux opportunités d'échanges. Tout le monde y gagne.</p>
+        <h1>Échanger ses objets, sans argent,<br>partout en France.</h1>
+        <p class="acc-chapo">À deux avec le Match, ou en boucle à trois avec le Grand Troc : plus de chances de trouver ce qu'on cherche.</p>
         <form class="acc-search" id="f-search-home" role="search">
           <select name="cat" aria-label="Catégorie"><option value="">Tout</option></select>
           <input type="search" name="q" maxlength="100" placeholder="Vélo, poussette, perceuse…" aria-label="Chercher un objet">
           <button type="submit" aria-label="Chercher"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
         </form>
+        <div class="lieu" data-lieu></div>
         <div class="acc-btns">
           <button class="acc-btn y" type="button" data-proposer>Proposer un objet</button>
           <button class="acc-btn g" type="button" data-objets>Voir les objets</button>
@@ -527,7 +541,7 @@ dialog.visiteur .sablier{font-size:40px}
 
     <div class="bloc">
       <div class="acc-titre">
-        <h2>Articles en ligne en attente d'un Troc.</h2>
+        <h2>Articles en ligne en attente d'un Troc<span id="acc-fil-lieu"></span>.</h2>
         <button type="button" data-objets>Tout voir</button>
       </div>
       <div class="results acc-fil" id="acc-fil"><p class="empty">Chargement des objets…</p></div>
@@ -565,16 +579,14 @@ dialog.visiteur .sablier{font-size:40px}
 
     <div class="acc-duo">
       <div class="card bloc" id="particuliers">
-        <span class="label">Pour les particuliers</span>
-        <h2><span class="hl">Simplicité</span>.</h2>
+        <span class="label">L'offre</span>
+        <h2>Troquer est <span class="hl">gratuit</span>.</h2>
         <ul class="gratuit">
-          <li>Publier</li>
-          <li>Choisir</li>
-          <li>Provoquer un Match</li>
-          <li>Propositions chaque dimanche</li>
+          <li>Publier et chercher, même sans compte</li>
+          <li>Le Match et le Grand Troc</li>
+          <li>En main propre près de chez soi, ou par colis</li>
         </ul>
-        <p class="muted" style="font-size:14px">Déjà sur Vinted ou Leboncoin ? <button type="button" class="lien" data-annonce>Troquer son annonce</button></p>
-        <p class="muted" style="font-size:14px">Entreprise ou collectivité ? <a href="/pros/">Professionnels</a> · <a href="/collectivites/">Collectivités</a></p>
+        <p class="muted" style="font-size:14px"><a href="/particuliers/">Voir les offres</a> · Déjà sur Vinted ou Leboncoin ? <button type="button" class="lien" data-annonce>Troquer son annonce</button></p>
       </div>
       <aside class="pub" data-pub hidden></aside>
     </div>
@@ -602,6 +614,7 @@ dialog.visiteur .sablier{font-size:40px}
   <section class="view" id="v-categorie" hidden>
     <nav class="fil" aria-label="Fil d'Ariane"><a href="/#objets">Objets</a><span id="cat-fil"></span></nav>
     <h2 id="cat-titre"></h2>
+    <div class="lieu" data-lieu></div>
     <div class="filtres" id="cat-filtres"></div>
     <div class="filtres-actifs" id="cat-actifs" hidden><span id="cat-puces"></span><button type="button" class="lien" id="cat-effacer">Effacer les filtres</button></div>
     <ul class="cat-sous" id="cat-sous"></ul>
@@ -616,6 +629,7 @@ dialog.visiteur .sablier{font-size:40px}
     <form class="search" id="f-search" role="search">
       <input type="search" name="q" maxlength="100" placeholder="Chercher un objet" aria-label="Chercher un objet"><button type="submit">Chercher</button>
     </form>
+    <div class="lieu" data-lieu></div>
     <div class="historique" id="search-historique" hidden></div>
     <p class="muted" id="search-count" aria-live="polite"></p>
     <div class="results" id="results"></div>
@@ -712,6 +726,7 @@ dialog.visiteur .sablier{font-size:40px}
     </div>
 
     <div class="card" id="c-zones"><span class="label">Où je troque</span><div id="zones"></div></div>
+    <div class="card" id="c-espace" hidden><span class="label">Mon entreprise</span><div id="espace-txt"></div></div>
     <div class="card c-premium" id="c-premium"><span class="label">Troc Premium</span><div id="premium"></div></div>
     <aside class="pub" data-pub hidden></aside>
 
@@ -776,6 +791,8 @@ dialog.visiteur .sablier{font-size:40px}
             <input class="input" type="url" name="annonce_origine" inputmode="url" maxlength="500" placeholder="Collez le lien : on pré-remplit pour vous"></label>
           <div id="import-guide" hidden></div>
         </div></details>
+      <label class="reserve" id="reserve-obj" hidden><input type="checkbox" name="reserve_espace">
+        <span>Réservé à mes collègues (<span data-espace-nom></span>) : remise sur place, invisible des autres membres</span></label>
       <button class="acc-btn y" type="submit">Publier</button>
       <p class="err" id="obj-err" hidden></p>
     </form>
@@ -812,6 +829,7 @@ dialog.visiteur .sablier{font-size:40px}
       <button class="super" type="button" id="m-super" aria-label="Super J'aime" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button>
       <button class="oui" type="button" id="m-oui" aria-label="J'aime"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
     </div>
+    <p class="quota" id="match-quota" hidden></p>
     <p class="muted aide" id="match-aide" hidden>Glissez la carte vers la droite si elle vous plaît, vers la gauche sinon (ou flèches ← → du clavier). Un cœur de chaque côté et vous échangez à deux, sans attendre dimanche.</p>
     <div id="bloc-trois" hidden style="display:flex;flex-direction:column;gap:16px">
       <div class="list-head" style="margin:8px 0 -4px"><span class="label">Boucles à trois</span></div>
@@ -836,6 +854,17 @@ dialog.visiteur .sablier{font-size:40px}
     <div class="hero"><span class="label">Modération</span><h2>Signalements à traiter</h2>
       <p class="muted" style="font-size:14px">Chaque décision est motivée : le texte est envoyé à la personne concernée, avec la possibilité de contester.</p></div>
     <div id="reports" style="display:flex;flex-direction:column;gap:16px"></div>
+    <div class="card stack" id="mod-espaces"><span class="label">Espaces réservés (entreprises, résidences)</span>
+      <div data-liste style="display:flex;flex-direction:column;gap:12px"></div>
+      <form class="stack" id="f-espace">
+        <label class="field"><span>Nom</span><input class="input" name="nom" required minlength="2" maxlength="120" placeholder="Ex. Acme Marseille"></label>
+        <label class="field"><span>Nom court du lien</span><input class="input" name="slug" required pattern="[a-z0-9-]+" maxlength="60" placeholder="Ex. acme-marseille"></label>
+        <label class="field"><span>Domaines des adresses e-mail</span><input class="input" name="domaines" required maxlength="300" placeholder="Ex. acme.fr, acme.com"></label>
+        <label class="field"><span>Lieu de remise</span><input class="input" name="lieu_de_remise" maxlength="200" placeholder="Ex. Accueil du bâtiment B, 2e étage"></label>
+        <label class="field"><span>Formule</span><select class="input" name="formule"><option value="espace">Espace salariés</option><option value="residences">Résidences</option><option value="territoire">Collectivité</option></select></label>
+        <div class="btns"><button class="btn" type="submit">Créer l'espace</button></div>
+      </form>
+    </div>
   </section>
 
   <footer class="legal">Un contenu vous semble illicite ou dangereux ? Utilisez « Signaler » sur l'objet concerné.</footer>
@@ -939,7 +968,7 @@ function go(v,{adresse,remplacer=false}={}){
   $$('nav.tabs button').forEach(b=>{b.dataset.tab===onglet?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   marquerOnglets();
   window.scrollTo(0,0);
-  if(v==='mod')chargerSignalements();
+  if(v==='mod'){chargerSignalements();Espace.moderation()}
   if(v==='favoris')Visiteur.afficher();
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
@@ -1029,12 +1058,13 @@ function afficherCategories(cats){
 // Une carte d'objet, avec l'étoile « Favoris » et, pour un membre, le cœur « J'aime » (visiteur.js), sur la photo, hors du lien.
 function carteObjet(o){
   if(typeof Visiteur!=='undefined')Visiteur.retenir(o);
-  return `<div class="carte-objet"><a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}</div>
+  return `<div class="carte-objet"><a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}${o.reserve_espace?'<span class="collegues">Collègues</span>':''}</div>
     <b>${esc(o.titre)}</b><span>${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></a>${typeof Visiteur!=='undefined'?Visiteur.boutons(o):''}</div>`;
 }
 async function chargerFil(){
   try{
-    const objets=await api('/objets');
+    const objets=await api('/objets'+Lieu.requete());
+    $('#acc-fil-lieu').textContent=Lieu.choix()?' '+Lieu.resume(true):'';
     $('#acc-fil').innerHTML=objets.length?objets.slice(0,12).map(carteObjet).join('')
       :'<p class="empty">Aucun objet proposé pour l\'instant. Soyez le premier : proposez ce qui dort chez vous.</p>';
   }catch{$('#acc-fil').innerHTML='<p class="empty">Les objets n\'ont pas pu être chargés. Réessayez dans un instant.</p>'}
@@ -1051,6 +1081,8 @@ function afficherSession(){
     $('#mdp-bouton').textContent=moi.a_un_mot_de_passe?'Changer le mot de passe':'Enregistrer le mot de passe'}
   else $('#f-mdp-rappel').hidden=true;
   if(typeof Premium!=='undefined')Premium.afficher();
+  if(typeof Lieu!=='undefined')Lieu.dessiner();
+  if(typeof Espace!=='undefined')Espace.afficher();
 }
 function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);store.set('troc.pseudo',null);afficherSession();go('home')}
 
@@ -1137,7 +1169,7 @@ $('#f-obj').onsubmit=async e=>{
     const photo=await envoyerPhoto(f.photo.files[0]); b.textContent='Publication…';
     await api('/moi/objets',{method:'POST',body:{titre:f.titre.value.trim(),categorie_slug:f.categorie_slug.value,etat:f.etat.value,
       sous_categorie_slug:f.sous_categorie_slug.value||null,caracteristiques:Detail.valeurs(f),modes_echange:Detail.modes(f),
-      format_colis:f.format_colis.value||null,...Premium.localisation(f),
+      format_colis:f.format_colis.value||null,...Premium.localisation(f),reserve_espace:!!f.reserve_espace.checked,
       description:f.description.value.trim()||null,annonce_origine:annonce?annonce.lien:null,...photo}});
     f.reset(); Detail.remplir(f,false); $('#photo-txt').innerHTML=PHOTO_VIDE; $('#import-guide').hidden=true; f.querySelectorAll('details').forEach(d=>d.open=false);
     toast(annonce?`Objet publié. Une fois troqué, pensez à retirer l'annonce ${annonce.site}.`:'Objet publié');
@@ -1480,6 +1512,25 @@ $('#fiche').addEventListener('click',async e=>{
     catch(err){toast(err.message);b.disabled=false}}
 });
 
+/* Étiquette de colis TopTroc (tarif négocié + frais de service) et Garantie TopTroc, payées par un lien Stripe :
+   le paiement porte la référence « membre-envoi<transfert> » ; TopTroc envoie ensuite l'étiquette par e-mail. */
+let catalogueEnvois=null;
+api('/premium').then(c=>{catalogueEnvois=c}).catch(()=>{});
+const prixEuros=x=>x.toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+function lienPaiement(lien,achat){
+  const u=new URL(lien); u.searchParams.set('client_reference_id',moi.id+'-'+achat); if(moi.email)u.searchParams.set('prefilled_email',moi.email); return u.href;
+}
+function etiquetteTopTroc(don){
+  if(!catalogueEnvois||!moi)return '';
+  if(don.envoi_paye_le)return `<p class="muted" style="font-size:14px">Étiquette TopTroc payée : vous la recevez par e-mail sous 24 h ouvrées.</p>`;
+  const envoi=(catalogueEnvois.envois||[]).find(x=>x.format===don.objet.format_colis&&x.lien);
+  const garantie=!don.garantie&&catalogueEnvois.garantie_lien;
+  if(!envoi&&!garantie)return '';
+  return `<div class="card stack"><b>Pas d'étiquette ? TopTroc s'en occupe.</b>
+    <span class="muted" style="font-size:14px">Tarif négocié avec le transporteur : vous payez en ligne, vous recevez l'étiquette à imprimer et vous déposez le colis en point relais.</span>
+    <div class="btns">${envoi?`<a class="btn primary" href="${esc(lienPaiement(envoi.lien,'envoi'+don.id))}" rel="noopener">Acheter l'étiquette (${prixEuros(envoi.prix)})</a>`:''}
+    ${garantie?`<a class="btn" href="${esc(lienPaiement(catalogueEnvois.garantie_lien,'garantie'+don.id))}" rel="noopener">Ajouter la Garantie TopTroc (${prixEuros(catalogueEnvois.garantie_prix)})</a>`:''}</div></div>`;
+}
 /* Remise : en main propre (par défaut), par colis payé par l'expéditeur (avec son suivi), ou au point de dépôt. */
 const REMISES={main_propre:['remis','à remettre'],colis:['envoyé','à envoyer'],point_relais:['déposé','à déposer']};
 function afficherDepots(){
@@ -1502,7 +1553,7 @@ function afficherDepots(){
         <form class="stack" data-envoi="${e.id}"><div class="grid2">
           <label class="field"><span>Transporteur</span><input class="input" name="transporteur" required maxlength="40" placeholder="Mondial Relay, Colissimo…"></label>
           <label class="field"><span>Numéro de suivi</span><input class="input" name="numero_suivi" required maxlength="60"></label></div>
-          <div class="btns"><button class="btn primary">J'ai envoyé le colis</button></div></form>`;
+          <div class="btns"><button class="btn primary">J'ai envoyé le colis</button></div></form>${etiquetteTopTroc(don)}`;
     else if(don.mode==='point_relais')action=`<div class="place"><span class="muted">Point de dépôt</span><span>${lieu}</span></div>
         <div class="place"><span class="muted">Marquez « ${esc(don.objet.titre)} » avec le code</span><span class="code">${esc(don.code_retrait||'')}</span></div>
         <div class="btns"><button class="btn primary" data-deposer="${e.id}">J'ai déposé ${esc(don.objet.titre)}</button></div>`;
@@ -1593,6 +1644,83 @@ function afficherGrandTroc(){
 async function chargerGrandTroc(){try{grandTroc=await api('/grand-troc');afficherGrandTroc()}catch{}}
 setInterval(afficherGrandTroc,30e3);
 
+/* Filtre « Où ? » à la Leboncoin, pour tous (même sans compte) : toute la France par défaut, ou une ville
+   (Base Adresse Nationale, sans clé ni pistage) ou « autour de moi », avec un rayon. Le choix est gardé dans ce
+   navigateur ; un membre qui n'a rien choisi voit d'abord sa première zone d'intérêt (Mon espace). Il s'applique à
+   l'accueil, à la recherche, aux pages des catégories et à la recherche globale. */
+const Lieu=(()=>{
+  const BAN='https://api-adresse.data.gouv.fr', RAYONS=[2,5,10,20,50,100,200];
+  const PIN='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>';
+  const arrondi=x=>Math.round(x*100)/100;
+  let garde=null; try{garde=JSON.parse(store.get('troc.lieu')||'null')}catch{}
+  const trouvees=new Map(); let ouvert=null, attente;
+  function choix(){
+    if(garde)return garde.latitude==null?null:garde; // {toute_la_france:true} : toute la France choisie exprès
+    const z=moi&&moi.zones_interet&&moi.zones_interet[0];
+    return z?{libelle:z.libelle,latitude:z.latitude,longitude:z.longitude,rayon_km:z.rayon_km||10}:null;
+  }
+  const resume=(court=false)=>{const c=choix(); return c?(court?'à '+c.rayon_km+' km de '+c.libelle:c.libelle+' · '+c.rayon_km+' km'):'Toute la France'};
+  function ajouter(p){const c=choix(); if(c){p.set('latitude',c.latitude);p.set('longitude',c.longitude);p.set('rayon_km',c.rayon_km)} return p}
+  const requete=()=>{const p=ajouter(new URLSearchParams()); return p.size?'?'+p:''};
+  function dessiner(){
+    $$('[data-lieu]').forEach((x,i)=>{
+      const c=choix(), id='lieu-'+i;
+      x.innerHTML=`<button type="button" class="lieu-btn" aria-expanded="${ouvert===i}" aria-controls="${id}">${PIN}<span>${esc(resume())}</span></button>`
+        +(ouvert===i?`<form class="lieu-panneau" id="${id}">
+          <label class="sr-only" for="${id}-ville">Ville ou code postal</label>
+          <div class="ligne"><input id="${id}-ville" name="ville" list="${id}-liste" autocomplete="off" placeholder="Ville ou code postal" value="${esc(c?c.libelle:'')}"><datalist id="${id}-liste"></datalist>
+            <button type="button" data-autour>Autour de moi</button></div>
+          <div class="ligne"><label class="sr-only" for="${id}-rayon">Rayon</label><select id="${id}-rayon" name="rayon">${RAYONS.map(r=>`<option value="${r}"${r===(c?c.rayon_km:10)?' selected':''}>Dans un rayon de ${r} km</option>`).join('')}</select></div>
+          <div class="ligne"><button type="submit" class="ok">Voir les objets</button><button type="button" data-france>Toute la France</button></div>
+        </form>`:'');
+    });
+  }
+  async function villes(q){
+    if(q.trim().length<3)return [];
+    try{const d=await(await fetch(`${BAN}/search/?type=municipality&limit=6&q=${encodeURIComponent(q)}`)).json();
+      return d.features.map(f=>({libelle:`${f.properties.city} (${f.properties.postcode})`,latitude:arrondi(f.geometry.coordinates[1]),longitude:arrondi(f.geometry.coordinates[0])}))}
+    catch{return []}
+  }
+  function rafraichir(){
+    chargerFil();
+    if(vueActuelle==='search')chercher(Derniere.q,Derniere.cat);
+    else if(vueActuelle==='categorie')chargerCategorie();
+    else if(vueActuelle==='global'&&$('#f-global').q.value.trim())rechercherSite($('#f-global').q.value);
+  }
+  function enregistrer(v){garde=v; store.set('troc.lieu',JSON.stringify(v)); ouvert=null; dessiner(); rafraichir()}
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('.lieu-btn');
+    if(b){const i=[...$$('[data-lieu]')].indexOf(b.parentElement); ouvert=ouvert===i?null:i; dessiner();
+      if(ouvert!==null){const f=$('#lieu-'+i); if(f)f.ville.focus()} return}
+    if(e.target.closest('[data-france]'))return enregistrer({toute_la_france:true});
+    if(e.target.closest('[data-autour]')){
+      const f=e.target.closest('form');
+      if(!navigator.geolocation)return toast('Votre navigateur ne donne pas votre position : tapez votre ville.');
+      navigator.geolocation.getCurrentPosition(async pos=>{
+        const v={libelle:'Autour de moi',latitude:arrondi(pos.coords.latitude),longitude:arrondi(pos.coords.longitude)};
+        try{const d=await(await fetch(`${BAN}/reverse/?lat=${v.latitude}&lon=${v.longitude}`)).json(); const pr=d.features[0]&&d.features[0].properties; if(pr)v.libelle=`${pr.city} (${pr.postcode})`}catch{}
+        trouvees.set(v.libelle,v); f.ville.value=v.libelle;
+      },()=>toast('Position refusée : tapez votre ville.'),{maximumAge:6e5,timeout:1e4});
+    }
+  });
+  document.addEventListener('input',e=>{
+    const input=e.target; if(!input.closest||!input.closest('.lieu-panneau')||input.name!=='ville')return;
+    clearTimeout(attente);
+    attente=setTimeout(async()=>{const r=await villes(input.value); r.forEach(v=>trouvees.set(v.libelle,v));
+      const liste=document.getElementById(input.getAttribute('list')); if(liste)liste.innerHTML=r.map(v=>`<option value="${esc(v.libelle)}"></option>`).join('')},250);
+  });
+  document.addEventListener('submit',async e=>{
+    const f=e.target; if(!f.classList.contains('lieu-panneau'))return; e.preventDefault();
+    const nom=f.ville.value.trim(); if(!nom)return enregistrer({toute_la_france:true});
+    let v=trouvees.get(nom); if(!v){const r=await villes(nom); v=r[0]}
+    if(!v)return toast('Ville introuvable : essayez le code postal.');
+    enregistrer({libelle:v.libelle,latitude:v.latitude,longitude:v.longitude,rayon_km:+f.rayon.value});
+  });
+  return {choix,resume,ajouter,requete,dessiner};
+})();
+let Derniere={q:'',cat:''};
+Lieu.dessiner();
+
 /* Recherche libre : aucun compte nécessaire, l'API ne renvoie que les objets en ligne. */
 async function chercher(q,cat=''){
   q=q.trim(); // vide : tout ce qui est proposé en ce moment (« Voir les objets » du menu)
@@ -1601,7 +1729,7 @@ async function chercher(q,cat=''){
   $('#search-count').textContent='Recherche…'; $('#results').innerHTML=''; $('#search-plus').hidden=true;
   go('search',{adresse:ancre}); Visiteur.noter(q,cat);
   try{
-    const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat);
+    Derniere={q,cat}; const p=new URLSearchParams(); if(q)p.set('q',q); if(cat)p.set('categorie',cat); Lieu.ajouter(p);
     const objets=await api('/objets'+(p.size?'?'+p:''));
     Suite={p,vus:objets.length}; $('#search-plus').hidden=objets.length<PAGE_OBJETS;
     $('#search-count').textContent=objets.length?TT_I18N.available(objets.length):'';
@@ -1643,6 +1771,7 @@ function parametresCategorie(){
   Cat.etats.forEach(e=>p.append('etat',e));
   for(const [cle,vals] of Object.entries(Cat.caracs))vals.forEach(v=>p.append('caracteristique',cle+':'+v));
   if(Cat.tri!=='recent')p.set('tri',Cat.tri);
+  Lieu.ajouter(p);
   return p;
 }
 async function chargerCategorie(){
@@ -1746,7 +1875,7 @@ async function rechercherSite(terme){
       if(!mots.every(m=>normaliserRecherche(titre+' '+contenu).includes(m)))return null;
       return {url,titre};
     })),
-    api('/objets?'+new URLSearchParams({q})).then(value=>({value})).catch(()=>({erreur:true}))
+    api('/objets?'+Lieu.ajouter(new URLSearchParams({q}))).then(value=>({value})).catch(()=>({erreur:true}))
   ]);
   if(seq!==rechercheSequence||vueActuelle!=='global')return;
   const matches=pages.filter(x=>x.status==='fulfilled'&&x.value).map(x=>x.value);
@@ -1776,6 +1905,7 @@ async function demarrer(){
   await session;
   if(moi)Visiteur.apresConnexion(); else Visiteur.rafraichir();
   if(Visiteur.demarrer(h))return; // liens de confirmation ou d'arrêt du suivi sans compte
+  if(await Espace.demarrer(h))return; // lien d'invitation d'un espace réservé (entreprise, résidence)
   if(h.startsWith('#objet-')){if(moi)toutCharger(); ouvrirObjet(+h.slice(7)); return}
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(h.startsWith('#categorie=')){if(moi)toutCharger();suivre(h);return}
@@ -1792,5 +1922,6 @@ demarrer();
 <script src="match.js"></script>
 <script src="premium.js"></script>
 <script src="visiteur.js"></script>
+<script src="espace.js"></script>
 </body>
 </html>

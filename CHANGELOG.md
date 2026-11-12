@@ -13,6 +13,14 @@ Avant le 26/10/2026, les versions étaient numérotées `v0.x.y` (sections plus 
 
 Chaque PR ajoute sa ligne dans un fichier de [changelog.d/](changelog.d/) ; les lignes arrivent ici à la préparation de la livraison (`python3 scripts/version.py livraison`).
 
+## [V6.700] – 2026-11-12 · Recherche par lieu, offres Entreprises et Collectivités, espace salariés, quotas
+
+- Espace réservé aux salariés (offre Espace salariés / Résidences) : la modération crée l'espace d'un client, ses membres le rejoignent par un lien d'invitation avec leur e-mail pro et réservent leurs objets à leurs collègues, remise sur place (migration 0024).
+- Offres Entreprises et Collectivités avec formules, tarifs et demande de devis ; chiffres d'impact (/impact) ; étiquette de colis TopTroc et Garantie payables en ligne (migration 0023).
+- Quotas des comptes gratuits sur les actions qu'on lance (J'aime par jour, propositions en attente), désactivés par défaut (QUOTA_JAIME_PAR_JOUR, QUOTA_PROPOSITIONS_EN_COURS) ; Troc Premium les lève ; compteur dans le Match (migration 0025).
+- Page Les offres : tableau gratuit / Troc Premium, conditions, formules Premium, offres Entreprises et Collectivités.
+- Recherche par lieu à la Leboncoin (ville ou autour de moi + rayon, ou toute la France) sur l'accueil, la recherche et les catégories ; menu réduit à 4 entrées et page « Les offres » simplifiée.
+
 ## [V6.600] – 2026-10-28
 
 - App mobile : correction du démarrage sur iPhone (l'app se fermait après le logo), une seule version d'expo-font, celle du SDK 54.
@@ -124,7 +132,8 @@ Version en production le 26/10/2026 (`v0.5.0` et les deux changements ci-dessous
 - Envoi des e-mails par l'API de Brevo (#11).
 - Avant : mise en place du dépôt, domaine troctroc.fr et documentation d'hébergement (#1 à #9).
 
-[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.600...preprod
+[À venir]: https://github.com/benchamply-cmyk/montroc/compare/V6.700...preprod
+[V6.700]: https://github.com/benchamply-cmyk/montroc/compare/V6.600...V6.700
 [V6.600]: https://github.com/benchamply-cmyk/montroc/compare/V6.500...V6.600
 [V6.500]: https://github.com/benchamply-cmyk/montroc/compare/V6.400...V6.500
 [V6.400]: https://github.com/benchamply-cmyk/montroc/compare/V6.300...V6.400

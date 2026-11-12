@@ -130,6 +130,25 @@ SEUIL_FIABLE = 0.9  # au plus un manquement pour 0 à 9 échanges menés
 SEUIL_A_CONFIRMER = 0.75  # trois manquements sans échange mené au bout
 
 
+class Espace(Horodatage, Base):
+    """Un espace réservé, vendu à une entreprise, un bailleur ou une collectivité : ses membres (reconnus à leur
+    adresse e-mail professionnelle) troquent entre eux des objets que les autres ne voient pas, et se les
+    remettent sur place (accueil, conciergerie, loge…)."""
+
+    __tablename__ = "espaces"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slug: Mapped[str] = mapped_column(String(60), unique=True)
+    nom: Mapped[str] = mapped_column(String(120))
+    # Domaines des adresses e-mail qui donnent accès : ["acme.fr", "acme.com"].
+    domaines: Mapped[list[str]] = mapped_column(JSONB, default=list, server_default="[]")
+    # Où les objets se remettent, indiqué dans chaque échange de l'espace.
+    lieu_de_remise: Mapped[str | None] = mapped_column(String(200))
+    # Formule vendue (espace, residences, territoire…), pour mémoire et pour les bilans.
+    formule: Mapped[str | None] = mapped_column(String(30))
+    actif: Mapped[bool] = mapped_column(default=True, server_default="true")
+
+
 class Utilisateur(Horodatage, Base):
     __tablename__ = "utilisateurs"
 
@@ -162,6 +181,9 @@ class Utilisateur(Horodatage, Base):
     # Sans zone d'intérêt, l'ancienne règle par nom de ville (``zone``) s'applique.
     zones_interet: Mapped[list[dict]] = mapped_column(JSONB, default=list, server_default="[]")
     toute_la_france: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Espace réservé dont il est membre (son entreprise, sa résidence) ; None : aucun.
+    espace_id: Mapped[int | None] = mapped_column(ForeignKey("espaces.id", ondelete="SET NULL"), index=True)
+    espace: Mapped[Espace | None] = relationship()
     # Troc Premium (voir premium.py) : formule souscrite et fin de la période payée (ou de l'essai gratuit).
     formule: Mapped[str | None] = mapped_column(String(20))
     premium_jusqu_au: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
@@ -254,6 +276,8 @@ class Objet(Horodatage, Base):
     lieu: Mapped[str | None] = mapped_column(String(120))
     latitude: Mapped[float | None] = mapped_column(Float)
     longitude: Mapped[float | None] = mapped_column(Float)
+    # Réservé aux membres de cet espace (collègues, voisins de résidence) ; None : ouvert à tous.
+    espace_id: Mapped[int | None] = mapped_column(ForeignKey("espaces.id", ondelete="SET NULL"), index=True)
     # Format d'envoi (nomenclature.FORMATS_COLIS) : obligatoire pour proposer l'objet par colis.
     format_colis: Mapped[str | None] = mapped_column(String(20))
 
@@ -263,6 +287,10 @@ class Objet(Horodatage, Base):
     @property
     def contre_souhait_ids(self) -> list[int]:
         return [s.id for s in self.contre]
+
+    @property
+    def reserve_espace(self) -> bool:
+        return self.espace_id is not None
 
     __table_args__ = (
         CheckConstraint("length(trim(titre)) > 0", name="titre_non_vide"),
@@ -378,6 +406,9 @@ class Echange(Horodatage, Base):
     # Le Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande ou un accord de match).
     grand_troc_id: Mapped[int | None] = mapped_column(ForeignKey("grands_trocs.id", ondelete="SET NULL"), index=True)
     grand_troc: Mapped[GrandTroc | None] = relationship(back_populates="echanges")
+    # Le membre qui a lancé cette proposition (Match, boucle choisie) ; vide pour le Grand Troc. Sert au quota
+    # de propositions en attente des comptes gratuits.
+    auteur_id: Mapped[int | None] = mapped_column(ForeignKey("utilisateurs.id", ondelete="SET NULL"), index=True)
     # Boucle de remplacement, proposée pendant les 48 h de réponse après un refus (``services.remplacements``).
     remplacement: Mapped[bool] = mapped_column(default=False, server_default="false")
     # Boucle du Grand Troc annulée dont les objets libérés ont déjà servi à chercher des remplaçants.
@@ -421,6 +452,9 @@ class Transfert(Base):
     adresse_livraison: Mapped[str | None] = mapped_column(String(300))
     # Envoi couvert par la Garantie TopTroc (incluse dans Premium Plus et Famille).
     garantie: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Étiquette de colis achetée à TopTroc (Stripe) : TopTroc l'envoie au donneur par e-mail.
+    envoi_paye_le: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    envoi_format: Mapped[str | None] = mapped_column(String(10))
 
     echange: Mapped[Echange] = relationship(back_populates="transferts")
     objet: Mapped[Objet] = relationship()

@@ -220,6 +220,8 @@ def donner_avis(
     super_jaime = super_jaime and aime and not (avis is not None and avis.super)
     if super_jaime and premium.super_jaime_restants(session, moi) < 1:
         raise ErreurMetier("Plus de Super J'aime cette semaine : ils reviennent lundi (ou avec Troc Premium).")
+    if aime and not (avis is not None and avis.aime) and premium.jaime_restants(session, moi) == 0:
+        raise ErreurMetier("Plus de J'aime aujourd'hui : ils reviennent demain, ou illimités avec Troc Premium.")
     if avis is None:
         avis = m.Avis(utilisateur_id=moi.id, objet_id=objet_id, aime=aime)
         session.add(avis)

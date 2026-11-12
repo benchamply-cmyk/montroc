@@ -84,8 +84,20 @@ class Settings(BaseSettings):
     stripe_webhook_secret: str = ""
     # Portail client Stripe : changer de carte ou résilier en trois clics.
     stripe_portail: str = ""
+    # Étiquettes de colis TopTroc (la commission de TopTroc sur les envois) : prix public par format, tarif
+    # négocié du transporteur + frais de service, « petit = 4.90 ; moyen = 7.90 ; grand = 15.90 ». Les liens de
+    # paiement sont dans STRIPE_LIENS (envoi_petit, envoi_moyen, envoi_grand, garantie) ; sans lien, pas de bouton.
+    prix_envois: str = "petit = 4.90 ; moyen = 7.90 ; grand = 15.90"
+    prix_garantie: float = Field(default=0.99, ge=0)
+    # Qui reçoit les demandes de devis (Entreprises, Collectivités) et les étiquettes de colis à préparer.
+    contact_partenaires: str = "contact@toptroc.com"
     # Encart publicitaire montré aux membres sans formule « sans publicité » : « texte | lien ». Vide : aucun.
     encart_publicite: str = ""
+    # Quotas des comptes gratuits, sur les seules actions qu'on lance soi-même (chercher, publier, répondre à une
+    # proposition et le Grand Troc restent illimités) ; les abonnés Troc Premium n'en ont pas. 0 : pas de quota.
+    # Valeurs conseillées une fois la zone assez dense : 10 « J'aime » par jour, 3 propositions en attente.
+    quota_jaime_par_jour: int = Field(default=0, ge=0, le=1000)
+    quota_propositions_en_cours: int = Field(default=0, ge=0, le=100)
     # Durée de l'essai gratuit de Premium Plus, une fois par compte (0 : pas d'essai).
     jours_essai_premium: int = Field(default=30, ge=0, le=90)
 
@@ -147,6 +159,19 @@ class Settings(BaseSettings):
             if egal and cle.strip() and url.strip().startswith("https://"):
                 liens[cle.strip()] = url.strip()
         return liens
+
+    @property
+    def prix_par_format(self) -> dict[str, float]:
+        """{format de colis : prix public de l'étiquette TopTroc} lus dans PRIX_ENVOIS."""
+        prix = {}
+        for entree in self.prix_envois.split(";"):
+            cle, egal, valeur = entree.partition("=")
+            try:
+                if egal and cle.strip():
+                    prix[cle.strip()] = round(float(valeur.strip().replace(",", ".")), 2)
+            except ValueError:
+                continue
+        return prix
 
     @property
     def liste_cors(self) -> list[str]:

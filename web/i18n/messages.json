@@ -5270,5 +5270,637 @@
   "Troquer son annonce": {
     "en": "Swap your listing",
     "es": "Intercambiar tu anuncio"
+  },
+  "Échanger ses objets, sans argent,": {
+    "en": "Swap your things, without money,",
+    "es": "Intercambiar tus objetos, sin dinero,"
+  },
+  "partout en France.": {
+    "en": "anywhere in France.",
+    "es": "en toda Francia."
+  },
+  "À deux avec le Match, ou en boucle à trois avec le Grand Troc : plus de chances de trouver ce qu'on cherche.": {
+    "en": "Two-way with Match, or in a three-way loop with the Grand Troc: more chances to find what you are looking for.",
+    "es": "De dos en dos con el Match, o en un círculo de tres con el Grand Troc: más posibilidades de encontrar lo que buscas."
+  },
+  "Articles en ligne en attente d'un Troc": {
+    "en": "Items online waiting for a swap",
+    "es": "Artículos en línea esperando un trueque"
+  },
+  "L'offre": {
+    "en": "The offer",
+    "es": "La oferta"
+  },
+  "Troquer est": {
+    "en": "Swapping is",
+    "es": "Intercambiar es"
+  },
+  "Publier et chercher, même sans compte": {
+    "en": "Post and search, even without an account",
+    "es": "Publicar y buscar, incluso sin cuenta"
+  },
+  "En main propre près de chez soi, ou par colis": {
+    "en": "Hand to hand near you, or by parcel",
+    "es": "En mano cerca de ti, o por paquete"
+  },
+  "Voir les offres": {
+    "en": "See the offers",
+    "es": "Ver las ofertas"
+  },
+  "· Déjà sur Vinted ou Leboncoin ?": {
+    "en": "· Already on Vinted or Leboncoin?",
+    "es": "· ¿Ya estás en Vinted o Leboncoin?"
+  },
+  "Les offres · TopTroc": {
+    "en": "Offers · TopTroc",
+    "es": "Ofertas · TopTroc"
+  },
+  "Publier, chercher, le Match, le Grand Troc, la remise en main propre : tout l'essentiel ne coûte rien, partout en France.": {
+    "en": "Posting, searching, Match, the Grand Troc, hand-to-hand handover: all the essentials are free, anywhere in France.",
+    "es": "Publicar, buscar, el Match, el Grand Troc, la entrega en mano: todo lo esencial es gratis, en toda Francia."
+  },
+  "Publier ses objets, sans limite": {
+    "en": "Post your items, without limit",
+    "es": "Publicar tus objetos, sin límite"
+  },
+  "Dire ce qui serait utile": {
+    "en": "Say what would be useful",
+    "es": "Decir lo que sería útil"
+  },
+  "Chercher, même sans compte, près de chez soi ou dans toute la France (filtre « Où ? »)": {
+    "en": "Search, even without an account, near you or across France (\"Where?\" filter)",
+    "es": "Buscar, incluso sin cuenta, cerca de ti o en toda Francia (filtro «¿Dónde?»)"
+  },
+  "Le Match, à tout moment, et le Grand Troc du dimanche": {
+    "en": "Match, at any time, and the Sunday Grand Troc",
+    "es": "El Match, en cualquier momento, y el Grand Troc del domingo"
+  },
+  "La remise en main propre, ou l'envoi par colis (chacun paie l'envoi de son objet)": {
+    "en": "Hand-to-hand handover, or shipping by parcel (each person pays to ship their own item)",
+    "es": "La entrega en mano, o el envío por paquete (cada uno paga el envío de su objeto)"
+  },
+  "Troc Premium, plus tard": {
+    "en": "Troc Premium, later",
+    "es": "Troc Premium, más adelante"
+  },
+  "Une option de confort arrivera quand la communauté sera assez grande : sans publicité, voir qui aime ses objets, retour arrière dans le Match. Les échanges, eux, restent les mêmes pour tous.": {
+    "en": "A comfort option will come once the community is big enough: no ads, see who likes your items, undo in Match. Swaps stay the same for everyone.",
+    "es": "Una opción de comodidad llegará cuando la comunidad sea lo bastante grande: sin publicidad, ver quién quiere tus objetos, deshacer en el Match. Los intercambios siguen siendo iguales para todos."
+  },
+  "Entreprises et collectivités": {
+    "en": "Companies and local authorities",
+    "es": "Empresas y administraciones locales"
+  },
+  "Journées troc, salariés, habitants : voir les pages": {
+    "en": "Swap days, employees, residents: see the pages",
+    "es": "Jornadas de trueque, empleados, vecinos: ver las páginas"
+  },
+  "Créer son compte en une minute, avec son seul e-mail.": {
+    "en": "Create your account in one minute, with just your e-mail.",
+    "es": "Crear tu cuenta en un minuto, solo con tu e-mail."
+  },
+  "Les offres TopTroc : troquer est gratuit, partout en France, en main propre ou par colis.": {
+    "en": "TopTroc offers: swapping is free, anywhere in France, hand to hand or by parcel.",
+    "es": "Ofertas de TopTroc: intercambiar es gratis, en toda Francia, en mano o por paquete."
+  },
+  "Toute la France": {
+    "en": "All of France",
+    "es": "Toda Francia"
+  },
+  "Ville introuvable : essayez le code postal.": {
+    "en": "City not found: try the postcode.",
+    "es": "Ciudad no encontrada: prueba con el código postal."
+  },
+  "Position refusée : tapez votre ville.": {
+    "en": "Location refused: type your city.",
+    "es": "Ubicación rechazada: escribe tu ciudad."
+  },
+  "Votre navigateur ne donne pas votre position : tapez votre ville.": {
+    "en": "Your browser does not share your location: type your city.",
+    "es": "Tu navegador no da tu ubicación: escribe tu ciudad."
+  },
+  "Envoi par colis, si besoin": {
+    "en": "Shipping by parcel, if needed",
+    "es": "Envío por paquete, si hace falta"
+  },
+  "Pas d'imprimante ou pas de compte chez un transporteur ? TopTroc vend l'étiquette au tarif négocié : à partir de 4,90 € pour un petit colis, 7,90 € pour un colis moyen, 15,90 € jusqu'à 30 kg. La Garantie TopTroc (0,99 €) couvre votre envoi en cas de perte ou de casse.": {
+    "en": "No printer or no carrier account? TopTroc sells the label at a negotiated rate: from €4.90 for a small parcel, €7.90 for a medium parcel, €15.90 up to 30 kg. The TopTroc Guarantee (€0.99) covers your shipment if it is lost or damaged.",
+    "es": "¿Sin impresora o sin cuenta en un transportista? TopTroc vende la etiqueta a tarifa negociada: desde 4,90 € un paquete pequeño, 7,90 € uno mediano, 15,90 € hasta 30 kg. La Garantía TopTroc (0,99 €) cubre tu envío en caso de pérdida o rotura."
+  },
+  "Entreprises · TopTroc": {
+    "en": "Companies · TopTroc",
+    "es": "Empresas · TopTroc"
+  },
+  "Les offres · Entreprises": {
+    "en": "Offers · Companies",
+    "es": "Ofertas · Empresas"
+  },
+  "Les offres · Collectivités": {
+    "en": "Offers · Local authorities",
+    "es": "Ofertas · Administraciones locales"
+  },
+  "Une activité utile et conviviale pour vos équipes, gratuite pour les salariés, avec un bilan chiffré pour votre démarche RSE.": {
+    "en": "A useful, friendly activity for your teams, free for employees, with measured results for your CSR approach.",
+    "es": "Una actividad útil y cercana para tus equipos, gratuita para los empleados, con un balance en cifras para tu RSC."
+  },
+  "Trois formules": {
+    "en": "Three plans",
+    "es": "Tres fórmulas"
+  },
+  "Pour essayer": {
+    "en": "To try it out",
+    "es": "Para probar"
+  },
+  "Journée troc": {
+    "en": "Swap day",
+    "es": "Jornada de trueque"
+  },
+  "1 200 € HT": {
+    "en": "€1,200 excl. VAT",
+    "es": "1.200 € sin IVA"
+  },
+  "Une journée sur votre site : stand, animation, objets apportés par les salariés, échanges sur place et en ligne pendant un mois. Bilan de la journée.": {
+    "en": "One day on your premises: stand, hosting, items brought by employees, swaps on site and online for a month. Report on the day.",
+    "es": "Un día en tu sede: puesto, animación, objetos traídos por los empleados, intercambios en el sitio y en línea durante un mes. Balance de la jornada."
+  },
+  "Le plus choisi": {
+    "en": "Most popular",
+    "es": "El más elegido"
+  },
+  "Espace salariés": {
+    "en": "Employee space",
+    "es": "Espacio para empleados"
+  },
+  "2 400 € HT / an": {
+    "en": "€2,400 excl. VAT / year",
+    "es": "2.400 € sin IVA / año"
+  },
+  "Jusqu'à 250 salariés (4 800 € jusqu'à 1 000, au-delà sur devis). Un Grand Troc interne chaque dimanche, deux journées troc par an, remise à l'accueil ou à la conciergerie, kit de communication interne et bilan RSE semestriel.": {
+    "en": "Up to 250 employees (€4,800 up to 1,000, beyond that on quote). An internal Grand Troc every Sunday, two swap days a year, handover at reception or the concierge desk, internal communication kit and half-yearly CSR report.",
+    "es": "Hasta 250 empleados (4.800 € hasta 1.000, más allá con presupuesto). Un Grand Troc interno cada domingo, dos jornadas de trueque al año, entrega en recepción o conserjería, kit de comunicación interna y balance RSC semestral."
+  },
+  "Bailleurs et résidences": {
+    "en": "Landlords and residences",
+    "es": "Arrendadores y residencias"
+  },
+  "Résidences": {
+    "en": "Residences",
+    "es": "Residencias"
+  },
+  "600 € HT / résidence / an": {
+    "en": "€600 excl. VAT / residence / year",
+    "es": "600 € sin IVA / residencia / año"
+  },
+  "Les objets circulent entre voisins d'une même résidence : affichage dans les halls, une journée troc par an au pied des immeubles, bilan annuel. Dégressif à partir de 5 résidences.": {
+    "en": "Items circulate between neighbours in the same residence: posters in the halls, one swap day a year outside the buildings, annual report. Volume discount from 5 residences.",
+    "es": "Los objetos circulan entre vecinos de una misma residencia: carteles en los portales, una jornada de trueque al año al pie de los edificios, balance anual. Descuento a partir de 5 residencias."
+  },
+  "Ce que vous obtenez": {
+    "en": "What you get",
+    "es": "Lo que obtienes"
+  },
+  "Zéro gestion": {
+    "en": "Nothing to manage",
+    "es": "Cero gestión"
+  },
+  ": nous ouvrons l'espace, animons les journées et répondons aux salariés.": {
+    "en": ": we open the space, host the days and answer employees.",
+    "es": ": abrimos el espacio, animamos las jornadas y respondemos a los empleados."
+  },
+  "Gratuit pour les salariés": {
+    "en": "Free for employees",
+    "es": "Gratis para los empleados"
+  },
+  ": publier, chercher, le Match et le Grand Troc, sans abonnement.": {
+    "en": ": posting, searching, Match and the Grand Troc, with no subscription.",
+    "es": ": publicar, buscar, el Match y el Grand Troc, sin suscripción."
+  },
+  ": objets réemployés, kilos de déchets évités et CO₂ évité estimés, salariés participants, prêts à reprendre dans votre rapport extra-financier.": {
+    "en": ": reused items, estimated kilos of waste and CO₂ avoided, participating employees, ready for your non-financial report.",
+    "es": ": objetos reutilizados, kilos de residuos y CO₂ evitados estimados, empleados participantes, listos para tu informe no financiero."
+  },
+  "Une action pour votre CSE": {
+    "en": "An action for your works council",
+    "es": "Una acción para tu comité de empresa"
+  },
+  ": un rendez-vous régulier, qui ne coûte rien aux salariés.": {
+    "en": ": a regular event that costs employees nothing.",
+    "es": ": una cita regular que no cuesta nada a los empleados."
+  },
+  "Associations et ressourceries": {
+    "en": "Associations and reuse centres",
+    "es": "Asociaciones y centros de reutilización"
+  },
+  "Vous faites déjà vivre le réemploi ? TopTroc est gratuit pour vous : publiez les objets que vous ne pouvez pas garder, et proposons ensemble des journées troc dans votre quartier.": {
+    "en": "Already running reuse? TopTroc is free for you: post the items you cannot keep, and let's organise swap days in your neighbourhood together.",
+    "es": "¿Ya promueves la reutilización? TopTroc es gratis para ti: publica los objetos que no puedes quedarte y organicemos juntos jornadas de trueque en tu barrio."
+  },
+  "Un premier échange de 30 minutes : votre site, vos équipes, l'endroit où remettre les objets.": {
+    "en": "A first 30-minute call: your site, your teams, where to hand over items.",
+    "es": "Una primera conversación de 30 minutos: tu sede, tus equipos, dónde entregar los objetos."
+  },
+  "Première journée troc ou premier Grand Troc dans le mois.": {
+    "en": "First swap day or first Grand Troc within the month.",
+    "es": "Primera jornada de trueque o primer Grand Troc en el mes."
+  },
+  "Demander un devis": {
+    "en": "Request a quote",
+    "es": "Pedir presupuesto"
+  },
+  "Deux minutes pour nous dire qui vous êtes : nous revenons vers vous sous deux jours ouvrés.": {
+    "en": "Two minutes to tell us who you are: we get back to you within two working days.",
+    "es": "Dos minutos para decirnos quién eres: te respondemos en dos días hábiles."
+  },
+  "Formule": {
+    "en": "Plan",
+    "es": "Fórmula"
+  },
+  "Je ne sais pas encore": {
+    "en": "I don't know yet",
+    "es": "Todavía no lo sé"
+  },
+  "Organisation": {
+    "en": "Organisation",
+    "es": "Organización"
+  },
+  "Votre nom": {
+    "en": "Your name",
+    "es": "Tu nombre"
+  },
+  "E-mail": {
+    "en": "E-mail",
+    "es": "E-mail"
+  },
+  "Téléphone": {
+    "en": "Phone",
+    "es": "Teléfono"
+  },
+  "facultatif": {
+    "en": "optional",
+    "es": "opcional"
+  },
+  "Nombre de salariés ou de logements": {
+    "en": "Number of employees or homes",
+    "es": "Número de empleados o viviendas"
+  },
+  "Nombre d'habitants": {
+    "en": "Number of residents",
+    "es": "Número de habitantes"
+  },
+  "Votre projet": {
+    "en": "Your project",
+    "es": "Tu proyecto"
+  },
+  "Envoyer la demande": {
+    "en": "Send the request",
+    "es": "Enviar la solicitud"
+  },
+  "TopTroc pour les entreprises et les bailleurs : journée troc, espace salariés, résidences, avec un bilan chiffré pour votre RSE.": {
+    "en": "TopTroc for companies and landlords: swap day, employee space, residences, with measured results for your CSR.",
+    "es": "TopTroc para empresas y arrendadores: jornada de trueque, espacio para empleados, residencias, con un balance en cifras para tu RSC."
+  },
+  "TopTroc pour les collectivités : le Grand Troc de votre territoire, des lieux de remise publics et un rapport d'impact.": {
+    "en": "TopTroc for local authorities: the Grand Troc of your area, public handover places and an impact report.",
+    "es": "TopTroc para administraciones locales: el Grand Troc de tu territorio, lugares públicos de entrega y un informe de impacto."
+  },
+  "TopTroc fait circuler les objets qui dorment chez vos habitants : un échange direct ou une boucle à trois, sans argent. Moins de déchets, plus de liens entre voisins, et des chiffres pour le prouver.": {
+    "en": "TopTroc gets the items sleeping in your residents' homes moving: a direct swap or a three-way loop, without money. Less waste, closer neighbours, and figures to prove it.",
+    "es": "TopTroc hace circular los objetos olvidados en casa de tus habitantes: un intercambio directo o un círculo de tres, sin dinero. Menos residuos, más lazos entre vecinos, y cifras que lo demuestran."
+  },
+  "Pilote": {
+    "en": "Pilot",
+    "es": "Piloto"
+  },
+  "Grand Troc de quartier": {
+    "en": "Neighbourhood Grand Troc",
+    "es": "Grand Troc de barrio"
+  },
+  "3 900 € HT": {
+    "en": "€3,900 excl. VAT",
+    "es": "3.900 € sin IVA"
+  },
+  "Six mois sur un quartier : lancement auprès des habitants, deux journées troc sur l'espace public, lieux de remise conseillés, rapport d'impact final.": {
+    "en": "Six months in one neighbourhood: launch with residents, two swap days in public space, recommended handover places, final impact report.",
+    "es": "Seis meses en un barrio: lanzamiento con los vecinos, dos jornadas de trueque en el espacio público, lugares de entrega recomendados, informe de impacto final."
+  },
+  "Territoire": {
+    "en": "Territory",
+    "es": "Territorio"
+  },
+  "9 900 € HT / an": {
+    "en": "€9,900 excl. VAT / year",
+    "es": "9.900 € sin IVA / año"
+  },
+  "Une commune ou plusieurs arrondissements : Grand Troc à votre nom, quatre journées troc par an, lieux publics de remise (mairie, médiathèque, centre social), kit de communication et rapport d'impact trimestriel.": {
+    "en": "A town or several districts: a Grand Troc in your name, four swap days a year, public handover places (town hall, library, community centre), communication kit and quarterly impact report.",
+    "es": "Un municipio o varios distritos: Grand Troc con tu nombre, cuatro jornadas de trueque al año, lugares públicos de entrega (ayuntamiento, biblioteca, centro social), kit de comunicación e informe de impacto trimestral."
+  },
+  "Intercommunalités": {
+    "en": "Inter-municipal bodies",
+    "es": "Mancomunidades"
+  },
+  "Métropole": {
+    "en": "Metropolis",
+    "es": "Metrópoli"
+  },
+  "Sur devis": {
+    "en": "On quote",
+    "es": "Con presupuesto"
+  },
+  "Plusieurs communes, tableau de bord d'impact par commune, données ouvertes pour votre programme local de prévention des déchets, marque blanche possible.": {
+    "en": "Several towns, impact dashboard per town, open data for your local waste prevention programme, white label possible.",
+    "es": "Varios municipios, panel de impacto por municipio, datos abiertos para tu programa local de prevención de residuos, marca blanca posible."
+  },
+  "(PLPDMA) : une action de réemploi concrète, mesurée, visible des habitants, éligible à de nombreux financements de prévention des déchets.": {
+    "en": "(PLPDMA): a concrete, measured reuse action, visible to residents, eligible for many waste prevention funds.",
+    "es": "(PLPDMA): una acción de reutilización concreta, medida, visible para los vecinos, elegible para numerosas financiaciones de prevención de residuos."
+  },
+  "Le rapport d'impact": {
+    "en": "The impact report",
+    "es": "El informe de impacto"
+  },
+  "Objets réemployés, kilos de déchets évités et CO₂ évité (estimations par catégorie d'objet), habitants participants, par quartier : de quoi rendre compte aux élus et à vos financeurs.": {
+    "en": "Reused items, kilos of waste and CO₂ avoided (estimates by item category), participating residents, by neighbourhood: everything you need to report to elected officials and funders.",
+    "es": "Objetos reutilizados, kilos de residuos y CO₂ evitados (estimaciones por categoría), vecinos participantes, por barrio: todo para rendir cuentas a los cargos electos y a los financiadores."
+  },
+  "Un premier rendez-vous pour choisir le périmètre (un quartier, un arrondissement, une commune) et les lieux de remise.": {
+    "en": "A first meeting to choose the area (a neighbourhood, a district, a town) and the handover places.",
+    "es": "Una primera reunión para elegir el perímetro (un barrio, un distrito, un municipio) y los lugares de entrega."
+  },
+  "Les Grands Trocs et les journées troc se succèdent, nous suivons les échanges.": {
+    "en": "Grand Trocs and swap days follow one another, we follow the swaps.",
+    "es": "Los Grand Trocs y las jornadas de trueque se suceden, seguimos los intercambios."
+  },
+  "Le rapport d'impact, puis un point sur la suite.": {
+    "en": "The impact report, then a review of next steps.",
+    "es": "El informe de impacto y después un balance de lo siguiente."
+  },
+  "Envoi…": {
+    "en": "Sending…",
+    "es": "Enviando…"
+  },
+  "Merci ! Votre demande est bien partie : nous revenons vers vous sous deux jours ouvrés.": {
+    "en": "Thank you! Your request has been sent: we get back to you within two working days.",
+    "es": "¡Gracias! Tu solicitud se ha enviado: te respondemos en dos días hábiles."
+  },
+  "La demande n'a pas pu partir. Réessayez dans un instant, ou écrivez à contact@toptroc.com.": {
+    "en": "The request could not be sent. Try again in a moment, or write to contact@toptroc.com.",
+    "es": "No se pudo enviar la solicitud. Inténtalo de nuevo en un momento o escribe a contact@toptroc.com."
+  },
+  "objets réemployés en un an": {
+    "en": "items reused in one year",
+    "es": "objetos reutilizados en un año"
+  },
+  "de déchets évités (estimation)": {
+    "en": "of waste avoided (estimate)",
+    "es": "de residuos evitados (estimación)"
+  },
+  "habitants ont troqué": {
+    "en": "residents have swapped",
+    "es": "vecinos han intercambiado"
+  },
+  "Pas d'étiquette ? TopTroc s'en occupe.": {
+    "en": "No label? TopTroc takes care of it.",
+    "es": "¿Sin etiqueta? TopTroc se encarga."
+  },
+  "Tarif négocié avec le transporteur : vous payez en ligne, vous recevez l'étiquette à imprimer et vous déposez le colis en point relais.": {
+    "en": "Rate negotiated with the carrier: you pay online, receive the label to print and drop the parcel at a pick-up point.",
+    "es": "Tarifa negociada con el transportista: pagas en línea, recibes la etiqueta para imprimir y dejas el paquete en un punto de recogida."
+  },
+  "Étiquette TopTroc payée : vous la recevez par e-mail sous 24 h ouvrées.": {
+    "en": "TopTroc label paid: you will receive it by e-mail within 24 working hours.",
+    "es": "Etiqueta TopTroc pagada: la recibes por e-mail en 24 horas hábiles."
+  },
+  "Mon entreprise": {
+    "en": "My company",
+    "es": "Mi empresa"
+  },
+  "Réservé à mes collègues (": {
+    "en": "Reserved for my colleagues (",
+    "es": "Reservado a mis compañeros ("
+  },
+  ") : remise sur place, invisible des autres membres": {
+    "en": "): handed over on site, hidden from other members",
+    "es": "): entrega en el sitio, invisible para los demás miembros"
+  },
+  "Espaces réservés (entreprises, résidences)": {
+    "en": "Private spaces (companies, residences)",
+    "es": "Espacios reservados (empresas, residencias)"
+  },
+  "Nom": {
+    "en": "Name",
+    "es": "Nombre"
+  },
+  "Nom court du lien": {
+    "en": "Short name for the link",
+    "es": "Nombre corto del enlace"
+  },
+  "Domaines des adresses e-mail": {
+    "en": "E-mail address domains",
+    "es": "Dominios de las direcciones de e-mail"
+  },
+  "Lieu de remise": {
+    "en": "Handover place",
+    "es": "Lugar de entrega"
+  },
+  "Collectivité": {
+    "en": "Local authority",
+    "es": "Administración local"
+  },
+  "Créer l'espace": {
+    "en": "Create the space",
+    "es": "Crear el espacio"
+  },
+  "Ex. Acme Marseille": {
+    "en": "E.g. Acme Marseille",
+    "es": "Ej. Acme Marseille"
+  },
+  "Ex. acme-marseille": {
+    "en": "E.g. acme-marseille",
+    "es": "Ej. acme-marseille"
+  },
+  "Ex. acme.fr, acme.com": {
+    "en": "E.g. acme.fr, acme.com",
+    "es": "Ej. acme.fr, acme.com"
+  },
+  "Ex. Accueil du bâtiment B, 2e étage": {
+    "en": "E.g. Reception, building B, 2nd floor",
+    "es": "Ej. Recepción del edificio B, 2.º piso"
+  },
+  "Collègues": {
+    "en": "Colleagues",
+    "es": "Compañeros"
+  },
+  "Voir les objets des collègues": {
+    "en": "See colleagues' items",
+    "es": "Ver los objetos de los compañeros"
+  },
+  "Quitter l'espace": {
+    "en": "Leave the space",
+    "es": "Salir del espacio"
+  },
+  "Rouvrir": {
+    "en": "Reopen",
+    "es": "Reabrir"
+  },
+  "Quand la communauté sera assez grande, Troc Premium (dès 2,99 € par mois) donnera des J'aime et des propositions illimités, sans publicité, avec retour arrière dans le Match. Un compte gratuit garde chaque jour des J'aime et des propositions ; chercher, publier, répondre aux propositions et le Grand Troc restent illimités pour tous.": {
+    "en": "Once the community is big enough, Troc Premium (from €2.99 a month) will give unlimited likes and proposals, no ads, and undo in the Match. A free account keeps a daily allowance of likes and proposals; searching, publishing, answering proposals and the Grand Troc stay unlimited for everyone.",
+    "es": "Cuando la comunidad sea lo bastante grande, Troc Premium (desde 2,99 € al mes) dará Me gusta y propuestas ilimitados, sin publicidad y con vuelta atrás en el Match. Una cuenta gratuita conserva cada día Me gusta y propuestas; buscar, publicar, responder a las propuestas y el Grand Troc siguen siendo ilimitados para todos."
+  },
+  "Particuliers : gratuit ou Troc Premium": {
+    "en": "Individuals: free or Troc Premium",
+    "es": "Particulares: gratis o Troc Premium"
+  },
+  "Ce que vous faites": {
+    "en": "What you do",
+    "es": "Lo que haces"
+  },
+  "Chercher et voir tous les objets, même sans compte": {
+    "en": "Search and see every item, even without an account",
+    "es": "Buscar y ver todos los objetos, incluso sin cuenta"
+  },
+  "Illimité": {
+    "en": "Unlimited",
+    "es": "Ilimitado"
+  },
+  "Publier ses objets et dire ce qui serait utile": {
+    "en": "Publish your items and say what would be useful",
+    "es": "Publicar tus objetos y decir qué te sería útil"
+  },
+  "Répondre aux propositions reçues": {
+    "en": "Answer the proposals you receive",
+    "es": "Responder a las propuestas recibidas"
+  },
+  "Inclus": {
+    "en": "Included",
+    "es": "Incluido"
+  },
+  "Inclus, avec l'avant-première à 17 h (Plus)": {
+    "en": "Included, with the 5 pm preview (Plus)",
+    "es": "Incluido, con el preestreno a las 17 h (Plus)"
+  },
+  "« J'aime » dans le Match": {
+    "en": "Likes in the Match",
+    "es": "«Me gusta» en el Match"
+  },
+  "10 par jour": {
+    "en": "10 a day",
+    "es": "10 al día"
+  },
+  "Propositions lancées, en attente de réponse": {
+    "en": "Proposals you started, awaiting an answer",
+    "es": "Propuestas enviadas, pendientes de respuesta"
+  },
+  "3 à la fois": {
+    "en": "3 at a time",
+    "es": "3 a la vez"
+  },
+  "Voir qui aime ses objets, retour arrière dans le Match": {
+    "en": "See who likes your items, undo in the Match",
+    "es": "Ver a quién le gustan tus objetos, vuelta atrás en el Match"
+  },
+  "Publicité": {
+    "en": "Advertising",
+    "es": "Publicidad"
+  },
+  "Un encart discret": {
+    "en": "A discreet banner",
+    "es": "Un anuncio discreto"
+  },
+  "Aucune": {
+    "en": "None",
+    "es": "Ninguna"
+  },
+  "Prix": {
+    "en": "Price",
+    "es": "Precio"
+  },
+  "0 €": {
+    "en": "€0",
+    "es": "0 €"
+  },
+  "Dès 2,99 € par mois": {
+    "en": "From €2.99 a month",
+    "es": "Desde 2,99 € al mes"
+  },
+  "Les conditions": {
+    "en": "The conditions",
+    "es": "Las condiciones"
+  },
+  "Les limites du compte gratuit ne s'appliqueront que lorsque la communauté sera assez grande dans votre zone. D'ici là, tout est illimité pour tous.": {
+    "en": "The free account limits will only apply once the community is big enough in your area. Until then, everything is unlimited for everyone.",
+    "es": "Los límites de la cuenta gratuita solo se aplicarán cuando la comunidad sea lo bastante grande en tu zona. Hasta entonces, todo es ilimitado para todos."
+  },
+  "Les « J'aime » reviennent chaque jour à minuit. Les « Non merci » et un « J'aime » déjà donné ne comptent pas.": {
+    "en": "Likes come back every day at midnight. \"No thanks\" and a like already given do not count.",
+    "es": "Los «Me gusta» vuelven cada día a medianoche. Los «No, gracias» y un «Me gusta» ya dado no cuentan."
+  },
+  "Une proposition libère sa place dès qu'elle est acceptée, refusée ou expirée (48 h sans réponse).": {
+    "en": "A proposal frees its slot as soon as it is accepted, declined or expired (48 hours without an answer).",
+    "es": "Una propuesta libera su plaza en cuanto se acepta, se rechaza o caduca (48 h sin respuesta)."
+  },
+  "Troc Premium est sans engagement : vous le résiliez quand vous voulez, il court jusqu'à la fin de la période payée.": {
+    "en": "Troc Premium has no commitment: cancel whenever you like, it runs until the end of the paid period.",
+    "es": "Troc Premium no tiene permanencia: lo cancelas cuando quieras y dura hasta el final del periodo pagado."
+  },
+  "Premium ne passe jamais devant un échange possible : au Grand Troc, la priorité ne sert qu'à départager, à nombre d'objets échangés égal.": {
+    "en": "Premium never takes precedence over a possible exchange: at the Grand Troc, priority only breaks ties when the number of items exchanged is equal.",
+    "es": "Premium nunca pasa por delante de un intercambio posible: en el Grand Troc, la prioridad solo sirve para desempatar, con el mismo número de objetos intercambiados."
+  },
+  "Les formules Troc Premium": {
+    "en": "Troc Premium plans",
+    "es": "Las fórmulas Troc Premium"
+  },
+  "L'essentiel": {
+    "en": "The essentials",
+    "es": "Lo esencial"
+  },
+  "2,99 € / mois": {
+    "en": "€2.99 / month",
+    "es": "2,99 € / mes"
+  },
+  "Ou 24 € par an. « J'aime » et propositions illimités, sans publicité, voir qui aime ses objets, retour arrière dans le Match.": {
+    "en": "Or €24 a year. Unlimited likes and proposals, no ads, see who likes your items, undo in the Match.",
+    "es": "O 24 € al año. «Me gusta» y propuestas ilimitados, sin publicidad, ver a quién le gustan tus objetos, vuelta atrás en el Match."
+  },
+  "Le plus complet": {
+    "en": "The most complete",
+    "es": "La más completa"
+  },
+  "5,99 € / mois": {
+    "en": "€5.99 / month",
+    "es": "5,99 € / mes"
+  },
+  "Ou 49 € par an. Tout Essentiel, plus l'avant-première du Grand Troc, la priorité à égalité, trois zones de recherche et la Garantie TopTroc sur vos colis.": {
+    "en": "Or €49 a year. Everything in Essentiel, plus the Grand Troc preview, tie-break priority, three search areas and the TopTroc Guarantee on your parcels.",
+    "es": "O 49 € al año. Todo Essentiel, más el preestreno del Grand Troc, la prioridad en caso de empate, tres zonas de búsqueda y la Garantía TopTroc en tus paquetes."
+  },
+  "Pour la maison": {
+    "en": "For the household",
+    "es": "Para la casa"
+  },
+  "8,99 € / mois": {
+    "en": "€8.99 / month",
+    "es": "8,99 € / mes"
+  },
+  "Ou 79 € par an. La formule Plus pour vous et trois proches.": {
+    "en": "Or €79 a year. The Plus plan for you and three relatives.",
+    "es": "O 79 € al año. La fórmula Plus para ti y tres allegados."
+  },
+  "Le Pass Dimanche (1,99 €) donne l'avant-première d'un Grand Troc, sans lever les limites du compte gratuit.": {
+    "en": "The Sunday Pass (€1.99) gives the preview of one Grand Troc, without lifting the free account limits.",
+    "es": "El Pase Domingo (1,99 €) da el preestreno de un Grand Troc, sin quitar los límites de la cuenta gratuita."
+  },
+  "Voir l'offre Entreprises et demander un devis": {
+    "en": "See the Companies offer and request a quote",
+    "es": "Ver la oferta Empresas y pedir presupuesto"
+  },
+  "Voir l'offre Collectivités et demander un devis": {
+    "en": "See the Local authorities offer and request a quote",
+    "es": "Ver la oferta Administraciones locales y pedir presupuesto"
+  },
+  "Les offres TopTroc : troquer est gratuit partout en France, Troc Premium pour aller plus loin, et des formules pour les entreprises et les collectivités.": {
+    "en": "TopTroc offers: swapping is free everywhere in France, Troc Premium to go further, and plans for companies and local authorities.",
+    "es": "Las ofertas de TopTroc: intercambiar es gratis en toda Francia, Troc Premium para ir más lejos y fórmulas para empresas y administraciones locales."
   }
 }

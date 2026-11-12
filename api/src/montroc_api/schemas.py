@@ -135,6 +135,40 @@ def arrondir(coordonnee: float) -> float:
     return round(coordonnee, 2)
 
 
+class EspaceResume(Lecture):
+    slug: str
+    nom: str
+    lieu_de_remise: str | None = None
+
+
+class EspaceLecture(EspaceResume):
+    """Un espace vu par la modération (et par ses membres : sans les domaines)."""
+
+    id: int
+    domaines: list[str]
+    formule: str | None = None
+    actif: bool
+    membres: int = 0
+    objets_en_ligne: int = 0
+
+
+class EspaceEcriture(BaseModel):
+    slug: str = Field(min_length=2, max_length=60, pattern=r"^[a-z0-9-]+$")
+    nom: str = Field(min_length=2, max_length=120)
+    domaines: list[str] = Field(min_length=1, max_length=10)
+    lieu_de_remise: str | None = Field(default=None, max_length=200)
+    formule: str | None = Field(default=None, max_length=30)
+    actif: bool = True
+
+    @field_validator("domaines")
+    @classmethod
+    def _domaines(cls, v: list[str]) -> list[str]:
+        propres = sorted({d.strip().lower().removeprefix("@") for d in v if d.strip()})
+        if not propres or any("." not in d or " " in d for d in propres):
+            raise ValueError("Indiquez des domaines d'e-mail, par exemple acme.fr.")
+        return propres
+
+
 class Moi(Lecture):
     id: int
     email: str
@@ -157,6 +191,11 @@ class Moi(Lecture):
     essai_disponible: bool = False
     super_jaime_restants: int = 0
     zones_max: int = 1
+    # Quotas des comptes gratuits (None : illimité) : « J'aime » du jour, propositions encore possibles.
+    jaime_restants: int | None = None
+    propositions_restantes: int | None = None
+    # Mon espace réservé (entreprise, résidence), s'il y en a un.
+    espace: EspaceResume | None = None
 
 
 class MoiModification(AvecTelephone):
@@ -278,6 +317,8 @@ class ObjetCreation(Localisation):
     contre_souhait_ids: list[int] = Field(default_factory=list, max_length=50)
     contre_strict: bool = False
     modes_echange: ModesEchange
+    # Réservé aux membres de mon espace (mes collègues) : seulement si j'en ai un.
+    reserve_espace: bool = False
 
     _photo = field_validator("photo_url")(_photo_cloudinary)
     _modes = field_validator("modes_echange")(_modes_objet)
@@ -303,6 +344,7 @@ class ObjetModification(Localisation):
     sous_categorie_slug: str | None = Field(default=None, max_length=50)
     caracteristiques: dict[str, str] | None = Field(default=None, max_length=12)
     modes_echange: list[str] | None = Field(default=None, max_length=len(nomenclature.MODES_ECHANGE))
+    reserve_espace: bool | None = None
 
     _modes = field_validator("modes_echange")(_modes_objet)
 
@@ -328,6 +370,8 @@ class ObjetLecture(Lecture):
     lieu: str | None = None
     format_colis: str | None = None
     cree_le: datetime
+    # Réservé aux membres d'un espace (ses collègues) : seuls eux le voient.
+    reserve_espace: bool = False
 
 
 class MonObjet(ObjetLecture):
@@ -434,6 +478,7 @@ class ObjetResume(Lecture):
     categorie_slug: str
     etat: EtatObjet | None
     photo_url: str | None
+    format_colis: str | None = None
 
 
 class EtapeBoucle(BaseModel):
@@ -477,6 +522,9 @@ class TransfertLecture(BaseModel):
     transporteur: str | None = None
     numero_suivi: str | None = None
     garantie: bool = False
+    # Étiquette TopTroc payée (le donneur la reçoit par e-mail) et son format.
+    envoi_paye_le: datetime | None = None
+    envoi_format: str | None = None
     # Où envoyer le colis : visible du receveur qui l'a donnée et de son donneur seulement.
     adresse_livraison: str | None = None
 
@@ -611,9 +659,20 @@ class FormatColis(BaseModel):
     poids_max_kg: int | None
 
 
+class EnvoiTopTroc(BaseModel):
+    """Étiquette de colis vendue par TopTroc pour un format : son prix public et son lien de paiement."""
+
+    format: str
+    prix: float
+    lien: str | None
+
+
 class CataloguePremium(BaseModel):
     formules: list[FormuleLecture]
     formats_colis: list[FormatColis]
+    envois: list[EnvoiTopTroc] = []
+    garantie_prix: float | None = None
+    garantie_lien: str | None = None
     jours_essai: int
     portail: str | None
     # Encart publicitaire, montré seulement à qui n'a pas « sans publicité ».

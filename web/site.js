@@ -2,7 +2,7 @@
    Sur l'accueil, index.html intercepte les liens « /#… » pour changer de vue sans recharger,
    et appelle TT.compte() quand la session change. */
 (()=>{
-  const VERSION='6.600'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
+  const VERSION='6.700'; // version de prod (V5.100, V5.200…), changée par la livraison : voir docs/05-git-et-branches.md
   const LOGO='<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#F2F3F6" d="M3 4h18v5h-6.5v11h-5V9H3z"/><path fill="#E6C23A" d="M29 28H11v-5h6.5V12h5v11H29z"/></svg>'; // deux T tête-bêche : deux membres, un échange
   const GRILLE='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="5" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="19" r="1.6"/><circle cx="12" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/></svg>'; // « Voir tout »
   const ETOILE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>'; // Favoris (le cœur est le « J'aime » du Match)
@@ -20,23 +20,10 @@
   <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 7h16"/><path class="b2" d="M4 12h16"/><path class="b3" d="M4 17h16"/></svg></button>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
-      <li><a href="/concept/">Le concept</a></li>
-      <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Les offres<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <ul id="pour-qui" hidden>
-          <li><a href="/particuliers/">Particuliers <small>Gratuit</small></a></li>
-          <li><a href="/pros/">Professionnels</a></li>
-          <li><a href="/collectivites/">Collectivités</a></li>
-        </ul>
-      </li>
-      <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-catalogue">Le catalogue<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <ul id="nav-catalogue" hidden>
-          <li><a href="/#objets">Voir les objets</a></li>
-          <li data-membre hidden><a href="/#monespace">Recherches personnalisées</a></li>
-          <li data-membre hidden><a href="/#monespace">Mes listes</a></li>
-          <li data-visiteur><a href="/#se-connecter" data-devenir>Devenir membre</a></li>
-        </ul>
-      </li>
+      <li><a href="/#objets">Voir les objets</a></li>
+      <li><a href="/comment-ca-marche/">Comment ça marche</a></li>
       <li><a href="/grand-troc/">Le Grand Troc</a></li>
+      <li><a href="/particuliers/">Les offres</a></li>
     </ul>
   </nav>
   <a class="favoris" href="/#favoris" aria-label="Favoris" title="Favoris">${ETOILE}<span class="favoris-nb" hidden></span></a>
@@ -64,6 +51,9 @@
   const pied=document.querySelector('footer.site');
   if(pied)pied.innerHTML=`<div class="in">
   <nav aria-label="Informations"><ul>
+    <li><a href="/concept/">Le concept</a></li>
+    <li><a href="/pros/">Entreprises</a></li>
+    <li><a href="/collectivites/">Collectivités</a></li>
     <li><a href="/faq/#contact">Contact</a></li>
     <li><a href="/faq/">FAQ</a></li>
     <li><a href="/mentions-legales/">Mentions légales</a></li>
@@ -526,7 +516,7 @@
     ouvertLe=performance.now(); fermer(); dessiner(); reveiller();
     if(etat.vue==='connexion'&&etat.email)pop.querySelector('#cnx-mdp').focus(); else focusPremier();
   }
-  haut.querySelector('[data-devenir]').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();ouvrirConnexion(true,undefined,true)});
+  haut.querySelector('[data-devenir]')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();ouvrirConnexion(true,undefined,true)});
   c.addEventListener('click',e=>{
     if(e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
     e.preventDefault(); e.stopImmediatePropagation();
@@ -554,6 +544,32 @@
 
   window.TT={compte,fermer,ouvrirConnexion,favoris};
   verifierSession();
+
+  /* Offres Entreprises et Collectivités : la demande de devis part à l'API, qui prévient l'équipe par e-mail. */
+  document.querySelectorAll('form[data-devis]').forEach(f=>f.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const etat=f.querySelector('.devis-etat'), bouton=f.querySelector('button[type=submit]');
+    const corps={type:f.dataset.devis};
+    for(const [cle,valeur] of new FormData(f))if(String(valeur).trim())corps[cle]=String(valeur).trim();
+    bouton.disabled=true; etat.textContent='Envoi…';
+    try{
+      const r=await fetch(API+'/partenaires/demande',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(corps)});
+      if(!r.ok)throw Error();
+      f.reset(); etat.textContent='Merci ! Votre demande est bien partie : nous revenons vers vous sous deux jours ouvrés.';
+    }catch{etat.textContent="La demande n'a pas pu partir. Réessayez dans un instant, ou écrivez à contact@toptroc.com."}
+    finally{bouton.disabled=false}
+  }));
+  // Chiffres d'impact de toute la France sur un an, affichés dès qu'il y a eu des échanges.
+  document.querySelectorAll('[data-impact]').forEach(bloc=>{
+    fetch(API+'/impact').then(r=>r.ok?r.json():null).then(i=>{
+      if(!i||!i.objets_reemployes)return;
+      const n=x=>x.toLocaleString(document.documentElement.lang||'fr');
+      bloc.innerHTML=`<div><b>${n(i.objets_reemployes)}</b><span>objets réemployés en un an</span></div>`
+        +`<div><b>${n(Math.round(i.kg_evites_estimes))} kg</b><span>de déchets évités (estimation)</span></div>`
+        +`<div><b>${n(i.membres_participants)}</b><span>habitants ont troqué</span></div>`;
+      bloc.hidden=false;
+    }).catch(()=>{});
+  });
 
   // L'assistant (bulle en bas à droite) : un script à part, avec ses propres textes dans les trois langues.
   window.TT_API=API;

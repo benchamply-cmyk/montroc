@@ -1,5 +1,6 @@
 """Catalogue public des objets disponibles (consultable sans compte)."""
 
+from math import cos, radians
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query
@@ -7,7 +8,7 @@ from sqlalchemy import func, or_, select
 
 from .. import models as m
 from .. import nomenclature
-from ..deps import SessionDep
+from ..deps import SessionDep, UtilisateurOptionnel
 from ..schemas import ObjetLecture
 
 router = APIRouter(prefix="/objets", tags=["objets"])
@@ -50,6 +51,26 @@ def _caracteristiques(categorie: str | None, sous_categorie: str | None, filtres
     return valeurs
 
 
+RAYON_TERRE_KM = 6371.0
+
+
+def _dans_le_rayon(latitude: float, longitude: float, rayon_km: float):
+    """Condition SQL : l'objet est localisé à moins de ``rayon_km`` du point (haversine, comme le moteur).
+
+    Un premier tri grossier par latitude/longitude (un « carré » autour du point) garde la requête rapide."""
+    d_lat = rayon_km / 111.0
+    d_lon = rayon_km / max(1e-6, 111.0 * cos(radians(latitude)))
+    la, lo = func.radians(m.Objet.latitude), func.radians(m.Objet.longitude)
+    la0, lo0 = radians(latitude), radians(longitude)
+    h = func.power(func.sin((la - la0) / 2), 2) + func.cos(la) * cos(la0) * func.power(func.sin((lo - lo0) / 2), 2)
+    return (
+        m.Objet.latitude.is_not(None),
+        m.Objet.latitude.between(latitude - d_lat, latitude + d_lat),
+        m.Objet.longitude.between(longitude - d_lon, longitude + d_lon),
+        2 * RAYON_TERRE_KM * func.asin(func.least(1.0, func.sqrt(h))) <= rayon_km,
+    )
+
+
 def requete_objets(
     categorie: str | None = None,
     zone: str | None = None,
@@ -59,13 +80,19 @@ def requete_objets(
     etats: list[m.EtatObjet] | None = None,
     caracteristiques: dict[str, list[str]] | None = None,
     plus_anciens: bool = False,
+    autour: tuple[float, float, float] | None = None,
+    espace_id: int | None = None,
+    seulement_espace: bool = False,
 ):
     """Objets disponibles de comptes non suspendus, filtrés par catégorie, sous-catégorie, état, caractéristiques,
     ville et mots-clés, les plus récents d'abord (ou les plus anciens). Sert aussi aux alertes du mode visiteur
     (suivis.py).
 
     Dans ``caracteristiques``, plusieurs valeurs d'une même clé s'additionnent (taille M ou L), des clés
-    différentes se cumulent (taille M et couleur noire), comme les filtres de la page d'une catégorie."""
+    différentes se cumulent (taille M et couleur noire), comme les filtres de la page d'une catégorie.
+
+    ``autour`` = (latitude, longitude, rayon en km) : seulement les objets localisés dans ce rayon, comme le filtre
+    « Où ? » de Leboncoin. Sans ``autour``, toute la France."""
     ordre = (m.Objet.cree_le.asc(), m.Objet.id.asc()) if plus_anciens else (m.Objet.cree_le.desc(), m.Objet.id.desc())
     requete = (
         select(m.Objet)
@@ -83,6 +110,15 @@ def requete_objets(
         requete = requete.where(m.Objet.caracteristiques[cle].astext.in_(valeurs))
     if zone:
         requete = requete.where(m.Utilisateur.zone == zone)
+    # Objets réservés à un espace : visibles de ses seuls membres (``espace_id`` du lecteur).
+    if seulement_espace:
+        requete = requete.where(m.Objet.espace_id == espace_id) if espace_id else requete.where(False)
+    elif espace_id:
+        requete = requete.where(or_(m.Objet.espace_id.is_(None), m.Objet.espace_id == espace_id))
+    else:
+        requete = requete.where(m.Objet.espace_id.is_(None))
+    if autour:
+        requete = requete.where(*_dans_le_rayon(*autour))
     if q and (mots := _mots(q)):
         requete = requete.join(m.Categorie, m.Categorie.slug == m.Objet.categorie_slug)
         for mot in mots:
@@ -100,6 +136,7 @@ def requete_objets(
 @router.get("", response_model=list[ObjetLecture])
 def lister(
     session: SessionDep,
+    lecteur: UtilisateurOptionnel,
     categorie: str | None = None,
     zone: str | None = None,
     q: str | None = Query(
@@ -122,14 +159,21 @@ def lister(
     tri: Literal["recent", "ancien"] = Query(default="recent", description="Plus récents ou plus anciens d'abord."),
     decalage: int = Query(default=0, ge=0, description="Objets à sauter : la page suivante commence après eux."),
     limite: int = Query(default=200, ge=1, le=200),
+    latitude: float | None = Query(default=None, ge=-90, le=90, description="Centre du filtre « Où ? »."),
+    longitude: float | None = Query(default=None, ge=-180, le=180, description="Centre du filtre « Où ? »."),
+    rayon_km: float = Query(default=10, ge=1, le=200, description="Rayon autour du centre, en km."),
+    espace: bool = Query(default=False, description="Seulement les objets réservés à mon espace (mes collègues)."),
 ):
     """Objets disponibles, filtrables par catégorie, sous-catégorie, état, caractéristiques, ville et mots-clés,
-    par pages de ``limite``.
+    par pages de ``limite``. Avec ``latitude``, ``longitude`` et ``rayon_km`` : seulement les objets localisés
+    dans ce rayon (filtre « Où ? » à la Leboncoin) ; sans eux, toute la France.
 
     Public : seuls les objets en ligne de comptes non suspendus sont renvoyés, sans données personnelles.
     Le mode visiteur parcourt ainsi tout le catalogue, page après page (« Voir plus »), et la page d'une
     catégorie filtre ici plutôt que dans le navigateur.
     """
+    if (latitude is None) != (longitude is None):
+        raise HTTPException(422, "Le filtre « Où ? » demande une latitude et une longitude.")
     if sous_categorie and categorie and sous_categorie not in dict(nomenclature.sous_categories(categorie)):
         raise HTTPException(422, "Cette sous-catégorie n'existe pas dans cette catégorie.")
     requete = requete_objets(
@@ -140,13 +184,20 @@ def lister(
         etats=etat,
         caracteristiques=_caracteristiques(categorie, sous_categorie, caracteristique or []),
         plus_anciens=tri == "ancien",
+        autour=(latitude, longitude, rayon_km) if latitude is not None else None,
+        espace_id=lecteur.espace_id if lecteur else None,
+        seulement_espace=espace,
     )
     return session.scalars(requete.offset(decalage).limit(limite)).all()
 
 
 @router.get("/{objet_id}", response_model=ObjetLecture)
-def lire(objet_id: int, session: SessionDep):
+def lire(objet_id: int, session: SessionDep, lecteur: UtilisateurOptionnel):
     objet = session.get(m.Objet, objet_id)
     if objet is None or objet.statut == m.StatutObjet.modere:
         raise HTTPException(404, "Objet introuvable.")
+    if objet.espace_id is not None and not (
+        lecteur and (lecteur.espace_id == objet.espace_id or lecteur.id == objet.proprietaire_id)
+    ):
+        raise HTTPException(404, "Objet introuvable.")  # réservé aux membres de son espace
     return objet

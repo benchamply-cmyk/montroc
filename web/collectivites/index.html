@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Collectivités · TopTroc</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<meta name="description" content="TopTroc pour les collectivités : le Grand Troc de votre territoire, des points de dépôt publics et un rapport d'impact.">
+<meta name="description" content="TopTroc pour les collectivités : le Grand Troc de votre territoire, des lieux de remise publics et un rapport d'impact.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/site.css">
@@ -21,39 +21,54 @@
 <header class="site"></header>
 
 <main>
-<span class="label">Pour qui ? · Collectivités</span>
+<span class="label">Les offres · Collectivités</span>
 <h1>Le Grand Troc <span class="hl">de votre territoire</span>.</h1>
-<p class="chapo">Chaque dimanche, TopTroc fait circuler les objets qui dorment chez vos habitants : un échange direct ou une boucle à trois, sans argent. Moins de déchets, plus de liens entre voisins, et des chiffres pour le prouver.</p>
+<p class="chapo">TopTroc fait circuler les objets qui dorment chez vos habitants : un échange direct ou une boucle à trois, sans argent. Moins de déchets, plus de liens entre voisins, et des chiffres pour le prouver.</p>
 
-<h2>Ce que nous mettons en place</h2>
-<div class="cartes">
-  <div class="carte"><b>Un Grand Troc à votre nom</b><span>« Le Grand Troc du 6e », « de votre commune » : le rendez-vous hebdomadaire porte l'identité de votre territoire.</span></div>
-  <div class="carte"><b>Des points de dépôt publics</b><span>Mairie de secteur, médiathèque, centre social, maison de quartier : les objets transitent par des lieux que les habitants connaissent.</span></div>
-  <div class="carte"><b>Un rapport d'impact</b><span>Chaque trimestre : objets réemployés, tonnage de déchets évités estimé, nombre d'habitants touchés, par quartier.</span></div>
+<div class="impact" data-impact hidden></div>
+
+<h2>Trois formules</h2>
+<div class="cartes formules">
+  <div class="carte"><span class="label">Pilote</span><b>Grand Troc de quartier</b><em class="prix">3 900 € HT</em><span>Six mois sur un quartier : lancement auprès des habitants, deux journées troc sur l'espace public, lieux de remise conseillés, rapport d'impact final.</span></div>
+  <div class="carte vedette"><span class="label">Le plus choisi</span><b>Territoire</b><em class="prix">9 900 € HT / an</em><span>Une commune ou plusieurs arrondissements : Grand Troc à votre nom, quatre journées troc par an, lieux publics de remise (mairie, médiathèque, centre social), kit de communication et rapport d'impact trimestriel.</span></div>
+  <div class="carte"><span class="label">Intercommunalités</span><b>Métropole</b><em class="prix">Sur devis</em><span>Plusieurs communes, tableau de bord d'impact par commune, données ouvertes pour votre programme local de prévention des déchets, marque blanche possible.</span></div>
 </div>
 
 <h2>Pourquoi le troc</h2>
 <ul>
   <li><strong>Il prolonge la vie des objets</strong> qui ne se vendent pas : jouets, petit électroménager, puériculture, outils, livres.</li>
   <li><strong>Il touche tout le monde</strong>, y compris celles et ceux qui n'achètent pas d'occasion. Ici, personne ne paie et personne ne vend.</li>
-  <li><strong>Il s'inscrit dans votre programme local de prévention des déchets</strong> : une action de réemploi concrète, mesurée, et visible des habitants.</li>
+  <li><strong>Il s'inscrit dans votre programme local de prévention des déchets</strong> (PLPDMA) : une action de réemploi concrète, mesurée, visible des habitants, éligible à de nombreux financements de prévention des déchets.</li>
 </ul>
+
+<h2>Le rapport d'impact</h2>
+<p>Objets réemployés, kilos de déchets évités et CO₂ évité (estimations par catégorie d'objet), habitants participants, par quartier : de quoi rendre compte aux élus et à vos financeurs.</p>
 
 <h2>Comment ça se passe</h2>
 <ol>
-  <li>Un premier rendez-vous pour choisir le périmètre (un quartier, un arrondissement, une commune) et les lieux de dépôt.</li>
+  <li>Un premier rendez-vous pour choisir le périmètre (un quartier, un arrondissement, une commune) et les lieux de remise.</li>
   <li>Le lancement : communication auprès des habitants, avec vos supports et les nôtres.</li>
-  <li>Les Grands Trocs du dimanche se succèdent, nous suivons les échanges et les dépôts.</li>
-  <li>Chaque trimestre, le rapport d'impact et un point sur la suite.</li>
+  <li>Les Grands Trocs et les journées troc se succèdent, nous suivons les échanges.</li>
+  <li>Le rapport d'impact, puis un point sur la suite.</li>
 </ol>
-
-<p class="muted">Le pilote se déroule dans le département des Bouches-du-Rhône (13).</p>
-
-<div class="appel">
-  <h2>Parlons de votre territoire</h2>
-  <p>Mairies, intercommunalités, syndicats de traitement des déchets, bailleurs sociaux : écrivez-nous, nous revenons vers vous rapidement.</p>
-  <a class="bouton" href="mailto:contact@toptroc.com?subject=TopTroc%20pour%20notre%20territoire">Écrire à contact@toptroc.com</a>
-</div>
+<form class="devis" data-devis="collectivite">
+  <h2>Demander un devis</h2>
+  <p>Deux minutes pour nous dire qui vous êtes : nous revenons vers vous sous deux jours ouvrés.</p>
+  <label class="champ"><span>Formule</span><select name="formule"><option value="quartier">Grand Troc de quartier</option><option value="territoire">Territoire</option><option value="metropole">Métropole</option><option value="autre">Je ne sais pas encore</option></select></label>
+  <label class="champ"><span>Organisation</span><input name="organisation" required minlength="2" maxlength="120" autocomplete="organization"></label>
+  <div class="deux">
+    <label class="champ"><span>Votre nom</span><input name="nom" required minlength="2" maxlength="80" autocomplete="name"></label>
+    <label class="champ"><span>E-mail</span><input name="email" type="email" required maxlength="200" autocomplete="email"></label>
+  </div>
+  <div class="deux">
+    <label class="champ"><span>Téléphone <small>facultatif</small></span><input name="telephone" type="tel" maxlength="30" autocomplete="tel"></label>
+    <label class="champ"><span>Nombre d'habitants <small>facultatif</small></span><input name="taille" maxlength="60"></label>
+  </div>
+  <label class="champ"><span>Votre projet <small>facultatif</small></span><textarea name="message" maxlength="2000" rows="4"></textarea></label>
+  <label class="piege" aria-hidden="true">Site web<input name="site_web" tabindex="-1" autocomplete="off"></label>
+  <button class="bouton" type="submit">Envoyer la demande</button>
+  <p class="devis-etat" role="status" aria-live="polite"></p>
+</form>
 </main>
 
 <footer class="site"></footer>

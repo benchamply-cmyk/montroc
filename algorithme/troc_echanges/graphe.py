@@ -87,8 +87,10 @@ class GrapheEchanges:
         dans une de ses zones, sinon par colis si le souhait et l'objet l'acceptent (``Utilisateur.acces``).
         Sinon, par noms de zones : le lieu de l'objet (le sien, sinon la zone de son propriétaire) dans une zone
         acceptée ; lieu inconnu : accepté ; sans zones précisées sur le souhait, même zone que le receveur
-        (si ``Marche.meme_zone``)."""
+        (si ``Marche.meme_zone``). Un objet réservé à un espace ne part qu'à un membre de cet espace."""
         u = self.marche.utilisateurs[receveur]
+        if objet.espace is not None:  # objet réservé à un espace : seulement entre ses membres, sur place
+            return u.espace == objet.espace
         if u.zones_geographiques and not souhait.zones:
             acces = u.acces(objet)
             if acces == "loin":

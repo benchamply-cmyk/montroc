@@ -49,6 +49,8 @@ def moi(utilisateur: m.Utilisateur) -> Moi:
             and formule is None,
             "super_jaime_restants": premium.super_jaime_restants(session, utilisateur) if session else 0,
             "zones_max": premium.zones_max(utilisateur),
+            "jaime_restants": premium.jaime_restants(session, utilisateur) if session else None,
+            "propositions_restantes": premium.propositions_restantes(session, utilisateur) if session else None,
         }
     )
 

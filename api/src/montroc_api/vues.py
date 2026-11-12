@@ -62,6 +62,8 @@ def echange(e: m.Echange, lecteur_id: int | None = None) -> EchangeLecture:
                 transporteur=t.transporteur,
                 numero_suivi=t.numero_suivi,
                 garantie=t.garantie,
+                envoi_paye_le=t.envoi_paye_le,
+                envoi_format=t.envoi_format,
                 adresse_livraison=t.adresse_livraison if _voit_l_adresse(t, lecteur_id) else None,
             )
             for t in e.transferts
