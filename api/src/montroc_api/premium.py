@@ -247,8 +247,12 @@ def payer_envoi(session: Session, utilisateur: m.Utilisateur, achat: str, paieme
         return f"garantie colis du transfert {transfert.id}"
     transfert.envoi_paye_le = datetime.now(UTC)
     transfert.envoi_format = transfert.objet.format_colis
-    client = paiement.get("customer_details") or {}
-    adresse = (paiement.get("shipping_details") or client).get("address") or {}
+    # Adresse de livraison saisie dans le lien de paiement : sous ``collected_information`` depuis la version
+    # 2025-03-31 de l'API Stripe, à la racine avant ; à défaut, l'adresse de facturation.
+    livraison = (paiement.get("collected_information") or {}).get("shipping_details") or paiement.get(
+        "shipping_details"
+    )
+    adresse = (livraison or paiement.get("customer_details") or {}).get("address") or {}
     depart = ", ".join(str(v) for k in ("line1", "line2", "postal_code", "city") if (v := adresse.get(k)))
     courriels.apres_validation(
         session,
