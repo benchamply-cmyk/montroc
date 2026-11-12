@@ -1,0 +1,1 @@
+- Recherche par lieu à la Leboncoin (ville ou autour de moi + rayon, ou toute la France) sur l'accueil, la recherche et les catégories ; menu réduit à 4 entrées et page « Les offres » simplifiée.

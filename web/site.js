@@ -20,23 +20,10 @@
   <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 7h16"/><path class="b2" d="M4 12h16"/><path class="b3" d="M4 17h16"/></svg></button>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <ul>
-      <li><a href="/concept/">Le concept</a></li>
-      <li class="sous"><button type="button" aria-expanded="false" aria-controls="pour-qui">Les offres<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <ul id="pour-qui" hidden>
-          <li><a href="/particuliers/">Particuliers <small>Gratuit</small></a></li>
-          <li><a href="/pros/">Professionnels</a></li>
-          <li><a href="/collectivites/">Collectivités</a></li>
-        </ul>
-      </li>
-      <li class="sous"><button type="button" aria-expanded="false" aria-controls="nav-catalogue">Le catalogue<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <ul id="nav-catalogue" hidden>
-          <li><a href="/#objets">Voir les objets</a></li>
-          <li data-membre hidden><a href="/#monespace">Recherches personnalisées</a></li>
-          <li data-membre hidden><a href="/#monespace">Mes listes</a></li>
-          <li data-visiteur><a href="/#se-connecter" data-devenir>Devenir membre</a></li>
-        </ul>
-      </li>
+      <li><a href="/#objets">Voir les objets</a></li>
+      <li><a href="/comment-ca-marche/">Comment ça marche</a></li>
       <li><a href="/grand-troc/">Le Grand Troc</a></li>
+      <li><a href="/particuliers/">Les offres</a></li>
     </ul>
   </nav>
   <a class="favoris" href="/#favoris" aria-label="Favoris" title="Favoris">${ETOILE}<span class="favoris-nb" hidden></span></a>
@@ -64,6 +51,9 @@
   const pied=document.querySelector('footer.site');
   if(pied)pied.innerHTML=`<div class="in">
   <nav aria-label="Informations"><ul>
+    <li><a href="/concept/">Le concept</a></li>
+    <li><a href="/pros/">Entreprises</a></li>
+    <li><a href="/collectivites/">Collectivités</a></li>
     <li><a href="/faq/#contact">Contact</a></li>
     <li><a href="/faq/">FAQ</a></li>
     <li><a href="/mentions-legales/">Mentions légales</a></li>
@@ -526,7 +516,7 @@
     ouvertLe=performance.now(); fermer(); dessiner(); reveiller();
     if(etat.vue==='connexion'&&etat.email)pop.querySelector('#cnx-mdp').focus(); else focusPremier();
   }
-  haut.querySelector('[data-devenir]').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();ouvrirConnexion(true,undefined,true)});
+  haut.querySelector('[data-devenir]')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();ouvrirConnexion(true,undefined,true)});
   c.addEventListener('click',e=>{
     if(e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
     e.preventDefault(); e.stopImmediatePropagation();
