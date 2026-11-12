@@ -491,6 +491,33 @@ dialog.visiteur p{margin:0}
 dialog.visiteur .sablier{font-size:40px}
 .btns.colonne{flex-direction:column;align-items:stretch;margin-top:6px}
 .etapes-compte{text-align:left;margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:14px}
+
+/* Photo d’accueil sous le texte et la boucle animée. */
+.acc-hero {
+  border-radius: 16px;
+  padding: clamp(14px, 3vw, 38px);
+  background-color: #111318;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(180deg, #111318 4%, #111318eb 30%, #11131848 100%),
+    url("/accueil-echange-voisins-v04.jpg");
+  background-position: center, 72% bottom;
+  background-size: cover, auto 68%;
+}
+.acc-hero .loop {
+  background: radial-gradient(ellipse at center, #111318cf 12%, #11131886 50%, transparent 72%);
+}
+.acc-hero .loop .ring { stroke: #8a929e; }
+@media (min-width: 760px) {
+  .acc-hero {
+    min-height: 430px;
+    background-image:
+      linear-gradient(90deg, #111318 0%, #11131844 52%, #11131860 100%),
+      url("/accueil-echange-voisins-v04.jpg");
+    background-position: center, right center;
+    background-size: cover;
+  }
+}
 </style>
 <link rel="canonical" href="https://toptroc.com/">
 <link rel="alternate" hreflang="fr" href="https://toptroc.com/">
