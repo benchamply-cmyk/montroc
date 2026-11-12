@@ -15,6 +15,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from . import courriels
 from . import models as m
 from .config import get_settings
 
@@ -186,6 +187,46 @@ def duree_achetee(achat: str) -> tuple[str, timedelta]:
     return cle, DUREE_MOIS if periode == "mois" else DUREE_AN
 
 
+def payer_envoi(session: Session, utilisateur: m.Utilisateur, achat: str, paiement: dict) -> str:
+    """Étiquette de colis (``envoi<transfert>``) ou Garantie TopTroc (``garantie<transfert>``) payée par le donneur.
+
+    L'étiquette est la commission de TopTroc sur les colis : tarif négocié du transporteur + frais de service.
+    En V1, l'équipe la prépare chez l'agrégateur (Boxtal) à partir de ce courriel et l'envoie au donneur ;
+    l'adresse d'expédition est celle saisie dans le paiement Stripe."""
+    genre = "envoi" if achat.startswith("envoi") else "garantie"
+    numero = achat.removeprefix(genre)
+    transfert = session.get(m.Transfert, int(numero)) if numero.isdigit() else None
+    if transfert is None or transfert.donneur_id != utilisateur.id or transfert.mode != "colis":
+        raise ValueError(f"{genre} {numero} : aucun envoi par colis de ce membre.")
+    if genre == "garantie":
+        transfert.garantie = True
+        return f"garantie colis du transfert {transfert.id}"
+    transfert.envoi_paye_le = datetime.now(UTC)
+    transfert.envoi_format = transfert.objet.format_colis
+    client = paiement.get("customer_details") or {}
+    adresse = (paiement.get("shipping_details") or client).get("address") or {}
+    depart = ", ".join(str(v) for k in ("line1", "line2", "postal_code", "city") if (v := adresse.get(k)))
+    courriels.apres_validation(
+        session,
+        courriels.envoyer,
+        get_settings().contact_partenaires,
+        f"Étiquette à préparer : transfert {transfert.id} ({transfert.envoi_format or 'format ?'})",
+        f"Objet : {transfert.objet.titre}\nDonneur : {utilisateur.pseudo} <{utilisateur.email}>\n"
+        f"Départ : {depart or 'adresse non transmise par Stripe'}\n"
+        f"Arrivée : {transfert.adresse_livraison or 'le receveur ne l avait pas encore indiquée'}\n"
+        f"Garantie : {'oui' if transfert.garantie else 'non'}",
+    )
+    courriels.apres_validation(
+        session,
+        courriels.envoyer,
+        utilisateur.email,
+        "Votre étiquette TopTroc arrive",
+        f"Bonjour {utilisateur.pseudo},\n\nMerci, le paiement de l'envoi de « {transfert.objet.titre} » est bien reçu. "
+        "Vous recevez l'étiquette à imprimer par e-mail sous 24 h ouvrées.",
+    )
+    return f"étiquette payée pour le transfert {transfert.id}"
+
+
 def traiter_evenement(session: Session, evenement: dict) -> str:
     """Applique un événement Stripe ; renvoie ce qui a été fait (pour le journal)."""
     objet = evenement.get("data", {}).get("object", {})
@@ -196,6 +237,8 @@ def traiter_evenement(session: Session, evenement: dict) -> str:
         utilisateur = session.get(m.Utilisateur, int(membre)) if membre.isdigit() else None
         if utilisateur is None:
             return "paiement sans membre reconnu"
+        if achat.startswith(("envoi", "garantie")):
+            return payer_envoi(session, utilisateur, achat, objet)
         cle, duree = duree_achetee(achat)
         activer(utilisateur, cle, duree)
         if objet.get("customer"):

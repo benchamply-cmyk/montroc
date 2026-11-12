@@ -545,6 +545,32 @@
   window.TT={compte,fermer,ouvrirConnexion,favoris};
   verifierSession();
 
+  /* Offres Entreprises et Collectivités : la demande de devis part à l'API, qui prévient l'équipe par e-mail. */
+  document.querySelectorAll('form[data-devis]').forEach(f=>f.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const etat=f.querySelector('.devis-etat'), bouton=f.querySelector('button[type=submit]');
+    const corps={type:f.dataset.devis};
+    for(const [cle,valeur] of new FormData(f))if(String(valeur).trim())corps[cle]=String(valeur).trim();
+    bouton.disabled=true; etat.textContent='Envoi…';
+    try{
+      const r=await fetch(API+'/partenaires/demande',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(corps)});
+      if(!r.ok)throw Error();
+      f.reset(); etat.textContent='Merci ! Votre demande est bien partie : nous revenons vers vous sous deux jours ouvrés.';
+    }catch{etat.textContent="La demande n'a pas pu partir. Réessayez dans un instant, ou écrivez à contact@toptroc.com."}
+    finally{bouton.disabled=false}
+  }));
+  // Chiffres d'impact de toute la France sur un an, affichés dès qu'il y a eu des échanges.
+  document.querySelectorAll('[data-impact]').forEach(bloc=>{
+    fetch(API+'/impact').then(r=>r.ok?r.json():null).then(i=>{
+      if(!i||!i.objets_reemployes)return;
+      const n=x=>x.toLocaleString(document.documentElement.lang||'fr');
+      bloc.innerHTML=`<div><b>${n(i.objets_reemployes)}</b><span>objets réemployés en un an</span></div>`
+        +`<div><b>${n(Math.round(i.kg_evites_estimes))} kg</b><span>de déchets évités (estimation)</span></div>`
+        +`<div><b>${n(i.membres_participants)}</b><span>habitants ont troqué</span></div>`;
+      bloc.hidden=false;
+    }).catch(()=>{});
+  });
+
   // L'assistant (bulle en bas à droite) : un script à part, avec ses propres textes dans les trois langues.
   window.TT_API=API;
   const assistant=document.createElement('script');assistant.src='/assistant.js';assistant.defer=true;document.body.append(assistant);
