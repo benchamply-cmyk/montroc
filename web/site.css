@@ -471,3 +471,58 @@ header.site.reduit .langue-bouton{min-height:34px;height:34px}
 .comparatif tbody th{font-weight:500;color:var(--ink)}
 .comparatif td{color:var(--muted)}
 .comparatif td:last-child{color:var(--ink)}
+
+/* ===== Refonte V7 (après V6.700) : deux univers sous un seul en-tête =====
+   A Particuliers (jaune), B Entreprises et collectivités (bleu acier). La recherche devient « Quoi ? » + « Où ? »,
+   et « Proposer un objet » reste toujours visible. Le thème Acier bleuté et le logo ne changent pas. */
+:root{--b2b:#9DB7D9;--b2b-doux:rgba(157,183,217,.13);--b2b-ink:#0F1620}
+header.site{--univers:32px}
+header.site.reduit{--univers:0px}
+.univers{height:var(--univers);overflow:hidden;border-bottom:1px solid var(--line);font-size:13px;transition:height .25s}
+header.site.reduit .univers{border-bottom-width:0}
+.univers-in{max-width:1120px;margin:0 auto;padding:0 16px;height:100%;display:flex;align-items:center;gap:4px}
+.univers a{color:var(--muted);text-decoration:none;font-weight:500;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.univers a:hover{color:var(--ink)}
+.univers a[aria-current="true"]{color:var(--ink);background:var(--surface)}
+.univers-b .univers a[aria-current="true"]{color:var(--b2b);background:var(--b2b-doux)}
+@media (max-width:1199px){.menu{top:calc(var(--haut) + var(--univers))}}
+
+/* Quoi ? + Où ? : deux pilules côte à côte */
+.site-in>.recherche-entete{border-radius:999px}
+.lieu-entete{flex:none;margin:0;position:relative;align-self:center}
+.lieu-entete:empty{display:none}
+.lieu-entete .lieu-btn{height:43px;max-width:220px;background:var(--surface-2);border-color:var(--line)}
+.lieu-entete .lieu-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lieu-entete .lieu-btn svg{stroke:var(--mark)}
+.lieu-entete .lieu-panneau{position:absolute;top:calc(100% + 8px);right:0;width:340px;max-width:calc(100vw - 32px);z-index:30;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.proposer-entete{flex:none;display:inline-flex;align-items:center;gap:6px;background:var(--mark);color:#16140A;text-decoration:none;font-weight:600;font-size:15px;border-radius:999px;padding:10px 16px;white-space:nowrap;box-shadow:0 8px 22px -12px rgba(230,194,58,.75)}
+.proposer-entete:hover{background:#F0CF4E}
+.proposer-entete svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+.univers-b .proposer-entete{display:none}
+@media (max-width:1099px){.proposer-entete span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.proposer-entete{padding:0;width:42px;height:42px;justify-content:center}}
+@media (max-width:899px){.lieu-entete{display:none}}
+header.site.reduit .proposer-entete{height:34px;padding-block:0}
+header.site.reduit .lieu-entete .lieu-btn{height:36px}
+
+/* Univers B : la couleur d'appoint passe au bleu acier sur les pages Entreprises et Collectivités. */
+.univers-b .page .label{color:var(--b2b)}
+.univers-b .page .hl{background:linear-gradient(transparent 58%,var(--b2b) 58%,var(--b2b) 92%,transparent 92%);color:var(--ink)}
+.univers-b .page .bouton,.univers-b .page .devis button[type=submit]{background:var(--b2b);color:var(--b2b-ink)!important}
+.univers-b .page .bouton:hover,.univers-b .page .devis button[type=submit]:hover{background:#B8CBE4}
+.univers-b .cartes .carte{padding:22px;gap:10px}
+.univers-b .cartes .carte:nth-child(2){border-color:var(--b2b);background-image:linear-gradient(180deg,#26313D,#1D252E)}
+.univers-b .cartes .carte .prix{font-family:var(--display);font-weight:700;color:var(--ink)}
+.univers-b .page .devis{border-color:color-mix(in srgb,var(--b2b) 45%,var(--line));background-image:radial-gradient(420px 240px at 0 0,var(--b2b-doux),transparent 70%),linear-gradient(180deg,var(--surface),var(--surface-2))}
+.univers-b .page .devis input:focus,.univers-b .page .devis select:focus,.univers-b .page .devis textarea:focus{border-color:var(--b2b);outline:0}
+.univers-b .page main{max-width:880px}
+
+/* Pied de page en colonnes */
+footer.site{background:var(--surface-2)}
+footer.site .in{display:grid;grid-template-columns:minmax(0,1.3fr) repeat(3,minmax(0,1fr));gap:28px;align-items:start}
+footer.site nav ul{display:grid;gap:8px}
+footer.site h2{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+footer.site .pied-marque p{margin:12px 0 0;max-width:30em}
+footer.site .pied-version{grid-column:1/-1;border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:860px){footer.site .in{grid-template-columns:repeat(3,minmax(0,1fr))}footer.site .pied-marque{grid-column:1/-1}}
+@media (max-width:560px){footer.site .in{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:699px){.proposer-entete{display:none}} /* sur téléphone, la barre du bas a déjà « Proposer » */

@@ -1,0 +1,1 @@
+- Refonte graphique V7 : deux univers (Particuliers, Entreprises et collectivités) sous un seul en-tête, recherche « Quoi ? » + « Où ? », bouton « Proposer un objet », distance et colis sur les vignettes, bandeaux colis et organisations sur l'accueil, pied de page en colonnes, bleu acier sur les pages Entreprises et Collectivités.

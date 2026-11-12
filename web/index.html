@@ -249,6 +249,7 @@ body.large .wrap{max-width:1120px}
 .acc-btn:active{transform:scale(.97)}
 .acc-btn.y{background:var(--mark);color:#111318}
 .acc-btn.a{background:var(--accent);color:var(--accent-ink)}
+a.acc-btn{text-decoration:none}
 .acc-btn.g{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 .acc-btns .acc-btn{flex:1 1 160px}
 .lieu{position:relative;margin:10px 0 4px}
@@ -491,6 +492,34 @@ dialog.visiteur p{margin:0}
 dialog.visiteur .sablier{font-size:40px}
 .btns.colonne{flex-direction:column;align-items:stretch;margin-top:6px}
 .etapes-compte{text-align:left;margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:14px}
+
+/* Refonte V7 : pastilles des vignettes (distance, colis), tuile colis, bandeau organisations. */
+.result .ph .ph-haut,.result .ph .ph-bas{position:absolute;left:8px;display:flex;gap:5px;flex-wrap:wrap;max-width:calc(100% - 52px)}
+.result .ph .ph-haut{top:8px}
+.result .ph .ph-bas{bottom:8px;max-width:calc(100% - 16px)}
+.result .ph .ph-haut>span,.result .ph .ph-bas>span{position:static;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;border-radius:999px;padding:3px 8px;background:rgba(17,19,24,.84);color:var(--ink);border:1px solid rgba(255,255,255,.08);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.result .ph .ph-lieu svg{width:12px;height:12px;stroke:var(--mark);fill:none;stroke-width:2;flex:none}
+.result .ph .colis{color:var(--mark)!important;border-color:rgba(230,194,58,.35)!important}
+.result .ph .collegues{background:#18222E!important;color:var(--b2b,#9DB7D9)!important;border-color:rgba(157,183,217,.35)!important}
+.acc-hero h1 .hl{background:linear-gradient(transparent 60%,var(--mark) 60%,var(--mark) 92%,transparent 92%);padding:0 .05em}
+.acc-colis{margin-top:14px;border-radius:18px;padding:22px;border:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:linear-gradient(135deg,color-mix(in srgb,var(--mark) 12%,var(--surface)),var(--surface) 60%)}
+.acc-colis .txt{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1 1 320px}
+.acc-colis h2{font-size:20px}
+.acc-colis p{margin:0}
+.acc-orga{margin-top:36px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;padding:28px;border-radius:22px;border:1px solid rgba(157,183,217,.28);background:radial-gradient(600px 300px at 0 0,rgba(157,183,217,.12),transparent 70%),linear-gradient(180deg,#1F2833,#18202A)}
+.acc-orga-txt{display:flex;flex-direction:column;gap:12px;align-items:flex-start;min-width:0}
+.acc-orga-txt .label{color:var(--b2b,#9DB7D9)}
+.acc-orga-txt h2{font-size:clamp(22px,3vw,30px);line-height:1.15}
+.acc-orga-txt p{margin:0}
+.acc-btn.orga{background:var(--b2b,#9DB7D9);color:#0F1620;text-decoration:none}
+.acc-orga-cartes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-self:center}
+.acc-orga-cartes a{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:14px;background:rgba(19,23,28,.55);border:1px solid var(--line);text-decoration:none;color:var(--ink);min-width:0}
+.acc-orga-cartes a:hover{border-color:var(--b2b,#9DB7D9)}
+.acc-orga-cartes b{font-family:var(--display);font-size:15px}
+.acc-orga-cartes span{font-size:14px;color:var(--muted)}
+.acc-orga-cartes small{margin-top:4px;font-family:var(--mono);font-size:12.5px;color:var(--b2b,#9DB7D9)}
+@media (max-width:860px){.acc-orga{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){.acc-orga{padding:20px}.acc-orga-cartes{grid-template-columns:minmax(0,1fr)}}
 </style>
 <link rel="canonical" href="https://toptroc.com/">
 <link rel="alternate" hreflang="fr" href="https://toptroc.com/">
@@ -510,8 +539,8 @@ dialog.visiteur .sablier{font-size:40px}
     <div class="acc-hero" id="decouvrir">
       <div class="acc-hero-txt">
         <span class="label">Pas de prix. Pas de monnaie.</span>
-        <h1>Échanger ses objets, sans argent,<br>partout en France.</h1>
-        <p class="acc-chapo">À deux avec le Match, ou en boucle à trois avec le Grand Troc : plus de chances de trouver ce qu'on cherche.</p>
+        <h1>Échanger ses objets, <span class="hl">près de chez soi</span> ou partout en France.</h1>
+        <p class="acc-chapo">À deux avec le Match, à trois avec le Grand Troc du dimanche, en main propre ou par colis.</p>
         <form class="acc-search" id="f-search-home" role="search">
           <select name="cat" aria-label="Catégorie"><option value="">Tout</option></select>
           <input type="search" name="q" maxlength="100" placeholder="Vélo, poussette, perceuse…" aria-label="Chercher un objet">
@@ -574,6 +603,29 @@ dialog.visiteur .sablier{font-size:40px}
           <button class="acc-btn g" type="button" data-proposer>Je participe</button>
         </div>
         <div class="acc-gt"><b data-gt-quand>Chaque dimanche à 18 h</b><span data-gt-reste aria-live="polite"></span></div>
+      </div>
+    </div>
+
+    <div class="acc-colis">
+      <div class="txt">
+        <span class="label">Partout en France</span>
+        <h2>L'objet est loin ? Par colis.</h2>
+        <p class="muted">Étiquette prête à imprimer dès 4,90 €, Garantie TopTroc à 0,99 € en option. Le reste est gratuit.</p>
+      </div>
+      <a class="acc-btn g" href="/particuliers/">Les tarifs</a>
+    </div>
+
+    <div class="acc-orga">
+      <div class="acc-orga-txt">
+        <span class="label">TopTroc pour les organisations</span>
+        <h2>Le troc pour vos salariés, vos résidents, votre territoire.</h2>
+        <p class="muted">Journées troc clés en main, espace réservé à vos équipes, bilan chiffré pour la RSE ou la prévention des déchets.</p>
+        <a class="acc-btn orga" href="/pros/#devis">Demander un devis</a>
+      </div>
+      <div class="acc-orga-cartes">
+        <a href="/pros/"><b>Entreprises</b><span>Journée troc, Espace salariés, CSE.</span><small>dès 1 200 € HT</small></a>
+        <a href="/pros/"><b>Résidences</b><span>Le troc au pied de l'immeuble.</span><small>600 € HT / an</small></a>
+        <a href="/collectivites/"><b>Collectivités</b><span>Quartier, territoire, métropole.</span><small>dès 3 900 € HT</small></a>
       </div>
     </div>
 
@@ -1056,9 +1108,24 @@ function afficherCategories(cats){
   $('#f-search-home').cat.innerHTML='<option value="">Tout</option>'+cats.map(c=>`<option value="${esc(c.slug)}">${esc(c.libelle)}</option>`).join('');
 }
 // Une carte d'objet, avec l'étoile « Favoris » et, pour un membre, le cœur « J'aime » (visiteur.js), sur la photo, hors du lien.
+const PIN_CARTE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/></svg>';
+/* Distance à vol d'oiseau depuis le lieu choisi dans « Où ? » (même calcul que l'API), sinon la ville de l'objet. */
+function distanceObjet(o){
+  const c=typeof Lieu!=='undefined'&&Lieu.choix();
+  if(c&&o.latitude!=null&&o.longitude!=null){
+    const r=Math.PI/180, dLat=(o.latitude-c.latitude)*r, dLon=(o.longitude-c.longitude)*r;
+    const h=Math.sin(dLat/2)**2+Math.cos(c.latitude*r)*Math.cos(o.latitude*r)*Math.sin(dLon/2)**2;
+    const km=2*6371*Math.asin(Math.min(1,Math.sqrt(h)));
+    return km<1?'moins de 1 km':(km<10?km.toFixed(1).replace('.',','):Math.round(km))+' km';
+  }
+  return o.lieu||'';
+}
 function carteObjet(o){
   if(typeof Visiteur!=='undefined')Visiteur.retenir(o);
-  return `<div class="carte-objet"><a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}${o.reserve_espace?'<span class="collegues">Collègues</span>':''}</div>
+  // Refonte V7 : en haut, « Collègues » et la distance (ou la ville) ; en bas, l'état et « Colis » si l'envoi est possible.
+  const ou=distanceObjet(o), haut=(o.reserve_espace?'<span class="collegues">Collègues</span>':'')+(ou?`<span class="ph-lieu">${PIN_CARTE}${esc(ou)}</span>`:'');
+  const bas=(o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:'')+((o.modes_echange||[]).includes('colis')?'<span class="colis">Colis</span>':'');
+  return `<div class="carte-objet"><a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${haut?`<span class="ph-haut">${haut}</span>`:''}${bas?`<span class="ph-bas">${bas}</span>`:''}</div>
     <b>${esc(o.titre)}</b><span>${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></a>${typeof Visiteur!=='undefined'?Visiteur.boutons(o):''}</div>`;
 }
 async function chargerFil(){
