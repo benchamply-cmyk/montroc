@@ -10,6 +10,7 @@ const Premium = (() => {
     apercu_du_stock: 'Aperçu du stock du dimanche', avant_premiere: 'Avant-première du Grand Troc à 17 h',
     shortlist: 'En tête des ShortLists', priorite: 'Priorité à égalité au Grand Troc', zones_multiples: "Jusqu'à 3 zones d'intérêt",
     garantie_colis: 'Garantie TopTroc sur vos colis', famille: '3 proches inclus',
+    illimite: "J'aime et propositions illimités",
   };
   const arrondi = x => Math.round(x * 100) / 100;
   const euros = x => x == null ? '' : x.toLocaleString(document.documentElement.lang || 'fr', {style: 'currency', currency: 'EUR'});

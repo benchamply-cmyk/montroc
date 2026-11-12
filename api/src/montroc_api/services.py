@@ -412,6 +412,12 @@ def proposer(
     ``auteur_id`` : le participant qui a choisi cette boucle ; la proposer vaut accord pour sa part.
     ``par_match`` : accord 1 à 1 proposé après un match (voir ``matchs.conclure``).
     """
+    if auteur_id is not None and grand_troc is None:
+        auteur = session.get(m.Utilisateur, auteur_id)
+        if premium.propositions_restantes(session, auteur) == 0:
+            raise ErreurMetier(
+                "Propositions en attente au maximum : attendez une réponse, ou illimitées avec Troc Premium."
+            )
     ids = [int(t.objet.id) for t in boucle.transferts]
     # Verrou ligne : deux propositions simultanées ne peuvent pas réserver le même objet.
     objets = session.scalars(select(m.Objet).where(m.Objet.id.in_(ids)).with_for_update()).all()
@@ -428,6 +434,7 @@ def proposer(
         grand_troc=grand_troc,
         par_match=par_match,
         remplacement=remplacement,
+        auteur_id=auteur_id if grand_troc is None else None,
     )
     for i, t in enumerate(boucle.transferts):
         # Souhait coché « j'accepte d'office », ou boucle choisie par le receveur : pas besoin de redemander.

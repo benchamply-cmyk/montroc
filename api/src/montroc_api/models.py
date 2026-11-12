@@ -406,6 +406,9 @@ class Echange(Horodatage, Base):
     # Le Grand Troc qui a trouvé cette boucle (vide pour une boucle choisie à la demande ou un accord de match).
     grand_troc_id: Mapped[int | None] = mapped_column(ForeignKey("grands_trocs.id", ondelete="SET NULL"), index=True)
     grand_troc: Mapped[GrandTroc | None] = relationship(back_populates="echanges")
+    # Le membre qui a lancé cette proposition (Match, boucle choisie) ; vide pour le Grand Troc. Sert au quota
+    # de propositions en attente des comptes gratuits.
+    auteur_id: Mapped[int | None] = mapped_column(ForeignKey("utilisateurs.id", ondelete="SET NULL"), index=True)
     # Boucle de remplacement, proposée pendant les 48 h de réponse après un refus (``services.remplacements``).
     remplacement: Mapped[bool] = mapped_column(default=False, server_default="false")
     # Boucle du Grand Troc annulée dont les objets libérés ont déjà servi à chercher des remplaçants.

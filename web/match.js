@@ -47,7 +47,20 @@
     $('#m-super').hidden = !moi || !moi.super_jaime_restants;
     $('#m-super').title = moi && moi.super_jaime_restants ? `Super J'aime : ${moi.super_jaime_restants} cette semaine` : '';
     $('#m-retour').hidden = !dernierNon || !av.includes('retour_arriere');
+    quotas();
   }
+
+  // Comptes gratuits, quand les quotas sont activés : « J'aime » du jour et propositions en attente.
+  function quotas() {
+    const q = $('#match-quota'), j = moi && moi.jaime_restants, p = moi && moi.propositions_restantes;
+    q.hidden = !moi || (j == null && p == null);
+    if (q.hidden) return;
+    const morceaux = [];
+    if (j != null) morceaux.push(j ? `Il vous reste ${j} J'aime aujourd'hui.` : 'Plus de J\'aime aujourd\'hui : ils reviennent demain.');
+    if (p != null) morceaux.push(p ? `Vous pouvez encore lancer ${p} proposition(s).` : 'Attendez une réponse avant de lancer une nouvelle proposition.');
+    q.innerHTML = `${morceaux.join(' ')} <button class="lien" type="button" data-vers-premium>Illimité avec Troc Premium</button>`;
+  }
+  async function relireQuotas() { try { moi = await api('/moi'); } catch {} quotas(); }
   $('#m-super').onclick = () => avis(true, true);
   $('#m-retour').onclick = async () => {
     if (!dernierNon) return;
@@ -91,6 +104,7 @@
     try {
       const r = await api('/match/avis', {method: 'POST', body: {objet_id: id, aime, super_jaime: superJaime}});
       dernierNon = aime ? null : id;
+      if (aime && moi.jaime_restants != null) moi.jaime_restants = Math.max(0, moi.jaime_restants - 1);
       if (superJaime) { moi.super_jaime_restants = Math.max(0, (moi.super_jaime_restants || 1) - 1); toast(`Super J'aime envoyé : ${c.proprietaire.pseudo} est prévenu.`); }
       carte.style.transform = `translateX(${aime ? 130 : -130}%) rotate(${aime ? 18 : -18}deg)`; carte.style.opacity = 0;
       await new Promise(ok => setTimeout(ok, calme ? 0 : 340));
@@ -170,6 +184,7 @@
   });
 
   $('#v-match').addEventListener('click', async e => {
+    if (e.target.closest('[data-vers-premium]')) { go('lists'); document.getElementById('c-premium')?.scrollIntoView({block: 'center'}); return; }
     const v = e.target.closest('[data-voir-echange]');
     if (v) { e.preventDefault(); go('trades'); const c = document.getElementById('echange-' + v.dataset.voirEchange); if (c) c.scrollIntoView(); return; }
 
@@ -179,7 +194,7 @@
       try {
         await api('/match/boucle', {method: 'POST', body: {objets: b.etapes.map(x => x.objet.id)}});
         toast('Boucle proposée : les deux autres ont 48 h pour dire oui.');
-        await Promise.all([chargerMatch(), chargerEchanges()]);
+        await Promise.all([chargerMatch(), chargerEchanges(), relireQuotas()]);
       } catch (err) { toast(err.message); t.disabled = false; }
       return;
     }
@@ -193,7 +208,7 @@
       try {
         await api('/match/accord', {method: 'POST', body: {mon_objet_id: +donne.value, son_objet_id: +recoit.value}});
         toast(`Proposition envoyée à ${matchs[i].avec.pseudo}`);
-        await Promise.all([chargerMatch(), chargerEchanges()]);
+        await Promise.all([chargerMatch(), chargerEchanges(), relireQuotas()]);
       } catch (err) { toast(err.message); a.disabled = false; }
     }
   });

@@ -401,6 +401,8 @@ details.plus summary::-webkit-details-marker{display:none}
 @media (min-width:760px){.fiche{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start}.fiche-panneau{position:sticky;top:90px}}
 /* Le Match : une pile de cartes à glisser, deux gros boutons ronds */
 .match-entete{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.quota{font-size:14px;text-align:center;margin:8px 0 0;color:var(--muted,#9aa3ad)}
+.quota .lien{background:none;border:0;padding:0;color:inherit;text-decoration:underline;font:inherit;cursor:pointer}
 .pile-match{display:grid;max-width:400px;width:100%;margin:0 auto}
 .pile-match>*{grid-area:1/1}
 .pile-match .carte{touch-action:pan-y;user-select:none;position:relative}
@@ -827,6 +829,7 @@ dialog.visiteur .sablier{font-size:40px}
       <button class="super" type="button" id="m-super" aria-label="Super J'aime" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button>
       <button class="oui" type="button" id="m-oui" aria-label="J'aime"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
     </div>
+    <p class="quota" id="match-quota" hidden></p>
     <p class="muted aide" id="match-aide" hidden>Glissez la carte vers la droite si elle vous plaît, vers la gauche sinon (ou flèches ← → du clavier). Un cœur de chaque côté et vous échangez à deux, sans attendre dimanche.</p>
     <div id="bloc-trois" hidden style="display:flex;flex-direction:column;gap:16px">
       <div class="list-head" style="margin:8px 0 -4px"><span class="label">Boucles à trois</span></div>

@@ -11,6 +11,7 @@ import json
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -30,8 +31,9 @@ PRIORITE = "priorite"  # à nombre d'échanges égal, le Grand Troc me départag
 ZONES_MULTIPLES = "zones_multiples"  # jusqu'à 3 zones d'intérêt
 GARANTIE_COLIS = "garantie_colis"  # mes envois par colis sont couverts par la Garantie TopTroc
 FAMILLE = "famille"  # 3 autres comptes profitent de ma formule
+ILLIMITE = "illimite"  # pas de quota de « J'aime » ni de propositions (voir ``quota_*`` dans config)
 
-_CONFORT = {SANS_PUB, VOIR_QUI_AIME, RETOUR_ARRIERE, APERCU_DU_STOCK}
+_CONFORT = {SANS_PUB, VOIR_QUI_AIME, RETOUR_ARRIERE, APERCU_DU_STOCK, ILLIMITE}
 _PLUS = _CONFORT | {AVANT_PREMIERE, SHORTLIST, PRIORITE, ZONES_MULTIPLES, GARANTIE_COLIS}
 
 
@@ -57,6 +59,7 @@ FORMULES = {
         Formule("pass", "Pass Dimanche", None, None, frozenset({AVANT_PREMIERE, APERCU_DU_STOCK}), 0, 1.99),
     )
 }
+PARIS = ZoneInfo("Europe/Paris")
 DUREE_PASS = timedelta(days=7)
 DUREE_MOIS = timedelta(days=31)
 DUREE_AN = timedelta(days=366)
@@ -122,6 +125,47 @@ def super_jaime_restants(session: Session, utilisateur: m.Utilisateur) -> int:
         )
     )
     return max(0, formule.super_jaime_par_semaine - (deja or 0))
+
+
+def debut_du_jour(maintenant: datetime) -> datetime:
+    """Minuit, heure de Paris : les « J'aime » du jour reviennent à minuit pour les membres."""
+    local = maintenant.astimezone(PARIS)
+    return local.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+def jaime_restants(session: Session, utilisateur: m.Utilisateur) -> int | None:
+    """« J'aime » qu'il me reste aujourd'hui ; None : illimité (pas de quota, ou abonné)."""
+    quota = get_settings().quota_jaime_par_jour
+    if not quota or a(utilisateur, ILLIMITE):
+        return None
+    deja = session.scalar(
+        select(func.count())
+        .select_from(m.Avis)
+        .where(
+            m.Avis.utilisateur_id == utilisateur.id,
+            m.Avis.aime,
+            m.Avis.cree_le >= debut_du_jour(datetime.now(UTC)),
+        )
+    )
+    return max(0, quota - (deja or 0))
+
+
+def propositions_restantes(session: Session, utilisateur: m.Utilisateur) -> int | None:
+    """Propositions que je peux encore lancer : le quota moins celles qui attendent une réponse ; None : illimité.
+    Une proposition acceptée, refusée ou expirée libère sa place."""
+    quota = get_settings().quota_propositions_en_cours
+    if not quota or a(utilisateur, ILLIMITE):
+        return None
+    en_cours = session.scalar(
+        select(func.count())
+        .select_from(m.Echange)
+        .where(
+            m.Echange.auteur_id == utilisateur.id,
+            m.Echange.statut == m.StatutEchange.propose,
+            m.Echange.expire_le > datetime.now(UTC),
+        )
+    )
+    return max(0, quota - (en_cours or 0))
 
 
 def activer(utilisateur: m.Utilisateur, cle: str, duree: timedelta, depuis: datetime | None = None) -> None:
