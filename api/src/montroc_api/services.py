@@ -107,6 +107,7 @@ def objet_moteur(o: m.Objet, contre=frozenset()) -> ObjetMoteur:
         modes=frozenset(o.modes_echange or MODES_PAR_DEFAUT),
         disponible=o.statut == m.StatutObjet.disponible,
         position=position(o),
+        espace=str(o.espace_id) if o.espace_id else None,
     )
 
 
@@ -120,12 +121,21 @@ def zones_interet(u: m.Utilisateur) -> tuple[ZoneInteret, ...]:
 
 def utilisateur_moteur(u: m.Utilisateur) -> UtilisateurMoteur:
     """Le membre vu par le moteur, pour ses seules zones d'intérêt (``acces``)."""
-    return UtilisateurMoteur(str(u.id), [], zones_interet=zones_interet(u), toute_la_france=u.toute_la_france)
+    return UtilisateurMoteur(
+        str(u.id),
+        [],
+        zones_interet=zones_interet(u),
+        toute_la_france=u.toute_la_france,
+        espace=str(u.espace_id) if u.espace_id else None,
+    )
 
 
 def acces(receveur: m.Utilisateur, objet: m.Objet) -> str | None:
     """« proche » (main propre possible), « loin » (par colis seulement) ou None, d'après les zones d'intérêt du
-    receveur ; « proche » pour qui n'a pas encore de zone d'intérêt (l'ancienne règle par ville s'applique)."""
+    receveur ; « proche » pour qui n'a pas encore de zone d'intérêt (l'ancienne règle par ville s'applique).
+    Un objet réservé à un espace : « proche » pour ses membres (remise sur place), None pour les autres."""
+    if objet.espace_id is not None:
+        return "proche" if receveur.espace_id == objet.espace_id else None
     u = utilisateur_moteur(receveur)
     return u.acces(objet_moteur(objet)) if u.zones_geographiques else "proche"
 
@@ -146,7 +156,13 @@ def point_de_depot(echange: m.Echange) -> str:
 
 
 def lieu_de_rencontre(echange: m.Echange) -> str:
-    """Le lieu public conseillé pour une remise en main propre (LIEUX_DE_RENCONTRE), choisi comme le point de dépôt."""
+    """Le lieu public conseillé pour une remise en main propre (LIEUX_DE_RENCONTRE), choisi comme le point de dépôt.
+    Entre membres d'un même espace réservé : son lieu de remise (accueil, conciergerie…)."""
+    espaces = {t.objet.espace_id for t in echange.transferts}
+    if len(espaces) == 1 and None not in espaces:
+        espace = echange.transferts[0].donneur.espace
+        if espace is not None and espace.lieu_de_remise:
+            return espace.lieu_de_remise
     return _lieu_par_zone(echange, get_settings().liste_lieux_de_rencontre, "")
 
 
@@ -181,6 +197,8 @@ def lieu_du_transfert(echange: m.Echange, t: m.Transfert) -> str:
 def mode_de_remise(objet: m.Objet, receveur: m.Utilisateur) -> str:
     """Comment l'objet arrive au receveur : par colis s'il est hors de ses zones proches ; sinon en main propre,
     le mode par défaut, ou au point de dépôt (s'il y en a un) pour un objet qui ne se remet pas en main propre."""
+    if objet.espace_id is not None:
+        return "main_propre"  # entre membres d'un espace : sur place
     if acces(receveur, objet) == "loin":
         return "colis"
     modes = set(objet.modes_echange or MODES_PAR_DEFAUT)
@@ -204,7 +222,9 @@ def zone_acceptee(souhait: m.Souhait | None, receveur: m.Utilisateur, objet: m.O
     """Comme au Grand Troc (``GrapheEchanges._zone_acceptee``) : un objet dans une zone d'intérêt du receveur,
     ou ailleurs en France par colis s'il l'accepte. Sans zone d'intérêt, l'ancienne règle par ville : la zone du
     donneur parmi celles de la demande si elle en précise, sinon la même que le receveur ; une ville inconnue ne
-    bloque pas."""
+    bloque pas. Un objet réservé à un espace ne va qu'à un membre de cet espace."""
+    if objet.espace_id is not None:
+        return receveur.espace_id == objet.espace_id
     if (receveur.zones_interet or receveur.toute_la_france) and not (souhait is not None and souhait.zones):
         a = acces(receveur, objet)
         if a == "loin":
@@ -289,6 +309,7 @@ def construire_marche(session: Session, stock_avant: datetime | None = None) -> 
             acceptation=acceptation(u),
             zones_interet=zones_interet(u),
             toute_la_france=u.toute_la_france,
+            espace=str(u.espace_id) if u.espace_id else None,
         )
     requete = select(m.Objet).where(m.Objet.statut == m.StatutObjet.disponible).options(selectinload(m.Objet.contre))
     if stock_avant is not None:

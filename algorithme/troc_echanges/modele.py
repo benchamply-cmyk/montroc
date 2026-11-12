@@ -80,6 +80,8 @@ class Objet:
     disponible: bool = True
     # Où se trouve l'objet (latitude, longitude), indiqué à la publication ; None : inconnu.
     position: tuple[float, float] | None = None
+    # Espace réservé (les salariés d'une entreprise…) : l'objet ne part qu'à un membre du même espace.
+    espace: str | None = None
 
     def accepte_le_colis(self) -> bool:
         return not self.modes or MODE_COLIS in self.modes
@@ -232,6 +234,8 @@ class Utilisateur:
     # la règle des zones par nom (``zone``, ``Souhait.zones``, ``Marche.meme_zone``).
     zones_interet: tuple[ZoneInteret, ...] = ()
     toute_la_france: bool = False
+    # Espace réservé dont il est membre (voir ``Objet.espace``) ; None : aucun.
+    espace: str | None = None
 
     @property
     def zones_geographiques(self) -> bool:
@@ -342,7 +346,8 @@ class Marche:
 
     def ajouter_utilisateur(self, id: str, souhaits=(), zone=None, fiabilite=1.0, priorite=1,
                             acceptation: float | None = None, plafond: int | None = None,
-                            zones_interet=(), toute_la_france: bool = False) -> Utilisateur:
+                            zones_interet=(), toute_la_france: bool = False,
+                            espace: str | None = None) -> Utilisateur:
         if id in self.utilisateurs:
             raise ValueError(f"Utilisateur {id!r} déjà présent.")
         if priorite < 1:
@@ -352,14 +357,15 @@ class Marche:
         if plafond is not None and plafond < 0:
             raise ValueError("plafond doit être >= 0.")
         u = Utilisateur(id, list(souhaits), zone, fiabilite, priorite, acceptation, plafond,
-                        tuple(zones_interet), toute_la_france)
+                        tuple(zones_interet), toute_la_france, espace)
         self.utilisateurs[id] = u
         return u
 
     def ajouter_objet(self, id: str, proprietaire: str, categorie: str, titre: str = "",
                       contre=(), contre_strict: bool = False, sous_categorie: str | None = None,
                       caracteristiques=(), etat: str | None = None, modes=(), zone: str | None = None,
-                      disponible: bool = True, position: tuple[float, float] | None = None) -> Objet:
+                      disponible: bool = True, position: tuple[float, float] | None = None,
+                      espace: str | None = None) -> Objet:
         if id in self.objets:
             raise ValueError(f"Objet {id!r} déjà présent.")
         if proprietaire not in self.utilisateurs:
@@ -372,7 +378,7 @@ class Marche:
             raise ValueError(f"etat doit être parmi {ETATS}.")
         caracteristiques = tuple(sorted(dict(caracteristiques).items()))
         o = Objet(id, proprietaire, categorie, titre, contre, contre_strict, sous_categorie, caracteristiques,
-                  etat, frozenset(modes), zone, disponible, position)
+                  etat, frozenset(modes), zone, disponible, position, espace)
         self.objets[id] = o
         return o
 

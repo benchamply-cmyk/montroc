@@ -5670,5 +5670,77 @@
   "Étiquette TopTroc payée : vous la recevez par e-mail sous 24 h ouvrées.": {
     "en": "TopTroc label paid: you will receive it by e-mail within 24 working hours.",
     "es": "Etiqueta TopTroc pagada: la recibes por e-mail en 24 horas hábiles."
+  },
+  "Mon entreprise": {
+    "en": "My company",
+    "es": "Mi empresa"
+  },
+  "Réservé à mes collègues (": {
+    "en": "Reserved for my colleagues (",
+    "es": "Reservado a mis compañeros ("
+  },
+  ") : remise sur place, invisible des autres membres": {
+    "en": "): handed over on site, hidden from other members",
+    "es": "): entrega en el sitio, invisible para los demás miembros"
+  },
+  "Espaces réservés (entreprises, résidences)": {
+    "en": "Private spaces (companies, residences)",
+    "es": "Espacios reservados (empresas, residencias)"
+  },
+  "Nom": {
+    "en": "Name",
+    "es": "Nombre"
+  },
+  "Nom court du lien": {
+    "en": "Short name for the link",
+    "es": "Nombre corto del enlace"
+  },
+  "Domaines des adresses e-mail": {
+    "en": "E-mail address domains",
+    "es": "Dominios de las direcciones de e-mail"
+  },
+  "Lieu de remise": {
+    "en": "Handover place",
+    "es": "Lugar de entrega"
+  },
+  "Collectivité": {
+    "en": "Local authority",
+    "es": "Administración local"
+  },
+  "Créer l'espace": {
+    "en": "Create the space",
+    "es": "Crear el espacio"
+  },
+  "Ex. Acme Marseille": {
+    "en": "E.g. Acme Marseille",
+    "es": "Ej. Acme Marseille"
+  },
+  "Ex. acme-marseille": {
+    "en": "E.g. acme-marseille",
+    "es": "Ej. acme-marseille"
+  },
+  "Ex. acme.fr, acme.com": {
+    "en": "E.g. acme.fr, acme.com",
+    "es": "Ej. acme.fr, acme.com"
+  },
+  "Ex. Accueil du bâtiment B, 2e étage": {
+    "en": "E.g. Reception, building B, 2nd floor",
+    "es": "Ej. Recepción del edificio B, 2.º piso"
+  },
+  "Collègues": {
+    "en": "Colleagues",
+    "es": "Compañeros"
+  },
+  "Voir les objets des collègues": {
+    "en": "See colleagues' items",
+    "es": "Ver los objetos de los compañeros"
+  },
+  "Quitter l'espace": {
+    "en": "Leave the space",
+    "es": "Salir del espacio"
+  },
+  "Rouvrir": {
+    "en": "Reopen",
+    "es": "Reabrir"
   }
 }
