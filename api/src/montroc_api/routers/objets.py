@@ -8,7 +8,7 @@ from sqlalchemy import func, or_, select
 
 from .. import models as m
 from .. import nomenclature
-from ..deps import SessionDep
+from ..deps import SessionDep, UtilisateurOptionnel
 from ..schemas import ObjetLecture
 
 router = APIRouter(prefix="/objets", tags=["objets"])
@@ -81,6 +81,8 @@ def requete_objets(
     caracteristiques: dict[str, list[str]] | None = None,
     plus_anciens: bool = False,
     autour: tuple[float, float, float] | None = None,
+    espace_id: int | None = None,
+    seulement_espace: bool = False,
 ):
     """Objets disponibles de comptes non suspendus, filtrés par catégorie, sous-catégorie, état, caractéristiques,
     ville et mots-clés, les plus récents d'abord (ou les plus anciens). Sert aussi aux alertes du mode visiteur
@@ -108,6 +110,13 @@ def requete_objets(
         requete = requete.where(m.Objet.caracteristiques[cle].astext.in_(valeurs))
     if zone:
         requete = requete.where(m.Utilisateur.zone == zone)
+    # Objets réservés à un espace : visibles de ses seuls membres (``espace_id`` du lecteur).
+    if seulement_espace:
+        requete = requete.where(m.Objet.espace_id == espace_id) if espace_id else requete.where(False)
+    elif espace_id:
+        requete = requete.where(or_(m.Objet.espace_id.is_(None), m.Objet.espace_id == espace_id))
+    else:
+        requete = requete.where(m.Objet.espace_id.is_(None))
     if autour:
         requete = requete.where(*_dans_le_rayon(*autour))
     if q and (mots := _mots(q)):
@@ -127,6 +136,7 @@ def requete_objets(
 @router.get("", response_model=list[ObjetLecture])
 def lister(
     session: SessionDep,
+    lecteur: UtilisateurOptionnel,
     categorie: str | None = None,
     zone: str | None = None,
     q: str | None = Query(
@@ -152,6 +162,7 @@ def lister(
     latitude: float | None = Query(default=None, ge=-90, le=90, description="Centre du filtre « Où ? »."),
     longitude: float | None = Query(default=None, ge=-180, le=180, description="Centre du filtre « Où ? »."),
     rayon_km: float = Query(default=10, ge=1, le=200, description="Rayon autour du centre, en km."),
+    espace: bool = Query(default=False, description="Seulement les objets réservés à mon espace (mes collègues)."),
 ):
     """Objets disponibles, filtrables par catégorie, sous-catégorie, état, caractéristiques, ville et mots-clés,
     par pages de ``limite``. Avec ``latitude``, ``longitude`` et ``rayon_km`` : seulement les objets localisés
@@ -174,13 +185,19 @@ def lister(
         caracteristiques=_caracteristiques(categorie, sous_categorie, caracteristique or []),
         plus_anciens=tri == "ancien",
         autour=(latitude, longitude, rayon_km) if latitude is not None else None,
+        espace_id=lecteur.espace_id if lecteur else None,
+        seulement_espace=espace,
     )
     return session.scalars(requete.offset(decalage).limit(limite)).all()
 
 
 @router.get("/{objet_id}", response_model=ObjetLecture)
-def lire(objet_id: int, session: SessionDep):
+def lire(objet_id: int, session: SessionDep, lecteur: UtilisateurOptionnel):
     objet = session.get(m.Objet, objet_id)
     if objet is None or objet.statut == m.StatutObjet.modere:
         raise HTTPException(404, "Objet introuvable.")
+    if objet.espace_id is not None and not (
+        lecteur and (lecteur.espace_id == objet.espace_id or lecteur.id == objet.proprietaire_id)
+    ):
+        raise HTTPException(404, "Objet introuvable.")  # réservé aux membres de son espace
     return objet

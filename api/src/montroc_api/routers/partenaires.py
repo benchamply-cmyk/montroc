@@ -8,14 +8,14 @@ un espace et des journées troc ; les membres, eux, troquent gratuitement.
 from datetime import UTC, datetime, timedelta
 from typing import Literal
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import func, select
 
 from .. import courriels, nomenclature
 from .. import models as m
 from ..config import get_settings
-from ..deps import SessionDep
+from ..deps import SessionDep, UtilisateurOptionnel, est_moderateur
 from .objets import _dans_le_rayon
 
 router = APIRouter(tags=["partenaires"])
@@ -89,11 +89,14 @@ def impact(
     longitude: float | None = Query(default=None, ge=-180, le=180),
     rayon_km: float = Query(default=10, ge=1, le=200),
     jours: int = Query(default=365, ge=1, le=3650, description="Période couverte, en jours."),
+    espace: str | None = Query(default=None, max_length=60, description="Bilan d'un espace réservé (son slug)."),
+    lecteur: UtilisateurOptionnel = None,
 ):
     """Objets réemployés et déchets évités (estimés) sur une période, dans un rayon ou dans toute la France.
 
     Un objet compte quand il a changé de mains dans un échange terminé. Le poids vient d'une moyenne par
-    catégorie (nomenclature.POIDS_MOYEN_KG) ; le CO₂ évité, d'un facteur moyen par kg d'objet réemployé."""
+    catégorie (nomenclature.POIDS_MOYEN_KG) ; le CO₂ évité, d'un facteur moyen par kg d'objet réemployé.
+    Avec ``espace`` : le bilan RSE d'un espace réservé, pour ses membres et la modération."""
     depuis = datetime.now(UTC) - timedelta(days=jours)
     requete = (
         select(m.Transfert.objet_id, m.Objet.categorie_slug, m.Transfert.donneur_id, m.Transfert.receveur_id)
@@ -102,6 +105,12 @@ def impact(
         .where(m.Echange.statut == m.StatutEchange.termine, m.Echange.cree_le >= depuis)
     )
     en_ligne = select(func.count(m.Objet.id)).where(m.Objet.statut == m.StatutObjet.disponible)
+    if espace is not None:
+        e = session.scalar(select(m.Espace).where(m.Espace.slug == espace))
+        if e is None or not lecteur or not (lecteur.espace_id == e.id or est_moderateur(lecteur)):
+            raise HTTPException(404, "Espace introuvable.")
+        requete = requete.where(m.Objet.espace_id == e.id)
+        en_ligne = en_ligne.where(m.Objet.espace_id == e.id)
     if latitude is not None and longitude is not None:
         requete = requete.where(*_dans_le_rayon(latitude, longitude, rayon_km))
         en_ligne = en_ligne.where(*_dans_le_rayon(latitude, longitude, rayon_km))

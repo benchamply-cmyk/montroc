@@ -294,6 +294,8 @@ body.large .wrap{max-width:1120px}
 .acc-titre :is(button,a){flex:none;text-decoration:none;background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:4px 0}
 .result .ph{position:relative}
 .result .ph .etat{position:absolute;left:8px;bottom:8px;font-size:11.5px;font-weight:600;background:rgba(17,19,24,.82);color:var(--ink);border-radius:6px;padding:3px 7px}
+.result .ph .collegues{position:absolute;left:8px;top:8px;font-size:11.5px;font-weight:600;background:var(--acc,#3b82f6);color:#fff;border-radius:6px;padding:3px 7px}
+.proposer .reserve{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4}
 .acc-duo{display:grid;gap:14px}
 .acc-duo>*,.acc-tuiles>*{min-width:0}
 .acc-hero h1 mark.mot{background:linear-gradient(transparent 24%,var(--mark-doux) 24%,var(--mark-doux) 90%,transparent 90%);color:inherit;padding:0 .06em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
@@ -722,6 +724,7 @@ dialog.visiteur .sablier{font-size:40px}
     </div>
 
     <div class="card" id="c-zones"><span class="label">Où je troque</span><div id="zones"></div></div>
+    <div class="card" id="c-espace" hidden><span class="label">Mon entreprise</span><div id="espace-txt"></div></div>
     <div class="card c-premium" id="c-premium"><span class="label">Troc Premium</span><div id="premium"></div></div>
     <aside class="pub" data-pub hidden></aside>
 
@@ -786,6 +789,8 @@ dialog.visiteur .sablier{font-size:40px}
             <input class="input" type="url" name="annonce_origine" inputmode="url" maxlength="500" placeholder="Collez le lien : on pré-remplit pour vous"></label>
           <div id="import-guide" hidden></div>
         </div></details>
+      <label class="reserve" id="reserve-obj" hidden><input type="checkbox" name="reserve_espace">
+        <span>Réservé à mes collègues (<span data-espace-nom></span>) : remise sur place, invisible des autres membres</span></label>
       <button class="acc-btn y" type="submit">Publier</button>
       <p class="err" id="obj-err" hidden></p>
     </form>
@@ -846,6 +851,17 @@ dialog.visiteur .sablier{font-size:40px}
     <div class="hero"><span class="label">Modération</span><h2>Signalements à traiter</h2>
       <p class="muted" style="font-size:14px">Chaque décision est motivée : le texte est envoyé à la personne concernée, avec la possibilité de contester.</p></div>
     <div id="reports" style="display:flex;flex-direction:column;gap:16px"></div>
+    <div class="card stack" id="mod-espaces"><span class="label">Espaces réservés (entreprises, résidences)</span>
+      <div data-liste style="display:flex;flex-direction:column;gap:12px"></div>
+      <form class="stack" id="f-espace">
+        <label class="field"><span>Nom</span><input class="input" name="nom" required minlength="2" maxlength="120" placeholder="Ex. Acme Marseille"></label>
+        <label class="field"><span>Nom court du lien</span><input class="input" name="slug" required pattern="[a-z0-9-]+" maxlength="60" placeholder="Ex. acme-marseille"></label>
+        <label class="field"><span>Domaines des adresses e-mail</span><input class="input" name="domaines" required maxlength="300" placeholder="Ex. acme.fr, acme.com"></label>
+        <label class="field"><span>Lieu de remise</span><input class="input" name="lieu_de_remise" maxlength="200" placeholder="Ex. Accueil du bâtiment B, 2e étage"></label>
+        <label class="field"><span>Formule</span><select class="input" name="formule"><option value="espace">Espace salariés</option><option value="residences">Résidences</option><option value="territoire">Collectivité</option></select></label>
+        <div class="btns"><button class="btn" type="submit">Créer l'espace</button></div>
+      </form>
+    </div>
   </section>
 
   <footer class="legal">Un contenu vous semble illicite ou dangereux ? Utilisez « Signaler » sur l'objet concerné.</footer>
@@ -949,7 +965,7 @@ function go(v,{adresse,remplacer=false}={}){
   $$('nav.tabs button').forEach(b=>{b.dataset.tab===onglet?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   marquerOnglets();
   window.scrollTo(0,0);
-  if(v==='mod')chargerSignalements();
+  if(v==='mod'){chargerSignalements();Espace.moderation()}
   if(v==='favoris')Visiteur.afficher();
 }
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
@@ -1039,7 +1055,7 @@ function afficherCategories(cats){
 // Une carte d'objet, avec l'étoile « Favoris » et, pour un membre, le cœur « J'aime » (visiteur.js), sur la photo, hors du lien.
 function carteObjet(o){
   if(typeof Visiteur!=='undefined')Visiteur.retenir(o);
-  return `<div class="carte-objet"><a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}</div>
+  return `<div class="carte-objet"><a class="result" href="#objet-${o.id}" data-fiche="${o.id}"><div class="ph">${o.photo_url?`<img src="${esc(vignette(o.photo_url,320))}" alt="" loading="lazy">`:''}${o.etat?`<span class="etat">${esc(ETATS[o.etat]||'')}</span>`:''}${o.reserve_espace?'<span class="collegues">Collègues</span>':''}</div>
     <b>${esc(o.titre)}</b><span>${esc(categories[o.categorie_slug]||o.categorie_slug)}</span></a>${typeof Visiteur!=='undefined'?Visiteur.boutons(o):''}</div>`;
 }
 async function chargerFil(){
@@ -1063,6 +1079,7 @@ function afficherSession(){
   else $('#f-mdp-rappel').hidden=true;
   if(typeof Premium!=='undefined')Premium.afficher();
   if(typeof Lieu!=='undefined')Lieu.dessiner();
+  if(typeof Espace!=='undefined')Espace.afficher();
 }
 function deconnecte(){jeton=null;moi=null;store.set('troc.jeton',null);store.set('troc.pseudo',null);afficherSession();go('home')}
 
@@ -1149,7 +1166,7 @@ $('#f-obj').onsubmit=async e=>{
     const photo=await envoyerPhoto(f.photo.files[0]); b.textContent='Publication…';
     await api('/moi/objets',{method:'POST',body:{titre:f.titre.value.trim(),categorie_slug:f.categorie_slug.value,etat:f.etat.value,
       sous_categorie_slug:f.sous_categorie_slug.value||null,caracteristiques:Detail.valeurs(f),modes_echange:Detail.modes(f),
-      format_colis:f.format_colis.value||null,...Premium.localisation(f),
+      format_colis:f.format_colis.value||null,...Premium.localisation(f),reserve_espace:!!f.reserve_espace.checked,
       description:f.description.value.trim()||null,annonce_origine:annonce?annonce.lien:null,...photo}});
     f.reset(); Detail.remplir(f,false); $('#photo-txt').innerHTML=PHOTO_VIDE; $('#import-guide').hidden=true; f.querySelectorAll('details').forEach(d=>d.open=false);
     toast(annonce?`Objet publié. Une fois troqué, pensez à retirer l'annonce ${annonce.site}.`:'Objet publié');
@@ -1885,6 +1902,7 @@ async function demarrer(){
   await session;
   if(moi)Visiteur.apresConnexion(); else Visiteur.rafraichir();
   if(Visiteur.demarrer(h))return; // liens de confirmation ou d'arrêt du suivi sans compte
+  if(await Espace.demarrer(h))return; // lien d'invitation d'un espace réservé (entreprise, résidence)
   if(h.startsWith('#objet-')){if(moi)toutCharger(); ouvrirObjet(+h.slice(7)); return}
   if(h.startsWith('#recherche=')){let q=h.slice(11); try{q=decodeURIComponent(q)}catch{} if(moi)toutCharger(); chercher(q); return}
   if(h.startsWith('#categorie=')){if(moi)toutCharger();suivre(h);return}
@@ -1901,5 +1919,6 @@ demarrer();
 <script src="match.js"></script>
 <script src="premium.js"></script>
 <script src="visiteur.js"></script>
+<script src="espace.js"></script>
 </body>
 </html>
