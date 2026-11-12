@@ -1,0 +1,1 @@
+- Accueil : une photo d’échange entre voisins accompagne la boucle animée du Grand Troc.
