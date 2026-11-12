@@ -1,1 +1,0 @@
-- Espace réservé aux salariés (offre Espace salariés / Résidences) : la modération crée l'espace d'un client, ses membres le rejoignent par un lien d'invitation avec leur e-mail pro et réservent leurs objets à leurs collègues, remise sur place (migration 0024).
