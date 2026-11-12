@@ -1,1 +1,2 @@
 - Quotas des comptes gratuits sur les actions qu'on lance (J'aime par jour, propositions en attente), désactivés par défaut (QUOTA_JAIME_PAR_JOUR, QUOTA_PROPOSITIONS_EN_COURS) ; Troc Premium les lève ; compteur dans le Match (migration 0025).
+- Page Les offres : tableau gratuit / Troc Premium, conditions, formules Premium, offres Entreprises et Collectivités.

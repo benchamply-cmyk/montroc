@@ -461,3 +461,13 @@ header.site.reduit .langue-bouton{min-height:34px;height:34px}
 .impact div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:4px}
 .impact b{font-family:var(--display);font-size:24px}
 .impact span{font-size:13px;color:var(--muted)}
+
+/* Les offres : tableau gratuit / Troc Premium, défilant sur téléphone. */
+.tableau{overflow-x:auto;margin:16px 0}
+.comparatif{width:100%;border-collapse:collapse;font-size:14px}
+@media (max-width:520px){.comparatif{font-size:13px}.comparatif th,.comparatif td{padding:9px 6px}.comparatif tbody th{width:44%}}
+.comparatif th,.comparatif td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.comparatif thead th{font-family:var(--display);font-size:13px;color:var(--ink)}
+.comparatif tbody th{font-weight:500;color:var(--ink)}
+.comparatif td{color:var(--muted)}
+.comparatif td:last-child{color:var(--ink)}
