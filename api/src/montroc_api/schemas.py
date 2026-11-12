@@ -191,6 +191,9 @@ class Moi(Lecture):
     essai_disponible: bool = False
     super_jaime_restants: int = 0
     zones_max: int = 1
+    # Quotas des comptes gratuits (None : illimité) : « J'aime » du jour, propositions encore possibles.
+    jaime_restants: int | None = None
+    propositions_restantes: int | None = None
     # Mon espace réservé (entreprise, résidence), s'il y en a un.
     espace: EspaceResume | None = None
 

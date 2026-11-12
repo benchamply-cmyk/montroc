@@ -93,6 +93,11 @@ class Settings(BaseSettings):
     contact_partenaires: str = "contact@toptroc.com"
     # Encart publicitaire montré aux membres sans formule « sans publicité » : « texte | lien ». Vide : aucun.
     encart_publicite: str = ""
+    # Quotas des comptes gratuits, sur les seules actions qu'on lance soi-même (chercher, publier, répondre à une
+    # proposition et le Grand Troc restent illimités) ; les abonnés Troc Premium n'en ont pas. 0 : pas de quota.
+    # Valeurs conseillées une fois la zone assez dense : 10 « J'aime » par jour, 3 propositions en attente.
+    quota_jaime_par_jour: int = Field(default=0, ge=0, le=1000)
+    quota_propositions_en_cours: int = Field(default=0, ge=0, le=100)
     # Durée de l'essai gratuit de Premium Plus, une fois par compte (0 : pas d'essai).
     jours_essai_premium: int = Field(default=30, ge=0, le=90)
 

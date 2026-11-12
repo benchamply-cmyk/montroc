@@ -5742,5 +5742,165 @@
   "Rouvrir": {
     "en": "Reopen",
     "es": "Reabrir"
+  },
+  "Quand la communauté sera assez grande, Troc Premium (dès 2,99 € par mois) donnera des J'aime et des propositions illimités, sans publicité, avec retour arrière dans le Match. Un compte gratuit garde chaque jour des J'aime et des propositions ; chercher, publier, répondre aux propositions et le Grand Troc restent illimités pour tous.": {
+    "en": "Once the community is big enough, Troc Premium (from €2.99 a month) will give unlimited likes and proposals, no ads, and undo in the Match. A free account keeps a daily allowance of likes and proposals; searching, publishing, answering proposals and the Grand Troc stay unlimited for everyone.",
+    "es": "Cuando la comunidad sea lo bastante grande, Troc Premium (desde 2,99 € al mes) dará Me gusta y propuestas ilimitados, sin publicidad y con vuelta atrás en el Match. Una cuenta gratuita conserva cada día Me gusta y propuestas; buscar, publicar, responder a las propuestas y el Grand Troc siguen siendo ilimitados para todos."
+  },
+  "Particuliers : gratuit ou Troc Premium": {
+    "en": "Individuals: free or Troc Premium",
+    "es": "Particulares: gratis o Troc Premium"
+  },
+  "Ce que vous faites": {
+    "en": "What you do",
+    "es": "Lo que haces"
+  },
+  "Chercher et voir tous les objets, même sans compte": {
+    "en": "Search and see every item, even without an account",
+    "es": "Buscar y ver todos los objetos, incluso sin cuenta"
+  },
+  "Illimité": {
+    "en": "Unlimited",
+    "es": "Ilimitado"
+  },
+  "Publier ses objets et dire ce qui serait utile": {
+    "en": "Publish your items and say what would be useful",
+    "es": "Publicar tus objetos y decir qué te sería útil"
+  },
+  "Répondre aux propositions reçues": {
+    "en": "Answer the proposals you receive",
+    "es": "Responder a las propuestas recibidas"
+  },
+  "Inclus": {
+    "en": "Included",
+    "es": "Incluido"
+  },
+  "Inclus, avec l'avant-première à 17 h (Plus)": {
+    "en": "Included, with the 5 pm preview (Plus)",
+    "es": "Incluido, con el preestreno a las 17 h (Plus)"
+  },
+  "« J'aime » dans le Match": {
+    "en": "Likes in the Match",
+    "es": "«Me gusta» en el Match"
+  },
+  "10 par jour": {
+    "en": "10 a day",
+    "es": "10 al día"
+  },
+  "Propositions lancées, en attente de réponse": {
+    "en": "Proposals you started, awaiting an answer",
+    "es": "Propuestas enviadas, pendientes de respuesta"
+  },
+  "3 à la fois": {
+    "en": "3 at a time",
+    "es": "3 a la vez"
+  },
+  "Voir qui aime ses objets, retour arrière dans le Match": {
+    "en": "See who likes your items, undo in the Match",
+    "es": "Ver a quién le gustan tus objetos, vuelta atrás en el Match"
+  },
+  "Publicité": {
+    "en": "Advertising",
+    "es": "Publicidad"
+  },
+  "Un encart discret": {
+    "en": "A discreet banner",
+    "es": "Un anuncio discreto"
+  },
+  "Aucune": {
+    "en": "None",
+    "es": "Ninguna"
+  },
+  "Prix": {
+    "en": "Price",
+    "es": "Precio"
+  },
+  "0 €": {
+    "en": "€0",
+    "es": "0 €"
+  },
+  "Dès 2,99 € par mois": {
+    "en": "From €2.99 a month",
+    "es": "Desde 2,99 € al mes"
+  },
+  "Les conditions": {
+    "en": "The conditions",
+    "es": "Las condiciones"
+  },
+  "Les limites du compte gratuit ne s'appliqueront que lorsque la communauté sera assez grande dans votre zone. D'ici là, tout est illimité pour tous.": {
+    "en": "The free account limits will only apply once the community is big enough in your area. Until then, everything is unlimited for everyone.",
+    "es": "Los límites de la cuenta gratuita solo se aplicarán cuando la comunidad sea lo bastante grande en tu zona. Hasta entonces, todo es ilimitado para todos."
+  },
+  "Les « J'aime » reviennent chaque jour à minuit. Les « Non merci » et un « J'aime » déjà donné ne comptent pas.": {
+    "en": "Likes come back every day at midnight. \"No thanks\" and a like already given do not count.",
+    "es": "Los «Me gusta» vuelven cada día a medianoche. Los «No, gracias» y un «Me gusta» ya dado no cuentan."
+  },
+  "Une proposition libère sa place dès qu'elle est acceptée, refusée ou expirée (48 h sans réponse).": {
+    "en": "A proposal frees its slot as soon as it is accepted, declined or expired (48 hours without an answer).",
+    "es": "Una propuesta libera su plaza en cuanto se acepta, se rechaza o caduca (48 h sin respuesta)."
+  },
+  "Troc Premium est sans engagement : vous le résiliez quand vous voulez, il court jusqu'à la fin de la période payée.": {
+    "en": "Troc Premium has no commitment: cancel whenever you like, it runs until the end of the paid period.",
+    "es": "Troc Premium no tiene permanencia: lo cancelas cuando quieras y dura hasta el final del periodo pagado."
+  },
+  "Premium ne passe jamais devant un échange possible : au Grand Troc, la priorité ne sert qu'à départager, à nombre d'objets échangés égal.": {
+    "en": "Premium never takes precedence over a possible exchange: at the Grand Troc, priority only breaks ties when the number of items exchanged is equal.",
+    "es": "Premium nunca pasa por delante de un intercambio posible: en el Grand Troc, la prioridad solo sirve para desempatar, con el mismo número de objetos intercambiados."
+  },
+  "Les formules Troc Premium": {
+    "en": "Troc Premium plans",
+    "es": "Las fórmulas Troc Premium"
+  },
+  "L'essentiel": {
+    "en": "The essentials",
+    "es": "Lo esencial"
+  },
+  "2,99 € / mois": {
+    "en": "€2.99 / month",
+    "es": "2,99 € / mes"
+  },
+  "Ou 24 € par an. « J'aime » et propositions illimités, sans publicité, voir qui aime ses objets, retour arrière dans le Match.": {
+    "en": "Or €24 a year. Unlimited likes and proposals, no ads, see who likes your items, undo in the Match.",
+    "es": "O 24 € al año. «Me gusta» y propuestas ilimitados, sin publicidad, ver a quién le gustan tus objetos, vuelta atrás en el Match."
+  },
+  "Le plus complet": {
+    "en": "The most complete",
+    "es": "La más completa"
+  },
+  "5,99 € / mois": {
+    "en": "€5.99 / month",
+    "es": "5,99 € / mes"
+  },
+  "Ou 49 € par an. Tout Essentiel, plus l'avant-première du Grand Troc, la priorité à égalité, trois zones de recherche et la Garantie TopTroc sur vos colis.": {
+    "en": "Or €49 a year. Everything in Essentiel, plus the Grand Troc preview, tie-break priority, three search areas and the TopTroc Guarantee on your parcels.",
+    "es": "O 49 € al año. Todo Essentiel, más el preestreno del Grand Troc, la prioridad en caso de empate, tres zonas de búsqueda y la Garantía TopTroc en tus paquetes."
+  },
+  "Pour la maison": {
+    "en": "For the household",
+    "es": "Para la casa"
+  },
+  "8,99 € / mois": {
+    "en": "€8.99 / month",
+    "es": "8,99 € / mes"
+  },
+  "Ou 79 € par an. La formule Plus pour vous et trois proches.": {
+    "en": "Or €79 a year. The Plus plan for you and three relatives.",
+    "es": "O 79 € al año. La fórmula Plus para ti y tres allegados."
+  },
+  "Le Pass Dimanche (1,99 €) donne l'avant-première d'un Grand Troc, sans lever les limites du compte gratuit.": {
+    "en": "The Sunday Pass (€1.99) gives the preview of one Grand Troc, without lifting the free account limits.",
+    "es": "El Pase Domingo (1,99 €) da el preestreno de un Grand Troc, sin quitar los límites de la cuenta gratuita."
+  },
+  "Voir l'offre Entreprises et demander un devis": {
+    "en": "See the Companies offer and request a quote",
+    "es": "Ver la oferta Empresas y pedir presupuesto"
+  },
+  "Voir l'offre Collectivités et demander un devis": {
+    "en": "See the Local authorities offer and request a quote",
+    "es": "Ver la oferta Administraciones locales y pedir presupuesto"
+  },
+  "Les offres TopTroc : troquer est gratuit partout en France, Troc Premium pour aller plus loin, et des formules pour les entreprises et les collectivités.": {
+    "en": "TopTroc offers: swapping is free everywhere in France, Troc Premium to go further, and plans for companies and local authorities.",
+    "es": "Las ofertas de TopTroc: intercambiar es gratis en toda Francia, Troc Premium para ir más lejos y fórmulas para empresas y administraciones locales."
   }
 }
